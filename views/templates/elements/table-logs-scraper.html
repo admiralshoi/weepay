@@ -1,0 +1,8 @@
+<tr class="{{#if success}} alert-success {{else}} alert-danger {{/if}}">
+    <td><p class="color-primary-cta hover-underline cursor-pointer font-weight-bold view-scraper-log"
+           data-filename="{{file}}" data-success="{{success}}" data-datetime="{{datetime}}" data-name="{{request}} - {{info}}">{{datetime}}</p></td>
+    <td>{{cookie_name}}</td>
+    <td>{{request}}</td>
+    <td class="d-none d-lg-table-cell">{{info}}</td>
+    <td class="d-none d-lg-table-cell">{{custom}}</td>
+</tr>

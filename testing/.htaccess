@@ -1,0 +1,24 @@
+AuthType Basic
+AuthName "Restricted Area"
+AuthUserFile /customers/f/a/3/co9i1xgl0/webroots/c79b3d0b/testing/.htpasswd
+Require valid-user
+
+Options -Indexes
+
+<FilesMatch "\.(eot|otf|ttf|woff|woff2)$">
+    Header always set Access-Control-Allow-Origin "*"
+</FilesMatch>
+
+RewriteEngine On
+RewriteBase /testing/
+
+# Preserve the Authorization header when it's sent
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+
+# Allow access to everything within the public directory
+RewriteCond %{REQUEST_URI} ^/testing/public/ [NC]
+RewriteRule ^ - [L]
+
+# Rewrite all other requests to index.php
+RewriteRule ^ index.php [L]

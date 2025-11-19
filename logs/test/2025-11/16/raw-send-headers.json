@@ -1,0 +1,19 @@
+{
+    "10002": "https:\/\/api.signicat.com\/auth\/rest\/sessions?signicat-accountId=a-spge-vtZQu1njZNgLAgWErfx9",
+    "19913": true,
+    "10036": "POST",
+    "52": 1,
+    "13": 500,
+    "10023": [
+        "Origin: https:\/\/localhost\/weepay\/",
+        "Referer: https:\/\/localhost\/weepay\/",
+        "User-Agent: Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/126.0.0.0 Safari\/537.36",
+        "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6InNhbmRib3gtc2lnbmluZy1rZXktNzJkYWM5NzlhM2Y3Zjk0MTgxNjRlYTM0ODUyY2M2MWEiLCJ0eXAiOiJhdCtqd3QifQ.eyJpc3MiOiJodHRwczovL2FwaS5zaWduaWNhdC5jb20vYXV0aC9vcGVuIiwibmJmIjoxNzYzMzI1NzU3LCJpYXQiOjE3NjMzMjU3NTcsImV4cCI6MTc2MzMyNjM1NywiYXVkIjoiaHR0cHM6Ly9hcGkuc2lnbmljYXQuY29tIiwic2NvcGUiOlsic2lnbmljYXQtYXBpIl0sImNsaWVudF9pZCI6InNhbmRib3gtdHJpY2t5LXR1cnRsZS0xODMiLCJhY2NvdW50X2lkIjoiYS1zcGdlLXZ0WlF1MW5qWk5nTEFnV0VyZng5Iiwic2FuZGJveCI6dHJ1ZSwiY2xpZW50X2dlbmVyYXRpb24iOjQsImp0aSI6IkE5NUQxOUQwMzhBNkM5OUIwM0MzOTdEMjA1NDRDOUI3In0.SDjfinJ2zvyqCNfkw1duDpRZEdi0j8t-DOoBIq-Bgu2_AdlPOQ9a6_zQLqbiBqV7BRPDu4gPnGWT0-qyw7pU8npFb4kamBbGBbfXsQ33L3zOpu9llKx3jJhvPUtsydaDUE6V3XceLRvPQowDCVaSr1pcDXtB-Rp2GtGpyUud4a_XS740cZlbKW9qTydGw3vSN0KLpT75HLdzHGu9ErH9iD9dpzzHPtCpAWM8Av64-cmNXhqEvdPxe0_TmxN8a0LUZrXCZPsKmrhLTxI2sPIlI1F51afVHKHtKLCxdg2_anLmOiEUlCeL9-0OfUsOxv6TIn1H6k8HtCh88FWAW0xipA",
+        "Content-type: application\/json; charset=UTF-8"
+    ],
+    "42": true,
+    "10102": "",
+    "68": 10,
+    "84": "CURL_HTTP_VERSION_1_1",
+    "10015": "{\"flow\":\"redirect\",\"allowedProviders\":[\"mitid\"],\"additionalParameters\":{\"mitid_reference_text\":\"c29tZXRleHQgZm9yIHRlc3Rpbmc=\"},\"requestedAttributes\":[\"name\",\"family_name\",\"given_name\",\"firstName\",\"lastName\",\"dateOfBirth\",\"nin\",\"nin_type\",\"mitidHasCpr\",\"mitidReferenceTextBody\",\"mitidCprSource\",\"mitidNameAndAddressProtection\",\"mitidIal\",\"mitidLoa\",\"mitidAal\",\"mitidFal\",\"mitidUuid\"],\"callbackUrls\":{\"success\":\"https:\\\/\\\/localhost\\\/weepay\\\/user\\\/verify\\\/success?tsid=tses_1lizmcxp3e0zjvd&next=cpf\",\"abort\":\"https:\\\/\\\/localhost\\\/weepay\\\/user\\\/verify\\\/abort?tsid=tses_1lizmcxp3e0zjvd&next=cpf\",\"error\":\"https:\\\/\\\/localhost\\\/weepay\\\/user\\\/verify\\\/error?tsid=tses_1lizmcxp3e0zjvd&next=cpf\"}}"
+}

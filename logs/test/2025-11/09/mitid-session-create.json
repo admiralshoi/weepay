@@ -1,0 +1,36 @@
+{
+    "id": "4c1dd59b-2a0d-45e1-b661-28033a33a0fd",
+    "accountId": "a-spge-vtZQu1njZNgLAgWErfx9",
+    "authenticationUrl": "https:\/\/weepay.sandbox.signicat.com\/broker\/sp\/external-service\/login?messageId=ffa15a5d-c6dc-974d-b902-accc46a8d884&transactionId=8092f1d2-8aae-7a4b-baf4-6baca822cd8b",
+    "status": "CREATED",
+    "callbackUrls": {
+        "success": "https:\/\/localhost:443\/weepay\/merchant\/roses-frisor\/checkout\/validation?sessionId=4c1dd59b-2a0d-45e1-b661-28033a33a0fd",
+        "abort": "https:\/\/localhost:443\/weepay\/mitid-test\/abort?sessionId=4c1dd59b-2a0d-45e1-b661-28033a33a0fd",
+        "error": "https:\/\/localhost:443\/weepay\/mitid-test\/success?sessionId=4c1dd59b-2a0d-45e1-b661-28033a33a0fd"
+    },
+    "allowedProviders": [
+        "mitid"
+    ],
+    "flow": "redirect",
+    "requestedAttributes": [
+        "dateOfBirth",
+        "family_name",
+        "firstName",
+        "given_name",
+        "lastName",
+        "mitidAal",
+        "mitidCprSource",
+        "mitidFal",
+        "mitidHasCpr",
+        "mitidIal",
+        "mitidLoa",
+        "mitidNameAndAddressProtection",
+        "mitidReferenceTextBody",
+        "mitidUuid",
+        "name",
+        "nin",
+        "nin_type"
+    ],
+    "sessionLifetime": 1200,
+    "expiresAt": "2025-11-09T12:52:54.1991218+00:00"
+}

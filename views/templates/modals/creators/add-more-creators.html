@@ -1,0 +1,84 @@
+<div class="modal" tabindex="-1" role="dialog" id="add-more-creators-modal">
+    <div class="modal-dialog responsive" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add More Creators</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="flex-col-start" style="row-gap: .5rem;">
+                    <div class="flex-row-between flex-align-center flex-nowrap" style="column-gap: .75rem">
+                        <div class="flex-row-start flex-align-center flex-nowrap" style="column-gap: .5rem">
+                            <i class="mdi mdi-plus color-design-blue font-22"></i>
+                            <p class="font-22 font-weight-medium mb-0">Add New Creator</p>
+                        </div>
+                    </div>
+                    <p class="font-14 color-gray mb-0">Enter the username to add a new creator to your portfolio</p>
+
+                    <div class="flex-row-between flex-align-center flex-nowrap w-100" style="column-gap: .5rem">
+                        <div class="position-relative flex-1-current">
+                            <input type="text" name="creator_username" placeholder="username" class="usernames-to-load form-field-v2 w-100" style="padding: .5rem .5rem .5rem 34px;">
+                            <div class="position-absolute" style="top: 5px; left: 10px">
+                                <i class="mdi mdi-at color-gray font-18"></i>
+                            </div>
+                        </div>
+                        <button class="btn-v2 design-action-btn load-new-creator" data-parent-container="#add-more-creators-modal">Load</button>
+                    </div>
+
+                    <div class="mt-2" data-preview="load-creator-preview" style="display: none;">
+                        <div class="flex-row-start flex-nowrap card-border bg-wrapper border-radius-10px p-3" style="column-gap: .75rem;">
+                            <div class="overflow-hidden w-60px h-60px">
+                                <div class="h-100 w-100 border-radius-50">
+                                    <img data-preview="load-creator-picture" src="" class="noSelect w-100 h-100 border-radius-50" />
+                                </div>
+                            </div>
+                            <div class="flex-col-start overflow-hidden" style="gap: .5rem;">
+                                <div class="flex-row-start flex-align-center flex-nowrap" style="gap: .5rem;">
+                                    <p class="font-18 font-weight-bold mb-0" data-preview="load-creator-name"></p>
+                                    <p class="font-weight-bold mute-box" data-preview="load-creator-username"></p>
+                                </div>
+                                <div class="flex-row-start flex-align-center flex-nowrap" style="gap: .5rem;">
+                                    <div class="flex-row-start flex-align-center flex-nowrap color-gray font-14 font-weight-medium" style="gap: .25rem;">
+                                        <i class="mdi mdi-account-multiple"></i>
+                                        <p class="mb-0" >
+                                            <span data-preview="load-creator-followers">0</span>
+                                            <span> followers</span>
+                                        </p>
+                                    </div>
+                                    <div class="flex-row-start flex-align-center flex-nowrap color-gray font-14 font-weight-medium" style="gap: .25rem;">
+                                        <i class="mdi mdi-folder-multiple-image"></i>
+                                        <p class="mb-0" >
+                                            <span data-preview="load-creator-media">0</span>
+                                            <span> posts</span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <p class="font-14 color-gray mb-0 font-weight-medium">
+                                    Do you wish to add <span class="font-weight-medium" data-preview="load-creator-name"></span> to your creators?
+                                </p>
+
+                                <div class="flex-row-start flex-align-center flex-nowrap" style="gap: .5rem;">
+                                    <button name="store_new_creator" class="store-loaded-creator btn-v2 design-action-btn">Store Creator</button>
+                                    <button name="cancel_store_creator"  class="cancel-store-loaded-creator btn-v2 trans-btn">Cancel</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <p class="mt-2 color-red font-12 d-none modalErrorBox"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

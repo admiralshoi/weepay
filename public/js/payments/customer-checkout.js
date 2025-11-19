@@ -1,0 +1,216 @@
+
+
+
+
+
+const CustomerCheckoutInfo = {
+    basket: null,
+    interval: null,
+    tsId: null,
+    elements: {
+        showCurrencies: null,
+        showNames: null,
+        showPrices: null,
+        nextStepButton: null,
+        loader: null,
+        lineItems: null,
+        total: null,
+    },
+    init(tsId) {
+        this.tsId = tsId;
+
+        this.elements.lineItems = document.getElementById('line_items');
+        this.elements.total = document.getElementById('total_price_container');
+        this.elements.nextStepButton = document.getElementById('next-step');
+        this.elements.loader = document.getElementById('loader-container');
+        this.elements.showNames = document.querySelectorAll('[data-show=basket_name]');
+        this.elements.showCurrencies = document.querySelectorAll('[data-show=basket_currency]');
+        this.elements.showPrices = document.querySelectorAll('[data-show=basket_price]');
+
+        this.bindEvents();
+    },
+
+    bindEvents() {
+        this.interval = window.setInterval(this.fetchBasket.bind(this), 1200);
+    },
+
+    setBasketInfo() {
+        this.elements.paymentCards.forEach(c => {
+            if (c.querySelector('.payment-card__radio').checked) {
+                c.classList.add('payment-card--selected');
+            } else {
+                c.classList.remove('payment-card--selected');
+            }
+        });
+    },
+
+    async fetchBasket() {
+        const result = await post(`api/checkout/terminal/basket`, {ts_id: this.tsId})
+        if(result.status === 'error') {
+            showErrorNotification("Unable to proceed", result.error.message)
+            window.clearInterval(this.interval)
+            this.interval = null;
+            return
+        }
+
+        if(empty(result.data.basket)) return;
+
+        window.clearInterval(this.interval)
+        this.interval = null;
+
+        let basket = result.data.basket;
+        let price = basket.price;
+        let currency = basket.currency;
+        let currencySymbol = basket.currency_symbol;
+        let name = basket.name;
+        let id = basket.uid;
+
+
+        this.elements.showNames.forEach(el => el.innerText = name)
+        this.elements.showCurrencies.forEach(el => el.innerText = currencySymbol)
+        this.elements.showPrices.forEach(el => el.innerText = phpNumberFormat(price))
+
+        this.elements.loader.style.display = 'none';
+        this.elements.nextStepButton.style.display = 'flex';
+        this.elements.lineItems.style.display = 'flex';
+        this.elements.total.style.display = 'flex';
+
+    }
+}
+
+
+
+
+
+
+
+const CustomerCheckout = {
+    listenStatus: false,
+    selectedPlan: null,
+    plans: null,
+    tsId: null,
+    elements: {
+        payButton: null,
+        toPayNow: null,
+        paymentCards: null,
+        paymentButtonLoader: null,
+        acceptTerms: null,
+    },
+    init(selectedPlanName, tsId) {
+        this.plans = paymentPlans;
+        this.tsId = tsId;
+
+        this.elements.acceptTerms = document.querySelector('[name=accept_terms]');
+        this.elements.payButton = document.getElementById('payButton');
+        this.elements.toPayNow = document.getElementById('to-pay-now');
+        this.elements.paymentButtonLoader = document.getElementById('paymentButtonLoader');
+        this.elements.paymentCards = document.querySelectorAll('.payment-card');
+
+        this.updateSelectedPlan(selectedPlanName);
+        this.bindEvents();
+    },
+
+    bindEvents() {
+        this.elements.payButton.addEventListener('click', this.generateCheckoutLink.bind(this));
+        this.elements.paymentCards.forEach(card => {
+            const radio = card.querySelector('.payment-card__radio');
+            card.addEventListener('click', (e) => {
+                if (e.target === radio) return;
+                radio.checked = true;
+                this.updateSelectedPlan(radio.value)
+                this.updateSelection();
+            });
+            radio.addEventListener('change', this.updateSelection);
+        });
+    },
+    updateSelectedPlan(planName) {
+        for(let plan of this.plans) {
+            if(plan.name === planName) {
+                this.selectedPlan = plan;
+                this.elements.toPayNow.innerText = phpNumberFormat(this.selectedPlan.to_pay_now)
+                break;
+            }
+        }
+    },
+    updateSelection() {
+        this.elements.paymentCards.forEach(c => {
+            if (c.querySelector('.payment-card__radio').checked) {
+                c.classList.add('payment-card--selected');
+            } else {
+                c.classList.remove('payment-card--selected');
+            }
+        });
+    },
+
+    async listenOrderStatus(orderCode) {
+        if(!this.listenStatus) return;
+        const result = await post(`api/checkout/order/status`, {ts_id: this.tsId, order_code: orderCode})
+        if(result.status === 'error') {
+            // showErrorNotification("Unable to fetch order", result.error.message)
+            this.elements.payButton.disabled = false;
+            this.elements.paymentButtonLoader.style.display = 'none';
+            window.clearInterval(this.orderListenerInterval);
+            this.listenStatus = false;
+            return false
+        }
+
+        if(result.data.status === 'COMPLETED') {
+            showSuccessNotification("Order completed")
+            this.elements.paymentButtonLoader.style.display = 'none';
+            window.clearInterval(this.orderListenerInterval);
+            this.listenStatus = false;
+            return true
+        }
+
+        if(result.data.status === 'CANCELED') {
+            showSuccessNotification("Order Cancelled")
+            this.elements.payButton.disabled = false;
+            this.elements.paymentButtonLoader.style.display = 'none';
+            window.clearInterval(this.orderListenerInterval);
+            this.listenStatus = false;
+            return true
+        }
+
+        if(result.data.status === 'EXPIRED') {
+            showSuccessNotification("Checkout expired")
+            this.elements.payButton.disabled = false;
+            this.elements.paymentButtonLoader.style.display = 'none';
+            window.clearInterval(this.orderListenerInterval);
+            this.listenStatus = false;
+            return true
+        }
+
+        this.listenOrderStatus.bind(this)(orderCode)
+    },
+
+    async generateCheckoutLink() {
+        if(!this.elements.acceptTerms.checked) {
+            showErrorNotification("Please agree to the terms", "You must check the box and agree to the terms stated before proceeding.")
+            return;
+        }
+        this.elements.payButton.disabled = true;
+        this.elements.paymentButtonLoader.style.display = 'flex';
+
+        const result = await post(`api/checkout/payment/session`, {ts_id: this.tsId, plan: this.selectedPlan.name})
+        if(result.status === 'error') {
+            showErrorNotification("Unable to proceed", result.error.message)
+            this.elements.payButton.disabled = false;
+            this.elements.paymentButtonLoader.style.display = 'none';
+            return
+        }
+
+        let paymentSessionUrl = result.data.paymentSessionUrl;
+        let orderCode = result.data.orderCode
+        const sessionPopup = window.open(
+            paymentSessionUrl,
+            'paymentSessionPopup',
+            'width="100%",height="100%"'
+        )
+        if (!sessionPopup) {
+            window.location.href = paymentSessionUrl;
+        }
+
+        this.listenStatus = true;
+        this.listenOrderStatus.bind(this)(orderCode);
+    }
+}

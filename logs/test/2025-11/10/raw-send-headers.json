@@ -1,0 +1,19 @@
+{
+    "10002": "https:\/\/demo-api.vivapayments.com\/checkout\/v2\/isv\/orders?merchantId=ee6d19b2-8b9e-41ed-874e-044680beeae7",
+    "19913": true,
+    "10036": "POST",
+    "52": 1,
+    "13": 500,
+    "10023": [
+        "Origin: https:\/\/localhost\/weepay\/",
+        "Referer: https:\/\/localhost\/weepay\/",
+        "User-Agent: Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/126.0.0.0 Safari\/537.36",
+        "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjBEOEZCOEQ2RURFQ0Y1Qzk3RUY1MjdDMDYxNkJCMjMzM0FCNjVGOUZSUzI1NiIsIng1dCI6IkRZLTQxdTNzOWNsLTlTZkFZV3V5TXpxMlg1OCIsInR5cCI6ImF0K2p3dCJ9.eyJpc3MiOiJodHRwczovL2RlbW8tYWNjb3VudHMudml2YXBheW1lbnRzLmNvbSIsIm5iZiI6MTc2Mjc4NTYwNCwiaWF0IjoxNzYyNzg1NjA0LCJleHAiOjE3NjI3ODkyMDQsImF1ZCI6WyJiaXNlcnZpY2VzX2FwaSIsImNvcmVfYXBpIiwiZWNyX2FwaSIsImh0dHBzOi8vZGVtby1hY2NvdW50cy52aXZhcGF5bWVudHMuY29tL3Jlc291cmNlcyJdLCJzY29wZSI6WyJ1cm46dml2YTpwYXltZW50czpiaXNlcnZpY2VzOm1lcmNoYW50YXBpIiwidXJuOnZpdmE6cGF5bWVudHM6Y29yZTphcGk6YWNxdWlyaW5nIiwidXJuOnZpdmE6cGF5bWVudHM6Y29yZTphcGk6YWNxdWlyaW5nOnRyYW5zYWN0aW9ucyIsInVybjp2aXZhOnBheW1lbnRzOmNvcmU6YXBpOmlzdiIsInVybjp2aXZhOnBheW1lbnRzOmNvcmU6YXBpOm5hdGl2ZWNoZWNrb3V0djIiLCJ1cm46dml2YTpwYXltZW50czpjb3JlOmFwaTpyZWRpcmVjdGNoZWNrb3V0IiwidXJuOnZpdmE6cGF5bWVudHM6ZWNyOmFwaSJdLCJjbGllbnRfaWQiOiIwNjdqZzJ6c2IwZzUxbTkyM2V6ODdpYzAzbjhpc3JxdWdodHFwamxkbjVidTYuYXBwcy52aXZhcGF5bWVudHMuY29tIiwidXJuOnZpdmE6cGF5bWVudHM6Y2xpZW50X3BlcnNvbl9pZCI6IjdFNDE2REZDLUFBODktNDMzNS05QkU1LTRCM0NFMkRDMzU5QiJ9.bGInBa23TdpBeLDN7rddktyWPad_ukg2lDQmbZ_NlkStofgp9yQg5hgMM1o19YrKh0yvWc0juAzplzjNSFPC15TtNPQx89gYZjJSx7N1KS508FS9OFpTC80fWh8-LtLs6-Gd8sM6qc4IgTYY81XqJ1b6MtJeFSQsO83Afn5xWC4jjkAjqVu0FEsPqAOmDo11209bhgwx6-rXGZ5rbUQCUe4MnEA7xqvRvOaIodLHlSgu_FaKqtwgx3PFkxEU7xdbcaVPzgD_fINa7DC9iyhubuKrQebbSUpE3KALyPvfd9zikU7_CDQ9smuX15Wt__BDIQn_0N1WrO6ghP-VqeyzMw",
+        "Content-type: application\/json; charset=UTF-8"
+    ],
+    "42": true,
+    "10102": "",
+    "68": 10,
+    "84": "CURL_HTTP_VERSION_1_1",
+    "10015": "{\"sourceCode\":\"3387\",\"amount\":50000,\"dynamicDescriptor\":\"Roses Fris...\",\"customerTrns\":\"Roses Fris\\u00f8r - Fris\\u00f8r Behandling\",\"merchantTrns\":\"Roses Fris\\u00f8r - Fris\\u00f8r Behandling\",\"allowRecurring\":false,\"preauth\":false,\"disableCash\":true,\"disableWallet\":true,\"tags\":[\"Roses Fris\\u00f8r\",\"Fris\\u00f8r Behandling\",\"Abeerah Jensen\",\"1996-05-12\"],\"isvAmount\":2475}"
+}

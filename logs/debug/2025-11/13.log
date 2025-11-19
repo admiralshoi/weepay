@@ -1,0 +1,79 @@
+[2025-11-13 15:24:43] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-13 15:24:43] - []
+[2025-11-13 15:24:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-13 15:24:43] - [2]
+[2025-11-13 15:24:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-13 15:24:43] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-11-13 15:24:43] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-13 15:24:43] - [1]
+[2025-11-13 15:24:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-13 15:24:43] - [2]
+[2025-11-13 15:24:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-13 15:24:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-13 15:24:43] - [2]
+[2025-11-13 15:24:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-13 15:24:43] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-13 15:24:43] -  user-cookies  
+[2025-11-13 15:24:43] -  user-no-organisation-cookies  
+[2025-11-13 15:24:43] -  request-path  viva-test
+[2025-11-13 15:24:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-13 15:24:43] - [2]
+[2025-11-13 15:24:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-13 15:24:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-13 15:24:43] - ["6124499677766","PENDING","SUSPENDED"]
+[2025-11-13 15:24:43] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-13 15:24:43] - []
+[2025-11-13 15:24:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-13 15:24:43] - [2]
+[2025-11-13 15:24:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-13 15:24:43] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-11-13 15:24:43] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-13 15:24:43] - [1]
+[2025-11-13 15:24:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-13 15:24:43] - [2]
+[2025-11-13 15:24:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-13 15:24:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-13 15:24:43] - [2]
+[2025-11-13 15:24:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-13 15:24:43] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-13 15:24:43] -  user-cookies  
+[2025-11-13 15:24:43] -  user-no-organisation-cookies  
+[2025-11-13 15:24:43] -  request-path  organisations/join/required
+[2025-11-13 15:24:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-13 15:24:43] - [2]
+[2025-11-13 15:24:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-13 15:24:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-13 15:24:43] - ["6124499677766","PENDING","SUSPENDED"]
+[2025-11-13 15:24:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-13 15:24:43] - [2]
+[2025-11-13 15:24:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-13 15:24:43] - SELECT * FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ?
+[2025-11-13 15:24:43] - ["6124499677766"]
+[2025-11-13 15:24:48] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-13 15:24:48] - []
+[2025-11-13 15:24:48] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-13 15:24:48] - [2]
+[2025-11-13 15:24:48] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-13 15:24:48] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-11-13 15:24:48] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-13 15:24:48] - [1]
+[2025-11-13 15:24:48] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-13 15:24:48] - [2]
+[2025-11-13 15:24:48] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-13 15:24:48] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-13 15:24:48] - [2]
+[2025-11-13 15:24:48] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-13 15:24:48] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-13 15:24:48] -  user-cookies  
+[2025-11-13 15:24:48] -  user-no-organisation-cookies  
+[2025-11-13 15:24:48] -  request-path  organisations/join/required
+[2025-11-13 15:24:48] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-13 15:24:48] - [2]
+[2025-11-13 15:24:48] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-13 15:24:48] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-13 15:24:48] - ["6124499677766","PENDING","SUSPENDED"]
+[2025-11-13 15:24:48] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-13 15:24:48] - [2]
+[2025-11-13 15:24:48] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-13 15:24:48] - SELECT * FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ?
+[2025-11-13 15:24:48] - ["6124499677766"]

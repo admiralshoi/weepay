@@ -1,0 +1,36 @@
+{
+    "id": "cb9efc66-37ee-4c6a-9456-c4baf8bb9ad6",
+    "accountId": "a-spge-vtZQu1njZNgLAgWErfx9",
+    "authenticationUrl": "https:\/\/weepay.sandbox.signicat.com\/broker\/sp\/external-service\/login?messageId=af5e9313-04ad-7d42-9ef7-ae91aee53116&transactionId=24fefe3f-77c1-f74d-a0a7-27afad6eca7c",
+    "status": "CREATED",
+    "callbackUrls": {
+        "success": "https:\/\/localhost:443\/weepay\/merchant\/lines-blomster\/checkout\/validation?sessionId=cb9efc66-37ee-4c6a-9456-c4baf8bb9ad6",
+        "abort": "https:\/\/localhost:443\/weepay\/mitid-test\/abort?sessionId=cb9efc66-37ee-4c6a-9456-c4baf8bb9ad6",
+        "error": "https:\/\/localhost:443\/weepay\/mitid-test\/success?sessionId=cb9efc66-37ee-4c6a-9456-c4baf8bb9ad6"
+    },
+    "allowedProviders": [
+        "mitid"
+    ],
+    "flow": "redirect",
+    "requestedAttributes": [
+        "dateOfBirth",
+        "family_name",
+        "firstName",
+        "given_name",
+        "lastName",
+        "mitidAal",
+        "mitidCprSource",
+        "mitidFal",
+        "mitidHasCpr",
+        "mitidIal",
+        "mitidLoa",
+        "mitidNameAndAddressProtection",
+        "mitidReferenceTextBody",
+        "mitidUuid",
+        "name",
+        "nin",
+        "nin_type"
+    ],
+    "sessionLifetime": 1200,
+    "expiresAt": "2025-10-31T15:36:05.2990049+00:00"
+}

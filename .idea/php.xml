@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="MessDetectorOptionsConfiguration">
+    <option name="transferred" value="true" />
+  </component>
+  <component name="PHPCSFixerOptionsConfiguration">
+    <option name="transferred" value="true" />
+  </component>
+  <component name="PHPCodeSnifferOptionsConfiguration">
+    <option name="highlightLevel" value="WARNING" />
+    <option name="transferred" value="true" />
+  </component>
+  <component name="PhpIncludePathManager">
+    <include_path>
+      <path value="$PROJECT_DIR$/vendor/html_parser/psr" />
+      <path value="$PROJECT_DIR$/vendor/composer" />
+      <path value="$PROJECT_DIR$/vendor/math-ai/vendor" />
+      <path value="$PROJECT_DIR$/vendor/html_parser/composer" />
+      <path value="$PROJECT_DIR$/vendor/html_parser/guzzlehttp" />
+      <path value="$PROJECT_DIR$/vendor/html_parser/php-http" />
+      <path value="$PROJECT_DIR$/vendor/html_parser/myclabs" />
+      <path value="$PROJECT_DIR$/vendor/html_parser/paquettg" />
+      <path value="$PROJECT_DIR$/vendor/html5_parser/src" />
+      <path value="$PROJECT_DIR$/vendor/html_parser/ralouphie" />
+    </include_path>
+  </component>
+  <component name="PhpProjectSharedConfiguration" php_language_level="8.0">
+    <option name="suggestChangeDefaultLanguageLevel" value="false" />
+  </component>
+  <component name="PhpStanOptionsConfiguration">
+    <option name="transferred" value="true" />
+  </component>
+  <component name="PsalmOptionsConfiguration">
+    <option name="transferred" value="true" />
+  </component>
+</project>

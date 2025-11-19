@@ -1,0 +1,55 @@
+<?php
+
+use classes\enumerations\Links;
+use features\Settings;
+use classes\Methods;
+function setPostData() {
+    if(strtolower($_SERVER["REQUEST_METHOD"]) === "post") {
+        $input = json_decode(file_get_contents("php://input"), true);
+        if(empty($_POST) && !empty($input)) Settings::$postData = $input;
+        else Settings::$postData = $_POST;
+        if(isset($_FILES) && !empty($_FILES)) {
+            Settings::$postData["__FILES"] = $_FILES;
+        }
+    }
+}
+
+setPostData();
+Settings::$encryptionDetails = _env("encryption/details.php");
+Settings::$testing = ((explode("/", getUrlPath())[0]) === "testing");
+Settings::$viewingAdminDashboard = str_starts_with(realUrlPath(), ADMIN_PANEL_PATH);
+Settings::$viewingOrganisationDashboard = str_starts_with(realUrlPath(), ORGANISATION_PANEL_PATH);
+Settings::$app = Methods::appMeta()->mergeSettingsWithRole(
+    Methods::appMeta()->getAllAsKeyPairs()
+);
+
+Settings::$testerAuth = file_get_contents(ROOT . HTACCESS_PWD_FILE);
+
+Links::init();
+
+
+foreach (\Database\model\UserRoles::where("defined", 1)->order("access_level", "DESC")->all()->list() as $role) {
+    $roleMatch = match ($role->access_level) {
+        default => false,
+        8, 9 => Methods::isAdmin(),
+    };
+    if($roleMatch) break;
+}
+
+
+if(isLoggedIn()) {
+    Settings::$user = Methods::users()->get(__uuid());
+    debugLog(Settings::$user->cookies, 'user-cookies');
+    if(!is_null(Settings::$user->cookies) && array_key_exists("organisation", toArray(Settings::$user->cookies))) {
+        $organisationId = Settings::$user->cookies->organisation;
+        $memberRow = Methods::organisationMembers()->getMember($organisationId);
+        if(isEmpty($memberRow) || !Methods::organisationMembers()->userIsMember($organisationId)) {
+            $memberRow = Methods::organisationMembers()->firstValidOrganisation();
+            debugLog($memberRow, 'member-row-2');
+        }
+        Methods::organisationMembers()->setChosenOrganisation($memberRow);
+    }
+    else debugLog(Settings::$user->cookies, 'user-no-organisation-cookies');
+}
+
+

@@ -1,0 +1,40 @@
+<div id="authenticate" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Your session has expired.</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" class="p-5 " id="login-form">
+                    <input type="hidden" name="redirect_uri" value="{{redirect_uri}}" />
+                    <div class="mb-4">
+                        <h3 class="h4 font-weight-bold text-theme">Login</h3>
+                    </div>
+
+                    <h6 class="h5 mb-0">Your sessions has expired.</h6>
+                    <p class="text-muted mt-2 mb-3">Please sign back in to your account.</p>
+
+                    <div id="user_login_form">
+                        <div class="form-group">
+                            <label for="email">Email address</label>
+                            <input type="email" id="email" class="form-control" name="email" placeholder="youemail@example.com">
+                        </div>
+                        <div class="form-group mb-5">
+                            <label for="password">Password</label>
+                            <div class="position-relative">
+                                <input type="password" id="password" name="password" placeholder="******"
+                                       class="form-control togglePwdVisibilityField" data-placement-class="absolute-tr-10-5">
+                            </div>
+                        </div>
+
+                        <p class="my-2 p-3 alert-danger" id="error-field" style="display: none"></p>
+                        <button name="login_user" class="auth-btn-prim">Login</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

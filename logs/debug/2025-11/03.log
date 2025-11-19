@@ -1,0 +1,100 @@
+[2025-11-03 10:34:47] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-03 10:34:47] - []
+[2025-11-03 10:34:47] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-03 10:34:47] - [1]
+[2025-11-03 10:34:47] -  request-path  viva-test
+[2025-11-03 10:34:47] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-03 10:34:47] - []
+[2025-11-03 10:34:47] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-03 10:34:47] - [1]
+[2025-11-03 10:34:47] -  request-path  api/track
+[2025-11-03 10:36:03] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-03 10:36:03] - []
+[2025-11-03 10:36:03] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-03 10:36:03] - [1]
+[2025-11-03 10:36:03] -  request-path  viva-test
+[2025-11-03 10:36:03] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-03 10:36:03] - []
+[2025-11-03 10:36:03] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-03 10:36:03] - [1]
+[2025-11-03 10:36:03] -  request-path  api/track
+[2025-11-03 10:37:24] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-03 10:37:24] - []
+[2025-11-03 10:37:24] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-03 10:37:24] - [1]
+[2025-11-03 10:37:24] -  request-path  viva-test
+[2025-11-03 10:37:24] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-03 10:37:24] - []
+[2025-11-03 10:37:24] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-03 10:37:24] - [1]
+[2025-11-03 10:37:24] -  request-path  api/track
+[2025-11-03 10:38:44] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-03 10:38:44] - []
+[2025-11-03 10:38:44] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-03 10:38:44] - [1]
+[2025-11-03 10:38:44] -  request-path  viva-test
+[2025-11-03 10:38:44] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-03 10:38:44] - []
+[2025-11-03 10:38:44] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-03 10:38:44] - [1]
+[2025-11-03 10:38:44] -  request-path  api/track
+[2025-11-03 10:41:09] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-03 10:41:09] - []
+[2025-11-03 10:41:09] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-03 10:41:09] - [1]
+[2025-11-03 10:41:09] -  request-path  viva-test
+[2025-11-03 10:41:10] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-03 10:41:10] - []
+[2025-11-03 10:41:10] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-03 10:41:10] - [1]
+[2025-11-03 10:41:10] -  request-path  api/track
+[2025-11-03 10:47:17] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-03 10:47:17] - []
+[2025-11-03 10:47:17] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-03 10:47:17] - [1]
+[2025-11-03 10:47:17] -  request-path  merchant/lines-blomster/checkout
+[2025-11-03 10:47:18] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-03 10:47:18] - []
+[2025-11-03 10:47:18] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-03 10:47:18] - [1]
+[2025-11-03 10:47:18] -  request-path  api/track
+[2025-11-03 10:47:42] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-03 10:47:42] - []
+[2025-11-03 10:47:42] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-03 10:47:42] - [1]
+[2025-11-03 10:47:42] -  request-path  merchant/lines-blomster/checkout/validation
+[2025-11-03 10:47:43] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-03 10:47:43] - []
+[2025-11-03 10:47:43] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-03 10:47:43] - [1]
+[2025-11-03 10:47:43] -  request-path  api/track
+[2025-11-03 10:47:44] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-03 10:47:44] - []
+[2025-11-03 10:47:44] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-03 10:47:44] - [1]
+[2025-11-03 10:47:44] -  request-path  merchant/lines-blomster/checkout/payment
+[2025-11-03 10:48:00] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-03 10:48:00] - []
+[2025-11-03 10:48:00] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-03 10:48:00] - [1]
+[2025-11-03 10:48:00] -  request-path  merchant/lines-blomster/checkout/validation
+[2025-11-03 10:48:00] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-03 10:48:00] - []
+[2025-11-03 10:48:00] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-03 10:48:00] - [1]
+[2025-11-03 10:48:00] -  request-path  api/track
+[2025-11-03 10:48:06] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-03 10:48:06] - []
+[2025-11-03 10:48:06] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-03 10:48:06] - [1]
+[2025-11-03 10:48:06] -  request-path  merchant/lines-blomster/checkout/validation
+[2025-11-03 10:48:06] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-03 10:48:06] - []
+[2025-11-03 10:48:06] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-03 10:48:06] - [1]
+[2025-11-03 10:48:06] -  request-path  api/track
+[2025-11-03 10:48:07] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-03 10:48:07] - []
+[2025-11-03 10:48:07] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-03 10:48:07] - [1]
+[2025-11-03 10:48:07] -  request-path  merchant/lines-blomster/checkout/payment

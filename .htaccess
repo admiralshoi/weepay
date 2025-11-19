@@ -1,0 +1,23 @@
+Options -Indexes
+
+<FilesMatch "\.(eot|otf|ttf|woff|woff2)$">
+    Header always set Access-Control-Allow-Origin "*"
+</FilesMatch>
+
+RewriteEngine On
+#RewriteBase /weepay/
+
+# Preserve the Authorization header when it's sent
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+
+# Allow access to everything within the public directory
+RewriteCond %{REQUEST_URI} ^/public/ [NC]
+RewriteRule ^ - [L]
+
+# Allow access to everything within the testing directory
+RewriteCond %{REQUEST_URI} ^/testing [NC]
+RewriteRule ^ - [L]
+
+# Rewrite all other requests to index.php
+RewriteRule ^ index.php [L]

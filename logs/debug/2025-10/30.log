@@ -1,0 +1,1394 @@
+[2025-10-30 13:18:38] -  request-path  
+[2025-10-30 13:18:38] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 13:18:38] - [2]
+[2025-10-30 13:19:11] -  request-path  
+[2025-10-30 13:19:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 13:19:11] - [2]
+[2025-10-30 13:19:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 13:19:11] - [2]
+[2025-10-30 13:25:06] -  request-path  
+[2025-10-30 13:25:06] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 13:25:06] - [2]
+[2025-10-30 13:25:06] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 13:25:06] - [2]
+[2025-10-30 13:25:39] -  request-path  
+[2025-10-30 13:25:39] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 13:25:39] - [2]
+[2025-10-30 13:25:39] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 13:25:39] - [2]
+[2025-10-30 15:11:44] -  request-path  
+[2025-10-30 15:11:44] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:11:44] - [2]
+[2025-10-30 15:11:44] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:11:44] - [2]
+[2025-10-30 15:13:11] -  request-path  tester
+[2025-10-30 15:13:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:13:11] - [2]
+[2025-10-30 15:13:16] -  request-path  tester
+[2025-10-30 15:13:16] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:13:16] - [2]
+[2025-10-30 15:13:45] -  request-path  tester
+[2025-10-30 15:13:45] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:13:45] - [2]
+[2025-10-30 15:14:13] -  request-path  tester
+[2025-10-30 15:14:13] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:14:13] - [2]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 15:15:58] - []
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 15:15:58] - [1]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-10-30 15:15:58] -  user-cookies  
+[2025-10-30 15:15:58] -  user-no-organisation-cookies  
+[2025-10-30 15:15:58] - Creating table 'appmeta' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:15:58] - CREATE TABLE `PROD_FKF_appmeta` (`id` INT AUTO_INCREMENT PRIMARY KEY, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `name` VARCHAR(255) NOT NULL, `value` TEXT NOT NULL, `type` TEXT NOT NULL, UNIQUE `uq_name` (`name`))
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["update_unknown_creator_media","false","bool"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["allow_auto_unknown_actor_fetch","false","bool"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["pages_messaging","false","bool"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["allow_creatorless_campaigns","true","bool"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["allow_none_creator_messaging","false","bool"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["analytics_interval",72,"int"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["campaign_media_update_frequency",1000,"int"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["maturing_period",432000,"int"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["impression_estimation_correction",0.66,"float"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["reach_estimation_percentage",0.8008,"float"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["post_estimation_model","[]","array"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["story_estimation_model","[]","array"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["price_estimation","{\"from\":13, \"to\": 16}","array"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["download_media","true","bool"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["user_role_settings","{\"brand_tester\":{\"download_media\":false,\"use_scraper\":false, \"pages_messaging\":true},\"creator_tester\":{\"download_media\":false,\"use_scraper\":false}}","array"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["use_scraper","true","bool"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["valid_campaign_currencies","[\"EUR\",\"USD\",\"GBP\"]","array"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["live_campaign_dev","false","bool"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["allow_affiliate_signup","false","bool"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["affiliate_payout_pool","140","float"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["affiliate_payout_week_interval","2","int"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["affiliate_cookie_total_max","50","int"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["affiliate_cookie_individual_max","4","int"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["affiliate_cookie_error_streak","5","int"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["open_campaigns_enabled","false","bool"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["show_creator_account_analytics_section","false","bool"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["stripe_live_keys","false","bool"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["payment_providers","[\"stripe\"]","array"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["active_payment_providers","[\"stripe\"]","array"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["available_payment_methods","{\"stripe\": [\"card\"]}","array"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["default_payment_provider","stripe","string"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["default_currency","EUR","string"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["default_country","DE","string"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["extra_subscription_quantity_fraction","100","int"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["organisation_roles","[\"owner\",\"admin\",\"team_manager\",\"analyst\"]","array"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["ppu_id_to_use","{\"with\": \"prd_67989593ad57e\",\"without\": \"prd_67989593ac08c\"}","array"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["ppu_min_quantity","5","int"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["canSubscribe","[\"brand\"]","array"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["canCreateCampaigns","[\"brand\", \"admin\"]","array"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["canIntegrate","[\"brand\", \"creator\"]","array"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["taskManager","{\"subscriptionRevert\": {\"ttl\": 600}, \"subscriptionCreateFailedCancel\": {\"ttl\": 600}, \"voidInvoice\": {\"ttl\": 600}}","array"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["subscriptionGracePeriod","432000","int"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["campaignTypes","{\"monitoring\": {\"title\": \"Profile Monitoring\", \"enabled\": 1, \"description\":\"Monitor profiles and track all their posted content\"}, \"tracking\": {\"title\": \"Brand Monitoring\", \"enabled\": 1, \"description\": \"Monitor mentions and tags of your brand profile posted by your influencers\"}, \"organic\": {\"title\": \"Organic Tracking\", \"enabled\": 1, \"description\": \"Track organic content and user-generated content related to your brand\"}}","array"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["campaignTrackingMethods","{\"mention\": {\"title\": \"Mentions\", \"enabled\": 1, \"description\": \"Captures all @mentions of your brand profile\"}, \"hashtag\": {\"title\": \"Hashtags\", \"enabled\": 1, \"description\": \"Track content that contains certain hashtags\"}, \"tag\": {\"title\": \"Tags\", \"enabled\": 1, \"description\": \"Track content that your brand profile are tagged in\"}}","array"]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_appmeta` (`name`, `value`, `type`) VALUES (?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["campaignUsages","{\"integrations\": {\"title\": \"Instagram Accounts\", \"enabled\": 1, \"description\": \"The amount of social accounts that may be enabled at the same time\"}, \"days\": {\"title\": \"Campaign Days\", \"enabled\": 1, \"description\": \"The currency of running campaigns\"}, \"creators\": {\"title\": \"Unique Creators\", \"enabled\": 1, \"description\": \"The amount of unique creators you can track\"}}","array"]
+[2025-10-30 15:15:58] - Creating table 'userroles' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:15:58] - CREATE TABLE `PROD_FKF_userroles` (`id` INT AUTO_INCREMENT PRIMARY KEY, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `access_level` INT NOT NULL, `name` VARCHAR(255) NOT NULL, `description` VARCHAR(255) NOT NULL, `depth` VARCHAR(255) DEFAULT '' NOT NULL, `defined` TINYINT NOT NULL, UNIQUE `uq_access_level` (`access_level`))
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_userroles` (`access_level`, `name`, `description`, `depth`, `defined`) VALUES (?,?,?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  [0,"guest","Guest user","",1]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_userroles` (`access_level`, `name`, `description`, `depth`, `defined`) VALUES (?,?,?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  [1,"creator","Influencer \/ creator","all",1]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_userroles` (`access_level`, `name`, `description`, `depth`, `defined`) VALUES (?,?,?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  [2,"brand","Brand \/ business","all",1]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_userroles` (`access_level`, `name`, `description`, `depth`, `defined`) VALUES (?,?,?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  [3,"creator_tester","Content Creator test account","all",1]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_userroles` (`access_level`, `name`, `description`, `depth`, `defined`) VALUES (?,?,?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  [4,"brand_tester","Brand test account","all",1]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_userroles` (`access_level`, `name`, `description`, `depth`, `defined`) VALUES (?,?,?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  [5,"cookie_manager","Cookie manager account","all",1]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_userroles` (`access_level`, `name`, `description`, `depth`, `defined`) VALUES (?,?,?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  [6,"affiliate","Affiliate account","all",1]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_userroles` (`access_level`, `name`, `description`, `depth`, `defined`) VALUES (?,?,?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  [8,"admin","Platform admin. Second highest authority. The user has access to everything. Can read and write to every object","all",1]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_userroles` (`access_level`, `name`, `description`, `depth`, `defined`) VALUES (?,?,?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  [9,"system_admin","System admin. Highest authority. The user has access to developer-menus as well as anything the platform offers","all",1]
+[2025-10-30 15:15:58] - Creating table 'users' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:15:58] - CREATE TABLE `PROD_FKF_users` (`id` INT AUTO_INCREMENT PRIMARY KEY, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `uid` VARCHAR(255) NOT NULL, `username` VARCHAR(255) NOT NULL, `password` TEXT NOT NULL, `email` VARCHAR(255) NOT NULL, `full_name` VARCHAR(255) NOT NULL, `access_level` INT NOT NULL, `lang` VARCHAR(255) DEFAULT 'en' NOT NULL, `deactivated` TINYINT DEFAULT 0 NOT NULL, `registration_complete` TINYINT DEFAULT 1 NOT NULL, `created_by` VARCHAR(255) NULL, `cookies` TEXT NULL, `address_country` VARCHAR(255) NULL, `address_region` VARCHAR(255) NULL, `address_city` VARCHAR(255) NULL, `address_zip` VARCHAR(255) NULL, `address_street` VARCHAR(255) NULL, `payout_bank_info` VARCHAR(255) NULL, UNIQUE `uq_uid` (`uid`), UNIQUE `uq_email` (`email`))
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_users` (`uid`, `username`, `password`, `email`, `full_name`, `access_level`) VALUES (?,?,?,?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["29852698833154","admin","a729e298b42102452104edf8d80a3ed9ed6a0395ab53f8f6229892504f5f521c","admin@system.com","System Admin",9]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_users` (`uid`, `username`, `password`, `email`, `full_name`, `access_level`) VALUES (?,?,?,?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["31883198833154","guest","a729e298b42102452104edf8d80a3ed9ed6a0395ab53f8f6229892504f5f521c","guest@system.com","Guest User",1]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_users` (`uid`, `username`, `password`, `email`, `full_name`, `access_level`) VALUES (?,?,?,?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["6124499677766","brand","a729e298b42102452104edf8d80a3ed9ed6a0395ab53f8f6229892504f5f521c","brand@system.com","Brand User",2]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_users` (`uid`, `username`, `password`, `email`, `full_name`, `access_level`) VALUES (?,?,?,?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["27017094193078","creator","a729e298b42102452104edf8d80a3ed9ed6a0395ab53f8f6229892504f5f521c","creator@system.com","Creator User",1]
+[2025-10-30 15:15:58] - Creating table 'countries' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:15:58] - CREATE TABLE `PROD_FKF_countries` (`id` INT AUTO_INCREMENT PRIMARY KEY, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `uid` VARCHAR(255) NOT NULL, `code` VARCHAR(255) NOT NULL, `name` VARCHAR(255) NOT NULL, `enabled` TINYINT DEFAULT 0 NOT NULL, UNIQUE `uq_code` (`code`), UNIQUE `uq_uid` (`uid`))
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_countries` WHERE `uid` = ? AND `code` = ? AND `name` = ? AND `enabled` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_countries` (`uid`, `code`, `name`, `enabled`) VALUES (?,?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["ctr_70zjtwdj7","DE","Germany",1]
+[2025-10-30 15:15:58] - Creating table 'cronjob' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:15:58] - CREATE TABLE `PROD_FKF_cronjob` (`id` INT AUTO_INCREMENT PRIMARY KEY, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `uid` VARCHAR(255) NOT NULL, `name` VARCHAR(255) NOT NULL, `started_at` INT NOT NULL, `finished_at` INT NOT NULL, `can_run` TINYINT NOT NULL, `is_running` TINYINT NOT NULL, `access_level` TINYINT NOT NULL, UNIQUE `uq_uid` (`uid`))
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_cronjob` (`uid`, `name`, `started_at`, `finished_at`, `can_run`, `is_running`, `access_level`) VALUES (?,?,?,?,?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["crn_3i3uzrwyal2m5j4","Hashtag tracking",0,0,1,0,8]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_cronjob` (`uid`, `name`, `started_at`, `finished_at`, `can_run`, `is_running`, `access_level`) VALUES (?,?,?,?,?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["crn_9ezwcjusz2yf8av","Media Update",0,0,1,0,8]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_cronjob` (`uid`, `name`, `started_at`, `finished_at`, `can_run`, `is_running`, `access_level`) VALUES (?,?,?,?,?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["crn_2ywksq8hm1fogp8","Tag Mentions",0,0,1,0,8]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_cronjob` (`uid`, `name`, `started_at`, `finished_at`, `can_run`, `is_running`, `access_level`) VALUES (?,?,?,?,?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["crn_fny6zh56nw2dy3c","Account Insights",0,0,1,0,8]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_cronjob` (`uid`, `name`, `started_at`, `finished_at`, `can_run`, `is_running`, `access_level`) VALUES (?,?,?,?,?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["crn_tkw3fwyq3cuj7xw","Event Mode",0,0,1,0,8]
+[2025-10-30 15:15:58] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:15:58] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_cronjob` (`uid`, `name`, `started_at`, `finished_at`, `can_run`, `is_running`, `access_level`) VALUES (?,?,?,?,?,?,?)
+[2025-10-30 15:15:58] -  querybuilder-insert-values  ["crn_2ppdykrmb0ux842","Affiliate payment period",0,0,1,0,8]
+[2025-10-30 15:15:58] - Creating table 'eventlog' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:15:58] - CREATE TABLE `PROD_FKF_eventlog` (`id` INT AUTO_INCREMENT PRIMARY KEY, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `event_type` VARCHAR(255) NOT NULL, `event_value` VARCHAR(255) NOT NULL, `uid` VARCHAR(255) NULL, `_page` VARCHAR(255) NULL, `_object` VARCHAR(255) NULL, `_value` VARCHAR(255) NULL)
+[2025-10-30 15:15:58] - Creating table 'externalaccess' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:15:58] - CREATE TABLE `PROD_FKF_externalaccess` (`id` INT AUTO_INCREMENT PRIMARY KEY, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `uid` VARCHAR(255) NOT NULL, `name` VARCHAR(255) NOT NULL, `user_agent` VARCHAR(255) NULL COMMENT '', `origin` VARCHAR(255) NULL COMMENT '', `token` TEXT NULL COMMENT '')
+[2025-10-30 15:15:58] - Creating table 'notifications' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:15:58] - CREATE TABLE `PROD_FKF_notifications` (`id` INT AUTO_INCREMENT PRIMARY KEY, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `uid` VARCHAR(255) NOT NULL, `recipient_id` VARCHAR(255) NOT NULL, `ref` VARCHAR(255) DEFAULT '' NOT NULL, `type` VARCHAR(255) NOT NULL, `push_type` TINYINT NOT NULL COMMENT '0 = platform, 1 = email, 2 = both	', `email_sent` TINYINT NOT NULL, `is_read` TINYINT DEFAULT 0 NOT NULL, UNIQUE `uq_uid` (`uid`))
+[2025-10-30 15:15:58] - Creating table 'organisationmembers' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:15:58] - CREATE TABLE `PROD_FKF_organisationmembers` (`id` INT AUTO_INCREMENT PRIMARY KEY, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `uid` VARCHAR(255) NOT NULL, `uuid` VARCHAR(255) NOT NULL, `organisation` VARCHAR(255) NOT NULL, `role` VARCHAR(255) NOT NULL, `invitation_status` VARCHAR(255) DEFAULT 'PENDING' NOT NULL, `status` VARCHAR(255) DEFAULT 'ACTIVE' NOT NULL, `invitation_activity` TEXT NULL, `change_activity` TEXT NULL, INDEX `idx_organisation` (`organisation`), INDEX `idx_uuid` (`uuid`), UNIQUE `uq_uid` (`uid`), FOREIGN KEY (`uuid`) REFERENCES `PROD_FKF_users`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, FOREIGN KEY (`organisation`) REFERENCES `PROD_FKF_organisations`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT)
+[2025-10-30 15:15:58] -  SQL table creation, organisationmembers  SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'PROD_FKF_organisations'
+[2025-10-30 15:15:58] - Creating table 'organisations' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:15:58] - CREATE TABLE `PROD_FKF_organisations` (`id` INT AUTO_INCREMENT PRIMARY KEY, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `uid` VARCHAR(255) NOT NULL, `name` VARCHAR(255) NOT NULL, `industry` VARCHAR(255) NULL, `description` VARCHAR(255) NULL, `website` VARCHAR(255) NULL, `contact_email` VARCHAR(255) NULL, `team_settings` TEXT NULL, `general_settings` TEXT NULL, `pictures` TEXT NULL, `permissions` TEXT NULL, `status` VARCHAR(255) DEFAULT 'ACTIVE' NOT NULL, UNIQUE `uq_uid` (`uid`))
+[2025-10-30 15:15:58] - Creating table 'passwordresets' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:15:58] - CREATE TABLE `PROD_FKF_passwordresets` (`id` INT AUTO_INCREMENT PRIMARY KEY, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `uid` VARCHAR(255) NOT NULL, `email` VARCHAR(255) NOT NULL, `token` VARCHAR(255) NOT NULL, `is_used` TINYINT DEFAULT 0 NOT NULL, UNIQUE `uq_token` (`token`), FOREIGN KEY (`email`) REFERENCES `PROD_FKF_users`(`email`) ON DELETE RESTRICT ON UPDATE RESTRICT)
+[2025-10-30 15:15:58] - Creating table 'paymentmethods' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:17:35] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 15:17:35] - []
+[2025-10-30 15:17:35] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:17:35] - [2]
+[2025-10-30 15:17:35] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:17:35] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 15:17:35] - [1]
+[2025-10-30 15:17:35] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:17:35] - [2]
+[2025-10-30 15:17:35] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:17:35] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:17:35] - [2]
+[2025-10-30 15:17:35] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:17:35] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:17:35] - [2]
+[2025-10-30 15:17:35] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:17:35] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:17:35] - [2]
+[2025-10-30 15:17:35] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:17:35] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:17:35] - [2]
+[2025-10-30 15:17:35] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:18:18] - Altering table 'appmeta' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:18] - ALTER TABLE `PROD_FKF_appmeta` ADD UNIQUE `uq_name` (`name`), DROP INDEX `uq_name`
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:18] - Altering table 'countries' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:18] - ALTER TABLE `PROD_FKF_countries` ADD UNIQUE `uq_code` (`code`), ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_code`, DROP INDEX `uq_uid`
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_countries` WHERE `uid` = ? AND `code` = ? AND `name` = ? AND `enabled` = ? LIMIT 1
+[2025-10-30 15:18:18] - Altering table 'cronjob' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:18] - ALTER TABLE `PROD_FKF_cronjob` ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:18:18] - Creating table 'customers' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:18] - CREATE TABLE `PROD_FKF_customers` (`id` INT AUTO_INCREMENT PRIMARY KEY, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `uid` VARCHAR(255) NOT NULL, `uuid` VARCHAR(255) NOT NULL, `provider` VARCHAR(255) NOT NULL, `default_pm` VARCHAR(255) NULL, `prid` VARCHAR(255) NULL, `billing_email` VARCHAR(255) NULL, `billing_name` VARCHAR(255) NULL, `billing_country` VARCHAR(255) NULL, `billing_region` VARCHAR(255) NULL, `billing_city` VARCHAR(255) NULL, `billing_zip` VARCHAR(255) NULL, `billing_street` VARCHAR(255) NULL, `billing_vat` VARCHAR(255) NULL, `test` TINYINT NOT NULL, UNIQUE `uq_prid` (`prid`), UNIQUE `uq_uid` (`uid`), UNIQUE `uq_uuid` (`uuid`), FOREIGN KEY (`provider`) REFERENCES `PROD_FKF_paymentproviders`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT)
+[2025-10-30 15:18:18] -  SQL table creation, customers  SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'PROD_FKF_paymentproviders'
+[2025-10-30 15:18:18] - Altering table 'eventlog' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:18] - Altering table 'externalaccess' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:18] - Altering table 'notifications' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:18] - ALTER TABLE `PROD_FKF_notifications` ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:18:18] - Creating table 'organisationmembers' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:18] - CREATE TABLE `PROD_FKF_organisationmembers` (`id` INT AUTO_INCREMENT PRIMARY KEY, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `uid` VARCHAR(255) NOT NULL, `uuid` VARCHAR(255) NOT NULL, `organisation` VARCHAR(255) NOT NULL, `role` VARCHAR(255) NOT NULL, `invitation_status` VARCHAR(255) DEFAULT 'PENDING' NOT NULL, `status` VARCHAR(255) DEFAULT 'ACTIVE' NOT NULL, `invitation_activity` TEXT NULL, `change_activity` TEXT NULL, INDEX `idx_organisation` (`organisation`), INDEX `idx_uuid` (`uuid`), UNIQUE `uq_uid` (`uid`), FOREIGN KEY (`uuid`) REFERENCES `PROD_FKF_users`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, FOREIGN KEY (`organisation`) REFERENCES `PROD_FKF_organisations`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT)
+[2025-10-30 15:18:18] - Altering table 'organisations' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:18] - ALTER TABLE `PROD_FKF_organisations` ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:18:18] - Altering table 'passwordresets' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:18] - ALTER TABLE `PROD_FKF_passwordresets` DROP INDEX `email`, ADD UNIQUE `uq_token` (`token`), DROP INDEX `uq_token`, ADD FOREIGN KEY (`email`) REFERENCES `PROD_FKF_users`(`email`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_passwordresets_ibfk_1`
+[2025-10-30 15:18:18] - Creating table 'paymentmethods' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:18] - CREATE TABLE `PROD_FKF_paymentmethods` (`id` INT AUTO_INCREMENT PRIMARY KEY, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `uid` VARCHAR(255) NOT NULL, `type` VARCHAR(255) NULL, `brand` VARCHAR(255) NULL, `last4` INT NULL, `exp_month` VARCHAR(255) NULL, `exp_year` VARCHAR(255) NULL, `is_default` TINYINT DEFAULT 0 NOT NULL, `prid` VARCHAR(255) NULL, `customer` VARCHAR(255) NULL, `test` TINYINT NOT NULL, `deleted` TINYINT DEFAULT 0 NOT NULL, INDEX `idx_customer` (`customer`), UNIQUE `uq_prid` (`prid`), UNIQUE `uq_uid` (`uid`), FOREIGN KEY (`customer`) REFERENCES `PROD_FKF_customers`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT)
+[2025-10-30 15:18:18] -  SQL table creation, paymentmethods  SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'PROD_FKF_customers'
+[2025-10-30 15:18:18] - Creating table 'paymentproviders' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:18] - CREATE TABLE `PROD_FKF_paymentproviders` (`id` INT AUTO_INCREMENT PRIMARY KEY, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `uid` VARCHAR(255) NOT NULL, `name` VARCHAR(255) NOT NULL, `enabled` TINYINT DEFAULT 0 NOT NULL, `pkl` VARCHAR(255) NULL, `skl` VARCHAR(255) NULL, `pkt` VARCHAR(255) NULL, `skt` VARCHAR(255) NULL, UNIQUE `uq_name` (`name`), UNIQUE `uq_uid` (`uid`))
+[2025-10-30 15:18:18] - SELECT * FROM `PROD_FKF_paymentproviders` WHERE `uid` = ? AND `name` = ? AND `pkl` = ? AND `skl` = ? AND `pkt` = ? AND `skt` = ? LIMIT 1
+[2025-10-30 15:18:54] - Altering table 'appmeta' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:54] - ALTER TABLE `PROD_FKF_appmeta` ADD UNIQUE `uq_name` (`name`), DROP INDEX `uq_name`
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:18:54] - Altering table 'countries' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:54] - ALTER TABLE `PROD_FKF_countries` ADD UNIQUE `uq_code` (`code`), ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_code`, DROP INDEX `uq_uid`
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_countries` WHERE `uid` = ? AND `code` = ? AND `name` = ? AND `enabled` = ? LIMIT 1
+[2025-10-30 15:18:54] - Altering table 'cronjob' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:54] - ALTER TABLE `PROD_FKF_cronjob` ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:18:54] - Creating table 'customers' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:54] - CREATE TABLE `PROD_FKF_customers` (`id` INT AUTO_INCREMENT PRIMARY KEY, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `uid` VARCHAR(255) NOT NULL, `uuid` VARCHAR(255) NOT NULL, `provider` VARCHAR(255) NOT NULL, `default_pm` VARCHAR(255) NULL, `prid` VARCHAR(255) NULL, `billing_email` VARCHAR(255) NULL, `billing_name` VARCHAR(255) NULL, `billing_country` VARCHAR(255) NULL, `billing_region` VARCHAR(255) NULL, `billing_city` VARCHAR(255) NULL, `billing_zip` VARCHAR(255) NULL, `billing_street` VARCHAR(255) NULL, `billing_vat` VARCHAR(255) NULL, `test` TINYINT NOT NULL, UNIQUE `uq_prid` (`prid`), UNIQUE `uq_uid` (`uid`), UNIQUE `uq_uuid` (`uuid`), FOREIGN KEY (`provider`) REFERENCES `PROD_FKF_paymentproviders`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT)
+[2025-10-30 15:18:54] - Altering table 'eventlog' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:54] - Altering table 'externalaccess' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:54] - Altering table 'notifications' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:54] - ALTER TABLE `PROD_FKF_notifications` ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:18:54] - Altering table 'organisationmembers' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:54] - ALTER TABLE `PROD_FKF_organisationmembers` ADD INDEX `idx_organisation` (`organisation`), ADD INDEX `idx_uuid` (`uuid`), DROP INDEX `idx_organisation`, DROP INDEX `idx_uuid`, ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`, ADD FOREIGN KEY (`uuid`) REFERENCES `PROD_FKF_users`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, ADD FOREIGN KEY (`organisation`) REFERENCES `PROD_FKF_organisations`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_organisationmembers_ibfk_1`, DROP FOREIGN KEY `prod_fkf_organisationmembers_ibfk_2`
+[2025-10-30 15:18:54] - Altering table 'organisations' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:54] - ALTER TABLE `PROD_FKF_organisations` ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:18:54] - Altering table 'passwordresets' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:54] - ALTER TABLE `PROD_FKF_passwordresets` DROP INDEX `email`, ADD UNIQUE `uq_token` (`token`), DROP INDEX `uq_token`, ADD FOREIGN KEY (`email`) REFERENCES `PROD_FKF_users`(`email`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_passwordresets_ibfk_2`
+[2025-10-30 15:18:54] - Creating table 'paymentmethods' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:54] - CREATE TABLE `PROD_FKF_paymentmethods` (`id` INT AUTO_INCREMENT PRIMARY KEY, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `uid` VARCHAR(255) NOT NULL, `type` VARCHAR(255) NULL, `brand` VARCHAR(255) NULL, `last4` INT NULL, `exp_month` VARCHAR(255) NULL, `exp_year` VARCHAR(255) NULL, `is_default` TINYINT DEFAULT 0 NOT NULL, `prid` VARCHAR(255) NULL, `customer` VARCHAR(255) NULL, `test` TINYINT NOT NULL, `deleted` TINYINT DEFAULT 0 NOT NULL, INDEX `idx_customer` (`customer`), UNIQUE `uq_prid` (`prid`), UNIQUE `uq_uid` (`uid`), FOREIGN KEY (`customer`) REFERENCES `PROD_FKF_customers`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT)
+[2025-10-30 15:18:54] - Altering table 'paymentproviders' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:54] - ALTER TABLE `PROD_FKF_paymentproviders` ADD UNIQUE `uq_name` (`name`), ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_name`, DROP INDEX `uq_uid`
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_paymentproviders` WHERE `uid` = ? AND `name` = ? AND `pkl` = ? AND `skl` = ? AND `pkt` = ? AND `skt` = ? LIMIT 1
+[2025-10-30 15:18:54] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_paymentproviders` (`uid`, `name`, `pkl`, `skl`, `pkt`, `skt`) VALUES (?,?,?,?,?,?)
+[2025-10-30 15:18:54] -  querybuilder-insert-values  ["ppr_j6h3vmm98smg","stripe","cTg3aFZ1Y3FXaTNyYWpWUHZaQ2doK3JOQXY4bStqVUprVFgwdEVPOWMxM3lTYng0T0lzMUM1N3UrbHgyRm53azNabktpNlZ1ekx6a3lHNlY1Y0tmRURDUTByVU5MMkxGd2NzZTRqaXArdWRoeE0yMEN1SmFhWFFaM3Y5a0EydmZDRTRjL2d2OGNCMDdjN3c9","MWlZV1BkOHBIZVk3N0ovRGNIVjJsTnovd0ZDYk5zMEtRcDYySFdyTXpja1I5VmdTNUYwVmxuNFZHanZGMXRMM2ltKzR2SnVqVkRnblBKVFdhUW5PeEt5b0JRekk1eFhUQ1Q4OVBGZk9IdmU4UlBRMVBZU1hxQjhxaDZnMDdOVHJ4ZklmY1VwZDk5cUF5bEk9","N0FLNStBNE5idzUvUXRLZGRTR2wvcTcxTFdKS2s5WWNYTXlyS1VaMW5oQmFZR1BFdFBHVW10ODlrb1dGOXg5eDVoTlY0d0o5QUR2dEd2RzI1eWRWMjUvTFpyZUhSREJycDhvNDJST1dkSUdxb3dWL2QrUlk1N2FXYXJ2b1J2dzBHOStGL0hSNTRaNmk4eTA9","SFIwaHo1RFhaQ2RoUE1SQ3JrdGZ3Q3RxR29EZFVObGZwYUNpSGFWY0I2aGxKc0dnWmw4Q3BCL3ZvMjNTQTlOcHl1bUtCeUdQVVNlRSt5TzM1cHVXdlRqTWF1U2ozOENkbHNHRm11NWV6K1U1YU5oZFlTVmNMR3ROR0d1a3U0Mlo5STZ0UlZIZVNCSjVXRkE9"]
+[2025-10-30 15:18:54] - Creating table 'tasks' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:54] - CREATE TABLE `PROD_FKF_tasks` (`id` INT AUTO_INCREMENT PRIMARY KEY, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `uid` VARCHAR(255) NOT NULL, `status` ENUM('open', 'closed') DEFAULT 'open' NOT NULL, `type` ENUM('revert_subscription', 'void_invoice') NULL, `object_id` VARCHAR(255) NOT NULL, `execute_at` BIGINT NOT NULL, `executed_at` BIGINT NULL, `data` TEXT NULL, `result` TEXT NULL, INDEX `idx_object_id` (`object_id`), UNIQUE `uq_uid` (`uid`))
+[2025-10-30 15:18:54] - Altering table 'userroles' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:54] - ALTER TABLE `PROD_FKF_userroles` ADD UNIQUE `uq_access_level` (`access_level`), DROP INDEX `uq_access_level`
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:18:54] - Altering table 'users' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:18:54] - ALTER TABLE `PROD_FKF_users` ADD UNIQUE `uq_uid` (`uid`), ADD UNIQUE `uq_email` (`email`), DROP INDEX `uq_uid`, DROP INDEX `uq_email`
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:18:54] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:18:54] -  request-path  tester
+[2025-10-30 15:18:54] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:18:54] - [2]
+[2025-10-30 15:18:54] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:19:28] - Altering table 'appmeta' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:19:28] - ALTER TABLE `PROD_FKF_appmeta` ADD UNIQUE `uq_name` (`name`), DROP INDEX `uq_name`
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:19:28] - Altering table 'countries' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:19:28] - ALTER TABLE `PROD_FKF_countries` ADD UNIQUE `uq_code` (`code`), ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_code`, DROP INDEX `uq_uid`
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_countries` WHERE `uid` = ? AND `code` = ? AND `name` = ? AND `enabled` = ? LIMIT 1
+[2025-10-30 15:19:28] - Altering table 'cronjob' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:19:28] - ALTER TABLE `PROD_FKF_cronjob` ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:19:28] - Altering table 'customers' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:19:28] - ALTER TABLE `PROD_FKF_customers` DROP INDEX `provider`, ADD UNIQUE `uq_prid` (`prid`), ADD UNIQUE `uq_uid` (`uid`), ADD UNIQUE `uq_uuid` (`uuid`), DROP INDEX `uq_uid`, DROP INDEX `uq_uuid`, DROP INDEX `uq_prid`, ADD FOREIGN KEY (`provider`) REFERENCES `PROD_FKF_paymentproviders`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_customers_ibfk_1`
+[2025-10-30 15:19:28] - Altering table 'eventlog' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:19:28] - Altering table 'externalaccess' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:19:28] - Altering table 'notifications' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:19:28] - ALTER TABLE `PROD_FKF_notifications` ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:19:28] - Altering table 'organisationmembers' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:19:28] - ALTER TABLE `PROD_FKF_organisationmembers` ADD INDEX `idx_organisation` (`organisation`), ADD INDEX `idx_uuid` (`uuid`), DROP INDEX `idx_organisation`, DROP INDEX `idx_uuid`, ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`, ADD FOREIGN KEY (`uuid`) REFERENCES `PROD_FKF_users`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, ADD FOREIGN KEY (`organisation`) REFERENCES `PROD_FKF_organisations`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_organisationmembers_ibfk_3`, DROP FOREIGN KEY `prod_fkf_organisationmembers_ibfk_4`
+[2025-10-30 15:19:28] - Altering table 'organisations' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:19:28] - ALTER TABLE `PROD_FKF_organisations` ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:19:28] - Altering table 'passwordresets' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:19:28] - ALTER TABLE `PROD_FKF_passwordresets` DROP INDEX `email`, ADD UNIQUE `uq_token` (`token`), DROP INDEX `uq_token`, ADD FOREIGN KEY (`email`) REFERENCES `PROD_FKF_users`(`email`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_passwordresets_ibfk_3`
+[2025-10-30 15:19:28] - Altering table 'paymentmethods' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:19:28] - ALTER TABLE `PROD_FKF_paymentmethods` ADD INDEX `idx_customer` (`customer`), DROP INDEX `idx_customer`, ADD UNIQUE `uq_prid` (`prid`), ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`, DROP INDEX `uq_prid`, ADD FOREIGN KEY (`customer`) REFERENCES `PROD_FKF_customers`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_paymentmethods_ibfk_1`
+[2025-10-30 15:19:28] - Altering table 'paymentproviders' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:19:28] - ALTER TABLE `PROD_FKF_paymentproviders` ADD UNIQUE `uq_name` (`name`), ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_name`, DROP INDEX `uq_uid`
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_paymentproviders` WHERE `uid` = ? AND `name` = ? AND `pkl` = ? AND `skl` = ? AND `pkt` = ? AND `skt` = ? LIMIT 1
+[2025-10-30 15:19:28] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_paymentproviders` (`uid`, `name`, `pkl`, `skl`, `pkt`, `skt`) VALUES (?,?,?,?,?,?)
+[2025-10-30 15:19:28] -  querybuilder-insert-values  ["ppr_j6h3vmm98smg","stripe","cTg3aFZ1Y3FXaTNyYWpWUHZaQ2doK3JOQXY4bStqVUprVFgwdEVPOWMxM3lTYng0T0lzMUM1N3UrbHgyRm53azNabktpNlZ1ekx6a3lHNlY1Y0tmRURDUTByVU5MMkxGd2NzZTRqaXArdWRoeE0yMEN1SmFhWFFaM3Y5a0EydmZDRTRjL2d2OGNCMDdjN3c9","MWlZV1BkOHBIZVk3N0ovRGNIVjJsTnovd0ZDYk5zMEtRcDYySFdyTXpja1I5VmdTNUYwVmxuNFZHanZGMXRMM2ltKzR2SnVqVkRnblBKVFdhUW5PeEt5b0JRekk1eFhUQ1Q4OVBGZk9IdmU4UlBRMVBZU1hxQjhxaDZnMDdOVHJ4ZklmY1VwZDk5cUF5bEk9","N0FLNStBNE5idzUvUXRLZGRTR2wvcTcxTFdKS2s5WWNYTXlyS1VaMW5oQmFZR1BFdFBHVW10ODlrb1dGOXg5eDVoTlY0d0o5QUR2dEd2RzI1eWRWMjUvTFpyZUhSREJycDhvNDJST1dkSUdxb3dWL2QrUlk1N2FXYXJ2b1J2dzBHOStGL0hSNTRaNmk4eTA9","SFIwaHo1RFhaQ2RoUE1SQ3JrdGZ3Q3RxR29EZFVObGZwYUNpSGFWY0I2aGxKc0dnWmw4Q3BCL3ZvMjNTQTlOcHl1bUtCeUdQVVNlRSt5TzM1cHVXdlRqTWF1U2ozOENkbHNHRm11NWV6K1U1YU5oZFlTVmNMR3ROR0d1a3U0Mlo5STZ0UlZIZVNCSjVXRkE9"]
+[2025-10-30 15:19:28] -  Sql insert, `PROD_FKF_paymentproviders`  SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'stripe' for key 'prod_fkf_paymentproviders.uq_name'
+[2025-10-30 15:19:28] - Altering table 'tasks' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:19:28] - ALTER TABLE `PROD_FKF_tasks` MODIFY COLUMN `status` ENUM('open', 'closed') DEFAULT 'open' NOT NULL, MODIFY COLUMN `type` ENUM('revert_subscription', 'void_invoice') NULL, ADD INDEX `idx_object_id` (`object_id`), DROP INDEX `idx_object_id`, ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:19:28] - Altering table 'userroles' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:19:28] - ALTER TABLE `PROD_FKF_userroles` ADD UNIQUE `uq_access_level` (`access_level`), DROP INDEX `uq_access_level`
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:19:28] - Altering table 'users' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:19:28] - ALTER TABLE `PROD_FKF_users` ADD UNIQUE `uq_uid` (`uid`), ADD UNIQUE `uq_email` (`email`), DROP INDEX `uq_uid`, DROP INDEX `uq_email`
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:19:28] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:19:28] -  request-path  tester
+[2025-10-30 15:19:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:19:28] - [2]
+[2025-10-30 15:19:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:20:59] - Altering table 'appmeta' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:20:59] - ALTER TABLE `PROD_FKF_appmeta` ADD UNIQUE `uq_name` (`name`), DROP INDEX `uq_name`
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:20:59] - Altering table 'countries' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:20:59] - ALTER TABLE `PROD_FKF_countries` ADD UNIQUE `uq_code` (`code`), ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_code`, DROP INDEX `uq_uid`
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_countries` WHERE `uid` = ? AND `code` = ? AND `name` = ? AND `enabled` = ? LIMIT 1
+[2025-10-30 15:20:59] - Altering table 'cronjob' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:20:59] - ALTER TABLE `PROD_FKF_cronjob` ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:20:59] - Altering table 'customers' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:20:59] - ALTER TABLE `PROD_FKF_customers` DROP INDEX `provider`, ADD UNIQUE `uq_prid` (`prid`), ADD UNIQUE `uq_uid` (`uid`), ADD UNIQUE `uq_uuid` (`uuid`), DROP INDEX `uq_uid`, DROP INDEX `uq_uuid`, DROP INDEX `uq_prid`, ADD FOREIGN KEY (`provider`) REFERENCES `PROD_FKF_paymentproviders`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_customers_ibfk_2`
+[2025-10-30 15:20:59] - Altering table 'eventlog' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:20:59] - Altering table 'externalaccess' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:20:59] - Altering table 'notifications' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:20:59] - ALTER TABLE `PROD_FKF_notifications` ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:20:59] - Altering table 'organisationmembers' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:20:59] - ALTER TABLE `PROD_FKF_organisationmembers` ADD INDEX `idx_organisation` (`organisation`), ADD INDEX `idx_uuid` (`uuid`), DROP INDEX `idx_organisation`, DROP INDEX `idx_uuid`, ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`, ADD FOREIGN KEY (`uuid`) REFERENCES `PROD_FKF_users`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, ADD FOREIGN KEY (`organisation`) REFERENCES `PROD_FKF_organisations`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_organisationmembers_ibfk_5`, DROP FOREIGN KEY `prod_fkf_organisationmembers_ibfk_6`
+[2025-10-30 15:20:59] - Altering table 'organisations' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:20:59] - ALTER TABLE `PROD_FKF_organisations` ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:20:59] - Altering table 'passwordresets' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:20:59] - ALTER TABLE `PROD_FKF_passwordresets` DROP INDEX `email`, ADD UNIQUE `uq_token` (`token`), DROP INDEX `uq_token`, ADD FOREIGN KEY (`email`) REFERENCES `PROD_FKF_users`(`email`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_passwordresets_ibfk_4`
+[2025-10-30 15:20:59] - Altering table 'paymentmethods' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:20:59] - ALTER TABLE `PROD_FKF_paymentmethods` ADD INDEX `idx_customer` (`customer`), DROP INDEX `idx_customer`, ADD UNIQUE `uq_prid` (`prid`), ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`, DROP INDEX `uq_prid`, ADD FOREIGN KEY (`customer`) REFERENCES `PROD_FKF_customers`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_paymentmethods_ibfk_2`
+[2025-10-30 15:20:59] - Altering table 'paymentproviders' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:20:59] - ALTER TABLE `PROD_FKF_paymentproviders` ADD UNIQUE `uq_name` (`name`), ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_name`, DROP INDEX `uq_uid`
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_paymentproviders` WHERE `uid` = ? AND `name` = ? AND `pkl` = ? AND `skl` = ? AND `pkt` = ? AND `skt` = ? LIMIT 1
+[2025-10-30 15:20:59] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_paymentproviders` (`uid`, `name`, `pkl`, `skl`, `pkt`, `skt`) VALUES (?,?,?,?,?,?)
+[2025-10-30 15:20:59] -  querybuilder-insert-values  ["ppr_j6h3vmm98smg","stripe","QTlDN3Z6anYwUm00UEd4QkJtSzFYRG9zaUxKWmdTcDR5UXk5c055YmpxaEpiWFFKaG94RDAxYVVMMmVmQTFJY0RuTFpONmZCbFhROFdFSzVWVnZEMlgzeWhOMDdvSXlwcDBJeWo4WTFhejR3c2Q0QVgzU0JxZU9RK0tDUzcyWHRxZzZEV3lCVWEvdjE1TDg9","dDNhTG9qTlByejZ3cEhwaDNBVFFVc25PMFRUa3lqSHN3N3lkWVN0dFlGTkxVVTJ0RHBQQ2NtZHNZeUkvNzVxa0ltYkVWWmg0b2lGT0NEdzZpcGt3T3RpcCtIT1FoNmg4ajNVdmxJUHdaU0FJRDVlNzZiRFFqak1yc3NwSTZBSjlqUG1Zb2VpVFVER2daRHM9","dDJjdWVUemtQWnBncTdTSVVUUERVbGxkQmgvNGM4MFNFOTlrYWxTZW83b1pleUl5TTVSTjRBVHBaQ3FrOFNrSG80VXBIYUcwYVJ6TU1XNlBRb0NrRXh1N0pjVDgwVFBEUDUzU2ZIbTZpR3l0cnE4azFlR1lNem9kK041ZEZseGtPb2lFY0ZyWVFVTFlSWEk9","NGZVSnV6ZDMvbGlvNURZeGhGVm9aWWJaSE44ZVBteUp0b2FVYnpGMDhpdlpVM25LNms3d0tuMitOMEpTS3QvRXpkL2dQWWdhNUYxL3R6N0ZyQlFnbzZ1aWlMbGdJMTNQaEh1dklxODFBQVg1RXVlQlN3VHFXSlJlZldRMU8rNzlzclluL0ZkbURORS9HTmM9"]
+[2025-10-30 15:20:59] -  Sql insert, `PROD_FKF_paymentproviders`  SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'stripe' for key 'prod_fkf_paymentproviders.uq_name'
+[2025-10-30 15:20:59] - Altering table 'tasks' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:20:59] - ALTER TABLE `PROD_FKF_tasks` MODIFY COLUMN `status` ENUM('open', 'closed') DEFAULT 'open' NOT NULL, MODIFY COLUMN `type` ENUM('revert_subscription', 'void_invoice') NULL, ADD INDEX `idx_object_id` (`object_id`), DROP INDEX `idx_object_id`, ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:20:59] - Altering table 'userroles' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:20:59] - ALTER TABLE `PROD_FKF_userroles` ADD UNIQUE `uq_access_level` (`access_level`), DROP INDEX `uq_access_level`
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:20:59] - Altering table 'users' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:20:59] - ALTER TABLE `PROD_FKF_users` ADD UNIQUE `uq_uid` (`uid`), ADD UNIQUE `uq_email` (`email`), DROP INDEX `uq_uid`, DROP INDEX `uq_email`
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:20:59] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:20:59] -  request-path  tester
+[2025-10-30 15:20:59] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:20:59] - [2]
+[2025-10-30 15:20:59] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:21:02] - Altering table 'appmeta' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:21:02] - ALTER TABLE `PROD_FKF_appmeta` ADD UNIQUE `uq_name` (`name`), DROP INDEX `uq_name`
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:21:02] - Altering table 'countries' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:21:02] - ALTER TABLE `PROD_FKF_countries` ADD UNIQUE `uq_code` (`code`), ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_code`, DROP INDEX `uq_uid`
+[2025-10-30 15:21:02] - SELECT * FROM `PROD_FKF_countries` WHERE `uid` = ? AND `code` = ? AND `name` = ? AND `enabled` = ? LIMIT 1
+[2025-10-30 15:21:02] - Altering table 'cronjob' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:21:03] - ALTER TABLE `PROD_FKF_cronjob` ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:21:03] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:21:03] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:21:03] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:21:03] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:21:03] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:21:03] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:21:03] - Altering table 'customers' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:21:03] - ALTER TABLE `PROD_FKF_customers` DROP INDEX `provider`, ADD UNIQUE `uq_prid` (`prid`), ADD UNIQUE `uq_uid` (`uid`), ADD UNIQUE `uq_uuid` (`uuid`), DROP INDEX `uq_uid`, DROP INDEX `uq_uuid`, DROP INDEX `uq_prid`, ADD FOREIGN KEY (`provider`) REFERENCES `PROD_FKF_paymentproviders`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_customers_ibfk_3`
+[2025-10-30 15:21:03] - Altering table 'eventlog' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:21:03] - Altering table 'externalaccess' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:21:03] - Altering table 'notifications' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:21:03] - ALTER TABLE `PROD_FKF_notifications` ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:21:03] - Altering table 'organisationmembers' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:21:03] - ALTER TABLE `PROD_FKF_organisationmembers` ADD INDEX `idx_organisation` (`organisation`), ADD INDEX `idx_uuid` (`uuid`), DROP INDEX `idx_organisation`, DROP INDEX `idx_uuid`, ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`, ADD FOREIGN KEY (`uuid`) REFERENCES `PROD_FKF_users`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, ADD FOREIGN KEY (`organisation`) REFERENCES `PROD_FKF_organisations`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_organisationmembers_ibfk_7`, DROP FOREIGN KEY `prod_fkf_organisationmembers_ibfk_8`
+[2025-10-30 15:21:03] - Altering table 'organisations' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:21:03] - ALTER TABLE `PROD_FKF_organisations` ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:21:03] - Altering table 'passwordresets' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:21:03] - ALTER TABLE `PROD_FKF_passwordresets` DROP INDEX `email`, ADD UNIQUE `uq_token` (`token`), DROP INDEX `uq_token`, ADD FOREIGN KEY (`email`) REFERENCES `PROD_FKF_users`(`email`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_passwordresets_ibfk_5`
+[2025-10-30 15:21:03] - Altering table 'paymentmethods' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:21:03] - ALTER TABLE `PROD_FKF_paymentmethods` ADD INDEX `idx_customer` (`customer`), DROP INDEX `idx_customer`, ADD UNIQUE `uq_prid` (`prid`), ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`, DROP INDEX `uq_prid`, ADD FOREIGN KEY (`customer`) REFERENCES `PROD_FKF_customers`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_paymentmethods_ibfk_3`
+[2025-10-30 15:21:03] - Altering table 'paymentproviders' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:21:03] - ALTER TABLE `PROD_FKF_paymentproviders` ADD UNIQUE `uq_name` (`name`), ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_name`, DROP INDEX `uq_uid`
+[2025-10-30 15:21:03] - SELECT * FROM `PROD_FKF_paymentproviders` WHERE `uid` = ? AND `name` = ? AND `pkl` = ? AND `skl` = ? AND `pkt` = ? AND `skt` = ? LIMIT 1
+[2025-10-30 15:21:03] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_paymentproviders` (`uid`, `name`, `pkl`, `skl`, `pkt`, `skt`) VALUES (?,?,?,?,?,?)
+[2025-10-30 15:21:03] -  querybuilder-insert-values  ["ppr_j6h3vmm98smg","stripe","QTlDN3Z6anYwUm00UEd4QkJtSzFYRG9zaUxKWmdTcDR5UXk5c055YmpxaEpiWFFKaG94RDAxYVVMMmVmQTFJY0RuTFpONmZCbFhROFdFSzVWVnZEMlgzeWhOMDdvSXlwcDBJeWo4WTFhejR3c2Q0QVgzU0JxZU9RK0tDUzcyWHRxZzZEV3lCVWEvdjE1TDg9","dDNhTG9qTlByejZ3cEhwaDNBVFFVc25PMFRUa3lqSHN3N3lkWVN0dFlGTkxVVTJ0RHBQQ2NtZHNZeUkvNzVxa0ltYkVWWmg0b2lGT0NEdzZpcGt3T3RpcCtIT1FoNmg4ajNVdmxJUHdaU0FJRDVlNzZiRFFqak1yc3NwSTZBSjlqUG1Zb2VpVFVER2daRHM9","dDJjdWVUemtQWnBncTdTSVVUUERVbGxkQmgvNGM4MFNFOTlrYWxTZW83b1pleUl5TTVSTjRBVHBaQ3FrOFNrSG80VXBIYUcwYVJ6TU1XNlBRb0NrRXh1N0pjVDgwVFBEUDUzU2ZIbTZpR3l0cnE4azFlR1lNem9kK041ZEZseGtPb2lFY0ZyWVFVTFlSWEk9","NGZVSnV6ZDMvbGlvNURZeGhGVm9aWWJaSE44ZVBteUp0b2FVYnpGMDhpdlpVM25LNms3d0tuMitOMEpTS3QvRXpkL2dQWWdhNUYxL3R6N0ZyQlFnbzZ1aWlMbGdJMTNQaEh1dklxODFBQVg1RXVlQlN3VHFXSlJlZldRMU8rNzlzclluL0ZkbURORS9HTmM9"]
+[2025-10-30 15:21:03] -  Sql insert, `PROD_FKF_paymentproviders`  SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'stripe' for key 'prod_fkf_paymentproviders.uq_name'
+[2025-10-30 15:21:03] - Altering table 'tasks' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:21:03] - ALTER TABLE `PROD_FKF_tasks` MODIFY COLUMN `status` ENUM('open', 'closed') DEFAULT 'open' NOT NULL, MODIFY COLUMN `type` ENUM('revert_subscription', 'void_invoice') NULL, ADD INDEX `idx_object_id` (`object_id`), DROP INDEX `idx_object_id`, ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:21:03] - Altering table 'userroles' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:21:03] - ALTER TABLE `PROD_FKF_userroles` ADD UNIQUE `uq_access_level` (`access_level`), DROP INDEX `uq_access_level`
+[2025-10-30 15:21:03] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:21:03] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:21:03] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:21:03] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:21:03] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:21:03] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:21:03] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:21:03] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:21:03] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:21:03] - Altering table 'users' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:21:03] - ALTER TABLE `PROD_FKF_users` ADD UNIQUE `uq_uid` (`uid`), ADD UNIQUE `uq_email` (`email`), DROP INDEX `uq_uid`, DROP INDEX `uq_email`
+[2025-10-30 15:21:03] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:21:03] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:21:03] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:21:03] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:21:03] -  request-path  tester
+[2025-10-30 15:21:03] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:21:03] - [2]
+[2025-10-30 15:21:03] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:22:21] - Altering table 'appmeta' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:21] - ALTER TABLE `PROD_FKF_appmeta` ADD UNIQUE `uq_name` (`name`), DROP INDEX `uq_name`
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:21] - Altering table 'countries' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:21] - ALTER TABLE `PROD_FKF_countries` ADD UNIQUE `uq_code` (`code`), ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_code`, DROP INDEX `uq_uid`
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_countries` WHERE `uid` = ? AND `code` = ? AND `name` = ? AND `enabled` = ? LIMIT 1
+[2025-10-30 15:22:21] - Altering table 'cronjob' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:21] - ALTER TABLE `PROD_FKF_cronjob` ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:22:21] - Altering table 'customers' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:21] - ALTER TABLE `PROD_FKF_customers` DROP INDEX `provider`, ADD UNIQUE `uq_prid` (`prid`), ADD UNIQUE `uq_uid` (`uid`), ADD UNIQUE `uq_uuid` (`uuid`), DROP INDEX `uq_uid`, DROP INDEX `uq_uuid`, DROP INDEX `uq_prid`, ADD FOREIGN KEY (`provider`) REFERENCES `PROD_FKF_paymentproviders`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_customers_ibfk_4`
+[2025-10-30 15:22:21] - Altering table 'eventlog' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:21] - Altering table 'externalaccess' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:21] - Altering table 'notifications' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:21] - ALTER TABLE `PROD_FKF_notifications` ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:22:21] - Altering table 'organisationmembers' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:21] - ALTER TABLE `PROD_FKF_organisationmembers` ADD INDEX `idx_organisation` (`organisation`), ADD INDEX `idx_uuid` (`uuid`), DROP INDEX `idx_organisation`, DROP INDEX `idx_uuid`, ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`, ADD FOREIGN KEY (`uuid`) REFERENCES `PROD_FKF_users`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, ADD FOREIGN KEY (`organisation`) REFERENCES `PROD_FKF_organisations`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_organisationmembers_ibfk_10`, DROP FOREIGN KEY `prod_fkf_organisationmembers_ibfk_9`
+[2025-10-30 15:22:21] - Altering table 'organisations' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:21] - ALTER TABLE `PROD_FKF_organisations` ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:22:21] - Altering table 'passwordresets' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:21] - ALTER TABLE `PROD_FKF_passwordresets` DROP INDEX `email`, ADD UNIQUE `uq_token` (`token`), DROP INDEX `uq_token`, ADD FOREIGN KEY (`email`) REFERENCES `PROD_FKF_users`(`email`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_passwordresets_ibfk_6`
+[2025-10-30 15:22:21] - Altering table 'paymentmethods' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:21] - ALTER TABLE `PROD_FKF_paymentmethods` ADD INDEX `idx_customer` (`customer`), DROP INDEX `idx_customer`, ADD UNIQUE `uq_prid` (`prid`), ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`, DROP INDEX `uq_prid`, ADD FOREIGN KEY (`customer`) REFERENCES `PROD_FKF_customers`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_paymentmethods_ibfk_4`
+[2025-10-30 15:22:21] - Altering table 'paymentproviders' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:21] - ALTER TABLE `PROD_FKF_paymentproviders` ADD UNIQUE `uq_name` (`name`), ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_name`, DROP INDEX `uq_uid`
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_paymentproviders` WHERE `uid` = ? AND `name` = ? AND `pkl` = ? AND `skl` = ? AND `pkt` = ? AND `skt` = ? LIMIT 1
+[2025-10-30 15:22:21] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_paymentproviders` (`uid`, `name`, `pkl`, `skl`, `pkt`, `skt`) VALUES (?,?,?,?,?,?)
+[2025-10-30 15:22:21] -  querybuilder-insert-values  ["ppr_j6h3vmm98smg","stripe","U0k0UXk3bVRqaS8vTG96dENZN2JSVURPVnAreS94enpQV3kwblljckVIVUlzeFRNRGV1ZExLOVlTNVBIM1lEOUNFdHJDeDh4Ym9DL05mMnZDaFVMdlU3ZkdFWW5GWmtlWW5mWEQvOVRrN1pIT29sMFdNb1NFTkdpdWV5bEtDQnZXTmQ3RVZWK2FUSlFGNTg9","RWllMmsrSjhkb2pkVUVXWjNqbjhJZ2lyTktJZTlpa1dqL3JNVFQxSkJzclhpUysyWS80OVVNZ1hsdnBuZWhwYThNYlFFdjFCK0R5eE9yQVZ2bjdiZzhCbHZCanR6UThBdUZrM3lWWHloNmpyM2xhYzQwWFUwN2U1UmJLMlJsTFJ1MjljRzl4OUZ3Z2lLem89","RmV5dXQ1MDIwYkZKZG81MmpWSGxIaTRndmQvNnZoQ2pZbzRZcHMyTm1hbFFnb2RqYUlOUHlYdW93VlRtT1NkWFU2NXNrSThwdnNJUHNDMHl0TWdveW14aml3NWNHcjJheUs5clE1S2pzZ2dQU3ZvdVRRb3V5NHlsdHVhRjhYQTYzREVoQ0FBb3lqV1FYM0U9","WW1EUVhMM0tvZXZvc0ovZ0Vpb05rdW9nN3NiTkVMZDc5SmJJd0NxWDhUYytuT2FpQWp6L3pkUGlMb01vYXViY1dNL2VSemJzSjg0UW00WlVuRXVrUjVjOUJrZmx2aksxM2FWWTQzTHlXVFJtQnN2YXJDbWxoVkNacXZhOXRrNTJTNWhYZ0dVUW8rRUlucDQ9"]
+[2025-10-30 15:22:21] -  Sql insert, `PROD_FKF_paymentproviders`  SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'stripe' for key 'prod_fkf_paymentproviders.uq_name'
+[2025-10-30 15:22:21] - Altering table 'tasks' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:21] - ALTER TABLE `PROD_FKF_tasks` MODIFY COLUMN `status` ENUM('open', 'closed') DEFAULT 'open' NOT NULL, MODIFY COLUMN `type` ENUM('revert_subscription', 'void_invoice') NULL, ADD INDEX `idx_object_id` (`object_id`), DROP INDEX `idx_object_id`, ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:22:21] - Altering table 'userroles' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:21] - ALTER TABLE `PROD_FKF_userroles` ADD UNIQUE `uq_access_level` (`access_level`), DROP INDEX `uq_access_level`
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:22:21] - Altering table 'users' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:21] - ALTER TABLE `PROD_FKF_users` ADD UNIQUE `uq_uid` (`uid`), ADD UNIQUE `uq_email` (`email`), DROP INDEX `uq_uid`, DROP INDEX `uq_email`
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:22:21] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:22:21] -  request-path  tester
+[2025-10-30 15:22:21] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:22:21] - [2]
+[2025-10-30 15:22:21] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:22:28] - Altering table 'appmeta' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:28] - ALTER TABLE `PROD_FKF_appmeta` ADD UNIQUE `uq_name` (`name`), DROP INDEX `uq_name`
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? AND `value` = ? AND `type` = ? LIMIT 1
+[2025-10-30 15:22:28] - Altering table 'countries' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:28] - ALTER TABLE `PROD_FKF_countries` ADD UNIQUE `uq_code` (`code`), ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_code`, DROP INDEX `uq_uid`
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_countries` WHERE `uid` = ? AND `code` = ? AND `name` = ? AND `enabled` = ? LIMIT 1
+[2025-10-30 15:22:28] - Altering table 'cronjob' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:28] - ALTER TABLE `PROD_FKF_cronjob` ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_cronjob` WHERE `uid` = ? AND `name` = ? AND `started_at` = ? AND `finished_at` = ? AND `can_run` = ? AND `is_running` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:22:28] - Altering table 'customers' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:28] - ALTER TABLE `PROD_FKF_customers` DROP INDEX `provider`, ADD UNIQUE `uq_prid` (`prid`), ADD UNIQUE `uq_uid` (`uid`), ADD UNIQUE `uq_uuid` (`uuid`), DROP INDEX `uq_uid`, DROP INDEX `uq_uuid`, DROP INDEX `uq_prid`, ADD FOREIGN KEY (`provider`) REFERENCES `PROD_FKF_paymentproviders`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_customers_ibfk_5`
+[2025-10-30 15:22:28] - Altering table 'eventlog' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:28] - Altering table 'externalaccess' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:28] - Altering table 'notifications' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:28] - ALTER TABLE `PROD_FKF_notifications` ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:22:28] - Altering table 'organisationmembers' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:28] - ALTER TABLE `PROD_FKF_organisationmembers` ADD INDEX `idx_organisation` (`organisation`), ADD INDEX `idx_uuid` (`uuid`), DROP INDEX `idx_organisation`, DROP INDEX `idx_uuid`, ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`, ADD FOREIGN KEY (`uuid`) REFERENCES `PROD_FKF_users`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, ADD FOREIGN KEY (`organisation`) REFERENCES `PROD_FKF_organisations`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_organisationmembers_ibfk_11`, DROP FOREIGN KEY `prod_fkf_organisationmembers_ibfk_12`
+[2025-10-30 15:22:28] - Altering table 'organisations' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:28] - ALTER TABLE `PROD_FKF_organisations` ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:22:28] - Altering table 'passwordresets' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:28] - ALTER TABLE `PROD_FKF_passwordresets` DROP INDEX `email`, ADD UNIQUE `uq_token` (`token`), DROP INDEX `uq_token`, ADD FOREIGN KEY (`email`) REFERENCES `PROD_FKF_users`(`email`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_passwordresets_ibfk_7`
+[2025-10-30 15:22:28] - Altering table 'paymentmethods' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:28] - ALTER TABLE `PROD_FKF_paymentmethods` ADD INDEX `idx_customer` (`customer`), DROP INDEX `idx_customer`, ADD UNIQUE `uq_prid` (`prid`), ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`, DROP INDEX `uq_prid`, ADD FOREIGN KEY (`customer`) REFERENCES `PROD_FKF_customers`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, DROP FOREIGN KEY `prod_fkf_paymentmethods_ibfk_5`
+[2025-10-30 15:22:28] - Altering table 'paymentproviders' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:28] - ALTER TABLE `PROD_FKF_paymentproviders` ADD UNIQUE `uq_name` (`name`), ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_name`, DROP INDEX `uq_uid`
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_paymentproviders` WHERE `uid` = ? AND `name` = ? AND `pkl` = ? AND `skl` = ? AND `pkt` = ? AND `skt` = ? LIMIT 1
+[2025-10-30 15:22:28] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_paymentproviders` (`uid`, `name`, `pkl`, `skl`, `pkt`, `skt`) VALUES (?,?,?,?,?,?)
+[2025-10-30 15:22:28] -  querybuilder-insert-values  ["ppr_j6h3vmm98smg","stripe","WFRiQVZxbEFtWERCMjVkZGtZY1ZncU4weTh0VkJTcWprZ2diOXZncGFLaHFIYU5ZenBVV2hLSHFPVG9DZE9idTFOVFhKVGhzTUQrL1M4YUlxaHlDeW1oQUVHZUhWUFVuUWVNYVE4T1ZCclJqU1FOcER5K2F1WmFhaCtpZStlN0kyT0w0bU5pRGJ4a3hZdVU9","ZjhkQ0l1Sk0zN1ZxdER3TVR0S2loVTcxb2JHdUtKQksxWjRNcW5ubjVHLzJGczhpSnZFSFBVK3crUXBFU085SU5xcEU4c2JrZ2JNQy82ZGR4QmJuOHJYWGp6bkdrYlNRYm9QVkk3OHZ4VlVMeTZQajhSVFByL0t2YVhobVFvaDlYV3Z6bGJ3TjZWMDJhcEE9","TVZNSWlhL1ptb3M0cXFlU2ErQnhlY2dkUE5WYzZxSSs3Q1RwRWRxZjZmVFF6RTBZbmtjT2VqV0RZRnV4bWNKRGQrSEFoR09YNWxyTW1uMy83RlVYYUkxcGpDWFE5eVlRdmhDME54RGh3T012OU9iVFlsN1o2bzRnNTZ2OHNZenBueU5JZ0dUeWhFOHZaTG89","RmtSRCt5SGZVZmZPclFGcjNWQXRlY25zQktBNS9JSk5vTkt0V1NLZVRCYU1ZNHNxWENTZDRDR3VwT3lQNTBpbU80N2d3eWdpV2ZtcEpBK3M4U3VCeWZadEdGTUVFNWtnaXJuY09vbDVEN1pPQXZQZkZsc2FTYmxsMzNQNVhyS05IdXo2MDR4Zk9qdEN5VlE9"]
+[2025-10-30 15:22:28] -  Sql insert, `PROD_FKF_paymentproviders`  SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'stripe' for key 'prod_fkf_paymentproviders.uq_name'
+[2025-10-30 15:22:28] - Altering table 'tasks' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:28] - ALTER TABLE `PROD_FKF_tasks` MODIFY COLUMN `status` ENUM('open', 'closed') DEFAULT 'open' NOT NULL, MODIFY COLUMN `type` ENUM('revert_subscription', 'void_invoice') NULL, ADD INDEX `idx_object_id` (`object_id`), DROP INDEX `idx_object_id`, ADD UNIQUE `uq_uid` (`uid`), DROP INDEX `uq_uid`
+[2025-10-30 15:22:28] - Altering table 'userroles' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:28] - ALTER TABLE `PROD_FKF_userroles` ADD UNIQUE `uq_access_level` (`access_level`), DROP INDEX `uq_access_level`
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `access_level` = ? AND `name` = ? AND `description` = ? AND `depth` = ? AND `defined` = ? LIMIT 1
+[2025-10-30 15:22:28] - Altering table 'users' with schema, indexes, uniques, and foreign keys...
+[2025-10-30 15:22:28] - ALTER TABLE `PROD_FKF_users` ADD UNIQUE `uq_uid` (`uid`), ADD UNIQUE `uq_email` (`email`), DROP INDEX `uq_uid`, DROP INDEX `uq_email`
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:22:28] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? AND `username` = ? AND `password` = ? AND `email` = ? AND `full_name` = ? AND `access_level` = ? LIMIT 1
+[2025-10-30 15:22:28] -  request-path  tester
+[2025-10-30 15:22:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:22:28] - [2]
+[2025-10-30 15:22:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:27:17] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 15:27:17] - []
+[2025-10-30 15:27:17] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:27:17] - [2]
+[2025-10-30 15:27:17] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:27:17] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 15:27:17] - [1]
+[2025-10-30 15:27:17] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:27:17] - [2]
+[2025-10-30 15:27:17] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:27:17] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:27:17] - [2]
+[2025-10-30 15:27:17] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:27:33] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 15:27:33] - []
+[2025-10-30 15:27:33] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:27:33] - [2]
+[2025-10-30 15:27:33] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:27:33] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 15:27:33] - [1]
+[2025-10-30 15:27:33] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:27:33] - [2]
+[2025-10-30 15:27:33] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:27:33] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:27:33] - [2]
+[2025-10-30 15:27:33] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:27:33] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-10-30 15:27:33] -  user-cookies  
+[2025-10-30 15:27:33] -  user-no-organisation-cookies  
+[2025-10-30 15:27:33] -  request-path  tester
+[2025-10-30 15:28:44] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 15:28:44] - []
+[2025-10-30 15:28:44] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:28:44] - [2]
+[2025-10-30 15:28:44] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:28:44] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 15:28:44] - [1]
+[2025-10-30 15:28:44] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:28:44] - [2]
+[2025-10-30 15:28:44] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:28:44] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:28:44] - [2]
+[2025-10-30 15:28:44] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:28:44] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-10-30 15:28:44] -  user-cookies  
+[2025-10-30 15:28:44] -  user-no-organisation-cookies  
+[2025-10-30 15:28:44] -  request-path  tester
+[2025-10-30 15:28:44] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-10-30 15:28:44] - ["6124499677766","PENDING","SUSPENDED"]
+[2025-10-30 15:28:44] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 15:28:44] - []
+[2025-10-30 15:28:44] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:28:44] - [2]
+[2025-10-30 15:28:44] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:28:44] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 15:28:44] - [1]
+[2025-10-30 15:28:44] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:28:44] - [2]
+[2025-10-30 15:28:44] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:28:44] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 15:28:44] - [2]
+[2025-10-30 15:28:44] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 15:28:44] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-10-30 15:28:44] -  user-cookies  
+[2025-10-30 15:28:44] -  user-no-organisation-cookies  
+[2025-10-30 15:28:44] -  request-path  organisations/join/required
+[2025-10-30 15:28:44] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-10-30 15:28:44] - ["6124499677766","PENDING","SUSPENDED"]
+[2025-10-30 19:29:06] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 19:29:06] - []
+[2025-10-30 19:29:06] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 19:29:06] - [2]
+[2025-10-30 19:29:06] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 19:29:06] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 19:29:06] - [1]
+[2025-10-30 19:29:06] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 19:29:06] - [2]
+[2025-10-30 19:29:06] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 19:29:06] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 19:29:06] - [2]
+[2025-10-30 19:29:06] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 19:29:06] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-10-30 19:29:06] -  user-cookies  
+[2025-10-30 19:29:06] -  user-no-organisation-cookies  
+[2025-10-30 19:29:06] -  request-path  organisations/join/required
+[2025-10-30 19:29:06] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-10-30 19:29:06] - ["6124499677766","PENDING","SUSPENDED"]
+[2025-10-30 21:02:55] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:02:55] - []
+[2025-10-30 21:02:55] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 21:02:55] - [2]
+[2025-10-30 21:02:55] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 21:02:55] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:02:55] - [1]
+[2025-10-30 21:02:55] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 21:02:55] - [2]
+[2025-10-30 21:02:55] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 21:02:55] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 21:02:55] - [2]
+[2025-10-30 21:02:55] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 21:02:55] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-10-30 21:02:55] -  user-cookies  
+[2025-10-30 21:02:55] -  user-no-organisation-cookies  
+[2025-10-30 21:02:55] -  request-path  
+[2025-10-30 21:02:55] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-10-30 21:02:55] - ["6124499677766","PENDING","SUSPENDED"]
+[2025-10-30 21:02:55] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:02:55] - []
+[2025-10-30 21:02:55] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 21:02:55] - [2]
+[2025-10-30 21:02:55] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 21:02:55] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:02:55] - [1]
+[2025-10-30 21:02:55] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 21:02:55] - [2]
+[2025-10-30 21:02:55] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 21:02:55] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-10-30 21:02:55] - [2]
+[2025-10-30 21:02:55] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-10-30 21:02:55] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-10-30 21:02:55] -  user-cookies  
+[2025-10-30 21:02:55] -  user-no-organisation-cookies  
+[2025-10-30 21:02:55] -  request-path  organisations/join/required
+[2025-10-30 21:02:55] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-10-30 21:02:55] - ["6124499677766","PENDING","SUSPENDED"]
+[2025-10-30 21:03:16] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:03:16] - []
+[2025-10-30 21:03:16] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:03:16] - [1]
+[2025-10-30 21:03:16] -  request-path  organisations/join/required
+[2025-10-30 21:03:16] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-10-30 21:03:16] - ["","PENDING","SUSPENDED"]
+[2025-10-30 21:03:19] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:03:19] - []
+[2025-10-30 21:03:19] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:03:19] - [1]
+[2025-10-30 21:03:19] -  request-path  
+[2025-10-30 21:03:19] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-10-30 21:03:19] - ["","PENDING","SUSPENDED"]
+[2025-10-30 21:03:19] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:03:19] - []
+[2025-10-30 21:03:19] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:03:19] - [1]
+[2025-10-30 21:03:19] -  request-path  organisations/join/required
+[2025-10-30 21:03:19] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-10-30 21:03:19] - ["","PENDING","SUSPENDED"]
+[2025-10-30 21:03:31] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:03:31] - []
+[2025-10-30 21:03:31] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:03:31] - [1]
+[2025-10-30 21:03:31] -  request-path  logout
+[2025-10-30 21:03:31] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-10-30 21:03:31] - ["","PENDING","SUSPENDED"]
+[2025-10-30 21:04:51] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:04:51] - []
+[2025-10-30 21:04:51] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:04:51] - [1]
+[2025-10-30 21:04:51] -  request-path  logout
+[2025-10-30 21:04:51] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-10-30 21:04:51] - ["","PENDING","SUSPENDED"]
+[2025-10-30 21:04:51] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:04:51] - []
+[2025-10-30 21:04:51] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:04:51] - [1]
+[2025-10-30 21:04:51] -  request-path  
+[2025-10-30 21:04:51] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-10-30 21:04:51] - ["","PENDING","SUSPENDED"]
+[2025-10-30 21:04:51] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:04:51] - []
+[2025-10-30 21:04:51] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:04:51] - [1]
+[2025-10-30 21:04:51] -  request-path  organisations/join/required
+[2025-10-30 21:04:51] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-10-30 21:04:51] - ["","PENDING","SUSPENDED"]
+[2025-10-30 21:05:35] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:05:35] - []
+[2025-10-30 21:05:35] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:05:35] - [1]
+[2025-10-30 21:05:35] -  request-path  organisations/join/required
+[2025-10-30 21:05:38] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:05:38] - []
+[2025-10-30 21:05:38] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:05:38] - [1]
+[2025-10-30 21:05:38] -  request-path  
+[2025-10-30 21:05:53] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:05:53] - []
+[2025-10-30 21:05:53] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:05:53] - [1]
+[2025-10-30 21:05:53] -  request-path  tester
+[2025-10-30 21:06:19] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:06:19] - []
+[2025-10-30 21:06:19] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:06:19] - [1]
+[2025-10-30 21:06:19] -  request-path  tester
+[2025-10-30 21:08:07] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:08:07] - []
+[2025-10-30 21:08:07] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:08:07] - [1]
+[2025-10-30 21:08:07] -  request-path  tester
+[2025-10-30 21:08:19] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:08:19] - []
+[2025-10-30 21:08:19] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:08:19] - [1]
+[2025-10-30 21:08:19] -  request-path  tester
+[2025-10-30 21:08:44] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:08:44] - []
+[2025-10-30 21:08:44] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:08:44] - [1]
+[2025-10-30 21:08:44] -  request-path  tester
+[2025-10-30 21:08:45] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:08:45] - []
+[2025-10-30 21:08:45] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:08:45] - [1]
+[2025-10-30 21:08:45] -  request-path  tester
+[2025-10-30 21:09:15] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:09:15] - []
+[2025-10-30 21:09:15] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:09:15] - [1]
+[2025-10-30 21:09:15] -  request-path  tester
+[2025-10-30 21:09:17] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:09:17] - []
+[2025-10-30 21:09:17] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:09:17] - [1]
+[2025-10-30 21:09:17] -  request-path  tester
+[2025-10-30 21:09:17] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:09:17] - []
+[2025-10-30 21:09:17] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:09:17] - [1]
+[2025-10-30 21:09:17] -  request-path  tester
+[2025-10-30 21:09:18] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:09:18] - []
+[2025-10-30 21:09:18] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:09:18] - [1]
+[2025-10-30 21:09:18] -  request-path  tester
+[2025-10-30 21:09:18] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:09:18] - []
+[2025-10-30 21:09:18] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:09:18] - [1]
+[2025-10-30 21:09:18] -  request-path  tester
+[2025-10-30 21:09:29] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:09:29] - []
+[2025-10-30 21:09:29] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:09:29] - [1]
+[2025-10-30 21:09:29] -  request-path  tester
+[2025-10-30 21:09:36] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:09:36] - []
+[2025-10-30 21:09:36] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:09:36] - [1]
+[2025-10-30 21:09:36] -  request-path  tester
+[2025-10-30 21:11:27] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:11:27] - []
+[2025-10-30 21:11:27] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:11:27] - [1]
+[2025-10-30 21:11:27] -  request-path  tester
+[2025-10-30 21:12:35] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:12:35] - []
+[2025-10-30 21:12:35] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:12:35] - [1]
+[2025-10-30 21:12:35] -  request-path  tester
+[2025-10-30 21:13:06] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:13:06] - []
+[2025-10-30 21:13:06] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:13:06] - [1]
+[2025-10-30 21:13:06] -  request-path  tester
+[2025-10-30 21:13:53] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:13:53] - []
+[2025-10-30 21:13:53] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:13:53] - [1]
+[2025-10-30 21:13:53] -  request-path  tester
+[2025-10-30 21:14:02] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:14:02] - []
+[2025-10-30 21:14:02] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:14:02] - [1]
+[2025-10-30 21:14:02] -  request-path  tester
+[2025-10-30 21:14:23] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:14:23] - []
+[2025-10-30 21:14:23] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:14:23] - [1]
+[2025-10-30 21:14:23] -  request-path  tester
+[2025-10-30 21:15:08] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:15:08] - []
+[2025-10-30 21:15:08] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:15:08] - [1]
+[2025-10-30 21:15:08] -  request-path  tester
+[2025-10-30 21:15:18] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:15:18] - []
+[2025-10-30 21:15:18] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:15:18] - [1]
+[2025-10-30 21:15:18] -  request-path  tester
+[2025-10-30 21:15:42] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:15:42] - []
+[2025-10-30 21:15:42] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:15:42] - [1]
+[2025-10-30 21:15:42] -  request-path  tester
+[2025-10-30 21:16:30] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:16:30] - []
+[2025-10-30 21:16:30] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:16:30] - [1]
+[2025-10-30 21:16:30] -  request-path  tester
+[2025-10-30 21:17:00] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:17:00] - []
+[2025-10-30 21:17:00] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:17:00] - [1]
+[2025-10-30 21:17:00] -  request-path  tester
+[2025-10-30 21:17:14] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:17:14] - []
+[2025-10-30 21:17:14] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:17:14] - [1]
+[2025-10-30 21:17:14] -  request-path  tester
+[2025-10-30 21:17:28] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:17:28] - []
+[2025-10-30 21:17:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:17:28] - [1]
+[2025-10-30 21:17:28] -  request-path  tester
+[2025-10-30 21:17:42] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:17:42] - []
+[2025-10-30 21:17:42] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:17:42] - [1]
+[2025-10-30 21:17:42] -  request-path  tester
+[2025-10-30 21:17:58] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:17:58] - []
+[2025-10-30 21:17:58] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:17:58] - [1]
+[2025-10-30 21:17:58] -  request-path  tester
+[2025-10-30 21:18:11] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:18:11] - []
+[2025-10-30 21:18:11] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:18:11] - [1]
+[2025-10-30 21:18:11] -  request-path  tester
+[2025-10-30 21:18:22] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:18:22] - []
+[2025-10-30 21:18:22] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:18:22] - [1]
+[2025-10-30 21:18:22] -  request-path  tester
+[2025-10-30 21:18:43] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:18:43] - []
+[2025-10-30 21:18:43] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:18:43] - [1]
+[2025-10-30 21:18:43] -  request-path  tester
+[2025-10-30 21:18:57] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:18:57] - []
+[2025-10-30 21:18:57] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:18:57] - [1]
+[2025-10-30 21:18:57] -  request-path  tester
+[2025-10-30 21:19:05] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:19:05] - []
+[2025-10-30 21:19:05] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:19:05] - [1]
+[2025-10-30 21:19:05] -  request-path  tester
+[2025-10-30 21:19:09] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:19:09] - []
+[2025-10-30 21:19:09] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:19:09] - [1]
+[2025-10-30 21:19:09] -  request-path  tester
+[2025-10-30 21:19:33] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:19:33] - []
+[2025-10-30 21:19:33] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:19:33] - [1]
+[2025-10-30 21:19:33] -  request-path  tester
+[2025-10-30 21:19:33] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:19:33] - []
+[2025-10-30 21:19:33] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:19:33] - [1]
+[2025-10-30 21:19:33] -  request-path  api/track
+[2025-10-30 21:19:51] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:19:51] - []
+[2025-10-30 21:19:51] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:19:51] - [1]
+[2025-10-30 21:19:51] -  request-path  tester
+[2025-10-30 21:19:52] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:19:52] - []
+[2025-10-30 21:19:52] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:19:52] - [1]
+[2025-10-30 21:19:52] -  request-path  api/track
+[2025-10-30 21:20:00] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:20:00] - []
+[2025-10-30 21:20:00] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:20:00] - [1]
+[2025-10-30 21:20:00] -  request-path  tester
+[2025-10-30 21:20:00] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:20:00] - []
+[2025-10-30 21:20:00] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:20:00] - [1]
+[2025-10-30 21:20:00] -  request-path  api/track
+[2025-10-30 21:20:15] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:20:15] - []
+[2025-10-30 21:20:15] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:20:15] - [1]
+[2025-10-30 21:20:15] -  request-path  tester
+[2025-10-30 21:20:15] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 21:20:15] - []
+[2025-10-30 21:20:15] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 21:20:15] - [1]
+[2025-10-30 21:20:15] -  request-path  api/track
+[2025-10-30 22:12:53] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 22:12:53] - []
+[2025-10-30 22:12:53] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 22:12:53] - [1]
+[2025-10-30 22:12:53] -  request-path  tester
+[2025-10-30 22:12:54] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 22:12:54] - []
+[2025-10-30 22:12:54] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 22:12:54] - [1]
+[2025-10-30 22:12:54] -  request-path  api/track
+[2025-10-30 22:24:07] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 22:24:07] - []
+[2025-10-30 22:24:07] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 22:24:07] - [1]
+[2025-10-30 22:24:07] -  request-path  tester
+[2025-10-30 22:24:45] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 22:24:45] - []
+[2025-10-30 22:24:45] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 22:24:45] - [1]
+[2025-10-30 22:24:45] -  request-path  tester
+[2025-10-30 22:24:46] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 22:24:46] - []
+[2025-10-30 22:24:46] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 22:24:46] - [1]
+[2025-10-30 22:24:46] -  request-path  api/track
+[2025-10-30 22:41:19] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 22:41:19] - []
+[2025-10-30 22:41:19] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 22:41:19] - [1]
+[2025-10-30 22:41:19] -  request-path  tester
+[2025-10-30 22:41:20] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-10-30 22:41:20] - []
+[2025-10-30 22:41:20] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-10-30 22:41:20] - [1]
+[2025-10-30 22:41:20] -  request-path  api/track

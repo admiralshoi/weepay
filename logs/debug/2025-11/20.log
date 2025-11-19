@@ -1,0 +1,455 @@
+[2025-11-20 00:04:23] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:04:23] - []
+[2025-11-20 00:04:23] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:04:23] - [1]
+[2025-11-20 00:04:23] -  request-path  terminals
+[2025-11-20 00:04:23] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:04:23] - []
+[2025-11-20 00:04:23] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:04:23] - [1]
+[2025-11-20 00:04:23] -  request-path  api/track
+[2025-11-20 00:06:10] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:06:10] - []
+[2025-11-20 00:06:10] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:06:10] - [1]
+[2025-11-20 00:06:10] -  request-path  
+[2025-11-20 00:06:10] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:06:10] - []
+[2025-11-20 00:06:10] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:06:10] - [1]
+[2025-11-20 00:06:10] -  request-path  api/track
+[2025-11-20 00:06:14] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:06:14] - []
+[2025-11-20 00:06:14] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:06:14] - [1]
+[2025-11-20 00:06:14] -  request-path  dashboard
+[2025-11-20 00:06:15] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:06:15] - []
+[2025-11-20 00:06:15] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:06:15] - [1]
+[2025-11-20 00:06:15] -  request-path  api/track
+[2025-11-20 00:06:17] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:06:17] - []
+[2025-11-20 00:06:17] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:06:17] - [1]
+[2025-11-20 00:06:17] -  request-path  
+[2025-11-20 00:06:17] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:06:17] - []
+[2025-11-20 00:06:17] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:06:17] - [1]
+[2025-11-20 00:06:17] -  request-path  api/track
+[2025-11-20 00:06:44] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:06:44] - []
+[2025-11-20 00:06:44] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:06:44] - [1]
+[2025-11-20 00:06:44] -  request-path  consumer/login
+[2025-11-20 00:06:45] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:06:45] - []
+[2025-11-20 00:06:45] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:06:45] - [1]
+[2025-11-20 00:06:45] -  request-path  api/track
+[2025-11-20 00:06:50] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:06:50] - []
+[2025-11-20 00:06:50] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:06:50] - [1]
+[2025-11-20 00:06:50] -  request-path  
+[2025-11-20 00:06:51] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:06:51] - []
+[2025-11-20 00:06:51] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:06:51] - [1]
+[2025-11-20 00:06:51] -  request-path  api/track
+[2025-11-20 00:10:19] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:10:19] - []
+[2025-11-20 00:10:19] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:10:19] - [1]
+[2025-11-20 00:10:19] -  request-path  merchant/login
+[2025-11-20 00:10:20] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:10:20] - []
+[2025-11-20 00:10:20] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:10:20] - [1]
+[2025-11-20 00:10:20] -  request-path  api/track
+[2025-11-20 00:10:25] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:10:25] - []
+[2025-11-20 00:10:25] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:10:25] - [1]
+[2025-11-20 00:10:25] -  request-path  api/merchant/login
+[2025-11-20 00:10:25] - SELECT * FROM `PROD_FKF_users` WHERE (`email` = ? OR `username` = ?) AND `password` = ? LIMIT 1
+[2025-11-20 00:10:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:25] - [2]
+[2025-11-20 00:10:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:25] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:10:25] - []
+[2025-11-20 00:10:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:25] - [2]
+[2025-11-20 00:10:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:25] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-11-20 00:10:25] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:10:25] - [1]
+[2025-11-20 00:10:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:25] - [2]
+[2025-11-20 00:10:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:25] - [2]
+[2025-11-20 00:10:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:25] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:25] -  user-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:10:25] - SELECT * FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? LIMIT 1
+[2025-11-20 00:10:25] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:25] - SELECT * FROM `PROD_FKF_organisations` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-20 00:10:25] - ["6124499677766","org_zb0kl2j82yy7trk","PENDING","SUSPENDED"]
+[2025-11-20 00:10:25] -  set-org-default  [{"id":1,"created_at":"2025-11-09 10:55:51","updated_at":"2025-11-09 10:55:51","uid":"org_zb0kl2j82yy7trk","name":"Roses Fris\u00f8r","industry":"fris\u00f8r","description":null,"website":null,"contact_email":null,"team_settings":null,"general_settings":null,"pictures":null,"permissions":null,"status":"ACTIVE","contact_phone":null,"cvr":null,"company_name":null,"company_address":null,"country":null},"org_zb0kl2j82yy7trk"]
+[2025-11-20 00:10:25] - UPDATE `PROD_FKF_users` SET `cookies`=? WHERE `uid` = ?
+[2025-11-20 00:10:25] -  current cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:10:25] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:25] -  current-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:10:25] -  request-path  dashboard
+[2025-11-20 00:10:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:25] - [2]
+[2025-11-20 00:10:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-20 00:10:25] - ["6124499677766","PENDING","SUSPENDED"]
+[2025-11-20 00:10:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:25] - [2]
+[2025-11-20 00:10:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:25] -  functions_oUuid  ["merchant","org_zb0kl2j82yy7trk",{"id":3,"created_at":"2025-11-17 10:14:52","updated_at":"2025-11-17 10:14:52","uid":"orm_24z96nl4lp7vhoy","uuid":{"id":3,"created_at":"2025-10-30 16:15:58","updated_at":"2025-11-19 23:47:01","uid":"6124499677766","username":"merchant","password":"e128ef07f3be8ceac5e357196cd34c5cfab18ff79a13e92a5c475d11e0788969","email":"merchant@example.com","full_name":"Merchant User","access_level":2,"lang":"en","deactivated":0,"registration_complete":1,"created_by":null,"cookies":{"organisation":"org_zb0kl2j82yy7trk"},"address_country":null,"address_region":null,"address_city":null,"address_zip":null,"address_street":null,"payout_bank_info":null},"organisation":{"id":1,"created_at":"2025-11-09 10:55:51","updated_at":"2025-11-09 10:55:51","uid":"org_zb0kl2j82yy7trk","name":"Roses Fris\u00f8r","industry":"fris\u00f8r","description":null,"website":null,"contact_email":null,"team_settings":null,"general_settings":null,"pictures":null,"permissions":null,"status":"ACTIVE","contact_phone":null,"cvr":null,"company_name":null,"company_address":null,"country":null},"role":"owner","invitation_status":"ACCEPTED","status":"ACTIVE","invitation_activity":[{"timestamp":1763370892,"triggered_by":"6124499677766","event":"ACCEPTED","extra":[]}],"change_activity":null}]
+[2025-11-20 00:10:25] - SELECT `uid`, `name` FROM `PROD_FKF_locations` WHERE `uuid` = ? AND `status` IN (?,?,?)
+[2025-11-20 00:10:25] - ["org_zb0kl2j82yy7trk","DRAFT","ACTIVE","INACTIVE"]
+[2025-11-20 00:10:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:25] - [2]
+[2025-11-20 00:10:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:25] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:10:25] - []
+[2025-11-20 00:10:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:25] - [2]
+[2025-11-20 00:10:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:25] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-11-20 00:10:25] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:10:25] - [1]
+[2025-11-20 00:10:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:25] - [2]
+[2025-11-20 00:10:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:25] - [2]
+[2025-11-20 00:10:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:25] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:25] -  user-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:10:25] - SELECT * FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? LIMIT 1
+[2025-11-20 00:10:25] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:25] - SELECT * FROM `PROD_FKF_organisations` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-20 00:10:25] - ["6124499677766","org_zb0kl2j82yy7trk","PENDING","SUSPENDED"]
+[2025-11-20 00:10:25] -  set-org-default  [{"id":1,"created_at":"2025-11-09 10:55:51","updated_at":"2025-11-09 10:55:51","uid":"org_zb0kl2j82yy7trk","name":"Roses Fris\u00f8r","industry":"fris\u00f8r","description":null,"website":null,"contact_email":null,"team_settings":null,"general_settings":null,"pictures":null,"permissions":null,"status":"ACTIVE","contact_phone":null,"cvr":null,"company_name":null,"company_address":null,"country":null},"org_zb0kl2j82yy7trk"]
+[2025-11-20 00:10:25] - UPDATE `PROD_FKF_users` SET `cookies`=? WHERE `uid` = ?
+[2025-11-20 00:10:25] -  current cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:10:25] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:25] -  current-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:10:25] -  request-path  api/track
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:10:29] - []
+[2025-11-20 00:10:29] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:29] - [2]
+[2025-11-20 00:10:29] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:10:29] - [1]
+[2025-11-20 00:10:29] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:29] - [2]
+[2025-11-20 00:10:29] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:29] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:29] - [2]
+[2025-11-20 00:10:29] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:29] -  user-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? LIMIT 1
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_organisations` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:29] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-20 00:10:29] - ["6124499677766","org_zb0kl2j82yy7trk","PENDING","SUSPENDED"]
+[2025-11-20 00:10:29] -  set-org-default  [{"id":1,"created_at":"2025-11-09 10:55:51","updated_at":"2025-11-09 10:55:51","uid":"org_zb0kl2j82yy7trk","name":"Roses Fris\u00f8r","industry":"fris\u00f8r","description":null,"website":null,"contact_email":null,"team_settings":null,"general_settings":null,"pictures":null,"permissions":null,"status":"ACTIVE","contact_phone":null,"cvr":null,"company_name":null,"company_address":null,"country":null},"org_zb0kl2j82yy7trk"]
+[2025-11-20 00:10:29] - UPDATE `PROD_FKF_users` SET `cookies`=? WHERE `uid` = ?
+[2025-11-20 00:10:29] -  current cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:29] -  current-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:10:29] -  request-path  organisation
+[2025-11-20 00:10:29] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:29] - [2]
+[2025-11-20 00:10:29] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:29] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-20 00:10:29] - ["6124499677766","PENDING","SUSPENDED"]
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ?
+[2025-11-20 00:10:29] - ["6124499677766"]
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_organisations` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_organisations` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_countries` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_organisations` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_countries` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_organisations` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_countries` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_organisations` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:29] - SELECT * FROM `PROD_FKF_countries` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:29] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:29] - [2]
+[2025-11-20 00:10:29] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:30] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:10:30] - []
+[2025-11-20 00:10:30] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:30] - [2]
+[2025-11-20 00:10:30] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:30] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-11-20 00:10:30] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:10:30] - [1]
+[2025-11-20 00:10:30] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:30] - [2]
+[2025-11-20 00:10:30] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:30] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:30] - [2]
+[2025-11-20 00:10:30] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:30] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:30] -  user-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:10:30] - SELECT * FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? LIMIT 1
+[2025-11-20 00:10:30] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:30] - SELECT * FROM `PROD_FKF_organisations` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:30] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-20 00:10:30] - ["6124499677766","org_zb0kl2j82yy7trk","PENDING","SUSPENDED"]
+[2025-11-20 00:10:30] -  set-org-default  [{"id":1,"created_at":"2025-11-09 10:55:51","updated_at":"2025-11-09 10:55:51","uid":"org_zb0kl2j82yy7trk","name":"Roses Fris\u00f8r","industry":"fris\u00f8r","description":null,"website":null,"contact_email":null,"team_settings":null,"general_settings":null,"pictures":null,"permissions":null,"status":"ACTIVE","contact_phone":null,"cvr":null,"company_name":null,"company_address":null,"country":null},"org_zb0kl2j82yy7trk"]
+[2025-11-20 00:10:30] - UPDATE `PROD_FKF_users` SET `cookies`=? WHERE `uid` = ?
+[2025-11-20 00:10:30] -  current cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:10:30] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:30] -  current-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:10:30] -  request-path  api/track
+[2025-11-20 00:10:34] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:10:34] - []
+[2025-11-20 00:10:34] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:34] - [2]
+[2025-11-20 00:10:34] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:34] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-11-20 00:10:34] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:10:34] - [1]
+[2025-11-20 00:10:34] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:34] - [2]
+[2025-11-20 00:10:34] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:34] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:34] - [2]
+[2025-11-20 00:10:34] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:34] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:34] -  user-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:10:34] - SELECT * FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? LIMIT 1
+[2025-11-20 00:10:34] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:34] - SELECT * FROM `PROD_FKF_organisations` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:34] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-20 00:10:34] - ["6124499677766","org_zb0kl2j82yy7trk","PENDING","SUSPENDED"]
+[2025-11-20 00:10:34] -  set-org-default  [{"id":1,"created_at":"2025-11-09 10:55:51","updated_at":"2025-11-09 10:55:51","uid":"org_zb0kl2j82yy7trk","name":"Roses Fris\u00f8r","industry":"fris\u00f8r","description":null,"website":null,"contact_email":null,"team_settings":null,"general_settings":null,"pictures":null,"permissions":null,"status":"ACTIVE","contact_phone":null,"cvr":null,"company_name":null,"company_address":null,"country":null},"org_zb0kl2j82yy7trk"]
+[2025-11-20 00:10:34] - UPDATE `PROD_FKF_users` SET `cookies`=? WHERE `uid` = ?
+[2025-11-20 00:10:34] -  current cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:10:34] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:34] -  current-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:10:34] -  request-path  organisation/add
+[2025-11-20 00:10:34] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:34] - [2]
+[2025-11-20 00:10:34] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:34] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-20 00:10:34] - ["6124499677766","PENDING","SUSPENDED"]
+[2025-11-20 00:10:34] - SELECT * FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` = ?
+[2025-11-20 00:10:34] - ["6124499677766","PENDING"]
+[2025-11-20 00:10:34] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:34] - [2]
+[2025-11-20 00:10:34] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:34] - SELECT `uid`, `name`, `code` FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-20 00:10:34] - [1]
+[2025-11-20 00:10:34] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-20 00:10:34] - ["6124499677766","PENDING","SUSPENDED"]
+[2025-11-20 00:10:35] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:10:35] - []
+[2025-11-20 00:10:35] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:35] - [2]
+[2025-11-20 00:10:35] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:35] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-11-20 00:10:35] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:10:35] - [1]
+[2025-11-20 00:10:35] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:35] - [2]
+[2025-11-20 00:10:35] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:35] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:10:35] - [2]
+[2025-11-20 00:10:35] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:10:35] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:35] -  user-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:10:35] - SELECT * FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? LIMIT 1
+[2025-11-20 00:10:35] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:35] - SELECT * FROM `PROD_FKF_organisations` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:35] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-20 00:10:35] - ["6124499677766","org_zb0kl2j82yy7trk","PENDING","SUSPENDED"]
+[2025-11-20 00:10:35] -  set-org-default  [{"id":1,"created_at":"2025-11-09 10:55:51","updated_at":"2025-11-09 10:55:51","uid":"org_zb0kl2j82yy7trk","name":"Roses Fris\u00f8r","industry":"fris\u00f8r","description":null,"website":null,"contact_email":null,"team_settings":null,"general_settings":null,"pictures":null,"permissions":null,"status":"ACTIVE","contact_phone":null,"cvr":null,"company_name":null,"company_address":null,"country":null},"org_zb0kl2j82yy7trk"]
+[2025-11-20 00:10:35] - UPDATE `PROD_FKF_users` SET `cookies`=? WHERE `uid` = ?
+[2025-11-20 00:10:35] -  current cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:10:35] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:10:35] -  current-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:10:35] -  request-path  api/track
+[2025-11-20 00:11:37] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:11:37] - []
+[2025-11-20 00:11:37] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:11:37] - [2]
+[2025-11-20 00:11:37] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:11:37] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-11-20 00:11:37] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:11:37] - [1]
+[2025-11-20 00:11:37] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:11:37] - [2]
+[2025-11-20 00:11:37] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:11:37] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:11:37] - [2]
+[2025-11-20 00:11:37] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:11:37] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:11:37] -  user-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:11:37] - SELECT * FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? LIMIT 1
+[2025-11-20 00:11:37] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:11:37] - SELECT * FROM `PROD_FKF_organisations` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:11:37] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-20 00:11:37] - ["6124499677766","org_zb0kl2j82yy7trk","PENDING","SUSPENDED"]
+[2025-11-20 00:11:37] -  set-org-default  [{"id":1,"created_at":"2025-11-09 10:55:51","updated_at":"2025-11-09 10:55:51","uid":"org_zb0kl2j82yy7trk","name":"Roses Fris\u00f8r","industry":"fris\u00f8r","description":null,"website":null,"contact_email":null,"team_settings":null,"general_settings":null,"pictures":null,"permissions":null,"status":"ACTIVE","contact_phone":null,"cvr":null,"company_name":null,"company_address":null,"country":null},"org_zb0kl2j82yy7trk"]
+[2025-11-20 00:11:37] - UPDATE `PROD_FKF_users` SET `cookies`=? WHERE `uid` = ?
+[2025-11-20 00:11:37] -  current cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:11:37] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:11:37] -  current-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:11:37] -  request-path  api/has-session
+[2025-11-20 00:12:36] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:12:36] - []
+[2025-11-20 00:12:36] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:12:36] - [2]
+[2025-11-20 00:12:36] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:12:36] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-11-20 00:12:36] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:12:36] - [1]
+[2025-11-20 00:12:36] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:12:36] - [2]
+[2025-11-20 00:12:36] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:12:36] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:12:36] - [2]
+[2025-11-20 00:12:36] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:12:36] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:12:36] -  user-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:12:36] - SELECT * FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? LIMIT 1
+[2025-11-20 00:12:36] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:12:36] - SELECT * FROM `PROD_FKF_organisations` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:12:36] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-20 00:12:36] - ["6124499677766","org_zb0kl2j82yy7trk","PENDING","SUSPENDED"]
+[2025-11-20 00:12:36] -  set-org-default  [{"id":1,"created_at":"2025-11-09 10:55:51","updated_at":"2025-11-09 10:55:51","uid":"org_zb0kl2j82yy7trk","name":"Roses Fris\u00f8r","industry":"fris\u00f8r","description":null,"website":null,"contact_email":null,"team_settings":null,"general_settings":null,"pictures":null,"permissions":null,"status":"ACTIVE","contact_phone":null,"cvr":null,"company_name":null,"company_address":null,"country":null},"org_zb0kl2j82yy7trk"]
+[2025-11-20 00:12:36] - UPDATE `PROD_FKF_users` SET `cookies`=? WHERE `uid` = ?
+[2025-11-20 00:12:36] -  current cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:12:36] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:12:36] -  current-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:12:36] -  request-path  api/has-session
+[2025-11-20 00:13:36] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:13:36] - []
+[2025-11-20 00:13:36] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:13:36] - [2]
+[2025-11-20 00:13:36] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:13:36] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-11-20 00:13:36] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:13:36] - [1]
+[2025-11-20 00:13:36] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:13:36] - [2]
+[2025-11-20 00:13:36] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:13:36] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:13:36] - [2]
+[2025-11-20 00:13:36] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:13:36] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:13:36] -  user-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:13:36] - SELECT * FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? LIMIT 1
+[2025-11-20 00:13:36] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:13:36] - SELECT * FROM `PROD_FKF_organisations` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:13:36] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-20 00:13:36] - ["6124499677766","org_zb0kl2j82yy7trk","PENDING","SUSPENDED"]
+[2025-11-20 00:13:36] -  set-org-default  [{"id":1,"created_at":"2025-11-09 10:55:51","updated_at":"2025-11-09 10:55:51","uid":"org_zb0kl2j82yy7trk","name":"Roses Fris\u00f8r","industry":"fris\u00f8r","description":null,"website":null,"contact_email":null,"team_settings":null,"general_settings":null,"pictures":null,"permissions":null,"status":"ACTIVE","contact_phone":null,"cvr":null,"company_name":null,"company_address":null,"country":null},"org_zb0kl2j82yy7trk"]
+[2025-11-20 00:13:36] - UPDATE `PROD_FKF_users` SET `cookies`=? WHERE `uid` = ?
+[2025-11-20 00:13:36] -  current cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:13:36] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:13:36] -  current-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:13:36] -  request-path  api/has-session
+[2025-11-20 00:14:36] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:14:36] - []
+[2025-11-20 00:14:36] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:14:36] - [2]
+[2025-11-20 00:14:36] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:14:36] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-11-20 00:14:36] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:14:36] - [1]
+[2025-11-20 00:14:36] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:14:36] - [2]
+[2025-11-20 00:14:36] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:14:36] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:14:36] - [2]
+[2025-11-20 00:14:36] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:14:36] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:14:36] -  user-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:14:36] - SELECT * FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? LIMIT 1
+[2025-11-20 00:14:36] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:14:36] - SELECT * FROM `PROD_FKF_organisations` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:14:36] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-20 00:14:36] - ["6124499677766","org_zb0kl2j82yy7trk","PENDING","SUSPENDED"]
+[2025-11-20 00:14:36] -  set-org-default  [{"id":1,"created_at":"2025-11-09 10:55:51","updated_at":"2025-11-09 10:55:51","uid":"org_zb0kl2j82yy7trk","name":"Roses Fris\u00f8r","industry":"fris\u00f8r","description":null,"website":null,"contact_email":null,"team_settings":null,"general_settings":null,"pictures":null,"permissions":null,"status":"ACTIVE","contact_phone":null,"cvr":null,"company_name":null,"company_address":null,"country":null},"org_zb0kl2j82yy7trk"]
+[2025-11-20 00:14:36] - UPDATE `PROD_FKF_users` SET `cookies`=? WHERE `uid` = ?
+[2025-11-20 00:14:36] -  current cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:14:36] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:14:36] -  current-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:14:36] -  request-path  api/has-session
+[2025-11-20 00:15:36] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:15:36] - []
+[2025-11-20 00:15:36] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:15:36] - [2]
+[2025-11-20 00:15:36] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:15:36] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-11-20 00:15:36] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:15:36] - [1]
+[2025-11-20 00:15:36] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:15:36] - [2]
+[2025-11-20 00:15:36] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:15:36] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:15:36] - [2]
+[2025-11-20 00:15:36] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:15:36] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:15:36] -  user-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:15:36] - SELECT * FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? LIMIT 1
+[2025-11-20 00:15:36] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:15:36] - SELECT * FROM `PROD_FKF_organisations` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:15:36] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-20 00:15:36] - ["6124499677766","org_zb0kl2j82yy7trk","PENDING","SUSPENDED"]
+[2025-11-20 00:15:36] -  set-org-default  [{"id":1,"created_at":"2025-11-09 10:55:51","updated_at":"2025-11-09 10:55:51","uid":"org_zb0kl2j82yy7trk","name":"Roses Fris\u00f8r","industry":"fris\u00f8r","description":null,"website":null,"contact_email":null,"team_settings":null,"general_settings":null,"pictures":null,"permissions":null,"status":"ACTIVE","contact_phone":null,"cvr":null,"company_name":null,"company_address":null,"country":null},"org_zb0kl2j82yy7trk"]
+[2025-11-20 00:15:36] - UPDATE `PROD_FKF_users` SET `cookies`=? WHERE `uid` = ?
+[2025-11-20 00:15:36] -  current cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:15:36] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:15:36] -  current-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:15:36] -  request-path  api/has-session
+[2025-11-20 00:16:43] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-20 00:16:43] - []
+[2025-11-20 00:16:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:16:43] - [2]
+[2025-11-20 00:16:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:16:43] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-11-20 00:16:43] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-20 00:16:43] - [1]
+[2025-11-20 00:16:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:16:43] - [2]
+[2025-11-20 00:16:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:16:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-20 00:16:43] - [2]
+[2025-11-20 00:16:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-20 00:16:43] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:16:43] -  user-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:16:43] - SELECT * FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? LIMIT 1
+[2025-11-20 00:16:43] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:16:43] - SELECT * FROM `PROD_FKF_organisations` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:16:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-20 00:16:43] - ["6124499677766","org_zb0kl2j82yy7trk","PENDING","SUSPENDED"]
+[2025-11-20 00:16:43] -  set-org-default  [{"id":1,"created_at":"2025-11-09 10:55:51","updated_at":"2025-11-09 10:55:51","uid":"org_zb0kl2j82yy7trk","name":"Roses Fris\u00f8r","industry":"fris\u00f8r","description":null,"website":null,"contact_email":null,"team_settings":null,"general_settings":null,"pictures":null,"permissions":null,"status":"ACTIVE","contact_phone":null,"cvr":null,"company_name":null,"company_address":null,"country":null},"org_zb0kl2j82yy7trk"]
+[2025-11-20 00:16:43] - UPDATE `PROD_FKF_users` SET `cookies`=? WHERE `uid` = ?
+[2025-11-20 00:16:43] -  current cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:16:43] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-20 00:16:43] -  current-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-20 00:16:43] -  request-path  api/has-session

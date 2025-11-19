@@ -1,0 +1,17 @@
+{
+    "10002": "https:\/\/demo-api.vivapayments.com\/isv\/v1\/accounts\/2a982983-2cef-47e8-b4c3-9d1978d252d9",
+    "19913": true,
+    "10036": "GET",
+    "52": 1,
+    "13": 500,
+    "10023": [
+        "Origin: https:\/\/localhost\/weepay\/",
+        "Referer: https:\/\/localhost\/weepay\/",
+        "User-Agent: Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/126.0.0.0 Safari\/537.36",
+        "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjBEOEZCOEQ2RURFQ0Y1Qzk3RUY1MjdDMDYxNkJCMjMzM0FCNjVGOUZSUzI1NiIsIng1dCI6IkRZLTQxdTNzOWNsLTlTZkFZV3V5TXpxMlg1OCIsInR5cCI6ImF0K2p3dCJ9.eyJpc3MiOiJodHRwczovL2RlbW8tYWNjb3VudHMudml2YXBheW1lbnRzLmNvbSIsIm5iZiI6MTc2MTg2MjM3MywiaWF0IjoxNzYxODYyMzczLCJleHAiOjE3NjE4NjU5NzMsImF1ZCI6WyJiaXNlcnZpY2VzX2FwaSIsImNvcmVfYXBpIiwiZWNyX2FwaSIsImh0dHBzOi8vZGVtby1hY2NvdW50cy52aXZhcGF5bWVudHMuY29tL3Jlc291cmNlcyJdLCJzY29wZSI6WyJ1cm46dml2YTpwYXltZW50czpiaXNlcnZpY2VzOm1lcmNoYW50YXBpIiwidXJuOnZpdmE6cGF5bWVudHM6Y29yZTphcGk6YWNxdWlyaW5nIiwidXJuOnZpdmE6cGF5bWVudHM6Y29yZTphcGk6YWNxdWlyaW5nOnRyYW5zYWN0aW9ucyIsInVybjp2aXZhOnBheW1lbnRzOmNvcmU6YXBpOmlzdiIsInVybjp2aXZhOnBheW1lbnRzOmNvcmU6YXBpOm5hdGl2ZWNoZWNrb3V0djIiLCJ1cm46dml2YTpwYXltZW50czpjb3JlOmFwaTpyZWRpcmVjdGNoZWNrb3V0IiwidXJuOnZpdmE6cGF5bWVudHM6ZWNyOmFwaSJdLCJjbGllbnRfaWQiOiIwNjdqZzJ6c2IwZzUxbTkyM2V6ODdpYzAzbjhpc3JxdWdodHFwamxkbjVidTYuYXBwcy52aXZhcGF5bWVudHMuY29tIiwidXJuOnZpdmE6cGF5bWVudHM6Y2xpZW50X3BlcnNvbl9pZCI6IjdFNDE2REZDLUFBODktNDMzNS05QkU1LTRCM0NFMkRDMzU5QiJ9.K5TxopjX64SY6I8b78STweflIt4fuTlwTBM8lbSKy2rqI511oA-JIHZukdFvseREpRWRjRljFRvfdkOKJMRV_kmtUuyXEdp_bi-ut6xCYkK2JymewgAKz8DWWEvCnSV2K-dYKTSSux8I-HUfiMTIeo-OcGTh2j326brDwNyE4s8gr4XNlQcEhIuBwT0MLc5oghzFmcGrQ6fVSEhzWysDBOzbm-d10yrpn4vY8n-4BDkpVruFHpailtKQY1IQlgTSftibdDZ2ip6yIKx9kD5zrNyfTnNJdEuecHit038xw64Z0rCn62px8jm-1tw32D36dnBF7GC8mpLLZbyjpyEeQw"
+    ],
+    "42": true,
+    "10102": "",
+    "68": 10,
+    "84": "CURL_HTTP_VERSION_1_1"
+}
