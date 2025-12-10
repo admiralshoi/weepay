@@ -4,7 +4,7 @@ return [
     'connections' => [
         'testing' => [
             'driver' => 'mysql',
-            'host' => 'localhost',
+            'host' => 'mysql.co9i1xgl0.service.one',
             'database' => 'co9i1xgl0_weepaysolutions',
             'username' => 'co9i1xgl0_weepaysolutions',
             'password' => 'adLt3vJXmhNTRVn',
@@ -14,7 +14,7 @@ return [
         ],
         'production' => [
             'driver' => 'mysql',
-            'host' => 'localhost',
+            'host' => 'mysql.co9i1xgl0.service.one',
             'database' => 'co9i1xgl0_weepaysolutions',
             'username' => 'co9i1xgl0_weepaysolutions',
             'password' => 'adLt3vJXmhNTRVn',

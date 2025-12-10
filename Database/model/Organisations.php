@@ -12,6 +12,7 @@ class Organisations extends \Database\Model {
         "website" => ["type" => "string", "default" => null, "nullable" => true],
         "contact_email" => ["type" => "string", "default" => null, "nullable" => true],
         "contact_phone" => ["type" => "string", "default" => null, "nullable" => true],
+        "contact_phone_country_code" => ["type" => "string", "default" => null, "nullable" => true],
         "cvr" => ['type' => "string", 'default' => null, 'nullable' => true],
         "company_name" => ['type' => "string", 'default' => null, 'nullable' => true],
         "company_address" => ['type' => "text", 'default' => null, 'nullable' => true],
@@ -21,10 +22,11 @@ class Organisations extends \Database\Model {
         "pictures" => ["type" => "text", "default" => null, "nullable" => true],
         "permissions" => ["type" => "text", "default" => null, "nullable" => true],
         "status" => ["type" => "enum", "default" => 'DRAFT', 'values' => ['DRAFT', 'ACTIVE', 'INACTIVE', 'DELETED']],
+        "merchant_prid" => ["type" => "string", "default" => null, "nullable" => true],
     ];
 
     public static array $indexes = ['cvr'];
-    public static array $uniques = ["uid"];
+    public static array $uniques = ["uid", "merchant_prid"];
 
     protected static array $requiredRows = [];
     protected static array $requiredRowsTesting = [];

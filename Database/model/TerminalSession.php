@@ -14,7 +14,7 @@ class TerminalSession extends \Database\Model {
         "csrf" => ["type" => 'string', "default" => null, 'nullable' => true],
     ];
 
-    public static array $indexes = ["terminal"];
+    public static array $indexes = ["terminal", "customer"];
     public static array $uniques = ["uid"];
 
     protected static array $requiredRows = [];
@@ -25,6 +25,7 @@ class TerminalSession extends \Database\Model {
 
     public static function foreignkeys(): array {
         return [
+            "customer" => [Users::tableColumn("uid"), Users::newStatic()],
             "terminal" => [Terminals::tableColumn("uid"), Terminals::newStatic()],
         ];
     }

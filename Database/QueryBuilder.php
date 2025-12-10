@@ -56,6 +56,7 @@ class QueryBuilder {
     }
 
     public function where(string $column, mixed $operator, mixed $value = null): static {
+        $columnUnescaped = $column;
         $column = $this->escapeIdentifier($column);
         if ($value === null) {
             $values = $operator;
@@ -63,6 +64,8 @@ class QueryBuilder {
         } else {
             $values = $value;
         }
+
+        if(!is_array($values) && in_array($columnUnescaped, $this->encryptedColumns)) $values = DbColumnEncryptor::build($columnUnescaped)->encrypt($values);
 
         if (is_array($values)) {
             if(empty($values)) {
@@ -81,12 +84,14 @@ class QueryBuilder {
         return $this;
     }
     public function whereLike(string $column, null|int|string|float $value): static {
+        if(in_array($column, $this->encryptedColumns)) $value = DbColumnEncryptor::build($column)->encrypt($value);
         $column = $this->escapeIdentifier($column);
         $value = '%' . $value . '%';
         $this->addCondition("{$column} LIKE ?", [$value]);
         return $this;
     }
     public function whereNotLike(string $column, null|int|string|float $value): static {
+        if(in_array($column, $this->encryptedColumns)) $value = DbColumnEncryptor::build($column)->encrypt($value);
         $column = $this->escapeIdentifier($column);
         $value = '%' . $value . '%';
         $this->addCondition("{$column} NOT LIKE ?", [$value]);
@@ -94,12 +99,15 @@ class QueryBuilder {
     }
 
     public function orWhere(string $column, mixed $operator, mixed $value = null): static {
+        $columnUnescaped = $column;
+        $column = $this->escapeIdentifier($column);
         if ($value === null) {
             $values = $operator;
             $operator = is_array($values) ? "IN" : "=";
         } else {
             $values = $value;
         }
+        if(!is_array($values) && in_array($columnUnescaped, $this->encryptedColumns)) $values = DbColumnEncryptor::build($columnUnescaped)->encrypt($values);
 
         if (is_array($values)) {
             if(empty($values)) {
@@ -168,6 +176,7 @@ class QueryBuilder {
 
     public function whereMath(string $column, string $math, string $operator, string|int|float $value): static {
         $column = $this->escapeIdentifier($column);
+        if(in_array($column, $this->encryptedColumns)) $value = DbColumnEncryptor::build($column)->encrypt($value);
         if(is_string($value)) $value = $this->escapeString($value);
         $this->addCondition("{$column} {$math} {$operator} {$value}");
         return $this;
@@ -474,6 +483,7 @@ class QueryBuilder {
             debugLog($sql);
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute($this->bindings);
+            debugLog($this->bindings, 'queryBuilder-first-bindings');
             $result = $stmt->fetch(PDO::FETCH_OBJ);
             if (empty($result)) return null;
 

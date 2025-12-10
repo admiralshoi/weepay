@@ -28,6 +28,10 @@ class RouteResponse {
         printJson($res, $responseCode);
     }
 
+    #[NoReturn] public function mimeType(mixed $res, string $mimeType, int $responseCode = 200): void {
+        printMimeType($res, $mimeType, $responseCode);
+    }
+
 
     #[NoReturn] public function html(?string $res, int $responseCode = 200): void {
         printHtml($res, $responseCode);
@@ -49,6 +53,10 @@ class RouteResponse {
     }
 
     #[NoReturn] public function jsonError(string $message, array $data = [], int $responseCode = 200): void {
+        if($this->redirect) {
+            $data["redirect"] = $this->redirect;
+            if(!empty($this->redirectUrl)) $data["redirect_uri"] = $this->redirectUrl;
+        }
         $this->json(["status" => "error", "error" => array_merge(["message" => $message], $data)], $responseCode);
     }
     #[NoReturn] public function jsonSuccess(string $message, array $data = [], int $responseCode = 200): void {
@@ -59,19 +67,18 @@ class RouteResponse {
         $this->json(["status" => "success", "message" => $message, "data" => $data], $responseCode);
     }
 
-
-    #[ArrayShape(["status" => "string", "error" => "array|object"])]
-    public function arrayError(string $message, array|object $data = []): array {
-        return ["status" => "error", "error" => array_merge(["message" => $message], $data)];
+    #[ArrayShape(["status" => "string", "error" => "array|object", "code" => "integer"])]
+    public function arrayError(string $message, array|object $data = [], int $code = 200): array {
+        return ["status" => "error", "error" => array_merge(["message" => $message], toArray($data)), "code" => $code];
     }
-    #[ArrayShape(["status" => "string", "message" => "string", "data" => "array|object"])]
-    public function arraySuccess(string $message, array|object $data = []): array {
-        return ["status" => "success", "message" => $message, "data" => $data];
+    #[ArrayShape(["status" => "string", "message" => "string", "data" => "array|object", "code" => "integer"])]
+    public function arraySuccess(string $message, array|object $data = [], int $code = 200): array {
+        return ["status" => "success", "message" => $message, "data" => $data, "code" => $code];
     }
 
     #[NoReturn] public function jsonPermissionError(string $type, string $object, array $data = []): void {
         $object = Titles::cleanUcAll($object);
-        $this->jsonError("You are not authorized to perform $type-actions on $object", $data, 401);
+        $this->jsonError("Du har ikke tilladelse til at udøve '$type-handlinger' på objektet '$object'", $data, 401);
     }
 
 }

@@ -2,6 +2,7 @@
 
 namespace classes\organisations;
 
+use classes\app\OrganisationPermissions;
 use classes\Methods;
 use classes\utility\Crud;
 use classes\utility\Titles;
@@ -65,6 +66,46 @@ class OrganisationHandler extends Crud {
                     'modify' => true,
                     'delete' => true
                 ],
+                'checkout' => [
+                    'read' => true,
+                    'modify' => true,
+                    'delete' => true
+                ],
+                'team_members' => [
+                    'read' => true,
+                    'modify' => true,
+                    'delete' => true
+                ],
+                'team_invitations' => [
+                    'read' => true,
+                    'modify' => true,
+                    'delete' => true
+                ],
+                'team_roles' => [
+                    'read' => true,
+                    'modify' => true,
+                    'delete' => true
+                ],
+                'role_permissions' => [
+                    'read' => true,
+                    'modify' => true,
+                    'delete' => true
+                ],
+                'metrics' => [
+                    'read' => true,
+                    'modify' => true,
+                    'delete' => true
+                ],
+                'orders' => [
+                    'read' => true,
+                    'modify' => true,
+                    'delete' => true
+                ],
+                'customers' => [
+                    'read' => true,
+                    'modify' => true,
+                    'delete' => true
+                ],
                 'settings' => [
                     'read' => true,
                     'modify' => true,
@@ -76,11 +117,6 @@ class OrganisationHandler extends Crud {
                     'delete' => true
                 ],
                 'pages' => [
-                    'read' => true,
-                    'modify' => true,
-                    'delete' => true
-                ],
-                'employees' => [
                     'read' => true,
                     'modify' => true,
                     'delete' => true
@@ -176,12 +212,13 @@ class OrganisationHandler extends Crud {
         string $companyLine1,
         string $companyCity,
         string|int $companyPostalCode,
-        string $companyCountry,
+        ?object $companyCountry,
         ?string $website = null,
         ?string $industry = null,
+        ?string $description = null,
         ?string $contactEmail = null,
         null|int|string $contactPhone = null,
-        ?string $description = null,
+        ?string $contactPhoneCountryCode = null,
     ): ?string {
         $params = [
             "name" => $name,
@@ -191,13 +228,14 @@ class OrganisationHandler extends Crud {
                 "line_1" => $companyLine1,
                 "city" => $companyCity,
                 "postal_code" => $companyPostalCode,
-                "country" => $companyCountry,
+                "country" => $companyCountry?->code,
             ],
-            "country" => $companyCountry,
+            "country" => $companyCountry?->uid,
             "website" => $website,
             "industry" => $industry,
             "contact_email" => $contactEmail,
             "contact_phone" => $contactPhone,
+            "contact_phone_country_code" => $contactPhoneCountryCode,
             "description" => $description,
             "permissions" => [],
             "status" => "ACTIVE"
@@ -210,13 +248,7 @@ class OrganisationHandler extends Crud {
 
 
 
-    public function updateOrganisationDetails(string|int $uid, array $args): bool {
-        $params = [];
-        foreach ([
-            "name", "industry", "description", "website", "contact_email",
-            "team_settings", "general_settings", "pictures", "permissions"
-        ] as $key) if(array_key_exists($key, $args)) $params[$key] = $args[$key];
-
+    public function updateOrganisationDetails(string|int $uid, array $params): bool {
         return $this->update($params, ["uid" => $uid]);
     }
 
@@ -226,7 +258,7 @@ class OrganisationHandler extends Crud {
         if(!Methods::organisationMembers()->userIsMember($organisationId)) return false;
         if($organisationId !== __oUuid()) Methods::organisations()->setChosenOrganisation($organisationId);
         if(str_starts_with($organisationId, Organisations::$uidPrefix)) {
-            if(!__oModify($mainObject, $subObject)) return false;
+            if(!OrganisationPermissions::__oModify($mainObject, $subObject)) return false;
         }
         return true;
     }
@@ -234,7 +266,7 @@ class OrganisationHandler extends Crud {
         if(!Methods::organisationMembers()->userIsMember($organisationId)) return false;
         if($organisationId !== __oUuid()) Methods::organisations()->setChosenOrganisation($organisationId);
         if(str_starts_with($organisationId, Organisations::$uidPrefix)) {
-            if(!__oRead($mainObject, $subObject)) return false;
+            if(!OrganisationPermissions::__oRead($mainObject, $subObject)) return false;
         }
         return true;
     }
@@ -242,7 +274,7 @@ class OrganisationHandler extends Crud {
         if(!Methods::organisationMembers()->userIsMember($organisationId)) return false;
         if($organisationId !== __oUuid()) Methods::organisations()->setChosenOrganisation($organisationId);
         if(str_starts_with($organisationId, Organisations::$uidPrefix)) {
-            if(!__oDelete($mainObject, $subObject)) return false;
+            if(!OrganisationPermissions::__oDelete($mainObject, $subObject)) return false;
         }
         return true;
     }

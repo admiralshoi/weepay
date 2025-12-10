@@ -6,6 +6,7 @@ namespace features;
 use classes\enumerations\Links;
 use classes\Methods;
 use classes\utility\Titles;
+use Database\Collection;
 use stdClass;
 
 class DomMethods {
@@ -37,15 +38,21 @@ class DomMethods {
         return $element;
     }
     public static function locationSelect(array|object $options = [],null|string|int $selectedValue = null): string {
+        if($options instanceof Collection) $options = $options->toArray();
         $element = '
             <div>
             <div class="flex-row-start flex-align-center flex-nowrap" style="column-gap: .5rem;">
             <i class="mdi mdi-store-outline font-16 color-blue"></i>
             <p class="mb-0 font-18">Vis data for:</p>
             <select class="form-select-v2 w-200px" id="location-selection">';
-        $element .= '<option value="all">Alle butikker</option>';
+        $element .= '<option value="all" data-href="' . __url(Links::$merchant->locations->main) . '">Alle butikker</option>';
 
-        foreach ($options as $key => $option)  $element .= '<option value="'.$key.'" '.($selectedValue === $key ? 'selected' : '').'>'.$option.'</option>';
+        foreach ($options as $key => $option) {
+            $selected = $selectedValue === $key;
+            $element .= '<option value="'.$key.'" '.($selected ? 'selected' : '') ;
+            if(!$selected) $element .= 'data-href="' . __url(Links::$merchant->locations->setSingleLocation($key)) . '"';
+            $element .= '>'.$option.'</option>';
+        }
 
         $element .= '</select>
         </div>

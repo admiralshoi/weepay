@@ -2,13 +2,12 @@
 namespace Database\model;
 
 class Users extends \Database\Model {
-    public static ?string $uidPrefix = "";
+    public static ?string $uidPrefix = null;
     protected static array $schema = [
         "uid" => "string",
-        "username" => "string",
-        "password" => "text",
-        "email" => "string",
-        "full_name" => "string",
+        "email" => ["type" => "string", "default" => null, "nullable" => true],
+        "phone" => ["type" => "string", "default" => null, "nullable" => true],
+        "full_name" => ["type" => "string", "default" => null, "nullable" => true],
         "access_level" => "integer",
         "lang" => ["type" => "string", "default" => "en"],
         "deactivated" => ["type" => "tinyInteger", "default" => 0],
@@ -21,6 +20,7 @@ class Users extends \Database\Model {
         "address_zip" => ["type" => "string", "default" => null, "nullable" => true],
         "address_street" => ["type" => "string", "default" => null, "nullable" => true],
         "payout_bank_info" => ["type" => "string", "default" => null, "nullable" => true],
+        "birthdate" => ["type" => "string", "default" => null, "nullable" => true],
     ];
     public static array $indexes = [
 
@@ -32,24 +32,18 @@ class Users extends \Database\Model {
     protected static array $requiredRows = [
         [
             "uid" => "29852698833154",
-            "username" => "admin",
-            "password" => "e128ef07f3be8ceac5e357196cd34c5cfab18ff79a13e92a5c475d11e0788969",
             "email" => "admin@system.com",
             "full_name" => "System Admin",
             "access_level" => 9,
         ],
         [
             "uid" => "31883198833154",
-            "username" => "consumer",
-            "password" => "e128ef07f3be8ceac5e357196cd34c5cfab18ff79a13e92a5c475d11e0788969",
             "email" => "consumer@example.com",
             "full_name" => "Consumer Test",
             "access_level" => 1,
         ],
         [
             "uid" => "6124499677766",
-            "username" => "merchant",
-            "password" => "e128ef07f3be8ceac5e357196cd34c5cfab18ff79a13e92a5c475d11e0788969",
             "email" => "merchant@example.com",
             "full_name" => "Merchant User",
             "access_level" => 2,

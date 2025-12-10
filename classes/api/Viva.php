@@ -1,6 +1,7 @@
 <?php
 
 namespace classes\api;
+use classes\enumerations\Links;
 use classes\http\Requests;
 use classes\Methods;
 use env\api\Viva as API;
@@ -25,6 +26,18 @@ class Viva {
         return $this;
     }
 
+    const ISO_CURRENCIES = [
+//        "DKK" => "208",
+        "DKK" => "978",
+        "EUR" => "978",
+        "GBP" => "826",
+        "RON" => "946",
+        "PLN" => "985",
+        "CZK" => "203",
+        "HUF" => "348",
+        "SEK" => "752",
+        "BGN" => "975",
+    ];
 
 
     private function fetchToken(?Requests $requests = null): ?string {
@@ -107,31 +120,26 @@ class Viva {
     public function createSource(
         string $merchantId,
         string $sourceCode,
-        string $name,
-        string $domain,
-        string $pathSuccess,
-        string $pathFailure,
-    ): ?array {
+        string $slug,
+//        string $domain,
+//        string $pathSuccess,
+//        string $pathFailure,
+    ): bool {
         $requests =  Methods::requests();
         $payload = [
-            'sourceCode' =>$sourceCode,
-            'name' => $name,
-            'domain' => $domain,
-            'pathSuccess' => $pathSuccess,
-            'pathFail' => $pathFailure,
+            'sourceCode' => $sourceCode,
+            'name' => $slug,
+            'domain' => SITE_NAME,
+            'pathSuccess' => Links::$checkout->createMerchantCallbackPath($slug),
+            'pathFail' => Links::$checkout->createMerchantCallbackPath($slug),
+            "isSecure" => true
         ];
         $requests->basicAuth(API::resellerBasicAuthId($merchantId), API::resellerApiKey());
         $requests->setHeaderContentTypeJson();
         $requests->setBody($payload);
         $requests->post(API::sourceCreateUrl());
 
-        $response = $requests->getResponse();
-        return $response;
-        //Find the error response and at right...
-//        if(empty($token)) {
-//            errorLog($response, 'viva-failed-token-authentication');
-//        }
-//        return $token;
+        return $requests->getResponseCode() < 300;
     }
 
 
@@ -141,6 +149,7 @@ class Viva {
         string $merchantId,
         string|int|float $amount,
         string $sourceCode,
+        object $user,
         string $dynamicDescriptor,
         string $customerTrnsNote,
         string $merchantTrnsNote,
@@ -162,8 +171,14 @@ class Viva {
             'preauth' => $preAuth,
             'disableCash' => true,
             'disableWallet' => true,
+            "customer" => [
+                "email" => $user->email,
+                "phone" => $user->phone,
+                "fullName" => $user->full_name,
+                "countryCode" => strtoupper($user->lang),
+            ]
         ];
-        if(!empty($currency)) $payload['currencyCode'] = $currency;
+        if(!empty($currency) && array_key_exists($currency, self::ISO_CURRENCIES)) $payload['currencyCode'] = self::ISO_CURRENCIES[$currency];
         if(!empty($resellerSourceCode)) $payload['resellerSourceCode'] = $resellerSourceCode;
         if(!empty($tags)) $payload['tags'] = $tags;
         if(empty($resellerFee)) $resellerFee = Settings::$app->resellerFee;
@@ -173,12 +188,14 @@ class Viva {
             $payload['isvAmount'] = ceil($payload['amount'] * $resellerFee);
         }
 
+
         if(empty($token)) $token = $this->fetchToken();
         if(empty($token)) return null;
         $requests =  Methods::requests();
         $requests->setBearerToken($token);
         $requests->setHeaderContentTypeJson();
         $requests->setBody($payload);
+        testLog($payload, 'create-payment-payload');
 
         $requests->post(API::paymentCreateUrl($merchantId));
 

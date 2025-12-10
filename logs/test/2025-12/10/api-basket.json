@@ -1,0 +1,87 @@
+{
+    "basket": {
+        "id": 18,
+        "created_at": "2025-12-10 12:51:48",
+        "updated_at": "2025-12-10 12:51:48",
+        "uid": "chkb_353wuxor6mi762t",
+        "name": "heyeye",
+        "price": "3533.00",
+        "note": null,
+        "status": "DRAFT",
+        "currency": "DKK",
+        "terminal_session": "tses_h9imoj134a8h08u"
+    },
+    "paymentPlans": [
+        {
+            "enabled": true,
+            "title": "Betal Nu",
+            "caption": "Fuld betaling med det samme",
+            "installments": 1,
+            "start": "now",
+            "default": false,
+            "name": "direct",
+            "price_title": "3,533.00kr",
+            "subtitle": "Ingen gebyrer",
+            "next_payment_price": 3533,
+            "to_pay_now": 3533,
+            "payments": {}
+        },
+        {
+            "enabled": true,
+            "title": "Betal d. 1. i M\u00e5neden",
+            "caption": "Udskyd betalingen til n\u00e6ste m\u00e5ned",
+            "installments": 1,
+            "start": "first day of next month",
+            "default": false,
+            "name": "pushed",
+            "price_title": "3,533.00kr",
+            "subtitle": "Betales den 01. januar. Ingen renter",
+            "next_payment_price": 3533,
+            "to_pay_now": 0,
+            "payments": {}
+        },
+        {
+            "enabled": true,
+            "title": "Del i 4 Rater",
+            "caption": "Betal over 90 dage",
+            "installments": 4,
+            "start": "now",
+            "default": true,
+            "name": "installments",
+            "price_title": "883.25kr &times; 4",
+            "subtitle": "F\u00f8rste betaling nu &bullet; Ingen renter",
+            "next_payment_price": 883,
+            "to_pay_now": 883,
+            "payments": {
+                "0": {
+                    "price": 883,
+                    "date": "10. december",
+                    "date_title": "I dag",
+                    "timestamp": 1765321200,
+                    "installment": 1
+                },
+                "1": {
+                    "price": 883,
+                    "date": "08. januar",
+                    "date_title": "08. januar",
+                    "timestamp": 1767826800,
+                    "installment": 2
+                },
+                "2": {
+                    "price": 883,
+                    "date": "06. februar",
+                    "date_title": "06. februar",
+                    "timestamp": 1770332400,
+                    "installment": 3
+                },
+                "3": {
+                    "price": 884,
+                    "date": "07. marts",
+                    "date_title": "07. marts",
+                    "timestamp": 1772838000,
+                    "installment": 4
+                }
+            }
+        }
+    ]
+}

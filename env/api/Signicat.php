@@ -42,13 +42,16 @@ class Signicat {
 
 
     private static bool $sandbox = true;
-    private const SANDBOX_CLIENT_ID = "sandbox-tricky-turtle-183";
-    private const SANDBOX_CLIENT_SECRET = "aB8b34QPuOeGd7Sym4f7UbyHUBkTP7OwGma7KbGLrH8oUYUF";
-    private const SANDBOX_ACCOUNT_ID = "a-spge-vtZQu1njZNgLAgWErfx9";
+    private const SANDBOX_CLIENT_ID = "sandbox-biting-clock-989";
+//    private const SANDBOX_CLIENT_ID = "sandbox-tricky-turtle-183";
+    private const SANDBOX_CLIENT_SECRET = "NY8YZLg05SlEsRTYgY7ANOCPzDQi1789r98uI4kTOTAdJzBY";
+//    private const SANDBOX_CLIENT_SECRET = "aB8b34QPuOeGd7Sym4f7UbyHUBkTP7OwGma7KbGLrH8oUYUF";
+    private const SANDBOX_ACCOUNT_ID = "a-spge-j25bjJdoKxJQ9mQSF6ex";
+//    private const SANDBOX_ACCOUNT_ID = "a-spge-vtZQu1njZNgLAgWErfx9";
     private const SANDBOX_MITID_REFERENCE_ID = "c29tZXRleHQgZm9yIHRlc3Rpbmc=";
-    private const CLIENT_ID = "";
-    private const CLIENT_SECRET = "";
-    private const ACCOUNT_ID = "";
+    private const CLIENT_ID = "prod-annoyed-brain-701";
+    private const CLIENT_SECRET = "YszbVM9mloOaOln9dWVoTp3Br3YwmuhVfrusKavmkVsFjeqQ";
+    private const ACCOUNT_ID = "a-ppge-7yBfGYQ0OtoAt3bPaW7P";
     private const MITID_REFERENCE_ID = "c29tZXRleHQgZm9yIHRlc3Rpbmc=";
     private const SANDBOX_OAUTH_URL = "https://api.signicat.com/auth/open/connect/token";
     private const OAUTH_URL = "https://api.signicat.com/auth/open/connect/token";

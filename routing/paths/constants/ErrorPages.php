@@ -20,6 +20,20 @@ class ErrorPages extends \routing\paths\Paths {
         ],
     ];
 
+    const EXPIRED_419 = [
+        "template" => "LANDING_INNER_HTML",
+        "view" => "error-pages.page-expired",
+        "custom_scripts" => null,
+        "head" => null,
+        "assets" => [
+            "main" => null,
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
+
+
     const USER_404 = [
         "template" => "HOME_INNER_HTML",
         "view" => "error-pages.404-logged-in",

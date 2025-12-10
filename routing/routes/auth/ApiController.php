@@ -11,17 +11,23 @@ class ApiController {
         foreach (['username', 'password'] as $key) if(!array_key_exists($key, $args))
             Response()->jsonError("Missing required parameter $key");
 
-        if(!Methods::userLogin($args)) Response()->jsonError(Methods::userLoginError());
+        $authHandler = Methods::localAuthentication();
+        if(!$authHandler->validate($args)) {
+            $error = $authHandler->getError();
+            Response()->jsonError($error["error"]['message'], [], $error['code']);
+        }
 
-        $role = Methods::roles()->name($_SESSION['access_level'] ?? 0);
+        $authHandler->login();
+        $user = $authHandler->getUser();
+
+        $role = Methods::roles()->name($user?->access_level ?? 0);
         $redirectUrl = match ($role) {
             default => "",
             "consumer"=> __url(Links::$consumer->dashboard),
             "merchant" => __url(Links::$merchant->dashboard),
         };
 
-
-        Response()->setRedirect($redirectUrl)->jsonSuccess("You are now logged in");
+        Response()->setRedirect($redirectUrl)->jsonSuccess("Velkommen tilbage, " . $user->full_name);
     }
 
 

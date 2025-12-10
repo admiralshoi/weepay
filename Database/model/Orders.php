@@ -15,7 +15,7 @@ class Orders extends \Database\Model {
         "organisation"      => "string",
         "provider"    => "string",
         "customer"      => ["type" => "string", "nullable" => true, "default" => null],
-        "status"            => ["type" => "enum", "default" => "draft", "values" => ["DRAFT", "PENDING", "COMPLETED", "CANCELLED", "EXPIRED"]],
+        "status"            => ["type" => "enum", "default" => "DRAFT", "values" => ["DRAFT", "PENDING", "COMPLETED", "CANCELLED", "EXPIRED"]],
         "amount"      => ["type" => "decimal", "nullable" => false, "default" => 0, "precision" => 10, "scale" => 2],
         "currency" => "string",
         "billing_address"       => ["type" => "text", "nullable" => true, "default" => null],
@@ -25,6 +25,7 @@ class Orders extends \Database\Model {
         "fee"       => ["type" => "float", "default" => 0],
         "fee_amount"       => ["type" => "decimal", "default" => 0],
         "prid"       => ["type" => "string", "nullable" => true, "default" => null],
+        "terminal_session"       => ["type" => "string", "nullable" => true, "default" => null],
         "test" => "tinyInteger",
     ];
 
@@ -44,6 +45,7 @@ class Orders extends \Database\Model {
             "organisation" => [Organisations::tableColumn('uid'), Organisations::newStatic()],
             "provider" => [PaymentProviders::tableColumn('uid'), PaymentProviders::newStatic()],
             "customer" => [Customers::tableColumn('uid'), Customers::newStatic()],
+            "terminal_session" => [TerminalSession::tableColumn('uid'), TerminalSession::newStatic()],
         ];
     }
 

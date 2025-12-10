@@ -59,6 +59,10 @@ class Routes {
             header("location: " . __url(Links::$merchant->organisation->home));
             exit;
         }
+        if(requiresSelectedOrganisationWallet()) {
+            header("location: " . __url(Links::$merchant->organisation->home));
+            exit;
+        }
 
         $matches = [];
         foreach (self::$routes as $index => $route) {
@@ -102,12 +106,13 @@ class Routes {
                 }
             }
 
-            $args = array_merge(($method === "get" ? $_GET : Settings::$postData), $params);
+            $args = array_merge($_GET, Settings::$postData, $params);
 
             if ($pass) {
                 if (!is_array($route['handler'])) $route['handler'] = explode("::", $route['handler']);
                 if (count($route['handler']) < 2) throw new Exception("The handler must have both the class and method.");
                 $result = self::returnMethod($route['handler'][0], $route['handler'][1], $args);
+
 
                 $responseCode = 200;
                 if (is_array($result)) {
@@ -125,7 +130,13 @@ class Routes {
                         return;
                     }
                     printJson($result["result"], $result["response_code"]);
-                    return;
+                }
+                if($result === null) {
+                    if(!str_starts_with($route['path'], 'api')) {
+                        printView(ErrorController::e404());
+                        return;
+                    }
+                    else Response()->e401Json();
                 }
                 return;
             } else {

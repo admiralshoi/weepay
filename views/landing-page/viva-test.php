@@ -115,20 +115,20 @@ $sourceCreationBody = [
 //    'domain' => 'wee-pay.dk',
 //    'domain' => 'https://wee-pay.dk',
     'name' => 'wee-pay',
-    'sourceCode' =>'3278',
+    'sourceCode' =>'43480',
 ];
-//$felixMerchantId = "8094b2ab-f0af-4c9c-9065-8f82630add6e";
-//$requests =  Methods::requests();
-//$requests->basicAuth("$specialResellerId:$felixMerchantId", $specialResellerApiKey);
-//$requests->setHeaderContentTypeJson();
-//$requests->setBody($sourceCreationBody);
-//$requests->post("https://demo.vivapayments.com/api/sources");
-//
-//$responseHeaders = $requests->getHeaders();
-//$responseBody = $requests->getResponse();
-//
-//prettyPrint($responseHeaders);
-//prettyPrint($responseBody);
+$felixMerchantId = "8094b2ab-f0af-4c9c-9065-8f82630add6e";
+$requests =  Methods::requests();
+$requests->basicAuth("$specialResellerId:$felixMerchantId", $specialResellerApiKey);
+$requests->setHeaderContentTypeJson();
+$requests->setBody($sourceCreationBody);
+$requests->post("https://demo.vivapayments.com/api/sources");
+
+$responseHeaders = $requests->getHeaders();
+$responseBody = $requests->getResponse();
+
+prettyPrint($responseHeaders);
+prettyPrint($responseBody);
 
 
 

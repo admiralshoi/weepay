@@ -10,6 +10,12 @@ require_once ROOT . "features/permissions.php";
 function isLoggedIn(): bool {
     return isset($_SESSION["logged_in"]) && $_SESSION["logged_in"];
 }
+function isOidcAuthenticated(): bool {
+    return isset($_SESSION["oidcAuth"]) && $_SESSION["oidcAuth"];
+}
+function isLocalAuthenticated(): bool {
+    return isset($_SESSION["localAuth"]) && $_SESSION["localAuth"];
+}
 function currentUserId(): null|string|int {
     return isset($_SESSION["uuid"]) ? $_SESSION["uuid"] : null;
 }
@@ -75,6 +81,18 @@ function printView(array $viewList): void {
     if(is_array($content)) $content = json_encode($content);
     http_response_code($responseCode);
     header("Content-Type: application/json");
+    echo $content;
+    exit;
+}
+#[NoReturn] function printMimeType(mixed $content, string $mimeType, $responseCode = 200): void {
+    if(is_null($content)) {
+        http_response_code(500);
+        echo "Something went wrong";
+        exit;
+    }
+    if(is_array($content)) $content = json_encode($content);
+    http_response_code($responseCode);
+    header("Content-Type: $mimeType");
     echo $content;
     exit;
 }
@@ -320,6 +338,21 @@ function toObject(array|object $array, bool $force = false): object {
     return $object;
 }
 
+
+function __unsetKey(array|object|null $obj, string|int|array $keys): array|object|null {
+    $isObj = false;
+    if(isEmpty($obj)) return $obj;
+    if(is_object($obj)) {
+        $isObj = true;
+        $obj = toArray($obj);
+    }
+    if(!is_array($keys)) $keys = [$keys];
+    foreach ($keys as $key) {
+        if(array_key_exists($key, $obj)) unset($obj[$key]);
+    }
+    if($isObj) $obj = toObject($obj);
+    return $obj;
+}
 
 
 function nestedArray(null|array|object $targetObject, array $keys, mixed $defaultReturnKey = null): mixed {
@@ -780,6 +813,19 @@ function requiresSelectedOrganisation(): bool {
         isLoggedIn() &&
         \classes\Methods::isMerchant() &&
         isEmpty(\features\Settings::$organisation?->organisation) &&
+        !in_array(realUrlPath(), $exceptionPaths);
+}
+function requiresSelectedOrganisationWallet(): bool {
+    $headers = apache_request_headers();
+    if(array_key_exists("Request-Type", $headers) && $headers["Request-Type"] === "api") return false;
+    $exceptionPaths = [
+        Links::$merchant->organisation->switch,
+        Links::$merchant->organisation->home,
+        Links::$merchant->organisation->add,
+        Links::$app->logout
+    ];
+    return \classes\Methods::isMerchant() &&
+        isEmpty(\features\Settings::$organisation?->organisation?->merchant_prid) &&
         !in_array(realUrlPath(), $exceptionPaths);
 }
 

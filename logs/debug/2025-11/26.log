@@ -1,0 +1,1202 @@
+[2025-11-26 13:08:11] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:08:11] - []
+[2025-11-26 13:08:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-26 13:08:11] - [2]
+[2025-11-26 13:08:11] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-26 13:08:11] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-11-26 13:08:11] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:08:11] - [1]
+[2025-11-26 13:08:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-26 13:08:11] - [2]
+[2025-11-26 13:08:11] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-26 13:08:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-26 13:08:11] - [2]
+[2025-11-26 13:08:11] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-26 13:08:11] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-26 13:08:11] -  user-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-26 13:08:11] - SELECT * FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? LIMIT 1
+[2025-11-26 13:08:11] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-26 13:08:11] - SELECT * FROM `PROD_FKF_organisations` WHERE `uid` = ? LIMIT 1
+[2025-11-26 13:08:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-26 13:08:11] - ["6124499677766","org_zb0kl2j82yy7trk","PENDING","SUSPENDED"]
+[2025-11-26 13:08:11] -  set-org-default  [{"id":1,"created_at":"2025-11-09 10:55:51","updated_at":"2025-11-24 12:06:54","uid":"org_zb0kl2j82yy7trk","name":"Roses Fris\u00f8r","industry":"fris\u00f8r","description":null,"website":null,"contact_email":null,"team_settings":null,"general_settings":null,"pictures":null,"permissions":{"owner":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":true,"modify":true,"delete":true}}}},"admin":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":false,"modify":true,"delete":true}}}},"team_manager":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":false,"modify":true,"delete":true}}}},"analyst":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":true,"modify":true,"delete":true}}}},"butiksmedarbejder":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":true,"modify":true,"delete":true}}}}},"status":"ACTIVE","contact_phone":null,"cvr":null,"company_name":null,"company_address":null,"country":null,"contact_phone_country_code":null},"org_zb0kl2j82yy7trk"]
+[2025-11-26 13:08:11] - UPDATE `PROD_FKF_users` SET `cookies`=? WHERE `uid` = ?
+[2025-11-26 13:08:11] -  current cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-26 13:08:11] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-26 13:08:11] -  current-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-26 13:08:11] -  request-path  dashboard
+[2025-11-26 13:08:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-26 13:08:11] - [2]
+[2025-11-26 13:08:11] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-26 13:08:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-26 13:08:11] - ["6124499677766","PENDING","SUSPENDED"]
+[2025-11-26 13:08:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-26 13:08:11] - [2]
+[2025-11-26 13:08:11] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-26 13:08:11] -  functions_oUuid  ["merchant","org_zb0kl2j82yy7trk",{"id":3,"created_at":"2025-11-17 10:14:52","updated_at":"2025-11-17 10:14:52","uid":"orm_24z96nl4lp7vhoy","uuid":{"id":3,"created_at":"2025-10-30 16:15:58","updated_at":"2025-11-24 14:46:22","uid":"6124499677766","username":"merchant","password":"e128ef07f3be8ceac5e357196cd34c5cfab18ff79a13e92a5c475d11e0788969","email":"merchant@example.com","full_name":"Merchant User","access_level":2,"lang":"en","deactivated":0,"registration_complete":1,"created_by":null,"cookies":{"organisation":"org_zb0kl2j82yy7trk"},"address_country":null,"address_region":null,"address_city":null,"address_zip":null,"address_street":null,"payout_bank_info":null},"organisation":{"id":1,"created_at":"2025-11-09 10:55:51","updated_at":"2025-11-24 12:06:54","uid":"org_zb0kl2j82yy7trk","name":"Roses Fris\u00f8r","industry":"fris\u00f8r","description":null,"website":null,"contact_email":null,"team_settings":null,"general_settings":null,"pictures":null,"permissions":{"owner":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":true,"modify":true,"delete":true}}}},"admin":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":false,"modify":true,"delete":true}}}},"team_manager":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":false,"modify":true,"delete":true}}}},"analyst":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":true,"modify":true,"delete":true}}}},"butiksmedarbejder":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":true,"modify":true,"delete":true}}}}},"status":"ACTIVE","contact_phone":null,"cvr":null,"company_name":null,"company_address":null,"country":null,"contact_phone_country_code":null},"role":"owner","invitation_status":"ACCEPTED","status":"ACTIVE","invitation_activity":[{"timestamp":1763370892,"triggered_by":"6124499677766","event":"ACCEPTED","extra":[]}],"change_activity":null}]
+[2025-11-26 13:08:11] - SELECT `uid`, `name` FROM `PROD_FKF_locations` WHERE `uuid` = ? AND `status` IN (?,?,?)
+[2025-11-26 13:08:11] - ["org_zb0kl2j82yy7trk","DRAFT","ACTIVE","INACTIVE"]
+[2025-11-26 13:08:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-26 13:08:11] - [2]
+[2025-11-26 13:08:11] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-26 13:08:11] -  functions_oUuid  ["merchant","org_zb0kl2j82yy7trk",{"id":3,"created_at":"2025-11-17 10:14:52","updated_at":"2025-11-17 10:14:52","uid":"orm_24z96nl4lp7vhoy","uuid":{"id":3,"created_at":"2025-10-30 16:15:58","updated_at":"2025-11-24 14:46:22","uid":"6124499677766","username":"merchant","password":"e128ef07f3be8ceac5e357196cd34c5cfab18ff79a13e92a5c475d11e0788969","email":"merchant@example.com","full_name":"Merchant User","access_level":2,"lang":"en","deactivated":0,"registration_complete":1,"created_by":null,"cookies":{"organisation":"org_zb0kl2j82yy7trk"},"address_country":null,"address_region":null,"address_city":null,"address_zip":null,"address_street":null,"payout_bank_info":null},"organisation":{"id":1,"created_at":"2025-11-09 10:55:51","updated_at":"2025-11-24 12:06:54","uid":"org_zb0kl2j82yy7trk","name":"Roses Fris\u00f8r","industry":"fris\u00f8r","description":null,"website":null,"contact_email":null,"team_settings":null,"general_settings":null,"pictures":null,"permissions":{"owner":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":true,"modify":true,"delete":true}}}},"admin":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":false,"modify":true,"delete":true}}}},"team_manager":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":false,"modify":true,"delete":true}}}},"analyst":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":true,"modify":true,"delete":true}}}},"butiksmedarbejder":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":true,"modify":true,"delete":true}}}}},"status":"ACTIVE","contact_phone":null,"cvr":null,"company_name":null,"company_address":null,"country":null,"contact_phone_country_code":null},"role":"owner","invitation_status":"ACCEPTED","status":"ACTIVE","invitation_activity":[{"timestamp":1763370892,"triggered_by":"6124499677766","event":"ACCEPTED","extra":[]}],"change_activity":null}]
+[2025-11-26 13:08:11] - SELECT `amount`, `uuid`, `created_at` FROM `PROD_FKF_orders` WHERE `organisation` = ? AND `status` = ?
+[2025-11-26 13:08:11] - ["org_zb0kl2j82yy7trk","COMPLETED"]
+[2025-11-26 13:08:11] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:08:11] - [1]
+[2025-11-26 13:08:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-26 13:08:11] - [2]
+[2025-11-26 13:08:11] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-26 13:08:11] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:08:11] - []
+[2025-11-26 13:08:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-26 13:08:11] - [2]
+[2025-11-26 13:08:11] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-26 13:08:11] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-11-26 13:08:11] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:08:11] - [1]
+[2025-11-26 13:08:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-26 13:08:11] - [2]
+[2025-11-26 13:08:11] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-26 13:08:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-26 13:08:11] - [2]
+[2025-11-26 13:08:11] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-26 13:08:11] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-26 13:08:11] -  user-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-26 13:08:11] - SELECT * FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? LIMIT 1
+[2025-11-26 13:08:11] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-26 13:08:11] - SELECT * FROM `PROD_FKF_organisations` WHERE `uid` = ? LIMIT 1
+[2025-11-26 13:08:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-26 13:08:11] - ["6124499677766","org_zb0kl2j82yy7trk","PENDING","SUSPENDED"]
+[2025-11-26 13:08:11] -  set-org-default  [{"id":1,"created_at":"2025-11-09 10:55:51","updated_at":"2025-11-24 12:06:54","uid":"org_zb0kl2j82yy7trk","name":"Roses Fris\u00f8r","industry":"fris\u00f8r","description":null,"website":null,"contact_email":null,"team_settings":null,"general_settings":null,"pictures":null,"permissions":{"owner":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":true,"modify":true,"delete":true}}}},"admin":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":false,"modify":true,"delete":true}}}},"team_manager":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":false,"modify":true,"delete":true}}}},"analyst":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":true,"modify":true,"delete":true}}}},"butiksmedarbejder":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":true,"modify":true,"delete":true}}}}},"status":"ACTIVE","contact_phone":null,"cvr":null,"company_name":null,"company_address":null,"country":null,"contact_phone_country_code":null},"org_zb0kl2j82yy7trk"]
+[2025-11-26 13:08:11] - UPDATE `PROD_FKF_users` SET `cookies`=? WHERE `uid` = ?
+[2025-11-26 13:08:11] -  current cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-26 13:08:11] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-26 13:08:11] -  current-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-26 13:08:11] -  request-path  api/track
+[2025-11-26 13:08:13] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:08:13] - []
+[2025-11-26 13:08:13] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-26 13:08:13] - [2]
+[2025-11-26 13:08:13] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-26 13:08:13] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-11-26 13:08:13] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:08:13] - [1]
+[2025-11-26 13:08:13] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-26 13:08:13] - [2]
+[2025-11-26 13:08:13] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-26 13:08:13] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-26 13:08:13] - [2]
+[2025-11-26 13:08:13] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-26 13:08:13] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-26 13:08:13] -  user-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-26 13:08:13] - SELECT * FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? LIMIT 1
+[2025-11-26 13:08:13] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-26 13:08:13] - SELECT * FROM `PROD_FKF_organisations` WHERE `uid` = ? LIMIT 1
+[2025-11-26 13:08:13] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `organisation` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-26 13:08:13] - ["6124499677766","org_zb0kl2j82yy7trk","PENDING","SUSPENDED"]
+[2025-11-26 13:08:13] -  set-org-default  [{"id":1,"created_at":"2025-11-09 10:55:51","updated_at":"2025-11-24 12:06:54","uid":"org_zb0kl2j82yy7trk","name":"Roses Fris\u00f8r","industry":"fris\u00f8r","description":null,"website":null,"contact_email":null,"team_settings":null,"general_settings":null,"pictures":null,"permissions":{"owner":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":true,"modify":true,"delete":true}}}},"admin":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":false,"modify":true,"delete":true}}}},"team_manager":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":false,"modify":true,"delete":true}}}},"analyst":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":true,"modify":true,"delete":true}}}},"butiksmedarbejder":{"team":{"icon":"fa-solid fa-users","read":true,"modify":true,"delete":true,"permissions":{"members":{"read":true,"modify":true,"delete":true},"invitations":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"roles":{"icon":"mdi mdi-shield","read":true,"modify":true,"delete":true,"permissions":{"permissions":{"read":true,"modify":true,"delete":true},"roles":{"read":true,"modify":true,"delete":true}}},"locations":{"icon":"mdi mdi-store-outline","read":true,"modify":true,"delete":true,"permissions":{"locations":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true},"terminals":{"read":true,"modify":true,"delete":true},"pages":{"read":true,"modify":true,"delete":true},"employees":{"read":true,"modify":true,"delete":true}}},"orders":{"icon":"mdi mdi-cart-outline","read":true,"modify":true,"delete":true,"permissions":{"orders":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"settings":{"read":true,"modify":true,"delete":true}}},"organisation":{"icon":"fa-solid fa-building","read":true,"modify":true,"delete":true,"permissions":{"settings":{"read":true,"modify":true,"delete":true},"reports":{"read":true,"modify":true,"delete":true},"customers":{"read":true,"modify":true,"delete":true},"metrics":{"read":true,"modify":true,"delete":true},"locations":{"read":true,"modify":true,"delete":true}}}}},"status":"ACTIVE","contact_phone":null,"cvr":null,"company_name":null,"company_address":null,"country":null,"contact_phone_country_code":null},"org_zb0kl2j82yy7trk"]
+[2025-11-26 13:08:13] - UPDATE `PROD_FKF_users` SET `cookies`=? WHERE `uid` = ?
+[2025-11-26 13:08:13] -  current cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-26 13:08:13] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-11-26 13:08:13] -  current-cookies  {"organisation":"org_zb0kl2j82yy7trk"}
+[2025-11-26 13:08:13] -  request-path  logout
+[2025-11-26 13:08:13] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-11-26 13:08:13] - [2]
+[2025-11-26 13:08:13] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-11-26 13:08:13] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_organisationmembers` WHERE `uuid` = ? AND `invitation_status` != ? AND `status` != ?
+[2025-11-26 13:08:13] - ["6124499677766","PENDING","SUSPENDED"]
+[2025-11-26 13:08:13] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:08:13] - []
+[2025-11-26 13:08:13] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:08:13] - [1]
+[2025-11-26 13:08:13] -  request-path  
+[2025-11-26 13:08:13] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:08:13] - [1]
+[2025-11-26 13:08:13] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:08:13] - []
+[2025-11-26 13:08:13] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:08:13] - [1]
+[2025-11-26 13:08:13] -  request-path  api/track
+[2025-11-26 13:14:02] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:14:02] - []
+[2025-11-26 13:14:02] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:14:02] - [1]
+[2025-11-26 13:14:02] -  request-path  
+[2025-11-26 13:14:02] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:14:02] - [1]
+[2025-11-26 13:14:02] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:14:02] - []
+[2025-11-26 13:14:02] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:14:02] - [1]
+[2025-11-26 13:14:02] -  request-path  media/logos/_pos.svg
+[2025-11-26 13:14:02] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:14:02] - [1]
+[2025-11-26 13:14:02] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:14:02] - []
+[2025-11-26 13:14:02] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:14:02] - [1]
+[2025-11-26 13:14:02] -  request-path  media/images/viva-first-tech-bank.png
+[2025-11-26 13:14:02] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:14:02] - [1]
+[2025-11-26 13:14:02] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:14:02] - []
+[2025-11-26 13:14:02] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:14:02] - [1]
+[2025-11-26 13:14:02] -  request-path  api/track
+[2025-11-26 13:14:16] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:14:16] - []
+[2025-11-26 13:14:16] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:14:16] - [1]
+[2025-11-26 13:14:16] -  request-path  
+[2025-11-26 13:14:16] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:14:16] - [1]
+[2025-11-26 13:14:17] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:14:17] - []
+[2025-11-26 13:14:17] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:14:17] - [1]
+[2025-11-26 13:14:17] -  request-path  api/track
+[2025-11-26 13:14:47] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:14:47] - []
+[2025-11-26 13:14:47] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:14:47] - [1]
+[2025-11-26 13:14:47] -  request-path  
+[2025-11-26 13:14:47] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:14:47] - [1]
+[2025-11-26 13:14:47] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:14:47] - []
+[2025-11-26 13:14:47] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:14:47] - [1]
+[2025-11-26 13:14:47] -  request-path  api/track
+[2025-11-26 13:15:14] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:15:14] - []
+[2025-11-26 13:15:14] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:15:14] - [1]
+[2025-11-26 13:15:14] -  request-path  
+[2025-11-26 13:15:14] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:15:14] - [1]
+[2025-11-26 13:15:14] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:15:14] - []
+[2025-11-26 13:15:14] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:15:14] - [1]
+[2025-11-26 13:15:14] -  request-path  api/track
+[2025-11-26 13:15:16] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:15:16] - []
+[2025-11-26 13:15:16] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:15:16] - [1]
+[2025-11-26 13:15:16] -  request-path  
+[2025-11-26 13:15:17] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:15:17] - [1]
+[2025-11-26 13:15:17] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:15:17] - []
+[2025-11-26 13:15:17] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:15:17] - [1]
+[2025-11-26 13:15:17] -  request-path  api/track
+[2025-11-26 13:15:58] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:15:58] - []
+[2025-11-26 13:15:58] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:15:58] - [1]
+[2025-11-26 13:15:58] -  request-path  
+[2025-11-26 13:15:58] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:15:58] - [1]
+[2025-11-26 13:15:58] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:15:58] - []
+[2025-11-26 13:15:58] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:15:58] - [1]
+[2025-11-26 13:15:58] -  request-path  api/track
+[2025-11-26 13:16:36] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:16:36] - []
+[2025-11-26 13:16:36] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:16:36] - [1]
+[2025-11-26 13:16:36] -  request-path  
+[2025-11-26 13:16:36] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:16:36] - [1]
+[2025-11-26 13:16:36] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:16:36] - []
+[2025-11-26 13:16:36] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:16:36] - [1]
+[2025-11-26 13:16:36] -  request-path  api/track
+[2025-11-26 13:16:44] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:16:44] - []
+[2025-11-26 13:16:44] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:16:44] - [1]
+[2025-11-26 13:16:44] -  request-path  
+[2025-11-26 13:16:44] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:16:44] - [1]
+[2025-11-26 13:16:45] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:16:45] - []
+[2025-11-26 13:16:45] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:16:45] - [1]
+[2025-11-26 13:16:45] -  request-path  api/track
+[2025-11-26 13:17:16] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:17:16] - []
+[2025-11-26 13:17:16] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:17:16] - [1]
+[2025-11-26 13:17:16] -  request-path  
+[2025-11-26 13:17:16] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:17:16] - [1]
+[2025-11-26 13:17:16] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:17:16] - []
+[2025-11-26 13:17:16] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:17:16] - [1]
+[2025-11-26 13:17:16] -  request-path  api/track
+[2025-11-26 13:18:10] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:18:10] - []
+[2025-11-26 13:18:10] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:18:10] - [1]
+[2025-11-26 13:18:10] -  request-path  
+[2025-11-26 13:18:10] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:18:10] - [1]
+[2025-11-26 13:18:10] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:18:10] - []
+[2025-11-26 13:18:10] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:18:10] - [1]
+[2025-11-26 13:18:10] -  request-path  api/track
+[2025-11-26 13:19:18] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:19:18] - []
+[2025-11-26 13:19:18] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:19:18] - [1]
+[2025-11-26 13:19:18] -  request-path  
+[2025-11-26 13:19:18] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:19:18] - [1]
+[2025-11-26 13:19:18] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:19:18] - []
+[2025-11-26 13:19:18] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:19:18] - [1]
+[2025-11-26 13:19:18] -  request-path  api/track
+[2025-11-26 13:19:35] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:19:35] - []
+[2025-11-26 13:19:35] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:19:35] - [1]
+[2025-11-26 13:19:35] -  request-path  
+[2025-11-26 13:19:35] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:19:35] - [1]
+[2025-11-26 13:19:36] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:19:36] - []
+[2025-11-26 13:19:36] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:19:36] - [1]
+[2025-11-26 13:19:36] -  request-path  api/track
+[2025-11-26 13:20:13] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:20:13] - []
+[2025-11-26 13:20:13] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:20:13] - [1]
+[2025-11-26 13:20:13] -  request-path  
+[2025-11-26 13:20:13] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:20:13] - [1]
+[2025-11-26 13:20:14] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:20:14] - []
+[2025-11-26 13:20:14] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:20:14] - [1]
+[2025-11-26 13:20:14] -  request-path  api/track
+[2025-11-26 13:20:21] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:20:21] - []
+[2025-11-26 13:20:21] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:20:21] - [1]
+[2025-11-26 13:20:21] -  request-path  
+[2025-11-26 13:20:21] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:20:21] - [1]
+[2025-11-26 13:20:22] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:20:22] - []
+[2025-11-26 13:20:22] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:20:22] - [1]
+[2025-11-26 13:20:22] -  request-path  api/track
+[2025-11-26 13:20:33] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:20:33] - []
+[2025-11-26 13:20:33] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:20:33] - [1]
+[2025-11-26 13:20:33] -  request-path  
+[2025-11-26 13:20:33] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:20:33] - [1]
+[2025-11-26 13:20:34] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:20:34] - []
+[2025-11-26 13:20:34] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:20:34] - [1]
+[2025-11-26 13:20:34] -  request-path  api/track
+[2025-11-26 13:21:04] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:21:04] - []
+[2025-11-26 13:21:04] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:21:04] - [1]
+[2025-11-26 13:21:04] -  request-path  
+[2025-11-26 13:21:04] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:21:04] - [1]
+[2025-11-26 13:21:04] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:21:04] - []
+[2025-11-26 13:21:04] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:21:04] - [1]
+[2025-11-26 13:21:04] -  request-path  api/track
+[2025-11-26 13:24:06] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:24:06] - []
+[2025-11-26 13:24:06] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:24:06] - [1]
+[2025-11-26 13:24:06] -  request-path  
+[2025-11-26 13:24:06] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:24:06] - [1]
+[2025-11-26 13:24:06] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:24:06] - []
+[2025-11-26 13:24:06] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:24:06] - [1]
+[2025-11-26 13:24:06] -  request-path  api/track
+[2025-11-26 13:24:25] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:24:25] - []
+[2025-11-26 13:24:25] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:24:25] - [1]
+[2025-11-26 13:24:25] -  request-path  
+[2025-11-26 13:24:25] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:24:25] - [1]
+[2025-11-26 13:24:25] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:24:25] - []
+[2025-11-26 13:24:25] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:24:25] - [1]
+[2025-11-26 13:24:25] -  request-path  api/track
+[2025-11-26 13:24:55] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:24:55] - []
+[2025-11-26 13:24:55] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:24:55] - [1]
+[2025-11-26 13:24:55] -  request-path  
+[2025-11-26 13:24:55] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:24:55] - [1]
+[2025-11-26 13:24:55] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:24:55] - []
+[2025-11-26 13:24:55] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:24:55] - [1]
+[2025-11-26 13:24:55] -  request-path  api/track
+[2025-11-26 13:26:32] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:26:32] - []
+[2025-11-26 13:26:32] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:26:32] - [1]
+[2025-11-26 13:26:32] -  request-path  
+[2025-11-26 13:26:32] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:26:32] - [1]
+[2025-11-26 13:26:33] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:26:33] - []
+[2025-11-26 13:26:33] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:26:33] - [1]
+[2025-11-26 13:26:33] -  request-path  api/track
+[2025-11-26 13:26:47] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:26:47] - []
+[2025-11-26 13:26:47] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:26:47] - [1]
+[2025-11-26 13:26:47] -  request-path  
+[2025-11-26 13:26:47] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:26:47] - [1]
+[2025-11-26 13:26:47] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:26:47] - []
+[2025-11-26 13:26:47] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:26:47] - [1]
+[2025-11-26 13:26:47] -  request-path  api/track
+[2025-11-26 13:26:57] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:26:57] - []
+[2025-11-26 13:26:57] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:26:57] - [1]
+[2025-11-26 13:26:57] -  request-path  
+[2025-11-26 13:26:57] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:26:57] - [1]
+[2025-11-26 13:26:57] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:26:57] - []
+[2025-11-26 13:26:57] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:26:57] - [1]
+[2025-11-26 13:26:57] -  request-path  api/track
+[2025-11-26 13:27:36] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:27:36] - []
+[2025-11-26 13:27:36] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:27:36] - [1]
+[2025-11-26 13:27:36] -  request-path  
+[2025-11-26 13:27:36] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:27:36] - [1]
+[2025-11-26 13:27:37] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:27:37] - []
+[2025-11-26 13:27:37] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:27:37] - [1]
+[2025-11-26 13:27:37] -  request-path  api/track
+[2025-11-26 13:28:00] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:28:00] - []
+[2025-11-26 13:28:00] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:28:00] - [1]
+[2025-11-26 13:28:00] -  request-path  
+[2025-11-26 13:28:00] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:28:00] - [1]
+[2025-11-26 13:28:01] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:28:01] - []
+[2025-11-26 13:28:01] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:28:01] - [1]
+[2025-11-26 13:28:01] -  request-path  api/track
+[2025-11-26 13:28:07] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:28:07] - []
+[2025-11-26 13:28:07] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:28:07] - [1]
+[2025-11-26 13:28:07] -  request-path  
+[2025-11-26 13:28:07] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:28:07] - [1]
+[2025-11-26 13:28:07] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:28:07] - []
+[2025-11-26 13:28:07] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:28:07] - [1]
+[2025-11-26 13:28:07] -  request-path  api/track
+[2025-11-26 13:28:50] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:28:50] - []
+[2025-11-26 13:28:50] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:28:50] - [1]
+[2025-11-26 13:28:50] -  request-path  
+[2025-11-26 13:28:50] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:28:50] - [1]
+[2025-11-26 13:28:50] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:28:50] - []
+[2025-11-26 13:28:50] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:28:50] - [1]
+[2025-11-26 13:28:50] -  request-path  api/track
+[2025-11-26 13:30:19] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:30:19] - []
+[2025-11-26 13:30:19] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:30:19] - [1]
+[2025-11-26 13:30:19] -  request-path  
+[2025-11-26 13:30:19] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:30:19] - [1]
+[2025-11-26 13:30:20] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:30:20] - []
+[2025-11-26 13:30:20] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:30:20] - [1]
+[2025-11-26 13:30:20] -  request-path  api/track
+[2025-11-26 13:30:55] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:30:55] - []
+[2025-11-26 13:30:55] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:30:55] - [1]
+[2025-11-26 13:30:55] -  request-path  
+[2025-11-26 13:30:55] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:30:55] - [1]
+[2025-11-26 13:30:55] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:30:55] - []
+[2025-11-26 13:30:55] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:30:55] - [1]
+[2025-11-26 13:30:55] -  request-path  api/track
+[2025-11-26 13:32:02] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:32:02] - []
+[2025-11-26 13:32:02] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:32:02] - [1]
+[2025-11-26 13:32:02] -  request-path  
+[2025-11-26 13:32:02] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:32:02] - [1]
+[2025-11-26 13:32:03] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:32:03] - []
+[2025-11-26 13:32:03] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:32:03] - [1]
+[2025-11-26 13:32:03] -  request-path  api/track
+[2025-11-26 13:35:00] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:35:00] - []
+[2025-11-26 13:35:00] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:35:00] - [1]
+[2025-11-26 13:35:00] -  request-path  
+[2025-11-26 13:35:00] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:35:00] - [1]
+[2025-11-26 13:35:01] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:35:01] - []
+[2025-11-26 13:35:01] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:35:01] - [1]
+[2025-11-26 13:35:01] -  request-path  api/track
+[2025-11-26 13:35:37] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:35:37] - []
+[2025-11-26 13:35:37] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:35:37] - [1]
+[2025-11-26 13:35:37] -  request-path  
+[2025-11-26 13:35:37] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:35:37] - [1]
+[2025-11-26 13:35:37] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:35:37] - []
+[2025-11-26 13:35:37] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:35:37] - [1]
+[2025-11-26 13:35:37] -  request-path  api/track
+[2025-11-26 13:36:34] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:36:34] - []
+[2025-11-26 13:36:34] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:36:34] - [1]
+[2025-11-26 13:36:34] -  request-path  
+[2025-11-26 13:36:34] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:36:34] - [1]
+[2025-11-26 13:36:34] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:36:34] - []
+[2025-11-26 13:36:34] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:36:34] - [1]
+[2025-11-26 13:36:34] -  request-path  api/track
+[2025-11-26 13:36:43] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:36:43] - []
+[2025-11-26 13:36:43] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:36:43] - [1]
+[2025-11-26 13:36:43] -  request-path  
+[2025-11-26 13:36:43] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:36:43] - [1]
+[2025-11-26 13:36:44] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:36:44] - []
+[2025-11-26 13:36:44] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:36:44] - [1]
+[2025-11-26 13:36:44] -  request-path  api/track
+[2025-11-26 13:37:35] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:37:35] - []
+[2025-11-26 13:37:35] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:37:35] - [1]
+[2025-11-26 13:37:35] -  request-path  
+[2025-11-26 13:37:35] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:37:35] - [1]
+[2025-11-26 13:37:36] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:37:36] - []
+[2025-11-26 13:37:36] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:37:36] - [1]
+[2025-11-26 13:37:36] -  request-path  api/track
+[2025-11-26 13:39:31] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:39:31] - []
+[2025-11-26 13:39:31] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:39:31] - [1]
+[2025-11-26 13:39:31] -  request-path  
+[2025-11-26 13:39:31] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:39:31] - [1]
+[2025-11-26 13:39:31] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:39:31] - []
+[2025-11-26 13:39:31] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:39:31] - [1]
+[2025-11-26 13:39:31] -  request-path  api/track
+[2025-11-26 13:39:43] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:39:43] - []
+[2025-11-26 13:39:43] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:39:43] - [1]
+[2025-11-26 13:39:43] -  request-path  
+[2025-11-26 13:39:43] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:39:43] - [1]
+[2025-11-26 13:39:43] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:39:43] - []
+[2025-11-26 13:39:43] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:39:43] - [1]
+[2025-11-26 13:39:43] -  request-path  api/track
+[2025-11-26 13:39:53] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:39:53] - []
+[2025-11-26 13:39:53] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:39:53] - [1]
+[2025-11-26 13:39:53] -  request-path  
+[2025-11-26 13:39:53] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:39:53] - [1]
+[2025-11-26 13:39:54] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:39:54] - []
+[2025-11-26 13:39:54] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:39:54] - [1]
+[2025-11-26 13:39:54] -  request-path  api/track
+[2025-11-26 13:41:54] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:41:54] - []
+[2025-11-26 13:41:54] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:41:54] - [1]
+[2025-11-26 13:41:54] -  request-path  merchant/login
+[2025-11-26 13:41:54] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:41:54] - [1]
+[2025-11-26 13:41:55] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:41:55] - []
+[2025-11-26 13:41:55] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:41:55] - [1]
+[2025-11-26 13:41:55] -  request-path  api/track
+[2025-11-26 13:41:57] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:41:57] - []
+[2025-11-26 13:41:57] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:41:57] - [1]
+[2025-11-26 13:41:57] -  request-path  
+[2025-11-26 13:41:57] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:41:57] - [1]
+[2025-11-26 13:41:57] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:41:57] - []
+[2025-11-26 13:41:57] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:41:57] - [1]
+[2025-11-26 13:41:57] -  request-path  api/track
+[2025-11-26 13:42:46] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:42:46] - []
+[2025-11-26 13:42:46] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:42:46] - [1]
+[2025-11-26 13:42:46] -  request-path  
+[2025-11-26 13:42:46] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:42:46] - [1]
+[2025-11-26 13:42:46] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:42:46] - []
+[2025-11-26 13:42:46] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:42:46] - [1]
+[2025-11-26 13:42:46] -  request-path  api/track
+[2025-11-26 13:42:54] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:42:54] - []
+[2025-11-26 13:42:54] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:42:54] - [1]
+[2025-11-26 13:42:54] -  request-path  
+[2025-11-26 13:42:54] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:42:54] - [1]
+[2025-11-26 13:42:55] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:42:55] - []
+[2025-11-26 13:42:55] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:42:55] - [1]
+[2025-11-26 13:42:55] -  request-path  api/track
+[2025-11-26 13:43:07] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:43:07] - []
+[2025-11-26 13:43:07] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:43:07] - [1]
+[2025-11-26 13:43:07] -  request-path  
+[2025-11-26 13:43:07] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:43:07] - [1]
+[2025-11-26 13:43:07] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:43:07] - []
+[2025-11-26 13:43:07] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:43:07] - [1]
+[2025-11-26 13:43:07] -  request-path  api/track
+[2025-11-26 13:43:44] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:43:44] - []
+[2025-11-26 13:43:44] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:43:44] - [1]
+[2025-11-26 13:43:44] -  request-path  
+[2025-11-26 13:43:44] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:43:44] - [1]
+[2025-11-26 13:43:44] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:43:44] - []
+[2025-11-26 13:43:44] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:43:44] - [1]
+[2025-11-26 13:43:44] -  request-path  api/track
+[2025-11-26 13:44:40] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:44:40] - []
+[2025-11-26 13:44:40] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:44:40] - [1]
+[2025-11-26 13:44:40] -  request-path  
+[2025-11-26 13:44:40] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:44:40] - [1]
+[2025-11-26 13:44:41] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:44:41] - []
+[2025-11-26 13:44:41] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:44:41] - [1]
+[2025-11-26 13:44:41] -  request-path  api/track
+[2025-11-26 13:45:10] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:45:10] - []
+[2025-11-26 13:45:10] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:45:10] - [1]
+[2025-11-26 13:45:10] -  request-path  
+[2025-11-26 13:45:10] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:45:10] - [1]
+[2025-11-26 13:45:10] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:45:10] - []
+[2025-11-26 13:45:10] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:45:10] - [1]
+[2025-11-26 13:45:10] -  request-path  api/track
+[2025-11-26 13:45:39] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:45:39] - []
+[2025-11-26 13:45:39] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:45:39] - [1]
+[2025-11-26 13:45:39] -  request-path  
+[2025-11-26 13:45:39] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:45:39] - [1]
+[2025-11-26 13:45:39] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:45:39] - []
+[2025-11-26 13:45:39] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:45:39] - [1]
+[2025-11-26 13:45:39] -  request-path  api/track
+[2025-11-26 13:47:47] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:47:47] - []
+[2025-11-26 13:47:47] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:47:47] - [1]
+[2025-11-26 13:47:47] -  request-path  
+[2025-11-26 13:47:47] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:47:47] - [1]
+[2025-11-26 13:47:48] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:47:48] - []
+[2025-11-26 13:47:48] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:47:48] - [1]
+[2025-11-26 13:47:48] -  request-path  api/track
+[2025-11-26 13:48:05] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:48:05] - []
+[2025-11-26 13:48:05] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:48:05] - [1]
+[2025-11-26 13:48:05] -  request-path  
+[2025-11-26 13:48:05] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:48:05] - [1]
+[2025-11-26 13:48:05] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:48:05] - []
+[2025-11-26 13:48:05] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:48:05] - [1]
+[2025-11-26 13:48:05] -  request-path  api/track
+[2025-11-26 13:48:18] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:48:18] - []
+[2025-11-26 13:48:18] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:48:18] - [1]
+[2025-11-26 13:48:18] -  request-path  
+[2025-11-26 13:48:18] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:48:18] - [1]
+[2025-11-26 13:48:19] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:48:19] - []
+[2025-11-26 13:48:19] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:48:19] - [1]
+[2025-11-26 13:48:19] -  request-path  api/track
+[2025-11-26 13:50:11] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:50:11] - []
+[2025-11-26 13:50:11] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:50:11] - [1]
+[2025-11-26 13:50:11] -  request-path  
+[2025-11-26 13:50:11] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:50:11] - [1]
+[2025-11-26 13:50:12] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:50:12] - []
+[2025-11-26 13:50:12] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:50:12] - [1]
+[2025-11-26 13:50:12] -  request-path  api/track
+[2025-11-26 13:50:51] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:50:51] - []
+[2025-11-26 13:50:51] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:50:51] - [1]
+[2025-11-26 13:50:51] -  request-path  
+[2025-11-26 13:50:51] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:50:51] - [1]
+[2025-11-26 13:50:51] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:50:51] - []
+[2025-11-26 13:50:51] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:50:51] - [1]
+[2025-11-26 13:50:51] -  request-path  api/track
+[2025-11-26 13:51:01] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:51:01] - []
+[2025-11-26 13:51:01] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:51:01] - [1]
+[2025-11-26 13:51:01] -  request-path  
+[2025-11-26 13:51:01] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:51:01] - [1]
+[2025-11-26 13:51:02] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:51:02] - []
+[2025-11-26 13:51:02] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:51:02] - [1]
+[2025-11-26 13:51:02] -  request-path  api/track
+[2025-11-26 13:51:11] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:51:11] - []
+[2025-11-26 13:51:11] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:51:11] - [1]
+[2025-11-26 13:51:11] -  request-path  
+[2025-11-26 13:51:11] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:51:11] - [1]
+[2025-11-26 13:51:11] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:51:11] - []
+[2025-11-26 13:51:11] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:51:11] - [1]
+[2025-11-26 13:51:11] -  request-path  api/track
+[2025-11-26 13:51:26] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:51:26] - []
+[2025-11-26 13:51:26] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:51:26] - [1]
+[2025-11-26 13:51:26] -  request-path  
+[2025-11-26 13:51:26] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:51:26] - [1]
+[2025-11-26 13:51:26] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:51:26] - []
+[2025-11-26 13:51:26] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:51:26] - [1]
+[2025-11-26 13:51:26] -  request-path  api/track
+[2025-11-26 13:51:41] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:51:41] - []
+[2025-11-26 13:51:41] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:51:41] - [1]
+[2025-11-26 13:51:41] -  request-path  
+[2025-11-26 13:51:41] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:51:41] - [1]
+[2025-11-26 13:51:41] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:51:41] - []
+[2025-11-26 13:51:41] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:51:41] - [1]
+[2025-11-26 13:51:41] -  request-path  api/track
+[2025-11-26 13:52:22] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:52:22] - []
+[2025-11-26 13:52:22] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:52:22] - [1]
+[2025-11-26 13:52:22] -  request-path  
+[2025-11-26 13:52:22] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:52:22] - [1]
+[2025-11-26 13:52:23] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:52:23] - []
+[2025-11-26 13:52:23] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:52:23] - [1]
+[2025-11-26 13:52:23] -  request-path  api/track
+[2025-11-26 13:53:03] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:53:03] - []
+[2025-11-26 13:53:03] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:53:03] - [1]
+[2025-11-26 13:53:03] -  request-path  
+[2025-11-26 13:53:03] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:53:03] - [1]
+[2025-11-26 13:53:03] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:53:03] - []
+[2025-11-26 13:53:03] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:53:03] - [1]
+[2025-11-26 13:53:03] -  request-path  api/track
+[2025-11-26 13:53:55] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:53:55] - []
+[2025-11-26 13:53:55] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:53:55] - [1]
+[2025-11-26 13:53:55] -  request-path  
+[2025-11-26 13:53:55] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:53:55] - [1]
+[2025-11-26 13:53:56] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:53:56] - []
+[2025-11-26 13:53:56] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:53:56] - [1]
+[2025-11-26 13:53:56] -  request-path  api/track
+[2025-11-26 13:54:12] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:54:12] - []
+[2025-11-26 13:54:12] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:54:12] - [1]
+[2025-11-26 13:54:12] -  request-path  
+[2025-11-26 13:54:12] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:54:12] - [1]
+[2025-11-26 13:54:13] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:54:13] - []
+[2025-11-26 13:54:13] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:54:13] - [1]
+[2025-11-26 13:54:13] -  request-path  api/track
+[2025-11-26 13:54:31] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:54:31] - []
+[2025-11-26 13:54:31] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:54:31] - [1]
+[2025-11-26 13:54:31] -  request-path  
+[2025-11-26 13:54:31] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:54:31] - [1]
+[2025-11-26 13:54:32] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:54:32] - []
+[2025-11-26 13:54:32] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:54:32] - [1]
+[2025-11-26 13:54:32] -  request-path  api/track
+[2025-11-26 13:55:24] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:55:24] - []
+[2025-11-26 13:55:24] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:55:24] - [1]
+[2025-11-26 13:55:24] -  request-path  
+[2025-11-26 13:55:24] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:55:24] - [1]
+[2025-11-26 13:55:25] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:55:25] - []
+[2025-11-26 13:55:25] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:55:25] - [1]
+[2025-11-26 13:55:25] -  request-path  api/track
+[2025-11-26 13:55:35] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:55:35] - []
+[2025-11-26 13:55:35] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:55:35] - [1]
+[2025-11-26 13:55:35] -  request-path  merchant/login
+[2025-11-26 13:55:35] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 13:55:35] - [1]
+[2025-11-26 13:55:35] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 13:55:35] - []
+[2025-11-26 13:55:35] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 13:55:35] - [1]
+[2025-11-26 13:55:35] -  request-path  api/track
+[2025-11-26 14:19:09] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 14:19:09] - []
+[2025-11-26 14:19:09] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 14:19:09] - [1]
+[2025-11-26 14:19:09] -  request-path  
+[2025-11-26 14:19:09] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 14:19:09] - [1]
+[2025-11-26 14:19:09] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 14:19:09] - []
+[2025-11-26 14:19:09] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 14:19:09] - [1]
+[2025-11-26 14:19:09] -  request-path  api/track
+[2025-11-26 14:58:18] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 14:58:18] - []
+[2025-11-26 14:58:18] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 14:58:18] - [1]
+[2025-11-26 14:58:18] -  request-path  
+[2025-11-26 14:58:18] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 14:58:18] - [1]
+[2025-11-26 14:58:18] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 14:58:18] - []
+[2025-11-26 14:58:18] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 14:58:18] - [1]
+[2025-11-26 14:58:18] -  request-path  api/track
+[2025-11-26 14:58:31] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 14:58:31] - []
+[2025-11-26 14:58:31] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 14:58:31] - [1]
+[2025-11-26 14:58:31] -  request-path  
+[2025-11-26 14:58:31] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 14:58:31] - [1]
+[2025-11-26 14:58:31] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 14:58:31] - []
+[2025-11-26 14:58:31] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 14:58:31] - [1]
+[2025-11-26 14:58:32] -  request-path  api/track
+[2025-11-26 14:59:22] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 14:59:22] - []
+[2025-11-26 14:59:22] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 14:59:22] - [1]
+[2025-11-26 14:59:22] -  request-path  
+[2025-11-26 14:59:22] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 14:59:22] - [1]
+[2025-11-26 14:59:22] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 14:59:22] - []
+[2025-11-26 14:59:22] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 14:59:22] - [1]
+[2025-11-26 14:59:22] -  request-path  api/track
+[2025-11-26 15:01:38] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:01:38] - []
+[2025-11-26 15:01:38] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:01:38] - [1]
+[2025-11-26 15:01:38] -  request-path  
+[2025-11-26 15:01:38] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:01:38] - [1]
+[2025-11-26 15:01:38] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:01:38] - []
+[2025-11-26 15:01:38] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:01:38] - [1]
+[2025-11-26 15:01:38] -  request-path  api/track
+[2025-11-26 15:01:50] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:01:50] - []
+[2025-11-26 15:01:50] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:01:50] - [1]
+[2025-11-26 15:01:50] -  request-path  
+[2025-11-26 15:01:50] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:01:50] - [1]
+[2025-11-26 15:01:51] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:01:51] - []
+[2025-11-26 15:01:51] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:01:51] - [1]
+[2025-11-26 15:01:51] -  request-path  api/track
+[2025-11-26 15:02:51] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:02:51] - []
+[2025-11-26 15:02:51] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:02:51] - [1]
+[2025-11-26 15:02:51] -  request-path  
+[2025-11-26 15:02:51] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:02:51] - [1]
+[2025-11-26 15:02:52] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:02:52] - []
+[2025-11-26 15:02:52] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:02:52] - [1]
+[2025-11-26 15:02:52] -  request-path  api/track
+[2025-11-26 15:03:35] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:03:35] - []
+[2025-11-26 15:03:35] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:03:35] - [1]
+[2025-11-26 15:03:35] -  request-path  
+[2025-11-26 15:03:35] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:03:35] - [1]
+[2025-11-26 15:03:35] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:03:35] - []
+[2025-11-26 15:03:35] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:03:35] - [1]
+[2025-11-26 15:03:35] -  request-path  api/track
+[2025-11-26 15:03:42] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:03:42] - []
+[2025-11-26 15:03:42] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:03:42] - [1]
+[2025-11-26 15:03:42] -  request-path  
+[2025-11-26 15:03:42] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:03:42] - [1]
+[2025-11-26 15:03:43] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:03:43] - []
+[2025-11-26 15:03:43] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:03:43] - [1]
+[2025-11-26 15:03:43] -  request-path  api/track
+[2025-11-26 15:03:49] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:03:49] - []
+[2025-11-26 15:03:49] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:03:49] - [1]
+[2025-11-26 15:03:49] -  request-path  
+[2025-11-26 15:03:49] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:03:49] - [1]
+[2025-11-26 15:03:49] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:03:49] - []
+[2025-11-26 15:03:49] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:03:49] - [1]
+[2025-11-26 15:03:49] -  request-path  api/track
+[2025-11-26 15:04:00] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:04:00] - []
+[2025-11-26 15:04:00] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:04:00] - [1]
+[2025-11-26 15:04:00] -  request-path  
+[2025-11-26 15:04:00] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:04:00] - [1]
+[2025-11-26 15:04:00] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:04:00] - []
+[2025-11-26 15:04:00] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:04:00] - [1]
+[2025-11-26 15:04:00] -  request-path  api/track
+[2025-11-26 15:04:30] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:04:30] - []
+[2025-11-26 15:04:30] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:04:30] - [1]
+[2025-11-26 15:04:30] -  request-path  
+[2025-11-26 15:04:30] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:04:30] - [1]
+[2025-11-26 15:04:31] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:04:31] - []
+[2025-11-26 15:04:31] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:04:31] - [1]
+[2025-11-26 15:04:31] -  request-path  api/track
+[2025-11-26 15:05:41] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:05:41] - []
+[2025-11-26 15:05:41] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:05:41] - [1]
+[2025-11-26 15:05:41] -  request-path  
+[2025-11-26 15:05:41] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:05:41] - [1]
+[2025-11-26 15:05:42] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:05:42] - []
+[2025-11-26 15:05:42] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:05:42] - [1]
+[2025-11-26 15:05:42] -  request-path  api/track
+[2025-11-26 15:05:50] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:05:50] - []
+[2025-11-26 15:05:50] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:05:50] - [1]
+[2025-11-26 15:05:50] -  request-path  
+[2025-11-26 15:05:50] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:05:50] - [1]
+[2025-11-26 15:05:50] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:05:50] - []
+[2025-11-26 15:05:50] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:05:50] - [1]
+[2025-11-26 15:05:50] -  request-path  api/track
+[2025-11-26 15:06:25] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:06:25] - []
+[2025-11-26 15:06:25] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:06:25] - [1]
+[2025-11-26 15:06:25] -  request-path  
+[2025-11-26 15:06:25] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:06:25] - [1]
+[2025-11-26 15:06:26] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:06:26] - []
+[2025-11-26 15:06:26] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:06:26] - [1]
+[2025-11-26 15:06:26] -  request-path  api/track
+[2025-11-26 15:06:34] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:06:34] - []
+[2025-11-26 15:06:34] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:06:34] - [1]
+[2025-11-26 15:06:34] -  request-path  
+[2025-11-26 15:06:34] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:06:34] - [1]
+[2025-11-26 15:06:35] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:06:35] - []
+[2025-11-26 15:06:35] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:06:35] - [1]
+[2025-11-26 15:06:35] -  request-path  api/track
+[2025-11-26 15:07:10] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:07:10] - []
+[2025-11-26 15:07:10] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:07:10] - [1]
+[2025-11-26 15:07:10] -  request-path  
+[2025-11-26 15:07:10] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:07:10] - [1]
+[2025-11-26 15:07:10] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:07:10] - []
+[2025-11-26 15:07:10] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:07:10] - [1]
+[2025-11-26 15:07:10] -  request-path  api/track
+[2025-11-26 15:07:43] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:07:43] - []
+[2025-11-26 15:07:43] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:07:43] - [1]
+[2025-11-26 15:07:43] -  request-path  
+[2025-11-26 15:07:43] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:07:43] - [1]
+[2025-11-26 15:07:43] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:07:43] - []
+[2025-11-26 15:07:43] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:07:43] - [1]
+[2025-11-26 15:07:43] -  request-path  api/track
+[2025-11-26 15:07:59] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:07:59] - []
+[2025-11-26 15:07:59] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:07:59] - [1]
+[2025-11-26 15:07:59] -  request-path  
+[2025-11-26 15:07:59] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:07:59] - [1]
+[2025-11-26 15:08:00] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:08:00] - []
+[2025-11-26 15:08:00] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:08:00] - [1]
+[2025-11-26 15:08:00] -  request-path  api/track
+[2025-11-26 15:08:29] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:08:29] - []
+[2025-11-26 15:08:29] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:08:29] - [1]
+[2025-11-26 15:08:29] -  request-path  
+[2025-11-26 15:08:29] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:08:29] - [1]
+[2025-11-26 15:08:29] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:08:29] - []
+[2025-11-26 15:08:29] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:08:29] - [1]
+[2025-11-26 15:08:29] -  request-path  api/track
+[2025-11-26 15:08:40] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:08:40] - []
+[2025-11-26 15:08:40] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:08:40] - [1]
+[2025-11-26 15:08:40] -  request-path  
+[2025-11-26 15:08:40] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:08:40] - [1]
+[2025-11-26 15:08:40] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:08:40] - []
+[2025-11-26 15:08:40] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:08:40] - [1]
+[2025-11-26 15:08:40] -  request-path  api/track
+[2025-11-26 15:08:52] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:08:52] - []
+[2025-11-26 15:08:52] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:08:52] - [1]
+[2025-11-26 15:08:52] -  request-path  
+[2025-11-26 15:08:52] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:08:52] - [1]
+[2025-11-26 15:08:52] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:08:52] - []
+[2025-11-26 15:08:52] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:08:52] - [1]
+[2025-11-26 15:08:52] -  request-path  api/track
+[2025-11-26 15:09:01] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:09:01] - []
+[2025-11-26 15:09:01] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:09:01] - [1]
+[2025-11-26 15:09:01] -  request-path  
+[2025-11-26 15:09:01] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:09:01] - [1]
+[2025-11-26 15:09:01] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:09:01] - []
+[2025-11-26 15:09:01] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:09:01] - [1]
+[2025-11-26 15:09:01] -  request-path  api/track
+[2025-11-26 15:09:08] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:09:08] - []
+[2025-11-26 15:09:08] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:09:08] - [1]
+[2025-11-26 15:09:08] -  request-path  
+[2025-11-26 15:09:08] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:09:08] - [1]
+[2025-11-26 15:09:09] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:09:09] - []
+[2025-11-26 15:09:09] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:09:09] - [1]
+[2025-11-26 15:09:09] -  request-path  api/track
+[2025-11-26 15:09:37] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:09:37] - []
+[2025-11-26 15:09:37] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:09:37] - [1]
+[2025-11-26 15:09:37] -  request-path  
+[2025-11-26 15:09:37] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:09:37] - [1]
+[2025-11-26 15:09:37] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:09:37] - []
+[2025-11-26 15:09:37] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:09:37] - [1]
+[2025-11-26 15:09:37] -  request-path  api/track
+[2025-11-26 15:10:06] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:10:06] - []
+[2025-11-26 15:10:06] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:10:06] - [1]
+[2025-11-26 15:10:06] -  request-path  
+[2025-11-26 15:10:06] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:10:06] - [1]
+[2025-11-26 15:10:07] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:10:07] - []
+[2025-11-26 15:10:07] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:10:07] - [1]
+[2025-11-26 15:10:07] -  request-path  api/track
+[2025-11-26 15:10:24] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:10:24] - []
+[2025-11-26 15:10:24] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:10:24] - [1]
+[2025-11-26 15:10:24] -  request-path  
+[2025-11-26 15:10:24] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-11-26 15:10:24] - [1]
+[2025-11-26 15:10:24] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-11-26 15:10:24] - []
+[2025-11-26 15:10:24] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-11-26 15:10:24] - [1]
+[2025-11-26 15:10:24] -  request-path  api/track

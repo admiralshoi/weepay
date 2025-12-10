@@ -1,0 +1,17 @@
+{
+    "10002": "https:\/\/demo.vivapayments.com\/api\/orders\/3446521016547060",
+    "19913": true,
+    "10036": "GET",
+    "52": 1,
+    "13": 500,
+    "10023": [
+        "Origin: https:\/\/localhost\/weepay\/",
+        "Referer: https:\/\/localhost\/weepay\/",
+        "User-Agent: Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/126.0.0.0 Safari\/537.36",
+        "Authorization: Basic N2U0MTZkZmMtYWE4OS00MzM1LTliZTUtNGIzY2UyZGMzNTliOmVlNmQxOWIyLThiOWUtNDFlZC04NzRlLTA0NDY4MGJlZWFlNzpNM0dNWjcxSnlwNEcxS2EySjZrNGhNZEg2OTlaVVg="
+    ],
+    "42": true,
+    "10102": "",
+    "68": 10,
+    "84": "CURL_HTTP_VERSION_1_1"
+}

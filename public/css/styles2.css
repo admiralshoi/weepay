@@ -485,6 +485,7 @@ body#landing-page-body .landing-wrapper {
 .color-primary-dark { color: var(--primary-dark) !important; }
 .color-primary-gray-scale { color: var(--primary-gray-scale) !important; }
 .color-mute { color: var(--color-mute-text) !important; }
+.color-danger-bread { color: var(--color-error-danger-bread) !important; }
 
 .bg-error-danger-border { background: var(--color-error-danger-border) !important; }
 .bg-primary-gray-scale { background: var(--primary-gray-scale) !important; }
@@ -561,6 +562,7 @@ body#landing-page-body .landing-wrapper {
 .square-150 { height: 150px; width: 150px; box-sizing: border-box}
 .square-125 { height: 125px; width: 125px; box-sizing: border-box}
 .square-100 { height: 100px; width: 100px; box-sizing: border-box}
+.square-80 { height: 80px; width: 80px; box-sizing: border-box}
 .square-75 { height: 75px; width: 75px; box-sizing: border-box}
 .square-60 { height: 60px; width: 60px; box-sizing: border-box}
 .square-50 { height: 50px; width: 50px; box-sizing: border-box}
@@ -2409,13 +2411,11 @@ table.blue-purple-table-head thead th, table.blue-purple-table-head tbody td {
     padding: .5rem .75rem;
 }
 .action-btn-lg, .danger-btn-outline-lg, .gray-btn-lg, .mute-btn-lg, .design-action-btn-lg, .trans-btn-lg,
-.green-btn-lg, .trans-hover-design-action-btn-lg{
+.green-btn-lg, .trans-hover-design-action-btn-lg, .mute-hover-design-action-btn-lg{
     width: 100%;
 }
 .design-action-btn-lg:not(.design-action-btn-lg[disabled]):hover,
 .design-action-btn:not(.design-action-btn[disabled]):hover,
-.trans-hover-design-action-btn:not(.trans-hover-design-action-btn[disabled]):hover,
-.trans-hover-design-action-btn-lg:not(.trans-hover-design-action-btn-lg[disabled]):hover,
 .action-btn:not(.action-btn[disabled]):hover,
 .green-btn:not(.green-btn[disabled]):hover,
 .action-btn-lg:not(.action-btn-lg[disabled]):hover,
@@ -2456,9 +2456,16 @@ table.blue-purple-table-head thead th, table.blue-purple-table-head tbody td {
     color: var(--dark);
     border-color: transparent;
 }
+.mute-hover-design-action-btn, .mute-hover-design-action-btn-lg {
+    background: var(--wrapper-color);
+    color: var(--primary-dark);
+    border-color: var(--card-border-color);
+}
 
 .trans-hover-design-action-btn:not(.trans-hover-design-action-btn[disabled]):hover,
-.trans-hover-design-action-btn-lg:not(.trans-hover-design-action-btn-lg[disabled]):hover {
+.trans-hover-design-action-btn-lg:not(.trans-hover-design-action-btn-lg[disabled]):hover,
+.mute-hover-design-action-btn:not(.mute-hover-design-action-btn[disabled]):hover,
+.mute-hover-design-action-btn-lg:not(.mute-hover-design-action-btn-lg[disabled]):hover {
     background: var(--design-blue);
     color: var(--white);
     border-color: var(--design-blue);
@@ -2484,7 +2491,8 @@ table.blue-purple-table-head thead th, table.blue-purple-table-head tbody td {
 }
 .danger-btn-outline, .danger-btn-outline-lg {
     background: var(--cta-container-bg-color);
-    color: var(--primary-dark);
+    /*color: var(--primary-dark);*/
+    color: var(--color-danger);
     border-color: var(--color-danger);
 }
 .mute-danger-btn, .mute-danger-btn-lg {
@@ -4838,6 +4846,7 @@ table.blue-purple-table-head thead th, table.blue-purple-table-head tbody td {
 .border-info-warning { border: 1px solid var(--color-warning-info-text); }
 .border-info-danger { border: 1px solid var(--color-error-danger-border); }
 .card-border { border: 1px solid var(--card-border-color); }
+.design-border { border: 1px solid var(--design-blue) !important; }
 .card-border-dashed { border: 1px dashed var(--card-border-color); }
 .border-bottom-card { border-bottom: 1px solid var(--card-border-color); }
 
@@ -4929,11 +4938,6 @@ table.blue-purple-table-head thead th, table.blue-purple-table-head tbody td {
     color: #fff;
     border-color: var(--color-gray);
 }
-.danger-btn-outline, .danger-btn-outline-lg {
-    background: var(--cta-container-bg-color);
-    color: var(--primary-dark);
-    border-color: var(--color-danger);
-}
 .danger-btn, .danger-btn-lg {
     background: var(--color-danger);
     color: #fff;
@@ -4953,10 +4957,6 @@ table.blue-purple-table-head thead th, table.blue-purple-table-head tbody td {
     background: var(--wrapper-color);
     color: var(--color-danger);
     border-color: var(--color-danger);
-}
-.danger-btn-outline:hover, .danger-btn-outline-lg:hover {
-    background: var(--color-danger);
-    color: #fff;
 }
 .mute-btn:hover, .mute-btn-lg:hover {
     background: var(--wrapper-color-hover);

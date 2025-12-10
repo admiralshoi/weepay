@@ -1,0 +1,142 @@
+<div class="modal" tabindex="-1" role="dialog" id="organisation-details-modal">
+    <div class="modal-dialog responsive" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Organisation detaljer</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="color-gray text-sm mb-3">Opdater dine organisationsdetaljer.</p>
+                <form method="post" class="flex-col-start " style="row-gap: 1.5rem;">
+
+                    <div class="row" style="row-gap: .5rem;">
+                        <div class="col-12">
+                            <div class="flex-col-start " style="row-gap: .5rem">
+                                <p class="font-13 font-weight-bold mb-0">Organisationsnavn</p>
+                                <input type="text" name="name" value="{{organisation.name}}" placeholder="Roses Frisør" class="form-field-v2" maxlength="30">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-col-start " style="row-gap: .5rem">
+                        <p class="font-13 font-weight-bold mb-0">Beskrivelse (Valgfri)</p>
+                        <textarea name="description" placeholder="Tell us about your organisation" class="mnh-100px form-field-v2" maxlength="1000">{{organisation.description}}</textarea>
+                    </div>
+                    <div class="row" style="row-gap: .5rem;">
+                        <div class="col-12 col-md-6">
+                            <div class="flex-col-start" style="row-gap: .5rem">
+                                <p class="font-13 font-weight-bold mb-0">Hjemmeside (Valgfri)</p>
+                                <input type="text" name="website" value="{{organisation.website}}" placeholder="https://acme.com" class="form-field-v2" maxlength="50">
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="flex-col-start " style="row-gap: .5rem">
+                                <p class="font-13 font-weight-bold mb-0">Industri (Valgfri)</p>
+                                <input type="text" name="industry" value="{{organisation.industry}}" placeholder="Teknologi, Fashion, mv." class="form-field-v2" maxlength="30">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="row-gap: .5rem;">
+                        <div class="col-12 col-md-6">
+                            <div class="flex-col-start " style="row-gap: .5rem">
+                                <p class="font-13 font-weight-bold mb-0">Kontakt Email (Valgfri)</p>
+                                <input type="email" name="contact_email" value="{{organisation.contact_email}}" placeholder="contact@acme.com" class="form-field-v2" maxlength="50">
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 ">
+                            <div class="flex-col-start " style="row-gap: .5rem">
+                                <p class="font-13 font-weight-bold mb-0">Kontakt telefonnummer (Valgfri)</p>
+                                <div class="flex-row-start flex-align-center flex-nowrap" style="gap: 2px;">
+                                    <select class="form-select-v2 h-45px w-70px dropdown-no-arrow border-radius-tr-br-0-5rem"
+                                            data-search="true" name="contact_phone_country">
+                                        {{#foreach worldCountries}}
+                                            {{#if ../organisation.contact_phone_country_code}}
+                                                <option data-sort="{{value.countryNameEn}}_{{value.countryCode}}_{{value.countryNameLocal}}_{{value.countryCallingCode}}"
+                                                        value="{{value.countryCode}}" {{#eq value.countryCode ../organisation.contact_phone_country_code}}  selected {{/eq}}>
+                                                    <div class="flex-row-center flex-align-center flex-nowrap" style="gap: .25rem;">
+                                                        <span class="">{{value.flag}}</span>
+                                                        <span class="">+{{value.countryCallingCode}}</span>
+                                                    </div>
+                                                </option>
+                                            {{else}}
+                                                <option data-sort="{{value.countryNameEn}}_{{value.countryCode}}_{{value.countryNameLocal}}_{{value.countryCallingCode}}"
+                                                        value="{{value.countryCode}}" {{#eq value.countryCode ../defaultCountry}}  selected {{/eq}}>
+                                                    <div class="flex-row-center flex-align-center flex-nowrap" style="gap: .25rem;">
+                                                        <span class="">{{value.flag}}</span>
+                                                        <span class="">+{{value.countryCallingCode}}</span>
+                                                    </div>
+                                                </option>
+                                            {{/if}}
+                                        {{/foreach}}
+                                    </select>
+                                    <input type="text" name="contact_phone" value="{{organisation.contact_phone}}" placeholder="12 34 56 78" class="form-field-v2"
+                                           style="border-radius: 0 .5rem .5rem 0;" maxlength="15">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="row-gap: .5rem;">
+                        <div class="col-12 col-md-6">
+                            <div class="flex-col-start " style="row-gap: .5rem">
+                                <p class="font-13 font-weight-bold mb-0">Virksomhedsnavn</p>
+                                <input type="text" name="company_name" value="{{organisation.company_name}}" placeholder="Din virksomheds navn" class="form-field-v2" maxlength="50">
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="flex-col-start " style="row-gap: .5rem">
+                                <p class="font-13 font-weight-bold mb-0">Virksomhed CVR</p>
+                                <input type="text" name="company_cvr" value="{{organisation.cvr}}" placeholder="Dit CVR nummer" class="form-field-v2" maxlength="20">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="row-gap: .5rem;">
+                        <div class="col-12 col-md-6">
+                            <div class="flex-col-start " style="row-gap: .5rem">
+                                <p class="font-13 font-weight-bold mb-0">Vejnavn</p>
+                                <input type="text" name="company_line_1" value="{{organisation.company_address.line_1}}" placeholder="Din virksomheds vejnavn + nr." class="form-field-v2" maxlength="100">
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="flex-col-start " style="row-gap: .5rem">
+                                <p class="font-13 font-weight-bold mb-0">By</p>
+                                <input type="text" name="company_city" value="{{organisation.company_address.city}}" placeholder="Din virksomheds Bynavn" class="form-field-v2" maxlength="50">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="row-gap: .5rem;">
+                        <div class="col-12 col-md-6">
+                            <div class="flex-col-start " style="row-gap: .5rem">
+                                <p class="font-13 font-weight-bold mb-0">Postnummer</p>
+                                <input type="text" name="company_postal_code" value="{{organisation.company_address.postal_code}}" placeholder="Din virksomheds postnummer" class="form-field-v2" maxlength="30">
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="flex-col-start " style="row-gap: .5rem">
+                                <p class="font-13 font-weight-bold mb-0">Land</p>
+                                <select class="form-select-v2 h-45px w-100" name="company_country">
+                                    {{#foreachKeyValue allowedCountries}}
+                                    <option value="{{key}}" {{#eq key ../organisation.country.code}}  selected {{/eq}}>{{value}}</option>
+                                    {{/foreachKeyValue}}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="mt-2 color-red font-12 d-none modalErrorBox"></p>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Close</button>
+                <button type="button" class="btn-v2 action-btn flex-row-center-center flex-nowrap g-05" data-run="update">
+                    <span>Update Information</span>
+                    <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
+                        <span class="spinner-border color-white square-15" role="status" style="border-width: 2px;">
+                          <span class="sr-only">Loading...</span>
+                        </span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

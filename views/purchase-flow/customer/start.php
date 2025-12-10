@@ -5,9 +5,13 @@
 
 $terminal = $args->terminal;
 
+$pageTitle = "{$terminal->location->name} - Start Køb";
 ?>
 
 
+<script>
+    var pageTitle = <?=json_encode($pageTitle)?>;
+</script>
 
 
 <div class="page-content mt-5">
@@ -96,13 +100,14 @@ $terminal = $args->terminal;
                                 <i class="font-40 color-design-blue mdi mdi-shield-outline"></i>
                             </div>
 
-                            <p  class="mb-0 font-22 font-weight-bold">Log ind med MitID</p>
-                            <p  class="mb-0 font-14 color-gray font-weight-medium">Vi bruger MitID for at verificere din identitet sikkert</p>
+                            <p  class="mb-0 font-22 font-weight-bold text-center">Log ind med MitID</p>
+                            <p  class="mb-0 font-14 color-gray font-weight-medium text-center">Vi bruger MitID for at verificere din identitet sikkert</p>
 
-                            <a href="<?=$args->verifySession->authenticationUrl?>" class="mt-3  btn-v2 design-action-btn-lg flex-row-center flex-align-center flex-nowrap" style="gap: .55rem;">
+                            <button data-id="<?=$args->oidcSessionId?>"
+                                    class="mt-3  btn-v2 design-action-btn-lg flex-row-center flex-align-center flex-nowrap oidc-auth" style="gap: .55rem;">
                                 <i class="mdi mdi-shield-outline font-18"></i>
                                 <span class="font-18">Bekræft med MitID</span>
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>

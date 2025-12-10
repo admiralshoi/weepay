@@ -9,6 +9,7 @@ class GeneralController {
 
 
     #[NoReturn] public static function logout(): void  {
+        Methods::terminalSessions()->voidCustomerSessions(__uuid());
         removeSessions();
         Response()->redirect("");
     }

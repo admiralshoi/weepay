@@ -1,12 +1,14 @@
 <?php
 namespace classes;
 
+use classes\organisations\LocationMemberHandler;
+use classes\utility\QrHandler;
 use JetBrains\PhpStorm\Pure;
 use classes\notifications\NotificationHandler;
 use classes\auth\PasswordHandler;
 use classes\utility\SortByKey;
 use classes\auth\UserCreation;
-use classes\auth\UserLogin;
+use classes\auth\LocalAuthentication;
 use classes\user\Roles;
 use classes\app\Meta;
 use classes\user\Sidebars;
@@ -41,6 +43,9 @@ class Methods {
 
 
     public static function toCollection(array|object $items = []): Collection { return new Collection($items); }
+    public static function qr(): QrHandler { return new QrHandler(); }
+    public static function oidcAuthentication(): \classes\auth\OidcAuthentication { return new \classes\auth\OidcAuthentication(); }
+    public static function oidcSession(): \classes\auth\OidcSessionHandler { return new \classes\auth\OidcSessionHandler(); }
     public static function viva(): \classes\api\Viva { return new \classes\api\Viva(); }
     public static function reCaptcha(): \classes\api\ReCaptcha { return new \classes\api\ReCaptcha(); }
     public static function signicact(): \classes\api\Signicat { return new \classes\api\Signicat(); }
@@ -56,6 +61,7 @@ class Methods {
     #[Pure] public static function taskManager(): TaskManager { return new TaskManager(); }
     #[Pure] public static function countries(): CountryHandler { return new CountryHandler(); }
     #[Pure] public static function processOrder(): ProcessOrder { return new ProcessOrder(); }
+    #[Pure] public static function locationMembers(): LocationMemberHandler { return new LocationMemberHandler(); }
     #[Pure] public static function organisationMembers(): OrganisationMemberHandler { return new OrganisationMemberHandler(); }
     #[Pure] public static function organisations(): OrganisationHandler { return new OrganisationHandler(); }
     #[Pure] public static function paymentHandler(): PaymentHandler { return new PaymentHandler(); }
@@ -71,8 +77,7 @@ class Methods {
     #[Pure] public static function sidebars(): Sidebars { return new Sidebars(); }
     public static function roles(): Roles { return new Roles(); }
     #[Pure] public static function appMeta(): Meta { return new Meta(); }
-    public static function userLogin(array $params): bool { return UserLogin::run($params); }
-    #[Pure] public static function userLoginError(): ?string { return UserLogin::$error; }
+    public static function localAuthentication(): LocalAuthentication { return new LocalAuthentication(); }
     #[Pure] public static function cronWorker(string $type = ""): CronWorker { return new CronWorker($type); }
     public static function cronLogFiles(string $type): ?array { return (new CronWorker())->getLogFiles($type); }
     public static function userCreation(array $params, bool $thirdParty = false): bool { return UserCreation::run($params, $thirdParty); }

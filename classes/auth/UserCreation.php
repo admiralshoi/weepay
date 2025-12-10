@@ -112,7 +112,7 @@ class UserCreation {
 //        );
 
         if(!self::$thirdPartyCreation)
-            UserLogin::run(["email" => self::$givenFields["email"], "password" => self::$givenFields["password"]]);
+            LocalAuthentication::run(["email" => self::$givenFields["email"], "password" => self::$givenFields["password"]]);
 
 
         return true;

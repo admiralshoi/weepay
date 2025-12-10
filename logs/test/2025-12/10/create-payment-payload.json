@@ -1,0 +1,25 @@
+{
+    "sourceCode": "3387",
+    "amount": 50300,
+    "dynamicDescriptor": "Roses Fris\u00f8r",
+    "customerTrns": "heyeye",
+    "merchantTrns": "Roses Fris\u00f8r - heyeye",
+    "allowRecurring": true,
+    "preauth": false,
+    "disableCash": true,
+    "disableWallet": true,
+    "customer": {
+        "email": null,
+        "phone": null,
+        "fullName": "Alvin Christensen",
+        "countryCode": "DK"
+    },
+    "currencyCode": "978",
+    "tags": [
+        "Roses Fris\u00f8r",
+        "heyeye",
+        "Alvin Christensen",
+        "1996-05-12"
+    ],
+    "isvAmount": 2490
+}

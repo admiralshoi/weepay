@@ -12,6 +12,7 @@ const CustomerCheckoutInfo = {
         showNames: null,
         showPrices: null,
         nextStepButton: null,
+        cancelCheckoutButton: null,
         loader: null,
         lineItems: null,
         total: null,
@@ -22,6 +23,7 @@ const CustomerCheckoutInfo = {
         this.elements.lineItems = document.getElementById('line_items');
         this.elements.total = document.getElementById('total_price_container');
         this.elements.nextStepButton = document.getElementById('next-step');
+        this.elements.cancelCheckoutButton = document.getElementById('cancel-checkout');
         this.elements.loader = document.getElementById('loader-container');
         this.elements.showNames = document.querySelectorAll('[data-show=basket_name]');
         this.elements.showCurrencies = document.querySelectorAll('[data-show=basket_currency]');
@@ -32,6 +34,10 @@ const CustomerCheckoutInfo = {
 
     bindEvents() {
         this.interval = window.setInterval(this.fetchBasket.bind(this), 1200);
+
+        if(!empty(this.tsId) && this.elements.cancelCheckoutButton) {
+            this.elements.cancelCheckoutButton.addEventListener('click', this.voidCheckout.bind(this));
+        }
     },
 
     setBasketInfo() {
@@ -44,38 +50,60 @@ const CustomerCheckoutInfo = {
         });
     },
 
-    async fetchBasket() {
-        const result = await post(`api/checkout/terminal/basket`, {ts_id: this.tsId})
+    async voidCheckout() {
+        this.elements.cancelCheckoutButton.disabled = true;
+        this.elements.nextStepButton.disabled = true;
+        let link = platformLinks.api.checkout.terminalSession.replace("{id}", this.tsId);
+        const result = await del(link,  {restart: 1})
         if(result.status === 'error') {
-            showErrorNotification("Unable to proceed", result.error.message)
-            window.clearInterval(this.interval)
-            this.interval = null;
+            showErrorNotification("Der opstod en fejl", result.error.message)
+            this.elements.cancelCheckoutButton.disabled = false;
+            this.elements.nextStepButton.disabled = false;
             return
         }
-
-        if(empty(result.data.basket)) return;
-
-        window.clearInterval(this.interval)
-        this.interval = null;
-
-        let basket = result.data.basket;
+        handleStandardApiRedirect(result)
+        this.elements.cancelCheckoutButton.disabled = false;
+        this.elements.nextStepButton.disabled = false;
+    },
+    async fetchBasket() {
+        let link = platformLinks.api.checkout.consumerBasket.replace("{id}", this.tsId);
+        const result = await get(link)
+        if(result.status === 'error') {
+            showErrorNotification("Der opstod en fejl", result.error.message)
+            window.clearInterval(this.interval)
+            this.interval = null;
+            handleStandardApiRedirect(result.error)
+            return
+        }
+        if(empty(result.data.basket)) this.hideBasketInfo()
+        else this.showBasketInfo(result.data.basket);
+    },
+    showBasketInfo(basket) {
+        if(this.basket?.uid === basket.uid) return;
+        this.basket = basket;
         let price = basket.price;
         let currency = basket.currency;
         let currencySymbol = basket.currency_symbol;
         let name = basket.name;
         let id = basket.uid;
-
-
         this.elements.showNames.forEach(el => el.innerText = name)
         this.elements.showCurrencies.forEach(el => el.innerText = currencySymbol)
         this.elements.showPrices.forEach(el => el.innerText = phpNumberFormat(price))
-
         this.elements.loader.style.display = 'none';
         this.elements.nextStepButton.style.display = 'flex';
         this.elements.lineItems.style.display = 'flex';
         this.elements.total.style.display = 'flex';
-
-    }
+    },
+    hideBasketInfo() {
+        this.basket = null;
+        this.elements.showNames.forEach(el => el.innerText = '')
+        this.elements.showCurrencies.forEach(el => el.innerText = '')
+        this.elements.showPrices.forEach(el => el.innerText = '')
+        this.elements.loader.style.display = 'flex';
+        this.elements.nextStepButton.style.display = 'none';
+        this.elements.lineItems.style.display = 'none';
+        this.elements.total.style.display = 'none';
+    },
 }
 
 
@@ -88,7 +116,9 @@ const CustomerCheckout = {
     listenStatus: false,
     selectedPlan: null,
     plans: null,
+    interval: null,
     tsId: null,
+    basketHash: null,
     elements: {
         payButton: null,
         toPayNow: null,
@@ -99,6 +129,7 @@ const CustomerCheckout = {
     init(selectedPlanName, tsId) {
         this.plans = paymentPlans;
         this.tsId = tsId;
+        if('basketHash' in window) this.basketHash = basketHash;
 
         this.elements.acceptTerms = document.querySelector('[name=accept_terms]');
         this.elements.payButton = document.getElementById('payButton');
@@ -122,6 +153,28 @@ const CustomerCheckout = {
             });
             radio.addEventListener('change', this.updateSelection);
         });
+
+
+        if(this.basketHash) {
+            this.interval = window.setInterval(this.fetchBasketHash.bind(this), 1200);
+        }
+    },
+    async fetchBasketHash() {
+        let link = platformLinks.api.checkout.basketHash.replace("{id}", this.tsId);
+        const result = await get(link)
+        if(result.status === 'error') {
+            showErrorNotification("Der opstod en fejl", result.error.message)
+            window.clearInterval(this.interval)
+            this.interval = null;
+            handleStandardApiRedirect(result.error)
+        }
+
+        let hash = result.data.hash;
+        if(hash !== this.basketHash) {
+            showNeutralNotification("Kurven er blevet opdateret", "Omredigerer...")
+            setTimeout(()=> window.location =  result.data.goto, 1000);
+        }
+
     },
     updateSelectedPlan(planName) {
         for(let plan of this.plans) {
@@ -209,6 +262,19 @@ const CustomerCheckout = {
         if (!sessionPopup) {
             window.location.href = paymentSessionUrl;
         }
+        else {
+            let popupIntervalCheck = setInterval(() => {
+                if (sessionPopup.closed) {
+                    console.warn("Payment window closed.");
+                    this.elements.payButton.disabled = false;
+                    this.elements.paymentButtonLoader.style.display = 'none';
+                    this.listenStatus = false;
+                    window.clearInterval(popupIntervalCheck);
+                }
+            }, 500);
+        }
+
+
 
         this.listenStatus = true;
         this.listenOrderStatus.bind(this)(orderCode);

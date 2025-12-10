@@ -143,7 +143,7 @@ class Sidebars {
                     "access_level" => []
                 ),
                 "locations" => array(
-                    "link" => Links::$merchant->locations,
+                    "link" => Links::$merchant->locations->main,
                     "title" => "Butikker",
                     "data-value" => "locations",
                     "icon-class" => "mdi mdi-store-outline",
@@ -157,7 +157,7 @@ class Sidebars {
                     "access_level" => []
                 ),
                 "terminals" => array(
-                    "link" => Links::$merchant->terminals,
+                    "link" => Links::$merchant->terminals->main,
                     "title" => "Terminaler",
                     "data-value" => "terminals",
                     "icon-class" => "mdi mdi-monitor",
@@ -171,8 +171,8 @@ class Sidebars {
                     "access_level" => []
                 ),
                 "team" => array(
-                    "link" => Links::$merchant->team,
-                    "title" => "Medarbejdere",
+                    "link" => Links::$merchant->organisation->team,
+                    "title" => "Medlemmer",
                     "data-value" => "team",
                     "icon-class" => "mdi mdi-account-multiple-outline",
                     "access_level" => []
@@ -346,7 +346,7 @@ class Sidebars {
                     "access_level" => []
                 ),
                 "locations" => array(
-                    "link" => Links::$merchant->locations,
+                    "link" => Links::$merchant->locations->main,
                     "title" => "Butikker",
                     "data-value" => "locations",
                     "icon-class" => "mdi mdi-store-outline",
@@ -360,7 +360,7 @@ class Sidebars {
                     "access_level" => []
                 ),
                 "terminals" => array(
-                    "link" => Links::$merchant->terminals,
+                    "link" => Links::$merchant->terminals->main,
                     "title" => "Terminaler",
                     "data-value" => "terminals",
                     "icon-class" => "mdi mdi-monitor",
@@ -374,8 +374,8 @@ class Sidebars {
                     "access_level" => []
                 ),
                 "team" => array(
-                    "link" => Links::$merchant->team,
-                    "title" => "Medarbejdere",
+                    "link" => Links::$merchant->organisation->team,
+                    "title" => "Medlemmer",
                     "data-value" => "team",
                     "icon-class" => "mdi mdi-account-multiple-outline",
                     "access_level" => []

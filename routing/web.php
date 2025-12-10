@@ -13,19 +13,50 @@ require_once ROOT . "routing/middleware/middleware.php";
 
 
 
+/**
+ *  =========================================
+ *  =========== OPEN PAGES START ============
+ *  =========================================
+ */
+Routes::get(Links::$app->home, "LandingController::home");
+Routes::get(Links::$app->auth->consumerLogin, "auth.PageController::consumerDashboardLogin");
+Routes::get(Links::$app->auth->merchantLogin, "auth.PageController::merchantDashboardLogin");
+/**
+ *  =========================================
+ *  ============= OPEN PAGES END ============
+ *  =========================================
+ */
+
 
 
 /**
  *  =========================================
- *  =========== USER VERIFY START ===========
+ *  =========== OIDC PAGES START ============
  *  =========================================
  */
 Routes::group([], function() {
-    Routes::get("user/verify/{status}", "verification.MitIdController::callbackRouter");
+    Routes::get("auth/user/verify/{status}", "verification.MitIdController::callbackRouter");
+    Routes::get(Links::$app->auth->oicd->preAuthUrl, "verification.OidcController::preAuthPage");
 });
 /**
  * =========================================
- * ============ USER VERIFY END ============
+ * ============ OIDC PAGES END =============
+ * =========================================
+ */
+
+
+/**
+ *  =========================================
+ *  ============ OIDC API START =============
+ *  =========================================
+ */
+
+Routes::group(['api'], function() {
+    Routes::get(Links::$api->oidc->sessionPolling, "verification.OidcController::sessionPolling");
+});
+/**
+ * =========================================
+ * ============= OIDC API END ==============
  * =========================================
  */
 
@@ -36,16 +67,13 @@ Routes::group([], function() {
  *  =========================================
  */
 Routes::group([], function() {
-    Routes::get("merchant/{slug}/checkout", "flows.purchase.CustomerPageController::start");
-    Routes::get("merchant/{slug}/checkout/info", "flows.purchase.CustomerPageController::info");
-    Routes::get("merchant/{slug}/checkout/choose-plan", "flows.purchase.CustomerPageController::choosePlan");
+    Routes::get(Links::$merchant->public->locationPage, "flows.purchase.CustomerPageController::home");
+    Routes::get("merchant/{slug}/checkout", "flows.purchase.CustomerPageController::start", ['notMerchant', 'notAdmin']);
+    Routes::get("merchant/{slug}/checkout/info", "flows.purchase.CustomerPageController::info", ['notMerchant', 'notAdmin']);
+    Routes::get(Links::$merchant->terminals->consumerChoosePlan, "flows.purchase.CustomerPageController::choosePlan", ['notMerchant', 'notAdmin']);
 });
 
-Routes::group(['api'], function() {
-    Routes::post("api/checkout/terminal/basket", "flows.purchase.CustomerApiController::getBasket");
-    Routes::post("api/checkout/payment/session", "flows.purchase.CustomerApiController::generateSession");
-    Routes::post("api/checkout/order/status", "flows.purchase.CustomerApiController::checkOrderStatus");
-});
+
 /**
  * =========================================
  * ======= CUSTOMER PURCHASE FLOW END ======
@@ -93,11 +121,46 @@ Routes::group(['api', "requiresApiLogout"], function() {
  *  =========================================
  */
 Routes::group(['api','requiresApiLogin'], function() {
-    Routes::post(Links::$api->forms->createOrganisation, "merchants.ApiController::createOrganisation");
-    Routes::get(Links::$merchant->organisation->switch, "merchants.ApiController::selectOrganisation");
+    Routes::group(['merchant'], function() {
+        Routes::post(Links::$api->organisation->team->update, "merchants.ApiController::updateTeamMember");
+        Routes::post(Links::$api->organisation->team->role->create, "merchants.ApiController::createNewRole");
+        Routes::post(Links::$api->organisation->team->role->rename, "merchants.ApiController::renameRole");
+        Routes::delete(Links::$api->organisation->team->role->delete, "merchants.ApiController::deleteRole");
+        Routes::post(Links::$api->organisation->team->role->permissions, "merchants.ApiController::updateRolePermissions");
+
+        Routes::post(Links::$api->forms->createOrganisation, "merchants.ApiController::createOrganisation");
+        Routes::get(Links::$merchant->organisation->switch, "merchants.ApiController::selectOrganisation");
+        Routes::post(Links::$api->forms->merchant->editOrganisationDetails, "merchants.ApiController::updateBasicDetails");
+        Routes::post(Links::$api->forms->merchant->addNewLocation, "merchants.ApiController::createLocation");
+        Routes::post(Links::$api->forms->merchant->addNewTerminal, "merchants.ApiController::createTerminal");
+
+
+        Routes::get(Links::$api->checkout->merchantPosGetSessions, "flows.purchase.MerchantApiController::getTerminalSessions");
+        Routes::delete(Links::$api->checkout->terminalSession, "flows.purchase.MerchantApiController::deleteTerminalSession");
+
+        Routes::post(Links::$api->checkout->merchantPosBasket, "flows.purchase.MerchantApiController::createPosBasket");
+        Routes::get(Links::$api->checkout->merchantPosBasket, "flows.purchase.MerchantApiController::getBasket");
+        Routes::post(Links::$api->checkout->merchantVoidBasket, "flows.purchase.MerchantApiController::voidBasket");
+        Routes::get(Links::$api->checkout->terminalSession, "flows.purchase.MerchantApiController::getTerminalSession");
 
 
 
+    });
+
+    Routes::group(['consumer'], function() {
+        Routes::delete(Links::$api->checkout->terminalSession, "flows.purchase.CustomerApiController::voidTerminalSession");
+        Routes::get(Links::$api->checkout->basketHash, "flows.purchase.CustomerApiController::getBasketHash");
+
+    });
+
+    Routes::group(['merchantOrConsumer'], function() {
+
+
+        Routes::get(Links::$api->checkout->consumerBasket, "flows.purchase.CustomerApiController::getBasket");
+        Routes::post("api/checkout/payment/session", "flows.purchase.CustomerApiController::generateSession");
+        Routes::post("api/checkout/order/status", "flows.purchase.CustomerApiController::checkOrderStatus");
+
+    });
 
 
 
@@ -132,13 +195,23 @@ Routes::group(["requiresLogin"], function () {
     Routes::group(["merchant"], function () {
 
 
-//        Routes::get("team", "merchants.pages.PageController::team");
+        Routes::get(Links::$merchant->organisation->team, "merchants.pages.PageController::team");
         Routes::get(Links::$merchant->organisation->home, "merchants.pages.PageController::organisation");
         Routes::get(Links::$merchant->organisation->add, "merchants.pages.PageController::add");
-        Routes::get(Links::$merchant->orders, "merchants.pages.PageController::orders");
-        Routes::get(Links::$merchant->terminals, "merchants.pages.PageController::terminals");
-        Routes::get(Links::$merchant->locations, "merchants.pages.PageController::locations");
         Routes::get(Links::$merchant->dashboard, "merchants.pages.PageController::dashboard");
+        Routes::get(Links::$merchant->orders, "merchants.pages.PageController::orders");
+        Routes::get(Links::$merchant->terminals->main, "merchants.pages.PageController::terminals");
+        Routes::get(Links::$merchant->locations->main, "merchants.pages.PageController::locations");
+        Routes::get(Links::$merchant->locations->singleLocation, "merchants.pages.PageController::singleLocation");
+        Routes::get(Links::$merchant->locations->locationMembers, "merchants.pages.PageController::locationMembers");
+        Routes::get(Links::$merchant->locations->locationPageBuilder, "merchants.pages.PageController::locationPageBuilder");
+        Routes::get(Links::$merchant->terminals->terminalQr, "merchants.pages.PageController::getTerminalQrBytes");
+
+        Routes::get(Links::$merchant->terminals->terminalPosStart, "flows.purchase.MerchantPageController::posStart");
+        Routes::get(Links::$merchant->terminals->terminalPosDetails, "flows.purchase.MerchantPageController::posDetails");
+        Routes::get(Links::$merchant->terminals->terminalPosCheckout, "flows.purchase.MerchantPageController::posCheckout");
+
+
 
 
     });
@@ -171,21 +244,6 @@ Routes::group(["requiresLogin"], function () {
  */
 Routes::group(['requiresLoggedOut'], function() {
 
-    Routes::get("", "LandingController::home");
-
-    /**
-     *  =========================================
-     *  ========== MERCHANT AUTH START ==========
-     *  =========================================
-     */
-    Routes::get(Links::$app->auth->consumerLogin, "auth.PageController::consumerDashboardLogin");
-    Routes::get(Links::$app->auth->merchantLogin, "auth.PageController::merchantDashboardLogin");
-    /**
-     *  =========================================
-     *  =========== MERCHANT AUTH END ===========
-     *  =========================================
-     */
-
 
 
     Routes::get(Links::$policies->consumer->privacy, "GeneralController::pageNotReady");
@@ -206,11 +264,6 @@ Routes::group(['requiresLoggedOut'], function() {
     Routes::get("viva-test", "LandingController::vivaTest");
     Routes::get("viva-test/return-url", "LandingController::vivaTestReturnUrl");
 
-
-
-//    Routes::get("merchant/{slug}/checkout", "LandingController::merchantCheckout");
-//    Routes::get("merchant/{slug}/checkout/validation", "LandingController::merchantCheckoutUserValidation");
-//    Routes::get("merchant/{slug}/checkout/payment", "LandingController::merchantCheckoutPayment");
 
 });
 /**

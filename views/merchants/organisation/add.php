@@ -10,8 +10,6 @@ use features\Settings;
 
 $pageTitle = "Organisation - Tilføj ny";
 $countries = Methods::countries()->getByX(['enabled' => 1], ['uid', 'name', 'code']);
-$worldCountries = Methods::misc()::getCountriesLib(WORLD_COUNTRIES);
-
 
 ?>
 
@@ -22,6 +20,7 @@ $worldCountries = Methods::misc()::getCountriesLib(WORLD_COUNTRIES);
 
 
 <div class="page-content home">
+
 
     <div class="flex-row-center organisation-container">
         <div class="card border-radius-10px w-100 organisation-join-card">
@@ -255,12 +254,12 @@ $worldCountries = Methods::misc()::getCountriesLib(WORLD_COUNTRIES);
                                         <div class="flex-row-start flex-align-center flex-nowrap" style="gap: 2px;">
                                             <select class="form-select-v2 h-45px w-70px dropdown-no-arrow border-radius-tr-br-0-5rem"
                                                     data-search="true" name="contact_phone_country">
-                                                <?php foreach ($worldCountries as $country): ?>
-                                                    <option data-sort="<?=$country['countryNameEn']?>_<?=$country['countryCode']?>_<?=$country['currencyNameEn']?>"
-                                                            value="<?=$country['countryCode']?>" <?=$country['countryCode'] === Settings::$app->default_country ? 'selected' : ''?>>
+                                                <?php foreach ($args->worldCountries as $country): ?>
+                                                    <option data-sort="<?=$country->countryNameEn?>_<?=$country->countryCode?>_<?=$country->countryNameLocal?>_<?=$country->countryCallingCode?>"
+                                                            value="<?=$country->countryCode?>" <?=$country->countryCode === Settings::$app->default_country ? 'selected' : ''?>>
                                                         <div class="flex-row-center flex-align-center flex-nowrap" style="gap: .25rem;">
-                                                            <span class=""><?=$country['flag']?></span>
-                                                            <span class="">+<?=$country['countryCallingCode']?></span>
+                                                            <span class=""><?=$country->flag?></span>
+                                                            <span class="">+<?=$country->countryCallingCode?></span>
                                                         </div>
                                                     </option>
                                                 <?php endforeach; ?>
@@ -311,7 +310,7 @@ $worldCountries = Methods::misc()::getCountriesLib(WORLD_COUNTRIES);
                                         <p class="font-13 font-weight-bold mb-0">Land</p>
                                         <select class="form-select-v2 h-45px w-100 " name="company_country">
                                             <?php foreach ($countries as $country): ?>
-                                            <option value="<?=$country->uid?>" <?=$country->code === Settings::$app->default_country ? 'selected' : ''?>>
+                                            <option value="<?=$country->code?>" <?=$country->code === Settings::$app->default_country ? 'selected' : ''?>>
                                                 <?=$country->name?>
                                             </option>
                                             <?php endforeach; ?>

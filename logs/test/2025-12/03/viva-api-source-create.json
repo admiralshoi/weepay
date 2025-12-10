@@ -1,0 +1,12 @@
+{
+    "payload": {
+        "sourceCode": "yer5wd",
+        "name": "frisor-roses",
+        "domain": "wee-pay.dk",
+        "pathSuccess": "merchant\/frisor-roses\/checkout\/capture",
+        "pathFail": "merchant\/frisor-roses\/checkout\/capture",
+        "isSecure": true
+    },
+    "merchantid": "ee6d19b2-8b9e-41ed-874e-044680beeae7",
+    "url": "https:\/\/demo.vivapayments.com\/api\/sources"
+}

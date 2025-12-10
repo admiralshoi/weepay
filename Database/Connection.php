@@ -14,7 +14,7 @@ class Connection {
 
 
         self::$pdo = new PDO(
-            "{$config['driver']}:host={$config['host']};dbname={$config['database']}",
+            "{$config['driver']}:host={$config['host']};dbname={$config['database']};",
             $config['username'],
             $config['password']
         );

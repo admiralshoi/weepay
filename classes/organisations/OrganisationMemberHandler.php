@@ -68,9 +68,9 @@ class OrganisationMemberHandler extends Crud {
 
 
 
-    public function getMember(string|int $organisationId, string|int $uuid = 0): ?object {
+    public function getMember(string|int $organisationId, string|int $uuid = 0, array $fields =  []): ?object {
         if(empty($uuid)) $uuid = __uuid();
-        return $this->first(["uuid" => $uuid, "organisation" => $organisationId]);
+        return $this->first(["uuid" => $uuid, "organisation" => $organisationId], $fields);
     }
 
 

@@ -78,7 +78,100 @@ class CustomerPurchaseFlow extends \routing\paths\Paths {
                 "js.main.js",
                 "js.utility.js",
                 "js.modalHandler.js",
+                "js.oidc.js",
                 "js.async_search.js",
+                "js.initializer.js",
+            ],
+            "base" => null,
+            "vendor" => [
+                "js.includes.handleBars.js",
+            ],
+            "custom" => [],
+        ],
+    ];
+
+
+
+
+    const MERCHANT_POS_START = [
+        "template" => "CUSTOMER_PURCHASE_FLOW_INNER_HTML",
+        "view" => "purchase-flow.merchant.start",
+        "custom_scripts" => null,
+        "title" => null,
+        "head" => null,
+        "assets" => [
+            "main" => [
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.modalHandler.js",
+                "js.async_search.js",
+                "js.payments.merchant-pos.js",
+                "js.initializer.js",
+            ],
+            "base" => null,
+            "vendor" => [
+                "js.includes.handleBars.js",
+            ],
+            "custom" => [],
+        ],
+    ];
+
+
+
+    const MERCHANT_POS_DETAILS = [
+        "template" => "CUSTOMER_PURCHASE_FLOW_INNER_HTML",
+        "view" => "purchase-flow.merchant.details",
+        "custom_scripts" => null,
+        "title" => null,
+        "head" => null,
+        "assets" => [
+            "main" => [
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.modalHandler.js",
+                "js.async_search.js",
+                "js.payments.merchant-pos.js",
+                "js.initializer.js",
+            ],
+            "base" => null,
+            "vendor" => [
+                "js.includes.handleBars.js",
+            ],
+            "custom" => [],
+        ],
+    ];
+
+
+
+
+    const MERCHANT_POS_CHECKOUT = [
+        "template" => "CUSTOMER_PURCHASE_FLOW_INNER_HTML",
+        "view" => "purchase-flow.merchant.checkout",
+        "custom_scripts" => null,
+        "title" => null,
+        "head" => null,
+        "assets" => [
+            "main" => [
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.modalHandler.js",
+                "js.async_search.js",
+                "js.payments.merchant-pos.js",
                 "js.initializer.js",
             ],
             "base" => null,

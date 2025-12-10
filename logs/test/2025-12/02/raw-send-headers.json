@@ -1,0 +1,19 @@
+{
+    "10002": "https:\/\/api.signicat.com\/auth\/rest\/sessions?signicat-accountId=a-spge-j25bjJdoKxJQ9mQSF6ex",
+    "19913": true,
+    "10036": "POST",
+    "52": 1,
+    "13": 500,
+    "10023": [
+        "Origin: https:\/\/localhost\/weepay\/",
+        "Referer: https:\/\/localhost\/weepay\/",
+        "User-Agent: Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/126.0.0.0 Safari\/537.36",
+        "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6InNhbmRib3gtc2lnbmluZy1rZXktNTk0ODE2Y2JkZjU0NTY0ZWFkNzgwZDQ3ZjA5YzU4Y2IiLCJ0eXAiOiJhdCtqd3QifQ.eyJpc3MiOiJodHRwczovL2FwaS5zaWduaWNhdC5jb20vYXV0aC9vcGVuIiwibmJmIjoxNzY0NzAyMzMxLCJpYXQiOjE3NjQ3MDIzMzEsImV4cCI6MTc2NDcwMjQ1MSwiYXVkIjoiaHR0cHM6Ly9hcGkuc2lnbmljYXQuY29tIiwic2NvcGUiOlsic2lnbmljYXQtYXBpIl0sImNsaWVudF9pZCI6InNhbmRib3gtYml0aW5nLWNsb2NrLTk4OSIsImFjY291bnRfaWQiOiJhLXNwZ2UtajI1YmpKZG9LeEpROW1RU0Y2ZXgiLCJzYW5kYm94Ijp0cnVlLCJjbGllbnRfZ2VuZXJhdGlvbiI6NCwianRpIjoiRjQwNkVCNjY2MUZGMzY4NUYwNDQ0Q0UyRUUzMTE0QkMifQ.i4Cd5mdwrXqrOMPHIeLIdOkYYsl7Bq3XrmF-1QHRapC2ZtWtzLEJqg-8rcO86PEvPPPXG9qLZyY8wuKK-BqzcNy9MVBy4NOJLc0zptJ9p3YssYMh8086biS4-izOngaUeXXauX9GTPvrl3ObdXErMBOTdOCPAe-nZdJGawNeeZ8iTlPRP4oXsBDq1P8ZGPPYWwMtULE6Za6JpizQNOO_WPuqG-I-i9Fqpt6L62rZBkqUDwcywizQjaET548_ezq26PO7NXiXGUVWekrhQ13wisY2IyitXmBrkNig1DAStJAhCv29Y1VV7OLn8OV9E1Bav9sBV1WYw0dPFtx-oNnnbQ",
+        "Content-type: application\/json; charset=UTF-8"
+    ],
+    "42": true,
+    "10102": "",
+    "68": 10,
+    "84": "CURL_HTTP_VERSION_1_1",
+    "10015": "{\"flow\":\"redirect\",\"allowedProviders\":[\"mitid\"],\"additionalParameters\":{\"mitid_reference_text\":\"c29tZXRleHQgZm9yIHRlc3Rpbmc=\"},\"requestedAttributes\":[\"name\",\"family_name\",\"given_name\",\"firstName\",\"lastName\",\"dateOfBirth\",\"nin\",\"nin_type\",\"mitidHasCpr\",\"mitidReferenceTextBody\",\"mitidCprSource\",\"mitidNameAndAddressProtection\",\"mitidIal\",\"mitidLoa\",\"mitidAal\",\"mitidFal\",\"mitidUuid\"],\"callbackUrls\":{\"success\":\"https:\\\/\\\/localhost\\\/weepay\\\/auth\\\/user\\\/verify\\\/success?ref=oidc_1tfnoxcw5a9993c\",\"abort\":\"https:\\\/\\\/localhost\\\/weepay\\\/auth\\\/user\\\/verify\\\/abort?ref=oidc_1tfnoxcw5a9993c\",\"error\":\"https:\\\/\\\/localhost\\\/weepay\\\/auth\\\/user\\\/verify\\\/error?ref=oidc_1tfnoxcw5a9993c\"}}"
+}

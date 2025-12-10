@@ -59,12 +59,18 @@ function admin(): bool {
 function merchant(): bool {
     return Methods::isMerchant();
 }
+function merchantOrConsumer(): bool {
+    return merchant()  || consumer();
+}
 function consumer(): bool {
     return Methods::isConsumer();
 }
 function guest(): bool {
     return Methods::isGuest();
 }
+function notMerchant(): bool { return !merchant(); }
+function notConsumer(): bool { return !consumer(); }
+function notAdmin(): bool { return !admin(); }
 
 function cronJobAuth(array $args): bool {
     return isset($args["token"]) && $args["token"] === CRONJOB_TOKEN;

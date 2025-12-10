@@ -28,6 +28,15 @@
         width: calc(50% - 1rem);
     }
 }
+@media screen and (max-width: 450px) {
+    .row-centered-xs {
+        justify-content: center;
+    }
+    .mx-auto-xs {
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
 @media screen and (max-width: 799px) {
     .info-card {
         max-width: 100%;

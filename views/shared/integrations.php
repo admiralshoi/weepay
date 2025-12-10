@@ -3,6 +3,8 @@
  * @var object $args
  * @var string|null $pageHeaderTitle
  */
+
+use classes\app\OrganisationPermissions;
 use classes\Methods;
 use classes\utility\Titles;
 use features\Settings;
@@ -60,7 +62,7 @@ $hasSubscription = Methods::subscriptions()->hasActiveSubscription();
         <?php if(!$args->allDisabled->empty() || !$args->allEnabled->empty()): ?>
 
 
-        <?php __oReadProtectedContent('integrations'); ?>
+        <?php OrganisationPermissions::__oReadProtectedContent('integrations'); ?>
 
 
         <div class="row mt-4">
@@ -239,11 +241,11 @@ $hasSubscription = Methods::subscriptions()->hasActiveSubscription();
         <?php endif; ?>
 
 
-        <?php __oEndContent(); ?>
+        <?php OrganisationPermissions::__oEndContent(); ?>
 
         <?php endif; ?>
 
-        <?php __oReadProtectedContent('integrations'); ?>
+        <?php OrganisationPermissions::__oReadProtectedContent('integrations'); ?>
 
 
         <div class="row mt-4" style="row-gap: 2rem">
@@ -255,7 +257,7 @@ $hasSubscription = Methods::subscriptions()->hasActiveSubscription();
                             <div class="flex-row-between flex-align-center flex-wrap" style="gap: .5rem;">
                                 <p class="font-22 font-weight-bold mb-0">Connect Through Social Providers</p>
 
-                                <?php __oModifyProtectedContent('integrations'); ?>
+                                <?php OrganisationPermissions::__oModifyProtectedContent('integrations'); ?>
                                 <div class="flex-row-end flex-align-center flex-wrap " style="gap: .5rem;">
                                     <select class="form-select-v2 mnw-200px" name="role">
                                         <option value="" selected>Connect Account</option>
@@ -264,7 +266,7 @@ $hasSubscription = Methods::subscriptions()->hasActiveSubscription();
                                         </option>
                                     </select>
                                 </div>
-                                <?php __oEndContent(); ?>
+                                <?php OrganisationPermissions::__oEndContent(); ?>
                             </div>
                             <?php if(Methods::isBrand()): ?>
                                 <p class="font-14 color-gray font-weight-medium mb-0">Login and integrate through social providers to connect your accounts</p>
@@ -302,7 +304,7 @@ $hasSubscription = Methods::subscriptions()->hasActiveSubscription();
                                         </div>
                                         <div class="flex-row-end flex-align-center flex-nowrap" style="column-gap: .25rem;">
 
-                                            <?php __oModifyProtectedContent('integrations'); ?>
+                                            <?php OrganisationPermissions::__oModifyProtectedContent('integrations'); ?>
                                             <button class="btn-v2 mute-btn square-30 flex-align-center flex-row-center"
                                                 onclick="manageIntegration('<?=$integration->uid?>')" data-toggle="tooltip" title="Manage integration">
                                                 <i class="mdi mdi-cog"></i>
@@ -311,7 +313,7 @@ $hasSubscription = Methods::subscriptions()->hasActiveSubscription();
                                                     onclick="removeIntegration('<?=$integration->uid?>')" data-toggle="tooltip" title="Remove integration">
                                                 <i class="mdi mdi-trash-can"></i>
                                             </button>
-                                            <?php __oEndContent(); ?>
+                                            <?php OrganisationPermissions::__oEndContent(); ?>
                                         </div>
                                     </div>
                                 </div>
@@ -330,7 +332,7 @@ $hasSubscription = Methods::subscriptions()->hasActiveSubscription();
 
 
 
-        <?php __oEndContent(); ?>
+        <?php OrganisationPermissions::__oEndContent(); ?>
 
     </div>
 </div>

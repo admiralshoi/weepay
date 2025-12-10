@@ -4,6 +4,7 @@ namespace classes\enumerations\links\api\forms;
 
 class Forms {
 
+    public MerchantForms $merchant;
     public string $contactForm = "api/forms/public/contact";
     public string $createOrganisation = "api/forms/organisation";
 

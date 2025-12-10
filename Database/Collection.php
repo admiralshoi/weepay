@@ -86,8 +86,8 @@ class Collection implements Iterator, Countable {
     }
 
 
-    public function reduce(callable $callback): mixed{
-        $value = array_reduce($this->toArray(), $callback);
+    public function reduce(callable $callback, mixed $initial = null): mixed{
+        $value = array_reduce($this->toArray(), $callback, $initial);
         return is_array($value) || is_object($value) ? new static($value) : $value;
     }
 

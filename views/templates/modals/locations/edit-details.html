@@ -1,0 +1,162 @@
+<div class="modal" tabindex="-1" role="dialog" id="location-add-new-modal">
+  <div class="modal-dialog responsive" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Opret ny lokation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="color-gray text-sm mb-3">Lokationsdetaljer.</p>
+        <form method="post" class="flex-col-start " style="row-gap: 1.5rem;">
+
+          <div class="row" style="row-gap: .5rem;">
+            <div class="col-12">
+              <div class="flex-col-start " style="row-gap: .5rem">
+                <p class="font-13 font-weight-bold mb-0">Lokationsnavn (butiksnavn)</p>
+                <input type="text" name="name" value="{{location.name}}" placeholder="Roses Frisør" class="form-field-v2" maxlength="30">
+              </div>
+            </div>
+          </div>
+
+          <div class="row" style="row-gap: .5rem;">
+            <div class="col-12 col-md-6">
+              <div class="flex-col-start " style="row-gap: .5rem">
+                <p class="font-13 font-weight-bold mb-0">Beskrivelse (Valgfri)</p>
+                <textarea name="description" placeholder="En længere beskrivelse af lokationen" class="mnh-100px form-field-v2" maxlength="1000">{{location.description}}</textarea>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="flex-col-start " style="row-gap: .5rem">
+                <p class="font-13 font-weight-bold mb-0">Undertekst</p>
+                <textarea name="caption" placeholder="En kort beskrivelse af lokationen" class="mnh-100px form-field-v2" maxlength="250">{{location.caption}}</textarea>
+              </div>
+            </div>
+          </div>
+          <div class="row" style="row-gap: .5rem;">
+            <div class="col-12 col-md-6">
+              <div class="flex-col-start" style="row-gap: .5rem">
+                <p class="font-13 font-weight-bold mb-0">
+                  Kaldenavn
+                  <i class="mdi mdi-information-outline" data-toggle="tooltip" title="Kun små bogstaver (a-z) og bindestreg kan bruges"></i>
+                </p>
+                <input type="text" name="slug" value="{{location.slug}}" placeholder="roses-frisor" class="form-field-v2" maxlength="50">
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="flex-col-start " style="row-gap: .5rem">
+                <p class="font-13 font-weight-bold mb-0">Industri (Valgfri)</p>
+                <input type="text" name="industry" value="{{location.industry}}" placeholder="Teknologi, Fashion, mv." class="form-field-v2" maxlength="30">
+              </div>
+            </div>
+          </div>
+          <div class="row" style="row-gap: .5rem;">
+            <div class="col-12 col-md-6">
+              <div class="flex-col-start " style="row-gap: .5rem">
+                <p class="font-13 font-weight-bold mb-0">Kontakt Email (Valgfri)</p>
+                <input type="email" name="contact_email" value="{{location.contact_email}}" placeholder="kontakt@roses.com" class="form-field-v2" maxlength="50">
+              </div>
+            </div>
+            <div class="col-12 col-md-6 ">
+              <div class="flex-col-start " style="row-gap: .5rem">
+                <p class="font-13 font-weight-bold mb-0">Kontakt telefonnummer (Valgfri)</p>
+                <div class="flex-row-start flex-align-center flex-nowrap" style="gap: 2px;">
+                  <select class="form-select-v2 h-45px w-70px dropdown-no-arrow border-radius-tr-br-0-5rem"
+                          data-search="true" name="contact_phone_country">
+                    {{#foreach worldCountries}}
+                    {{#if ../location.contact_phone_country_code}}
+                    <option data-sort="{{value.countryNameEn}}_{{value.countryCode}}_{{value.countryNameLocal}}_{{value.countryCallingCode}}"
+                            value="{{value.countryCode}}" {{#eq value.countryCode ../location.contact_phone_country_code}}  selected {{/eq}}>
+                    <div class="flex-row-center flex-align-center flex-nowrap" style="gap: .25rem;">
+                      <span class="">{{value.flag}}</span>
+                      <span class="">+{{value.countryCallingCode}}</span>
+                    </div>
+                    </option>
+                    {{else}}
+                    <option data-sort="{{value.countryNameEn}}_{{value.countryCode}}_{{value.countryNameLocal}}_{{value.countryCallingCode}}"
+                            value="{{value.countryCode}}" {{#eq value.countryCode ../defaultCountry}}  selected {{/eq}}>
+                    <div class="flex-row-center flex-align-center flex-nowrap" style="gap: .25rem;">
+                      <span class="">{{value.flag}}</span>
+                      <span class="">+{{value.countryCallingCode}}</span>
+                    </div>
+                    </option>
+                    {{/if}}
+                    {{/foreach}}
+                  </select>
+                  <input type="text" name="contact_phone" value="{{location.contact_phone}}" placeholder="12 34 56 78" class="form-field-v2"
+                         style="border-radius: 0 .5rem .5rem 0;" maxlength="15">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row" style="row-gap: .5rem;">
+            <div class="col-12 col-md-6">
+              <div class="flex-col-start " style="row-gap: .5rem">
+                <p class="font-13 font-weight-bold mb-0">
+                  Brug organisationsdetaljer
+                  <i class="mdi mdi-information-outline" data-toggle="tooltip" title="Brug organisationens information for felter der ikke er udfyldt"></i>
+                </p>
+                <label class="form-switch">
+                  <input name="inherit_details" type="checkbox" {{#if location.inherit_details}} checked {{/if}}>
+                  <i></i>
+                </label>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="flex-col-start " style="row-gap: .5rem">
+                <p class="font-13 font-weight-bold mb-0">Virksomhed CVR (Valgfri)</p>
+                <input type="text" name="cvr" value="{{location.cvr}}" placeholder="Lokationens CVR nummer" class="form-field-v2" maxlength="20">
+              </div>
+            </div>
+          </div>
+          <div class="row" style="row-gap: .5rem;">
+            <div class="col-12 col-md-6">
+              <div class="flex-col-start " style="row-gap: .5rem">
+                <p class="font-13 font-weight-bold mb-0">Vejnavn</p>
+                <input type="text" name="line_1" value="{{location.address.line_1}}" placeholder="Lokationens vejnavn + nr." class="form-field-v2" maxlength="100">
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="flex-col-start " style="row-gap: .5rem">
+                <p class="font-13 font-weight-bold mb-0">By</p>
+                <input type="text" name="city" value="{{location.address.city}}" placeholder="Lokationens Bynavn" class="form-field-v2" maxlength="50">
+              </div>
+            </div>
+          </div>
+          <div class="row" style="row-gap: .5rem;">
+            <div class="col-12 col-md-6">
+              <div class="flex-col-start " style="row-gap: .5rem">
+                <p class="font-13 font-weight-bold mb-0">Postnummer</p>
+                <input type="text" name="postal_code" value="{{location.address.postal_code}}" placeholder="Lokationens postnummer" class="form-field-v2" maxlength="30">
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="flex-col-start " style="row-gap: .5rem">
+                <p class="font-13 font-weight-bold mb-0">Land</p>
+                <select class="form-select-v2 h-45px w-100" name="country">
+                  {{#foreachKeyValue allowedCountries}}
+                  <option value="{{key}}" {{#eq key ../location.country.code}}  selected {{/eq}}>{{value}}</option>
+                  {{/foreachKeyValue}}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <p class="mt-2 color-red font-12 d-none modalErrorBox"></p>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Close</button>
+        <button type="button" class="btn-v2 action-btn flex-row-center-center flex-nowrap g-05" data-run="update">
+          <span>Update Information</span>
+          <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
+                        <span class="spinner-border color-white square-15" role="status" style="border-width: 2px;">
+                          <span class="sr-only">Loading...</span>
+                        </span>
+                    </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -46,6 +46,11 @@
     min-width: 0;
     margin: 0 0.5rem;
 }
+.stepper-line-vertical {
+    width: 1px;
+    background-color: var(--dark);
+    height: 50px
+}
 
 
 
@@ -258,6 +263,127 @@ button[disabled] .button-disabled-spinner, .btn-v2[disabled] .button-disabled-sp
 
 
 
+.rightSidebar {
+    position: fixed;
+    top: 0;
+    right: -450px;
+    width: 400px;
+    max-width: 100%;
+    height: 100%;
+    background: var(--semi-white);
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+    transition: right 0.3s ease-in-out;
+    overflow-y: auto;
+    padding: 20px;
+    box-sizing: border-box;
+    z-index: 1000;
+}
+
+.rightSidebar.open {
+    right: 0;
+}
+
+.rightSidebar .closeRightSidebarBtn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+
+
+
+.rightSidebar label:not(.form-switch) {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+.rightSidebar label:not(.form-switch).required::before {
+    display: inline-block;
+    content: '*';
+    color: var(--color-danger-text);
+    margin-right: 5px;
+}
+
+
+#pageBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+    z-index: 999; /* below sidebar but above page */
+}
+
+#pageBackdrop.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.edit-section {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--card-border-color);
+}
+.edit-section .edit-header {
+    position: relative;
+    padding-right: 1.5rem;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+.edit-section .edit-body {
+    display: none;
+    flex-direction: column;
+    row-gap: 1.5rem;
+}
+.edit-section.open .edit-body {
+    display: flex;
+}
+
+.edit-section .edit-header::after {
+    content: "⌄";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%) rotate(0deg);
+    transition: transform 0.2s ease;
+}
+
+.edit-section.open .edit-header::after {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+@media (max-width: 450px) {
+    .rightSidebar {
+        width: 100%;
+    }
+}
+
+
+ul#error-box  {
+    width: 100%;
+    min-height: 30px;
+    font-size: 14px;
+    display: none;
+    border-radius: 8px;
+    padding: .75rem 1.25rem;
+    background: var(--color-error-danger-bg);
+    border: 1px solid var(--color-error-danger-border);
+    color: var(--color-error-danger-bread) !important;
+}
+ul#error-box li  {
+    padding: .5rem 0;
+}
+ul#error-box li:not(:last-of-type)  {
+    border-bottom: 1px solid var(--color-error-danger-border);
+}
 
 
 

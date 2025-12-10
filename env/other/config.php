@@ -15,7 +15,7 @@ define("LIVE", !str_contains($_SERVER["HTTP_HOST"], "localhost"));
 /**
  * ENV files
  */
-const PLATFORM_VERSION = "v1.002";
+const PLATFORM_VERSION = "v1.005";
 const HTACCESS_PWD_FILE = "env/other/htaccessPwd.txt";
 const DB_LIVE_FILE = "env/db/live.php";
 const DB_LOCAL_FILE = "env/db/local.php";
@@ -76,6 +76,7 @@ define("SITE_NAME","wee-pay.dk"); //Site name
 define("BRAND_NAME","WeePay"); //Brand
 
 define("LOGO_WIDE_HEADER", "media/logos/weepay_pos.svg");
+define("PARTNER_BANK_LOGO", "media/images/viva-first-tech-bank.png");
 define("LOGO_ICON", "media/logos/icon.png");
 define("FAVICON", "media/icons/icon.ico");
 
@@ -99,7 +100,7 @@ DEFINE("COMPANY_STREET_ADDRESS", "Hindegade 6");
 DEFINE("COMPANY_CITY", "København K");
 DEFINE("COMPANY_POSTAL", "1303");
 DEFINE("COMPANY_COUNTRY", "Danmark");
-DEFINE("COMPANY_ADDRESS_STRING", implode(" ", [COMPANY_NAME, COMPANY_STREET_ADDRESS, COMPANY_CITY, COMPANY_POSTAL]));
+DEFINE("COMPANY_ADDRESS_STRING", implode(" ", [COMPANY_STREET_ADDRESS, COMPANY_CITY, COMPANY_POSTAL]));
 DEFINE("COMPANY_EMAIL", "mail@" . SITE_NAME);
 DEFINE("COMPANY_WEBSITE", "www.wee-pay.dk");
 DEFINE("CONTACT_PHONE", "+45 81 98 18 86");

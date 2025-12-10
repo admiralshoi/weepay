@@ -14,6 +14,7 @@ class OrganisationMembers extends \Database\Model {
         "status" => ["type" => "string", "default" => 'ACTIVE'], //removed, suspended, active
         "invitation_activity" => ["type" => "text", "default" => null, "nullable" => true],
         "change_activity" => ["type" => "text", "default" => null, "nullable" => true],
+        "scoped_locations" => ["type" => "text", "default" => null, "nullable" => true],
     ];
 
     public static array $indexes = ["organisation", "uuid"];
@@ -22,7 +23,7 @@ class OrganisationMembers extends \Database\Model {
     protected static array $requiredRows = [];
     protected static array $requiredRowsTesting = [];
 
-    public static array $encodeColumns = ["change_activity", "invitation_activity"];
+    public static array $encodeColumns = ["change_activity", "invitation_activity", "scoped_locations"];
     public static array $encryptedColumns = [];
 
     public static function foreignkeys(): array {

@@ -30,10 +30,10 @@ class Viva {
     private const SANDBOX_CLIENT_SECRET = "7nUK8kkFW442A3q9Od4r9FmdP6t31K";
     private const SANDBOX_RESELLER_ID = "7e416dfc-aa89-4335-9be5-4b3ce2dc359b";
     private const SANDBOX_RESELLER_API_KEY = "M3GMZ71Jyp4G1Ka2J6k4hMdH699ZUX";
-    private const CLIENT_ID = "";
-    private const CLIENT_SECRET = "";
-    private const RESELLER_ID = "";
-    private const RESELLER_API_KEY = "";
+    private const CLIENT_ID = "e60a1kur6qjy1rt82hmm9lwyqshvmumb56cenyedv66j7.apps.vivapayments.com";
+    private const CLIENT_SECRET = "0nQT56vfkk3t9CC1X9ZzfjS1yj4G4U";
+    private const RESELLER_ID = "0fb66aa8-ba5b-49f0-877f-64e8649a3da9";
+    private const RESELLER_API_KEY = "tH8KWe94dTa7k9ta6h6o700Rfc2y3D";
     private const SANDBOX_OAUTH_URL = "https://demo-accounts.vivapayments.com/connect/token";
     private const OAUTH_URL = "";
     private const SANDBOX_MERCHANT_CREATE_URL = "https://demo-api.vivapayments.com/isv/v1/accounts";

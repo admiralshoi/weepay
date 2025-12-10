@@ -25,10 +25,35 @@ class TerminalHandler extends Crud {
     }
 
 
+    public function setIdle(string $id): bool {
+        return $this->update(['state' => 'IDLE', 'session' => null], ['uid' => $id]);
+    }
+    public function setActiveSession(string $id, string|int|null $sessionShortId): bool {
+        return $this->update(['state' => 'ACTIVE', 'session' => $sessionShortId], ['uid' => $id]);
+    }
 
 
 
 
+
+
+
+    public function insert(
+        string $organisationId,
+        string $name,
+        string $location,
+        string $status = "DRAFT",
+    ): ?string {
+        $params = [
+            "uuid" => $organisationId,
+            "name" => $name,
+            "location" => $location,
+            "status" => $status,
+        ];
+
+        if(!$this->create($params)) return null;
+        return $this->recentUid;
+    }
 
 
 

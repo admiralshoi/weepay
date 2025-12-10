@@ -15,6 +15,7 @@ class Merchants extends \routing\paths\Paths {
                 "js.server.js",
                 "js.main.js",
                 "js.utility.js",
+                "js.modalHandler.js",
                 "js.features.js",
                 "js.merchant.js",
                 "js.initializer.js",
@@ -24,7 +25,9 @@ class Merchants extends \routing\paths\Paths {
                 "css.responsiveness.css",
             ],
             "base" => null,
-            "vendor" => [],
+            "vendor" => [
+                "js.includes.handleBars.js",
+            ],
             "custom" => [],
         ],
     ];
@@ -53,9 +56,9 @@ class Merchants extends \routing\paths\Paths {
         ],
     ];
 
-    const MERCHANT_TEAM = [
+    const MERCHANT_ORGANISATION_TEAM = [
         "template" => "MERCHANT_INNER_HTML",
-        "view" => "merchants.pages.team",
+        "view" => "merchants.organisation.team",
         "custom_scripts" => "templates.scripts",
         "title" => null,
         "head" => "templates.head",
@@ -138,7 +141,90 @@ class Merchants extends \routing\paths\Paths {
     const MERCHANT_LOCATIONS = [
         "template" => "MERCHANT_INNER_HTML",
         "view" => "merchants.pages.locations",
-        "custom_scripts" => "templates.scripts",
+        "custom_scripts" => ["templates.scripts", 'templates.right-sidebars.location-actions'],
+        "title" => null,
+        "head" => "templates.head",
+        "assets" => [
+            "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.modalHandler.js",
+                "js.features.js",
+                "js.merchant.js",
+                "js.initializer.js",
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+            ],
+            "base" => null,
+            "vendor" => [
+                "js.includes.handleBars.js",
+            ],
+            "custom" => [],
+        ],
+    ];
+
+    const MERCHANT_LOCATION_PAGE_BUILDER = [
+        "template" => "MERCHANT_INNER_HTML",
+        "view" => "merchants.pages.page-builder",
+        "custom_scripts" => ["templates.scripts", 'templates.right-sidebars.location-actions'],
+        "title" => null,
+        "head" => "templates.head",
+        "assets" => [
+            "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.modalHandler.js",
+                "js.features.js",
+                "js.merchant.js",
+                "js.initializer.js",
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+            ],
+            "base" => null,
+            "vendor" => [
+                "js.includes.handleBars.js",
+            ],
+            "custom" => [],
+        ],
+    ];
+
+    const MERCHANT_SINGLE_LOCATION = [
+        "template" => "MERCHANT_INNER_HTML",
+        "view" => "merchants.pages.single-location",
+        "custom_scripts" => ["templates.scripts", 'templates.right-sidebars.location-actions'],
+        "title" => null,
+        "head" => "templates.head",
+        "assets" => [
+            "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.modalHandler.js",
+                "js.features.js",
+                "js.merchant.js",
+                "js.initializer.js",
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+            ],
+            "base" => null,
+            "vendor" => [
+                "js.includes.handleBars.js",
+            ],
+            "custom" => [],
+        ],
+    ];
+    const MERCHANT_LOCATION_MEMBERS = [
+        "template" => "MERCHANT_INNER_HTML",
+        "view" => "merchants.pages.team",
+        "custom_scripts" => ["templates.scripts", 'templates.right-sidebars.location-actions'],
         "title" => null,
         "head" => "templates.head",
         "assets" => [

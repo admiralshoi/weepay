@@ -3,11 +3,15 @@
 namespace classes\enumerations\links\api;
 
 use classes\enumerations\links\api\forms\Forms;
+use classes\enumerations\links\api\organisation\Organisation;
 
 class Api {
 
     public Auth $auth;
     public Forms $forms;
+    public Organisation $organisation;
+    public Oidc $oidc;
+    public Checkout $checkout;
 
 
 

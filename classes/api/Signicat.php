@@ -78,7 +78,7 @@ class Signicat {
 
 
     public function getSession(
-        string $sessionId,
+        string|int $sessionId,
         ?string $token = null
     ): ?array {
         if(empty($token)) $token = $this->fetchToken();

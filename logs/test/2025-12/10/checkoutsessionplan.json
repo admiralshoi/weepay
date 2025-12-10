@@ -1,0 +1,43 @@
+{
+    "enabled": true,
+    "title": "Del i 4 Rater",
+    "caption": "Betal over 90 dage",
+    "installments": 4,
+    "start": "now",
+    "default": true,
+    "name": "installments",
+    "price_title": "500.75kr &times; 4",
+    "subtitle": "F\u00f8rste betaling nu &bullet; Ingen renter",
+    "next_payment_price": 500,
+    "to_pay_now": 503,
+    "payments": {
+        "0": {
+            "price": 503,
+            "date": "10. december",
+            "date_title": "I dag",
+            "timestamp": 1765321200,
+            "installment": 1
+        },
+        "1": {
+            "price": 500,
+            "date": "08. januar",
+            "date_title": "08. januar",
+            "timestamp": 1767826800,
+            "installment": 2
+        },
+        "2": {
+            "price": 500,
+            "date": "06. februar",
+            "date_title": "06. februar",
+            "timestamp": 1770332400,
+            "installment": 3
+        },
+        "3": {
+            "price": 500,
+            "date": "07. marts",
+            "date_title": "07. marts",
+            "timestamp": 1772838000,
+            "installment": 4
+        }
+    }
+}

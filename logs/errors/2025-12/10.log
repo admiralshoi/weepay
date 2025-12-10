@@ -1,0 +1,30 @@
+[2025-12-10 12:46:11] -  Sql update, `PROD_FKF_terminalsession`  SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`weepay`.`prod_fkf_terminalsession`, CONSTRAINT `prod_fkf_terminalsession_ibfk_8` FOREIGN KEY (`customer`) REFERENCES `prod_fkf_users` (`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT)  -   #0 /Users/admiralshoi/Sites/weepay/Database/QueryBuilder.php(366): PDOStatement->execute(Array)
+#1 /Users/admiralshoi/Sites/weepay/classes/utility/Crud.php(140): Database\QueryBuilder->update(Array)
+#2 /Users/admiralshoi/Sites/weepay/routing/routes/flows/purchase/CustomerPageController.php(95): classes\utility\Crud->update(Array, Array)
+#3 [internal function]: routing\routes\flows\purchase\CustomerPageController::info(Array)
+#4 /Users/admiralshoi/Sites/weepay/routing/Routes.php(203): call_user_func('routing\\routes\\...', Array)
+#5 /Users/admiralshoi/Sites/weepay/routing/Routes.php(114): routing\Routes::returnMethod('routing\\routes\\...', 'info', Array)
+#6 /Users/admiralshoi/Sites/weepay/routing/web.php(521): routing\Routes::dispatch()
+#7 /Users/admiralshoi/Sites/weepay/index.php(14): require_once('/Users/admirals...')
+#8 {main}
+[2025-12-10 12:49:25] -  Sql update, `PROD_FKF_terminalsession`  SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`weepay`.`prod_fkf_terminalsession`, CONSTRAINT `prod_fkf_terminalsession_ibfk_8` FOREIGN KEY (`customer`) REFERENCES `prod_fkf_users` (`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT)  -   #0 /Users/admiralshoi/Sites/weepay/Database/QueryBuilder.php(366): PDOStatement->execute(Array)
+#1 /Users/admiralshoi/Sites/weepay/classes/utility/Crud.php(140): Database\QueryBuilder->update(Array)
+#2 /Users/admiralshoi/Sites/weepay/routing/routes/flows/purchase/CustomerPageController.php(94): classes\utility\Crud->update(Array, Array)
+#3 [internal function]: routing\routes\flows\purchase\CustomerPageController::info(Array)
+#4 /Users/admiralshoi/Sites/weepay/routing/Routes.php(203): call_user_func('routing\\routes\\...', Array)
+#5 /Users/admiralshoi/Sites/weepay/routing/Routes.php(114): routing\Routes::returnMethod('routing\\routes\\...', 'info', Array)
+#6 /Users/admiralshoi/Sites/weepay/routing/web.php(521): routing\Routes::dispatch()
+#7 /Users/admiralshoi/Sites/weepay/index.php(14): require_once('/Users/admirals...')
+#8 {main}
+[2025-12-10 12:49:41] -  Sql update, `PROD_FKF_terminalsession`  SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`weepay`.`prod_fkf_terminalsession`, CONSTRAINT `prod_fkf_terminalsession_ibfk_8` FOREIGN KEY (`customer`) REFERENCES `prod_fkf_users` (`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT)  -   #0 /Users/admiralshoi/Sites/weepay/Database/QueryBuilder.php(366): PDOStatement->execute(Array)
+#1 /Users/admiralshoi/Sites/weepay/classes/utility/Crud.php(140): Database\QueryBuilder->update(Array)
+#2 /Users/admiralshoi/Sites/weepay/routing/routes/flows/purchase/CustomerPageController.php(94): classes\utility\Crud->update(Array, Array)
+#3 [internal function]: routing\routes\flows\purchase\CustomerPageController::info(Array)
+#4 /Users/admiralshoi/Sites/weepay/routing/Routes.php(203): call_user_func('routing\\routes\\...', Array)
+#5 /Users/admiralshoi/Sites/weepay/routing/Routes.php(114): routing\Routes::returnMethod('routing\\routes\\...', 'info', Array)
+#6 /Users/admiralshoi/Sites/weepay/routing/web.php(521): routing\Routes::dispatch()
+#7 /Users/admiralshoi/Sites/weepay/index.php(14): require_once('/Users/admirals...')
+#8 {main}
+[2025-12-10 14:59:50] -  viva-failed-payment-creation  {"status":"error","errors":[{"message":"Http code 403 returned","error_code":403,"data":"{\"status\":403,\"message\":\"PersonsValidateCurrencyFailedCurrencyNotFound: Person does not support currency\",\"eventId\":\"4635\"}"}]}
+[2025-12-10 15:04:47] -  viva-failed-payment-creation  {"status":"error","errors":[{"message":"Http code 403 returned","error_code":403,"data":"{\"status\":403,\"message\":\"PersonsValidateCurrencyFailedCurrencyNotFound: Person does not support currency\",\"eventId\":\"4635\"}"}]}
+[2025-12-10 15:05:52] -  viva-failed-payment-creation  {"status":"error","errors":[{"message":"Http code 403 returned","error_code":403,"data":"{\"status\":403,\"message\":\"PersonsValidateCurrencyFailedCurrencyNotFound: Person does not support currency\",\"eventId\":\"4635\"}"}]}

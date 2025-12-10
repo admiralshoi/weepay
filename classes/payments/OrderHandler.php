@@ -39,6 +39,7 @@ class OrderHandler extends Crud {
         string $sourceCode,
         string $caption,
         ?string $prid,
+        ?string $terminalSessionId,
     ): bool {
 
         return $this->create([
@@ -54,6 +55,7 @@ class OrderHandler extends Crud {
             "source_code" => $sourceCode,
             "caption" => $caption,
             "prid" => $prid,
+            "terminal_session" => $terminalSessionId,
             "test" => (int)Viva::isSandbox()
         ]);
 

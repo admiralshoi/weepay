@@ -183,5 +183,17 @@ class Misc {
         return !(abs($includedIntegrations) > 0) ? 0 : floor($includedUsage / $includedIntegrations);
     }
 
+    public static function extractCompanyAddressString(null|array|object $address, bool $country = false, bool $breaks = false): string {
+        if(isEmpty($address)) return '';
+        if(is_array($address)) $address = toObject($address);
+        $split = $breaks ? "<br />" : ', ';
+        $part = [];
+        if(!isEmpty($address->line_1)) $part[] = $address->line_1;
+        if(!isEmpty($address->postal_code)) $part[] = $address->postal_code;
+        if(!isEmpty($address->city)) $part[] = $address->city;
+        if($country && !isEmpty($address->country)) $part[] = $address->country;
+        return implode($split, $part);
+    }
+
 
 }

@@ -6,11 +6,10 @@ class Merchant {
 
     public MerchantPublic $public;
     public Organisation $organisation;
+    public Locations $locations;
+    public Terminals $terminals;
     public string $dashboard = "dashboard";
     public string $orders = "orders";
-    public string $terminals = "terminals";
-    public string $team = "team";
-    public string $locations = "locations";
     public string $payouts = "payouts";
     public string $pendingPayments = "pending-payments";
     public string $locationPages = "location-pages";

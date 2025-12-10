@@ -1,7 +1,7 @@
 
 
 
-function handleStandardApiRedirect(result, timeout = 600) {
+function handleStandardApiRedirect(result, timeout = 1) {
     let resultData = ('data' in result) ? result.data : result;
     if(typeof resultData !== 'object') return;
     if(('redirect' in resultData) && resultData.redirect) {

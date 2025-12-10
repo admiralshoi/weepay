@@ -1,0 +1,33 @@
+<div class="modal" tabindex="-1" role="dialog" id="organisation-new-role">
+    <div class="modal-dialog vertical-middle" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Role</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="color-gray text-sm mb-3">New roles have all permissions enabled by default. Ensure to adjust the permissions afterwards as needed.</p>
+                <form method="post" class="flex-col-start " style="row-gap: 1.5rem;">
+                    <div class="flex-col-start " style="row-gap: .5rem">
+                        <p class="font-13 font-weight-bold mb-0">Role name</p>
+                        <input type="text" name="role_name" placeholder="Campaign manager" class="form-field-v2">
+                    </div>
+                    <p class="mt-2 color-red font-12 d-none modalErrorBox"></p>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Close</button>
+                <button type="button" class="btn-v2 action-btn flex-row-center-center flex-nowrap g-05" data-run="create">
+                    <span>Create role</span>
+                    <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
+                        <span class="spinner-border color-white square-15" role="status" style="border-width: 2px;">
+                          <span class="sr-only">Loading...</span>
+                        </span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

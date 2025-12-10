@@ -1,0 +1,18 @@
+{
+    "10002": "https:\/\/api.signicat.com\/auth\/rest\/sessions\/7dbcdf37-7ef8-4189-b127-0b80ec7a7db8",
+    "19913": true,
+    "10036": "GET",
+    "52": 1,
+    "13": 500,
+    "10023": [
+        "Origin: https:\/\/localhost\/weepay\/",
+        "Referer: https:\/\/localhost\/weepay\/",
+        "User-Agent: Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/126.0.0.0 Safari\/537.36",
+        "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6InNhbmRib3gtc2lnbmluZy1rZXktZDk4OGFjY2Q3YjVhNDM0Zjk3ZTJmOTE2MjIzOGM3MjkiLCJ0eXAiOiJhdCtqd3QifQ.eyJpc3MiOiJodHRwczovL2FwaS5zaWduaWNhdC5jb20vYXV0aC9vcGVuIiwibmJmIjoxNzY0OTUyMzE0LCJpYXQiOjE3NjQ5NTIzMTQsImV4cCI6MTc2NDk1MjQzNCwiYXVkIjoiaHR0cHM6Ly9hcGkuc2lnbmljYXQuY29tIiwic2NvcGUiOlsic2lnbmljYXQtYXBpIl0sImNsaWVudF9pZCI6InNhbmRib3gtYml0aW5nLWNsb2NrLTk4OSIsImFjY291bnRfaWQiOiJhLXNwZ2UtajI1YmpKZG9LeEpROW1RU0Y2ZXgiLCJzYW5kYm94Ijp0cnVlLCJjbGllbnRfZ2VuZXJhdGlvbiI6NCwianRpIjoiODM5RTIxOTdDMDk1QjMwMDUyRjhGQUU0MzM2MDA4NkQifQ.W7N38jZa7i_0kuq8fbUntJhwOcPiU8wv2KhbpY9dfOLVnjAw3Wves7Y2M_t3hu-lk7rk0lIQOL4kpFc8Lr1k5RMsjfzudwg1hB7jzbIcvA148bJo9anzGCuc6ABfQ7eqmJcN4x9KxHtzT3R7r4b3FcaLr077sKivOFf2-e6tNNwEhNd1wSYhNeyHcof5FOGD1pfL2cXCNZGYDhPE72HsTyaGONn2jUXUjbaY4hwcuVKsriUKVQf6QfiNwKads1L4O2PlL-oAwooXcuh9Sp0-Y_vyPHl07tJdXHOnT1rVU9jexJdPkk0j7qtIMz16niQjVRfXXGwxmLJ2QI-C3TRKBA",
+        "Content-type: application\/json; charset=UTF-8"
+    ],
+    "42": true,
+    "10102": "",
+    "68": 10,
+    "84": "CURL_HTTP_VERSION_1_1"
+}

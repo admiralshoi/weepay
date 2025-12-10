@@ -1,5 +1,12 @@
 <?php
 use features\Settings;
+
+$linksToExclude = [];
+if(!\classes\Methods::isAdmin()) {
+    $linksToExclude = ['admin'];
+    if(!\classes\Methods::isMerchant()) $linksToExclude[] = 'merchant';
+    if(!\classes\Methods::isConsumer()) $linksToExclude[] = 'consumer';
+}
 ?>
 <script>
     var applicationProcessing = {}
@@ -7,6 +14,8 @@ use features\Settings;
     var activeMenuItems = [];
     var activePage = <?=json_encode(trimPath(getUrlPath()))?>;
     const serverHost = <?=json_encode(HOST)?>;
+    const HOST = <?=json_encode(HOST)?>;
+    const SITE_NAME = <?=json_encode(SITE_NAME)?>;
     const userSession = <?=json_encode(isLoggedIn())?>;
     const UID = <?=json_encode(isset($_SESSION["uid"]) ? $_SESSION["uid"] : 0)?>;
     const SUMMERTIME = 2;
@@ -23,5 +32,10 @@ use features\Settings;
     const emailApproveIcon = <?=json_encode(__asset("media/icons/email.png"))?>;
     const closeWhiteIcon = <?=json_encode(__asset("media/icons/close-window-white.png"));?>
 
+
+    const organisation = <?=json_encode(__unsetKey(toArray(Settings::$organisation?->organisation), ['permissions']))?>;
+    var allowedCountries = <?=json_encode(\classes\Methods::countries()->mappedValues())?>;
+    const defaultCountry = <?=json_encode(Settings::$app->default_country)?>;
+    const platformLinks = <?=json_encode(\classes\enumerations\Links::toArray($linksToExclude))?>;
     var thirdPartyAuth = {}
 </script>

@@ -1,0 +1,11 @@
+{
+    "http_code": "HTTP\/2 200 ",
+    "content-type": "application\/json; charset=utf-8",
+    "content-length": "4",
+    "x-viva-correlationid": "25-336-C8CD1CA2",
+    "rp": "04",
+    "date": "Tue, 02 Dec 2025 23:57:58 GMT",
+    "server-timing": "ak_p; desc=\"1764719877761_34605101_620424071_19414_8787_40_51_15\";dur=1",
+    "strict-transport-security": "max-age=31536000;IncludeSubDomains",
+    "set-cookie": "ak_bmsc=AD40A69C644BC4AED77A57AF3B7E8F69~000000000000000000000000000000~YAAQLQgQAmQ4kKuaAQAAgF+A4R3HmZzW8\/m8x7CWhkK4V58hNYHUjhhSF0Dbl0mozGuB30++jWU5FSUTmXTHmr\/5aMBphiloLyGOYPMYjpUfzfll\/0qID6CXftauCfI5fWFIlI+r1yhJkjSYkYUk8nBIT4Hr\/5zaUIK8Kwgib1cMpdReVna2ASSGrySarrK+R8XkpkHnY5cz61yUvo7d4AHFX4oSxU8Wx8bMdQL6jrl+6zXlnOPwWGYSJRAXkhgKGnqRb9O6Mh1dsnrBi2x8qo9l4Xu9m8YZFvHSuirjW5k3hUiNBKKiWD+4ShPAu8u\/6ZXQF8XQsgVr74lLhJuKvwPVL7zHQv2qg451lmeuQPebBpsrpmBLIpbzdeO\/BL93vyyULhhxy8zStJm+ox92vmnvx+E=; Domain=.vivapayments.com; Path=\/; Expires=Wed, 03 Dec 2025 01:57:57 GMT; Max-Age=7199; SameSite=None; Secure; HttpOnly"
+}

@@ -4,6 +4,8 @@
  */
 
 use classes\enumerations\Links;
+use classes\Methods;
+use features\Settings;
 
 $pageTitle = "Butikslokationer";
 
@@ -15,6 +17,7 @@ $pageTitle = "Butikslokationer";
 <script>
     var pageTitle = <?=json_encode($pageTitle)?>;
     activePage = "locations";
+    var worldCountries = <?=json_encode(toArray($args->worldCountries))?>;
 </script>
 
 
@@ -34,7 +37,8 @@ $pageTitle = "Butikslokationer";
             <p class="mb-0 font-16 font-weight-medium color-gray">Administrer dine butikslokationer</p>
         </div>
         <div class="flex-row-end">
-            <button class="btn-v2 action-btn flex-row-center flex-align-center flex-nowrap" style="gap: .5rem;">
+            <button class="btn-v2 action-btn flex-row-center flex-align-center flex-nowrap"
+                onclick="LocationActions.addNewLocation()" style="gap: .5rem;">
                 <i class="mdi mdi-plus"></i>
                 <span>Tilføj ny butik</span>
             </button>
@@ -47,7 +51,7 @@ $pageTitle = "Butikslokationer";
             <div class="card border-radius-10px">
                 <div class="card-body">
                     <div class="flex-row-start flex-align-center flex-nowrap" style="column-gap: .5rem;">
-                        <i class="mdi mdi-store-outline font-16 color-blue"></i>
+                        <i class="mdi mdi-store-outline font-22 color-blue"></i>
                         <p class="mb-0 font-22 font-weight-bold">Butiksoversigt</p>
                     </div>
 
@@ -62,12 +66,19 @@ $pageTitle = "Butikslokationer";
                             <tbody>
                             <?php foreach ($args->locations->list() as $location): ?>
                                 <tr>
-                                    <td><?=$location->name?></td>
-                                    <td><?=$location->address ?? ''?></td>
+                                    <td>
+                                        <a href="<?=__url(Links::$merchant->locations->setSingleLocation($location->slug))?>"
+                                           class="color-blue hover-underline">
+                                            <?=$location->name?>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <?=Methods::misc()::extractCompanyAddressString($location->address, true)?>
+                                    </td>
                                     <td><?=ucfirst(strtolower($location->status))?></td>
                                     <td>
                                         <div class="flex-col-start " style="row-gap: 0;">
-                                            <div class="nav-button font-14" data-location-id="<?=$location->uid?>" onclick="">
+                                            <div class="nav-button font-14" data-location-id="<?=$location->uid?>" onclick="LocationActions.open()">
                                                 <i class="mdi mdi-dots-horizontal font-14"></i>
                                             </div>
                                         </div>

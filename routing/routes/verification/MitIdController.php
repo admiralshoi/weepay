@@ -10,33 +10,51 @@ class MitIdController {
 
 
     #[NoReturn] public static function callbackRouter(array $args): void  {
-        $status = $args["status"];
-        if(!array_key_exists('next', $args)) Response()->jsonError('Unknown next action.', [], 400);
-        if(!array_key_exists('sessionId', $args)) {
-            $status = 'error';
-            $sessionId = null;
+        if(!array_key_exists('ref', $args)) Response()->jsonError('Unknown ref.', [], 400);
+        $ref = $args["ref"];
+        $handler = Methods::oidcSession();
+        $session = $handler->get($ref);
+        testLog($session, 'oidc-cb-session');
+        if(isEmpty($session)) Response()->jsonError("Session not found", [], 404);
+        if(!in_array($session->status, ['DRAFT', 'PENDING'])) Response()->jsonError("Denied.", [], 401);
+
+        $response = $handler->getProviderSession($session->prid);
+        testLog($response, 'oidc-cb-response');
+
+        switch ($response?->status) {
+            default:
+                $handler->statusSuccess($ref);
+                break;
+            case "ABORT":
+                $handler->statusCancelled($ref);
+                Response()->jsonError('The authentication was aborted', [], 400);
+            case "CREATED":
+                $handler->statusVoid($ref);
+                Response()->jsonError('The authentication is not complete', [], 400);
+            case "ERROR":
+                $handler->statusError($ref);
+                Response()->jsonError('An error occurred. Try again later.', [], 400);
         }
-        else $sessionId = $args["sessionId"];
-        $next = $args["next"];
 
-
-        $session = Methods::signicact()->getSession($sessionId);
-        if($session['status'] !== 'SUCCESS') Response()->jsonError('Unable to authenticate.', [], 401);
+        $info = $session->info;
+        $next = property_exists($info, "next") ? $info->next : null;
+        $tsId = property_exists($info, "tsid") ? $info->tsid : null;
 
         switch ($next) {
             default: Response()->jsonError('Unknown next action.', [], 400);
             case 'cpf':
-                if(!array_key_exists('tsid', $args)) Response()->jsonError('Missing tsid.', [], 400);
+                if(empty($tsId)) Response()->jsonError('Missing tsid.', [], 400);
 
-                $terminalSession = Methods::terminalSessions()->get($args['tsid']);
+                $terminalSession = Methods::terminalSessions()->get($tsId);
                 if(isEmpty($terminalSession)) Response()->jsonError('Invalid tsid.', [], 400);
                 if(!in_array($terminalSession->state, ['ACTIVE', 'PENDING'])) Response()->jsonError('The session has expired.', [], 410);
 
+                sleep(2);
                 Response()->redirect(
                     __url(
                         "merchant/" . $terminalSession->terminal->location->slug .
                         '/checkout/info?' .
-                        http_build_query(['tsid' => $terminalSession->uid, 'sid' => $sessionId])
+                        http_build_query(['tsid' => $terminalSession->uid, 'sid' => $ref])
                     )
                 );
 

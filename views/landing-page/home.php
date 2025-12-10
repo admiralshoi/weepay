@@ -5,7 +5,6 @@
 
 use classes\enumerations\Links;
 
-
 ?>
 
 
@@ -26,17 +25,22 @@ use classes\enumerations\Links;
                 </div>
                 <p class="mb-0 font-weight-700 text-nowrap color-gray hero-sub-font">- løsning til fysiske butikker</p>
 
-                <div class="flex-row-start flex-align-center mt-3 mt-md-4" style="gap: 1rem;">
-
-                    <a href="<?=__url(Links::$app->auth->merchantLogin)?>" style="gap: .5rem; padding-bottom: .75rem; padding-top: .75rem;"
-                       class="btn-v2 action-btn flex-row-start flex-align-center flex-nowrap font-14 border-radius-10px  px-4 font-weight-bold" >
-                        <span>Bliv forhandler</span>
-                        <i class="mdi mdi-arrow-right"></i>
-                    </a>
+                <div class="flex-row-start flex-align-start flex-wrap mt-3 mt-md-4" style="gap: 1rem;">
+                    <div class="flex-col-start g-1">
+                        <a href="<?=__url(Links::$app->auth->merchantLogin)?>" style="gap: .5rem; padding-bottom: .75rem; padding-top: .75rem;"
+                           class="btn-v2 action-btn flex-row-start flex-align-center flex-nowrap font-14 border-radius-10px  px-4 font-weight-bold" >
+                            <span>Bliv forhandler</span>
+                            <i class="mdi mdi-arrow-right"></i>
+                        </a>
+                        <div class="flex-row-start flex-align-center" style="gap: .25rem;">
+                            <i class="color-acoustic-yellow fa-solid fa-bolt-lightning font-14"></i>
+                            <span class="font-14 color-gray font-weight-medium">Kun 5 minutters opsætning</span>
+                        </div>
+                    </div>
 
                     <a href="<?=__url(Links::$app->auth->consumerLogin)?>" style="gap: .5rem; padding-bottom: .75rem; padding-top: .75rem;"
                        class="btn-v2 trans-hover-design-action-btn card-border flex-row-start flex-align-center flex-nowrap font-14 border-radius-10px px-4 font-weight-medium" >
-                        <span>Kunde login</span>
+                        <span class="text-nowrap">Kunde login</span>
                     </a>
                 </div>
             </div>
@@ -148,6 +152,65 @@ use classes\enumerations\Links;
         </div>
     </section>
     <section class="w-100 py-6 px-3 bg-wrapper-hover">
+        <div class="flex-col-start flex-align-center flex-align-center w-100 rg-15">
+            <div class="flex-col-start flex-align-center flex-align-center w-100 mxw-300px rg-1">
+                <p class="mb-0 font-16 color-gray font-weight-bold text-uppercase">I samarbejde med</p>
+                <div class="flex-row-center-center flex-nowrap cg-1 h-100">
+                    <img src="<?=__asset(LOGO_WIDE_HEADER)?>" style="width: calc(50% - 2rem - 5px);" class=" mxw-200px" />
+                    <div class="stepper-line-vertical"></div>
+                    <img src="<?=__asset(PARTNER_BANK_LOGO)?>" style="width: calc(50% - 2rem - 5px);" class="mxw-200px"/>
+                </div>
+            </div>
+        </div>
+        <div class="flex-row-center w-100 mt-5">
+            <div class="flex-col-start rg-15">
+                <p class="mb-0 font-35 font-weight-bold text-center">Bygget på Europæisk Bankinfrastruktur</p>
+                <div class="w-100 mxw-700px mx-auto">
+                    <div class="flex-col-start flex-align-center flex-align-center w-100 rg-15 text-center">
+                        <p class="font-16 color-gray font-weight-medium">
+                            WeePay er fuldt integreret med VIVA Banks betalingssystem, som håndterer alle transaktioner med
+                            <strong>bankstandarder for sikkerhed, compliance og stabilitet.</strong>
+                        </p>
+                        <p class="font-16 color-gray font-weight-medium">
+                            Som europæisk bank er VIVA omfattet af indskydergarantien på op til 100.000 euro,
+                            hvilket giver et <strong>stærkt og trygt</strong> fundament for alle betalinger.
+                        </p>
+                        <div class="px-5 py-4 border-radius-10px" style="background:rgb(235,237,242); border: 1px solid #c3c8d4;">
+                            <p class="font-16 color-dark lineHeight-1-5 ">
+                                Det betyder, at din forretning får en løsning, der bygger på den samme sikkerhed og
+                                kvalitet som traditionelle bankoverførsler – <strong>blot hurtigere og smartere.</strong>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="w-100 mxw-500px mx-auto mt-4">
+                        <div class="flex-row-around flex-align-center flex-wrap g-1">
+                            <div class="flex-row-start-center cg-05 flex-nowrap font-14">
+                                <div class="flex-row-center-center square-30 border-radius-50 bg-lighter-blue">
+                                    <i class="mdi mdi-shield-outline color-blue"></i>
+                                </div>
+                                <span class="color-dark font-weight-medium text-nowrap">Banksikkerhed</span>
+                            </div>
+                            <div class="flex-row-start-center cg-05 flex-nowrap font-14">
+                                <div class="flex-row-center-center square-30 border-radius-50 bg-lighter-green">
+                                    <i class="mdi mdi-shield-outline color-green"></i>
+                                </div>
+                                <span class="color-dark font-weight-medium text-nowrap">EU-Compliance</span>
+                            </div>
+                            <div class="flex-row-start-center cg-05 flex-nowrap font-14">
+                                <div class="flex-row-center-center square-30 border-radius-50 bg-lighter-blue">
+                                    <i class="mdi mdi-shield-outline color-blue"></i>
+                                </div>
+                                <span class="color-dark font-weight-medium text-nowrap">100.000€ Garanti</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+    <section class="w-100 py-6 px-3">
         <div class="flex-col-start flex-align-center w-100">
             <p class="mb-0 font-35 font-weight-bold">Vi er din nære samarbejdspartner</p>
         </div>
@@ -185,6 +248,48 @@ use classes\enumerations\Links;
                                Det betyder, at du får værdi fra dag ét – dine kunder opdager straks, at du tilbyder "køb nu, betal senere",
                                 og det giver dig både mersalg og nye kunder.
                             </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="w-100 py-6 px-3 bg-wrapper-hover">
+        <div class="flex-row-center w-100">
+            <div class="w-100 mxw-700px mx-auto">
+                <div class="flex-col-start flex-align-center w-100" style="row-gap: 1rem;">
+                    <div class="flex-row-center flex-align-center flex-nowrap border-radius-10px py-2 px-4" style="gap: .5rem; background: rgba(23, 60, 144,.8);">
+                        <i class="mdi mdi-information-outline color-white font-14"></i>
+                        <span class="font-14 color-white">Vidste du...</span>
+                    </div>
+                    <p class="mb-0 font-35 font-weight-800 text-center">
+                        Hver tredje dansker brugte sidste år
+                        <span class="color-blue">KØB NU - BETAL SENERE</span> online
+                    </p>
+
+
+                    <div class="w-100 mxw-675px mx-auto">
+                        <div class="flex-col-start flex-align-center w-100" style="row-gap: 2rem;">
+                            <div class="flex-col-start flex-align-center w-100">
+                                <p class="mb-0 font-16 font-weight-medium color-gray">
+                                    Nu kan du tilbyde det samme <strong class="color-dark">i din fysiske forretning</strong> – og undersøgelser
+                                    viser <strong class="color-dark">op til 58% højere kurvstørrelse</strong> når kunder får fleksible betalingsmuligheder
+                                </p>
+                            </div>
+
+                            <div class="flex-row-end flex-align-center w-100" style="gap: 1rem;">
+                                <div class="flex-col-start g-025">
+                                    <a href="<?=__url(Links::$app->auth->merchantLogin)?>" style="gap: .5rem; padding-bottom: .75rem; padding-top: .75rem;"
+                                       class="btn-v2 action-btn flex-row-start flex-align-center flex-nowrap font-14 border-radius-10px  px-4 font-weight-bold" >
+                                        <span>Bliv forhandler nu</span>
+                                        <i class="mdi mdi-arrow-right"></i>
+                                    </a>
+                                    <div class="flex-row-start flex-align-center" style="gap: .25rem;">
+                                        <i class="color-acoustic-yellow fa-solid fa-bolt-lightning font-14"></i>
+                                        <span class="font-14 color-gray font-weight-medium">Kun 5 minutters opsætning</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

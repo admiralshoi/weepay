@@ -2,6 +2,7 @@
 
 namespace classes\organisations;
 
+use classes\lang\Translate;
 use classes\utility\Crud;
 use Database\Collection;
 use Database\model\CheckoutBasket;
@@ -16,16 +17,24 @@ class CheckoutBasketHandler extends Crud {
     }
 
 
-    public function getActiveBasket(string $terminalId, array $fields = []): ?object {
-        return $this->getFirst(['terminal' => $terminalId, 'status' => 'DRAFT'], $fields);
+
+    public function setFulfilled(string $id): bool {
+        return $this->update(['status' => 'FULFILLED'], ['uid' => $id]);
+    }
+    public function setVoid(string $id): bool {
+        return $this->update(['status' => 'VOID'], ['uid' => $id]);
     }
 
 
+    public function getActiveBasket(string $terminalSessionId, array $fields = []): ?object {
+        return $this->getFirst(['terminal_session' => $terminalSessionId, 'status' => 'DRAFT'], $fields);
+    }
 
-    public function setNew(string $terminalId, string $name, string|int|float $price, string $currency, ?string $note = null): ?string {
-        if($this->exists(['terminal' => $terminalId, 'status' => 'DRAFT']))
-            $this->update(['status' => 'VOID'], ['terminal' => $terminalId, 'status' => 'DRAFT']);
-        if(!$this->create(['terminal' => $terminalId, 'name' => $name, 'price' => $price, 'currency' => $currency, 'note' => $note])) return null;
+
+    public function setNew(string $terminalSessionId, string $name, string|int|float $price, string $currency, ?string $note = null): ?string {
+        if($this->exists(['terminal_session' => $terminalSessionId, 'status' => 'DRAFT']))
+            $this->update(['status' => 'VOID'], ['terminal_session' => $terminalSessionId, 'status' => 'DRAFT']);
+        if(!$this->create(['terminal_session' => $terminalSessionId, 'name' => $name, 'price' => $price, 'currency' => $currency, 'note' => $note])) return null;
         return $this->recentUid;
     }
 
@@ -47,25 +56,28 @@ class CheckoutBasketHandler extends Crud {
 
         if($plan->start === 'now' && $installments === 1) $plan->subtitle = 'Ingen gebyrer';
         elseif($installments > 1) $plan->subtitle = 'Første betaling nu &bullet; Ingen renter';
-        else $plan->subtitle = 'Betales den ' . date("d. F", strtotime($plan->start));
+        else $plan->subtitle = Translate::sentence('Betales den ' . date("d. F", strtotime($plan->start)). ". Ingen renter");
 
         $payments = [];
+        $averagePrice = floor($price / $installments);
+        $remainingPrice = $price - $averagePrice * ($installments - 1);
         if($installments > 1) {
             $remainingRatesAfterFirstPayment = $installments -1;
             $daysBetween = max(1, floor($paymentTimeframe / $remainingRatesAfterFirstPayment) -1);
             for($i = 0; $i < $installments; $i++) {
                 $paymentTime = strtotime($plan->start . " +" . ($i * $daysBetween) . " days");
                 $payments[] = [
-                    'price' => ($i <  $installments - 1) ? floor($price / $installments) : ceil($price / $installments),
-                    'date' => strtolower(date("d. F", $paymentTime)),
-                    'date_title' => $i === 0 ? "I dag" : strtolower(date("d. F", $paymentTime)),
-                    "timestamp" => $paymentTime,
+                    'price' => ($i === 0) ? $remainingPrice : $averagePrice,
+                    'date' => Translate::sentence(strtolower(date("d. F", $paymentTime))),
+                    'date_title' => $i === 0 ? "I dag" : Translate::sentence(strtolower(date("d. F", $paymentTime))),
+                    "timestamp" => strtotime(date("Y-m-d", $paymentTime)),
                     'installment' => $i + 1,
                 ];
             }
         }
+
         $plan->next_payment_price = floor($price / $installments);
-        $plan->to_pay_now = $planName === 'pushed' ? 0 : floor($price / $installments);
+        $plan->to_pay_now = $planName === 'pushed' ? 0 : $remainingPrice;
         $plan->payments = toObject($payments);
 
         return $plan;

@@ -1,0 +1,71 @@
+<div class="modal" tabindex="-1" role="dialog" id="terminal-add-new-modal">
+    <div class="modal-dialog responsive" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Opret ny terminal</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="color-gray text-sm mb-3">Angiv terminaldetaljerne</p>
+
+
+                <form method="post"  class="flex-col-start " style="row-gap: 1.5rem;">
+                    <div class="row" style="row-gap: .5rem;">
+                        <div class="col-12">
+                            <div class="flex-col-start " style="row-gap: .5rem">
+                                <p class="font-13 font-weight-bold mb-0">Termimnal navn</p>
+                                <input type="text" name="name" placeholder="Kasse 1" class="form-field-v2" maxlength="30">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="flex-col-start " style="row-gap: .5rem">
+                                <p class="font-13 font-weight-bold mb-0">Tilknyttet Lokation</p>
+                                <div class="flex-row-start flex-align-center flex-nowrap" style="gap: 2px;">
+                                    <select class="form-select-v2 h-45px w-100"
+                                            data-search="true" name="location">
+                                        {{#foreach locations}}
+                                        <option data-sort="{{value.name}}_{{value.cvr}}_{{value.slug}}"
+                                                value="{{value.uid}}" {{#eq value.uid ../selectedLocation}}  selected {{/eq}}>
+                                            <div class="flex-row-center flex-align-center flex-nowrap" style="gap: .25rem;">
+                                                <span class="">{{value.name}} ({{value.slug}})</span>
+                                            </div>
+                                        </option>
+                                        {{/foreach}}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="flex-row-start-center flex-nowrap cg-15 mb-3" >
+                                <p class="font-13 font-weight-bold">
+                                    Status
+                                    <i class="mdi mdi-information-outline" data-toggle="tooltip" title="Opret terminalen som 'aktiv' eller 'udkast'"></i>
+                                </p>
+                                <label class="form-switch">
+                                    <input name="status" type="checkbox">
+                                    <i></i>
+                                </label>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <p class="mt-2 color-red font-12 d-none modalErrorBox"></p>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Close</button>
+                <button type="button" class="btn-v2 action-btn flex-row-center-center flex-nowrap g-05" data-run="create">
+                    <span>Opret Terminal</span>
+                    <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
+              <span class="spinner-border color-white square-15" role="status" style="border-width: 2px;">
+                <span class="sr-only">Loading...</span>
+              </span>
+          </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

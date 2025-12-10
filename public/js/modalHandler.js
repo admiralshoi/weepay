@@ -158,6 +158,18 @@ class ModalHandler {
             file: 'creators.add-more-creators',
             keys: []
         },
+        organisationDetails: {
+            file: 'organisation.edit-details',
+            keys: ['organisation', 'allowedCountries', 'worldCountries', 'defaultCountry']
+        },
+        locationAddNew: {
+            file: 'locations.add-new-location',
+            keys: ['allowedCountries', 'worldCountries', 'defaultCountry', 'SITE_NAME']
+        },
+        terminalAddNew: {
+            file: 'terminals.add-new-terminal',
+            keys: ['locations', 'selectedLocation']
+        },
     };
 
     constructor(template) {

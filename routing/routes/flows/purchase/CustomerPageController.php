@@ -2,9 +2,11 @@
 
 namespace routing\routes\flows\purchase;
 
+use classes\enumerations\Links;
 use classes\Methods;
 use Database\model\Locations;
 use features\Settings;
+use routing\routes\verification\OidcController;
 
 class CustomerPageController {
 
@@ -23,65 +25,94 @@ class CustomerPageController {
         $session = Methods::terminalSessions()->getSession($terminalId);
         if(isEmpty($session)) return null;
 
-        $verifySession = Methods::signicact()->createSession(
-            'user/verify',
-            ['tsid' => $session->uid,'next' => 'cpf'],
+        if(isOidcAuthenticated()) Response()->redirect(
+            __url("merchant/{$terminal->location->slug}/checkout/info?tsid={$session->uid}")
         );
-        if(isset($_SESSION['customer'])) unset($_SESSION['customer']);
 
-        return Views("CUSTOMER_PURCHASE_FLOW_START", compact('slug', 'terminal', 'session', 'verifySession'));
+        $checkoutQuery = ['tsid' => $session->uid,'next' => 'cpf'];
+        $token = crc32(json_encode($checkoutQuery) . "_" . __csrf());
+        $existingOidcSession = Methods::oidcSession()->getByToken($token, ['uid', 'expires_at', 'status']);
+        $oidcSessionId = null;
+        if(!isEmpty($existingOidcSession)) {
+            if($existingOidcSession->expires_at <= time() || $existingOidcSession->status !== "DRAFT") {
+                Methods::oidcSession()->statusTimeout($existingOidcSession->uid);
+                $existingOidcSession = null;
+            }
+            else $oidcSessionId = $existingOidcSession->uid;
+        }
+
+        if(isEmpty($existingOidcSession)) {
+            $oidcSessionId = Methods::oidcSession()->setSession(
+                "authenticate",
+                $checkoutQuery,
+                $token,
+            );
+        }
+        if(isEmpty($oidcSessionId)) return null;
+
+        return Views("CUSTOMER_PURCHASE_FLOW_START", compact('slug', 'terminal', 'session', 'oidcSessionId'));
     }
 
     public static function info(array $args): mixed  {
         $slug = $args["slug"];
         if(!array_key_exists('tsid', $args)) return null;
-        $terminalId = $args["tsid"];
+        $terminalSessionId = $args["tsid"];
         $sessionId = array_key_exists('sid', $args) ? $args["sid"] : null;
+        $terminalSession = Methods::terminalSessions()->get($terminalSessionId);
+        if(isEmpty($terminalSession)) return null;
+        $redirectUrl = __url(
+            Links::$merchant->terminals->checkoutStart($terminalSession->terminal->location->slug, $terminalSession->terminal->uid)
+        );
 
-        if(isset($_SESSION['customer'])) $customer = $_SESSION['customer'];
-        else {
-            if(!empty($sessionId)) {
-                $session = Methods::signicact()->getSession($sessionId);
-                if($session['status'] !== 'SUCCESS') Response()->jsonError('Unable to authenticate.', [], 401);
+        if(!in_array($terminalSession->state, ['PENDING', 'ACTIVE'])) Response()->redirect($redirectUrl);
+        if($terminalSession->terminal->status !== 'ACTIVE') Response()->redirect($redirectUrl);
+        if($terminalSession->terminal->location->status !== 'ACTIVE') Response()->redirect($redirectUrl);
+        $authHandler = Methods::oidcAuthentication();
 
-                $customer = [
-                    'auth_provider_id' => $session['subject']['id'],
-                    'name' => $session['subject']['name'],
-                    'birthdate' => $session['subject']['dateOfBirth'],
-                    'nin_id' => $session['subject']['nin']['value'],
-                    'nin_country' => $session['subject']['nin']['issuingCountry'],
-                    'nin_user_type' => $session['subject']['nin']['type'],
-                ];
+        if(!isOidcAuthenticated()) {
+            if(empty($sessionId)) Response()->redirect($redirectUrl);
+            $session =  Methods::oidcSession()->get($sessionId);
+            if($session->status !== 'SUCCESS') Response()->redirect($redirectUrl);
+            $providerSession = Methods::oidcSession()->getProviderSession($session->prid);
+            testLog($providerSession, 'oidc-session-info-page');
+            if($providerSession->status === 'EXPIRED') Response()->redirect($redirectUrl);
+            $authId = $authHandler->login($providerSession);
+            if(empty($authId)) {
+                debugLog("Unable to authenticate user with oidc", 'auth-error');
+                Response()->redirect($redirectUrl);
             }
-            else {
-                $customer = [
-                    'auth_provider_id' => "",
-                    'name' => "",
-                    'birthdate' => "",
-                    'nin_id' => "",
-                    'nin_country' => "",
-                    'nin_user_type' => "",
-                ];
-            }
-            $_SESSION['customer'] = $customer;
+            $customer = $authHandler->get($authId);
+        }
+        else $customer = $authHandler->getByUserId();
+        if(isEmpty($customer)) {
+            Response()->redirect($redirectUrl);
         }
 
+        $customer->name = $customer->user?->full_name;
+        if(isEmpty($terminalSession->customer)) {
+            $terminalSession->customer = $customer?->user;
+            Methods::terminalSessions()->update(['customer' => $customer?->user?->uid], ['uid' => $terminalSession->uid]);
+        }
 
-        $terminalSession = Methods::terminalSessions()->get($terminalId);
-        if(isEmpty($terminalSession)) return null;
+        if(!in_array($terminalSession->state, ['ACTIVE', 'PENDING'])) {
+            $terminalSession = Methods::terminalSessions()->getSession($terminalSession->terminal->uid);
+            $currentUrl = $_SERVER['REQUEST_URI'];
+            $parsed = parse_url($currentUrl);
+            $path = getUrlPath();
+            $query = [];
+            if (!empty($parsed['query'])) parse_str($parsed['query'], $query);
+            $query['tsid'] = $terminalSession->uid;
+            Response()->redirect($path . '?' . http_build_query($query));
+        }
 
-        if($terminalSession->terminal->status !== 'ACTIVE') return null;
-        if($terminalSession->terminal->location->status !== 'ACTIVE') return null;
 
         $basket = null;
-        if($terminalSession->terminal->state === 'IDLE') Methods::terminals()->update(['state' => 'AWAITING_MERCHANT'], ['uid' => $terminalId]);
+        $nextStepLink = __url(Links::$merchant->terminals->getConsumerChoosePlan($slug, $terminalSessionId));
+        if($terminalSession->terminal->state === 'IDLE') Methods::terminals()->update(['state' => 'AWAITING_MERCHANT'], ['uid' => $terminalSessionId]);
         elseif($terminalSession->terminal->state === 'AWAITING_CUSTOMER'  && $terminalSession->terminal->session === $terminalSession->session) {
-            Methods::terminals()->update(['state' => 'ACTIVE'], ['uid' => $terminalId]);
+            Methods::terminals()->update(['state' => 'ACTIVE'], ['uid' => $terminalSessionId]);
             $basket = Methods::checkoutBasket()->excludeForeignKeys()->getActiveBasket($terminalSession->terminal->uid);
         }
-
-
-        $nextStepLink = __url("merchant/{$slug}/checkout/choose-plan?tsid={$terminalId}");
 
         return Views("CUSTOMER_PURCHASE_FLOW_INFO", compact('slug', 'terminalSession', 'customer', 'basket', 'nextStepLink'));
     }
@@ -90,15 +121,17 @@ class CustomerPageController {
         $slug = $args["slug"];
         if(!array_key_exists('tsid', $args)) return null;
         $terminalSessionId = $args["tsid"];
-        $customer = $_SESSION['customer'];
         $terminalSession = Methods::terminalSessions()->get($terminalSessionId);
         if(isEmpty($terminalSession)) return null;
+        $customer = Methods::oidcAuthentication()->getByUserId();
+        if(isEmpty($customer)) {
+            return OidcController::expiredPage(null, $terminalSession);
+        }
         $basketHandler = Methods::checkoutBasket()->excludeForeignKeys();
 
         if($terminalSession->terminal->status !== 'ACTIVE') return null;
         if($terminalSession->terminal->location->status !== 'ACTIVE') return null;
-        $basket = $basketHandler->getActiveBasket($terminalSession->terminal->uid);
-        if(isEmpty($basket)) return null;
+        $basket = $basketHandler->getActiveBasket($terminalSession->uid);
 
 
         $defaultToPayNow = 0;
@@ -116,10 +149,11 @@ class CustomerPageController {
         }
 
         $previousStepLink = __url("merchant/{$slug}/checkout/info?tsid={$terminalSessionId}");
+        $basketHash = hash("sha256", json_encode($basket) . "_" . json_encode($paymentPlans));
 
         return Views("CUSTOMER_PURCHASE_FLOW_PLAN", compact(
             'slug', 'terminalSession', 'customer', 'basket', 'paymentPlans',
-            'previousStepLink', 'defaultToPayNow', 'defaultPlanId'
+            'previousStepLink', 'defaultToPayNow', 'defaultPlanId', 'basketHash'
         ));
     }
 

@@ -86,7 +86,7 @@ const signupHandler = () => {
         if(isLoading) return;
         setLoading()
         if(!['brand', 'creator'].includes(formState)) {
-            setError("Unknown user type.")
+            setError("Ukendt  bruger-type.")
             return;
         }
         let form = formState === "brand" ? brandForm : creatorForm;
@@ -164,7 +164,7 @@ const loginHandler = () => {
             return false;
         }
 
-        queueNotificationOnLoad("Login success", result.message, 'success', 2000)
+        queueNotificationOnLoad("Log ind succesfuldt", result.message, 'success', 2000)
         handleStandardApiRedirect(result, 1)
     }
 

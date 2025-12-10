@@ -3,6 +3,8 @@
  * @var object $args
  */
 
+use classes\enumerations\Links;
+
 $customer = $args->customer;
 $terminalSession = $args->terminalSession;
 $terminal = $terminalSession->terminal;
@@ -15,6 +17,7 @@ $paymentPlans = $args->paymentPlans;
 
 <script>
     var paymentPlans = <?=json_encode(toArray($paymentPlans))?>;
+    var basketHash = '<?=$args->basketHash?>';
 </script>
 
 
@@ -112,7 +115,7 @@ $paymentPlans = $args->paymentPlans;
                 <div class="action-mute-info-box">
                     <div class="flex-row-start flex-align-center flex-nowrap" style="column-gap: 5px">
                         <div class="square-25 flex-row-center flex-align-center"><i class="font-16 mdi mdi-cart-outline"></i></div>
-                        <p class="mb-0 info-title">Ordresammendrag</p>
+                        <p class="mb-0 info-title">Total beløb</p>
                     </div>
                     <div class="info-content">
                         <div class="flex-row-between flex-align-center flex-nowrap" style="gap: .5rem">
@@ -130,7 +133,11 @@ $paymentPlans = $args->paymentPlans;
                     <div class="info-content">
                         <div class="flex-row-start flex-align-center flex-nowrap mt-1" style="gap: .5rem">
                             <input type="checkbox" name="accept_terms" class="square-20">
-                            Ved at bekræfte accepterer du handelsbetingelserne og privatlivspolitikken
+                            <span>
+                                Jeg bekræfter at jeg har læst og accepterer
+                                <a href="<?=__url(Links::$policies->consumer->termsOfUse)?>" target="_blank">handelsbetingelserne</a> og
+                                <a href="<?=__url(Links::$policies->consumer->privacy)?>" target="_blank">privatlivspolitikken.</a>
+                            </span>
                         </div>
                     </div>
                 </div>

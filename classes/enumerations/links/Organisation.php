@@ -6,6 +6,7 @@ class Organisation {
     public string $home = 'organisation';
     public string $add = 'organisation/add';
     public string $switch = 'organisation/select';
+    public string $team = 'organisation/team';
     public function switchPath(string $uid): string { return "organisation/select?uid=$uid"; }
 
 

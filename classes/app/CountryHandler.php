@@ -22,8 +22,8 @@ class CountryHandler extends Crud {
     public function getByCountryCode(string $code, array $fields = []): ?object {
         return $this->getFirst(['code' => strtoupper($code)], $fields);
     }
-    public function name(string $code): ?string {
-        return $this->getColumn(['code' => strtoupper($code)], 'name');
+    public function name(?string $code): ?string {
+        return empty($code) ? null : $this->getColumn(['code' => strtoupper($code)], 'name');
     }
 
     /*
@@ -31,6 +31,11 @@ class CountryHandler extends Crud {
      */
 
 
+
+
+    public function mappedValues(): array {
+        return  mapItemToKeyValuePairs($this->getByX(['enabled' => 1]), 'code', 'name');
+    }
 
 
 
