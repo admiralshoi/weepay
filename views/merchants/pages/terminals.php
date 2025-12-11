@@ -79,6 +79,7 @@ $pageTitle = "Kasseapparater";
                                             <?=$terminal->location->name?>
                                         </div>
                                     </td>
+                                    <td class="desktopOnlyTableCell"><?=$terminal->name?></td>
                                     <td class="desktopOnlyTableCell"><?=$terminal->location->name?></td>
                                     <td class="hideOnMobileTableCell">
                                         <?php if($terminal->status === 'ACTIVE'): ?>

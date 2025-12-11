@@ -174,3 +174,55 @@ const loginHandler = () => {
     })
 }
 loginHandler();
+
+
+const merchantSignupHandler = () => {
+    let isLoading = false;
+
+    const signupMerchant = async (btn) => {
+        if(isLoading) return;
+
+        let form = btn.parents('form').first();
+        let formData = new FormData(form.get(0));
+        let dest = form.attr("action");
+
+        // Get password fields
+        let password = formData.get('password');
+        let passwordConfirm = formData.get('password_confirm');
+
+        // Validate password match
+        if(password !== passwordConfirm) {
+            showErrorNotification("Fejl", "Adgangskoderne matcher ikke");
+            return false;
+        }
+
+        // Validate terms acceptance
+        let acceptTerms = form.find("input[name=accept_terms]").is(":checked");
+        if(!acceptTerms) {
+            showErrorNotification("Fejl", "Du skal acceptere vilkår og betingelser");
+            return false;
+        }
+
+        btn.get(0).disabled = true;
+        isLoading = true;
+
+        let result = await post(dest, formData);
+        console.log(result);
+
+        if(result.status === 'error') {
+            btn.get(0).disabled = false;
+            isLoading = false;
+            showErrorNotification("Kunne ikke oprette konto", result.error.message);
+            return false;
+        }
+
+        queueNotificationOnLoad("Konto oprettet", result.message, 'success', 2000);
+        handleStandardApiRedirect(result, 1);
+    }
+
+    $("button[name=signup-button]").on("click", function (e) {
+        e.preventDefault();
+        signupMerchant($(this));
+    })
+}
+merchantSignupHandler();

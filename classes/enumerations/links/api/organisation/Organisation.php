@@ -3,6 +3,7 @@
 namespace classes\enumerations\links\api\organisation;
 
 class Organisation {
+    public string $vivaConnectedAccount = "api/organisation/connected-account";
 
     public Team $team;
 

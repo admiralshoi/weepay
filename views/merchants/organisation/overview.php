@@ -12,6 +12,7 @@ if(!isEmpty(Settings::$organisation?->organisation)) $pageTitle .= " - " . Setti
 
 $organisation = Settings::$organisation?->organisation;
 $merchantActionRequired = empty($organisation?->merchant_prid);
+$connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
 
 ?>
 
@@ -40,7 +41,6 @@ $merchantActionRequired = empty($organisation?->merchant_prid);
 
 
     <?php  if(!isEmpty($organisation)): ?>
-
 
 
     <div class="flex-row-between flex-align-center flex-wrap" style="column-gap: .75rem; row-gap: .5rem;">
@@ -173,7 +173,7 @@ $merchantActionRequired = empty($organisation?->merchant_prid);
                                 <p class="mb-0 info-title color-dark">Handling påkrævet</p>
                             </div>
                             <div class="info-content">
-                                <p class="color-gray font-14">Du skal færdiggøre din Viva wallet opsætning før du kan begynde at brugr <?=BRAND_NAME?></p>
+                                <p class="color-gray font-14">Du skal færdiggøre din Viva wallet opsætning før du kan begynde at bruge <?=BRAND_NAME?></p>
                             </div>
                         </div>
                         <?php else: ?>
@@ -187,10 +187,33 @@ $merchantActionRequired = empty($organisation?->merchant_prid);
                             </div>
                         </div>
                         <?php endif; ?>
+
+                        <?php if(isEmpty($connectedAccount) || in_array($connectedAccount->state, ['VOID', 'REMOVED'])): ?>
+                        <button onclick="VivaWallet.setupVivaWallet(this)" class="btn-v2 mute-hover-design-action-btn-lg flex-row-between-center cg-1">
+                            <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
+                                <span class="spinner-border color-gray square-15" role="status" style="border-width: 2px;">
+                                  <span class="sr-only">Loading...</span>
+                                </span>
+                            </span>
+                            <span class="font-14">Opsæt min wallet</span>
+                            <i class="mdi mdi-cog-outline"></i>
+                        </button>
+                        <?php elseif($connectedAccount->state === 'DRAFT'): ?>
+                        <button onclick="VivaWallet.setupVivaWallet(this)" class="btn-v2 mute-hover-design-action-btn-lg flex-row-between-center cg-1">
+                            <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
+                                <span class="spinner-border color-gray square-15" role="status" style="border-width: 2px;">
+                                  <span class="sr-only">Loading...</span>
+                                </span>
+                            </span>
+                            <span class="font-14">Færdiggør opsætning</span>
+                            <i class="mdi mdi-open-in-new"></i>
+                        </button>
+                        <?php else: ?>
                         <a href="#" class="btn-v2 mute-hover-design-action-btn-lg flex-row-between-center cg-1">
                             <span class="font-14">Åbn Viva wallet</span>
                             <i class="mdi mdi-open-in-new"></i>
                         </a>
+                        <?php endif; ?>
 
                         <p class="font-14 font-weight-medium">Din wallet håndterer:</p>
                         <ul class="pl-3 line-spacing">
@@ -276,6 +299,14 @@ $merchantActionRequired = empty($organisation?->merchant_prid);
     <?php endif; ?>
 </div>
 
+
+<?php scriptStart(); ?>
+<script>
+    $(document).ready(function () {
+        VivaWallet.init('<?=$connectedAccount?->state?>');
+    })
+</script>
+<?php scriptEnd(); ?>
 
 
 

@@ -1,0 +1,17 @@
+{
+    "10002": "https:\/\/api.vivapayments.com\/isv\/v1\/accounts\/c45d7a01-13c4-4d83-9c3b-a93857cca01a",
+    "19913": true,
+    "10036": "GET",
+    "52": 1,
+    "13": 500,
+    "10023": [
+        "Origin: https:\/\/localhost\/weepay\/",
+        "Referer: https:\/\/localhost\/weepay\/",
+        "User-Agent: Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/126.0.0.0 Safari\/537.36",
+        "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjYyODk4N0E3MDQ2QTUyQzkzMDY2NDJFMkJGQjBBNUY5OUJFQkFCQkVSUzI1NiIsIng1dCI6IllvbUhwd1JxVXNrd1prTGl2N0NsLVp2cnE3NCIsInR5cCI6ImF0K2p3dCJ9.eyJpc3MiOiJodHRwczovL2FjY291bnRzLnZpdmFwYXltZW50cy5jb20iLCJuYmYiOjE3NjU0NjgxMzksImlhdCI6MTc2NTQ2ODEzOSwiZXhwIjoxNzY1NDcxNzM5LCJhdWQiOlsiYmlzZXJ2aWNlc19hcGkiLCJjb3JlX2FwaSIsImVjcl9hcGkiLCJodHRwczovL2FjY291bnRzLnZpdmFwYXltZW50cy5jb20vcmVzb3VyY2VzIl0sInNjb3BlIjpbInVybjp2aXZhOnBheW1lbnRzOmJpc2VydmljZXM6bWVyY2hhbnRhcGkiLCJ1cm46dml2YTpwYXltZW50czpjb3JlOmFwaTphY3F1aXJpbmciLCJ1cm46dml2YTpwYXltZW50czpjb3JlOmFwaTphY3F1aXJpbmc6dHJhbnNhY3Rpb25zIiwidXJuOnZpdmE6cGF5bWVudHM6Y29yZTphcGk6aXN2IiwidXJuOnZpdmE6cGF5bWVudHM6Y29yZTphcGk6bmF0aXZlY2hlY2tvdXR2MiIsInVybjp2aXZhOnBheW1lbnRzOmNvcmU6YXBpOnJlZGlyZWN0Y2hlY2tvdXQiLCJ1cm46dml2YTpwYXltZW50czplY3I6YXBpIl0sImNsaWVudF9pZCI6ImU2MGExa3VyNnFqeTFydDgyaG1tOWx3eXFzaHZtdW1iNTZjZW55ZWR2NjZqNy5hcHBzLnZpdmFwYXltZW50cy5jb20iLCJ1cm46dml2YTpwYXltZW50czpjbGllbnRfcGVyc29uX2lkIjoiMEZCNjZBQTgtQkE1Qi00OUYwLTg3N0YtNjRFODY0OUEzREE5In0.H5qpG947brvgGbp5h9jyt_mStzY6g_pESHm3lLZI64Q9FAg86unHUfnAC6GQcAo-cKgs24K86fzE4PFepHr7YL0deW3_jbudUo67_PMVYrSNEFv2m_wRecH41QAc51-O1J_Qha1PHxAIW05wl9DYJ3nCjGRAAplJ6h8ikrYYlEiUyWwMyAigL_eHOqz7MhFg0hjeL8ZoPNk-SAq_YfxFgVlv1I9jgm5u0yzILZHT3LD6baC8m_X-r02irXv9WRmFVYu82Beyv5gLnBWZwGS44XGW58WKfSk9W6RgUjzCMP-Ql5LbdRJkrtJEUVX1RvAZZi0aBeEiWrnTjAam_22MQ0-gDoCl4bAuSs4JJaV7mRteQNICOFEt062-9pVBVjj8ZcsReCk7D1_J_g1OVgyxPVNmW21HmWFezqG1GRtdjKie6X5E1V9T-lkC0GHimxcN8Eo7I6KBcCNRpPjXs4wXjlUHrrCNxhCDVcUofUfsT8UCo1ZVn-o5HO8qtJeQ1fsIf4Mf5id3ZGYs6DIKc5KycdkzYVRANy12AX8the3s4UsxCHQ2_5qK7qCNuH6GGhzXClIsP8IVtThmr9aPK2sjSge-98jYHtqVbfsqQdfmpgDSC58WIk1bOGwjXfmED0swv05C5R6Cu3O5E2ZKNFKOd9LoCUbcsCyRDH0MX_I0zQs"
+    ],
+    "42": true,
+    "10102": "",
+    "68": 10,
+    "84": "CURL_HTTP_VERSION_1_1"
+}

@@ -1,0 +1,3 @@
+[2025-12-11 14:27:07] -  viva-failed-payment-creation  {"status":"error","errors":[{"message":"Http code 404 returned","error_code":404,"data":"{\"status\":404,\"message\":\"Merchant not found\",\"eventId\":\"2\"}"}]}
+[2025-12-11 14:28:48] -  viva-failed-payment-creation  {"status":"error","errors":[{"message":"Http code 404 returned","error_code":404,"data":"{\"status\":404,\"message\":\"Merchant not found\",\"eventId\":\"2\"}"}]}
+[2025-12-11 14:32:11] -  viva-failed-payment-creation  {"status":"error","errors":[{"message":"Http code 404 returned","error_code":404,"data":"{\"status\":404,\"message\":\"Merchant not found\",\"eventId\":\"2\"}"}]}

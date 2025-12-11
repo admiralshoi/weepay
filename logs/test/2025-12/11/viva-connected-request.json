@@ -1,0 +1,41 @@
+{
+    "client_id": "067jg2zsb0g51m923ez87ic03n8isrqughtqpjldn5bu6.apps.vivapayments.com",
+    "client_secret": "7nUK8kkFW442A3q9Od4r9FmdP6t31K",
+    "token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjBEOEZCOEQ2RURFQ0Y1Qzk3RUY1MjdDMDYxNkJCMjMzM0FCNjVGOUZSUzI1NiIsIng1dCI6IkRZLTQxdTNzOWNsLTlTZkFZV3V5TXpxMlg1OCIsInR5cCI6ImF0K2p3dCJ9.eyJpc3MiOiJodHRwczovL2RlbW8tYWNjb3VudHMudml2YXBheW1lbnRzLmNvbSIsIm5iZiI6MTc2NTQ1NTI1NCwiaWF0IjoxNzY1NDU1MjU0LCJleHAiOjE3NjU0NTg4NTQsImF1ZCI6WyJiaXNlcnZpY2VzX2FwaSIsImNvcmVfYXBpIiwiZWNyX2FwaSIsImh0dHBzOi8vZGVtby1hY2NvdW50cy52aXZhcGF5bWVudHMuY29tL3Jlc291cmNlcyJdLCJzY29wZSI6WyJ1cm46dml2YTpwYXltZW50czpiaXNlcnZpY2VzOm1lcmNoYW50YXBpIiwidXJuOnZpdmE6cGF5bWVudHM6Y29yZTphcGk6YWNxdWlyaW5nIiwidXJuOnZpdmE6cGF5bWVudHM6Y29yZTphcGk6YWNxdWlyaW5nOnRyYW5zYWN0aW9ucyIsInVybjp2aXZhOnBheW1lbnRzOmNvcmU6YXBpOmlzdiIsInVybjp2aXZhOnBheW1lbnRzOmNvcmU6YXBpOm5hdGl2ZWNoZWNrb3V0djIiLCJ1cm46dml2YTpwYXltZW50czpjb3JlOmFwaTpyZWRpcmVjdGNoZWNrb3V0IiwidXJuOnZpdmE6cGF5bWVudHM6ZWNyOmFwaSJdLCJjbGllbnRfaWQiOiIwNjdqZzJ6c2IwZzUxbTkyM2V6ODdpYzAzbjhpc3JxdWdodHFwamxkbjVidTYuYXBwcy52aXZhcGF5bWVudHMuY29tIiwidXJuOnZpdmE6cGF5bWVudHM6Y2xpZW50X3BlcnNvbl9pZCI6IjdFNDE2REZDLUFBODktNDMzNS05QkU1LTRCM0NFMkRDMzU5QiJ9.PMD2WMK4_RRr3fXNrOa_9F4n-U-0RWwEOOGQ_cQnozkLO4rSrJxc0bG3T2AYGgXym6OvZQS0jm_3MVciuOo1UEXkJ6ro3uPqLO-oNc3Z0kYMoEILWeXf6wgfdiDAuuJAS5qr_OCU6E21ZMpAcQpFJGdwjkYQoz7qNvGa1walxApnN6QVn4NRFbN-4SRej3xYBhw2TRgAq66DyqYLgulzh19APOvIS7QAWXPqxllWEBTOrheyKPIvkw9_dyo-G34s0-dsGClBRqcL5jzKAzDFxLhxjJ6BrABeaOwdE1ZyvzNgKA7qQqdaPdlRWEzTZPbWGekQQdnUYUztnr8wVZeiAw",
+    "payload": {
+        "email": "universeofcoding@gmail.com",
+        "returnUrl": "https:\/\/localhost\/weepay\/organisation",
+        "branding": {
+            "partnerName": "WeePay",
+            "primaryColor": "#173c90",
+            "logoUrl": "https:\/\/wee-pay.dk\/public\/media\/logos\/icon.png"
+        }
+    },
+    "headers": {
+        "0": "Origin: https:\/\/localhost\/weepay\/",
+        "1": "Referer: https:\/\/localhost\/weepay\/",
+        "2": "User-Agent: Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/126.0.0.0 Safari\/537.36",
+        "authorization": "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjBEOEZCOEQ2RURFQ0Y1Qzk3RUY1MjdDMDYxNkJCMjMzM0FCNjVGOUZSUzI1NiIsIng1dCI6IkRZLTQxdTNzOWNsLTlTZkFZV3V5TXpxMlg1OCIsInR5cCI6ImF0K2p3dCJ9.eyJpc3MiOiJodHRwczovL2RlbW8tYWNjb3VudHMudml2YXBheW1lbnRzLmNvbSIsIm5iZiI6MTc2NTQ1NTI1NCwiaWF0IjoxNzY1NDU1MjU0LCJleHAiOjE3NjU0NTg4NTQsImF1ZCI6WyJiaXNlcnZpY2VzX2FwaSIsImNvcmVfYXBpIiwiZWNyX2FwaSIsImh0dHBzOi8vZGVtby1hY2NvdW50cy52aXZhcGF5bWVudHMuY29tL3Jlc291cmNlcyJdLCJzY29wZSI6WyJ1cm46dml2YTpwYXltZW50czpiaXNlcnZpY2VzOm1lcmNoYW50YXBpIiwidXJuOnZpdmE6cGF5bWVudHM6Y29yZTphcGk6YWNxdWlyaW5nIiwidXJuOnZpdmE6cGF5bWVudHM6Y29yZTphcGk6YWNxdWlyaW5nOnRyYW5zYWN0aW9ucyIsInVybjp2aXZhOnBheW1lbnRzOmNvcmU6YXBpOmlzdiIsInVybjp2aXZhOnBheW1lbnRzOmNvcmU6YXBpOm5hdGl2ZWNoZWNrb3V0djIiLCJ1cm46dml2YTpwYXltZW50czpjb3JlOmFwaTpyZWRpcmVjdGNoZWNrb3V0IiwidXJuOnZpdmE6cGF5bWVudHM6ZWNyOmFwaSJdLCJjbGllbnRfaWQiOiIwNjdqZzJ6c2IwZzUxbTkyM2V6ODdpYzAzbjhpc3JxdWdodHFwamxkbjVidTYuYXBwcy52aXZhcGF5bWVudHMuY29tIiwidXJuOnZpdmE6cGF5bWVudHM6Y2xpZW50X3BlcnNvbl9pZCI6IjdFNDE2REZDLUFBODktNDMzNS05QkU1LTRCM0NFMkRDMzU5QiJ9.PMD2WMK4_RRr3fXNrOa_9F4n-U-0RWwEOOGQ_cQnozkLO4rSrJxc0bG3T2AYGgXym6OvZQS0jm_3MVciuOo1UEXkJ6ro3uPqLO-oNc3Z0kYMoEILWeXf6wgfdiDAuuJAS5qr_OCU6E21ZMpAcQpFJGdwjkYQoz7qNvGa1walxApnN6QVn4NRFbN-4SRej3xYBhw2TRgAq66DyqYLgulzh19APOvIS7QAWXPqxllWEBTOrheyKPIvkw9_dyo-G34s0-dsGClBRqcL5jzKAzDFxLhxjJ6BrABeaOwdE1ZyvzNgKA7qQqdaPdlRWEzTZPbWGekQQdnUYUztnr8wVZeiAw",
+        "content_type": "Content-type: application\/json; charset=UTF-8"
+    },
+    "response_code": 200,
+    "response_headers": {
+        "http_code": "HTTP\/2 200 ",
+        "content-type": "application\/json; charset=utf-8",
+        "content-length": "255",
+        "x-viva-correlationid": "25-345-29CC6B73",
+        "x-viva-eventid": "0",
+        "prx": "03",
+        "date": "Thu, 11 Dec 2025 12:14:14 GMT",
+        "strict-transport-security": "max-age=31536000 ; includeSubDomains",
+        "set-cookie": "ak_bmsc=1AE2373A40925C104D2CE212C8E875E6~000000000000000000000000000000~YAAQNggQAqgbbQibAQAA5lRVDR7ac08YxB+0urI9cHLGJFt0cVXbr2bPRFYjiZoO9NC1Ru5KJvvQj4I1n6viF0C\/KcrohNJbTi42tTpYfHGxlHjm+TtgCy4NFyG\/aqfce8MyBJzEvdR27lvJ9z5c2\/BNa8cq8ZZJd5ov+kVBpa6ynC8v61+BjMzwMFKvC1d3OvQmn4d5gSOG5nB2Ubk\/2dIzjoojL3KocYU4f5QxhAXyxQNAC3trfJg1dzwWs2CSgCBXnQ25eAU4WIkEg04oI2Pvx7\/5fTDH1v8SMHL2DTQbl+slQjJ0VJk9SuGqupVL19TKYUC5m\/KueG3mw1fMUU22pm9pjRvSOQ10cWrw8YusIaakRxWsyG9Ez4JeVp3x6hZno9uUkbiaVlUB3PDZwjLYqnM=; Domain=.vivapayments.com; Path=\/; Expires=Thu, 11 Dec 2025 14:14:14 GMT; Max-Age=7200; SameSite=None; Secure; HttpOnly"
+    },
+    "response": {
+        "accountId": "a30576f5-2727-4947-84e8-fa709d15c8a6",
+        "invitation": {
+            "email": "universeofcoding@gmail.com",
+            "redirectUrl": "https:\/\/demo-app.vivapayments.com\/register\/invite\/3\/a30576f5-2727-4947-84e8-fa709d15c8a6",
+            "created": "2025-12-11T14:14:14.7072717+02:00"
+        }
+    }
+}

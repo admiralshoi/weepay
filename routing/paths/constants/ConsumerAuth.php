@@ -18,6 +18,7 @@ class ConsumerAuth extends \routing\paths\Paths {
                 "js.server.js",
                 "js.main.js",
                 "js.utility.js",
+                "js.oidc.js",
                 "js.features.js",
                 "js.auth.js",
                 "js.initializer.js",

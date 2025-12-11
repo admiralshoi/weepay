@@ -491,7 +491,8 @@ function __oUuid(): ?string {
     debugLog([$role, __oid(), toArray(\features\Settings::$organisation)], 'functions_oUuid');
     return match ($role) {
         default => null,
-        'merchant' => __oid()
+        'merchant' => __oid(),
+        'consumer' => __uuid(),
     };
 }
 function generateUniqueId($length = 9, $type = 'MIX', bool $includeUppercase = false): string {

@@ -10,6 +10,7 @@ class Organisations extends \Database\Model {
         "industry" => ["type" => "string", "default" => null, "nullable" => true],
         "description" => ["type" => "string", "default" => null, "nullable" => true],
         "website" => ["type" => "string", "default" => null, "nullable" => true],
+        "primary_email" => ["type" => "string", "default" => null, "nullable" => true],
         "contact_email" => ["type" => "string", "default" => null, "nullable" => true],
         "contact_phone" => ["type" => "string", "default" => null, "nullable" => true],
         "contact_phone_country_code" => ["type" => "string", "default" => null, "nullable" => true],
@@ -26,7 +27,7 @@ class Organisations extends \Database\Model {
     ];
 
     public static array $indexes = ['cvr'];
-    public static array $uniques = ["uid", "merchant_prid"];
+    public static array $uniques = ["uid", "merchant_prid", "primary_email"];
 
     protected static array $requiredRows = [];
     protected static array $requiredRowsTesting = [];

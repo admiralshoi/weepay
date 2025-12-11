@@ -46,12 +46,13 @@ class ApiController {
             Response()->jsonPermissionError("modify", 'organisationsdetaljer');
         $organisation = Methods::organisations()->get(__oid());
 
-        $requiredKeys = ["name", "company_name", "company_cvr", "company_line_1", "company_city", "company_postal_code", "company_country"];
+        $requiredKeys = ["name", "email", "company_name", "company_cvr", "company_line_1", "company_city", "company_postal_code", "company_country"];
         foreach ($requiredKeys as $key) if(!array_key_exists($key, $args) || empty(trim($args[$key])))
             Response()->jsonError("Venligst udfyld alle påkrævet felter", ['blame_field' => $key]);
 
         $name = Titles::cleanUcAll(trim($args["name"]));
         $companyName = Titles::cleanUcAll(trim($args["company_name"]));
+        $primaryEmail = trim($args["email"]);
         $companyCvr = trim($args["company_cvr"]);
         $companyLine1 = trim($args["company_line_1"]);
         $companyCity = trim($args["company_city"]);
@@ -64,9 +65,11 @@ class ApiController {
         $contactPhoneCountry = array_key_exists('contact_phone_country', $args) ? trim($args["contact_phone_country"]) : null;
         $description = array_key_exists('description', $args) ? ucfirst(trim($args["description"])) : null;
 
-        if(!empty($website) && !filter_var($args["website"], FILTER_VALIDATE_URL))
+        if(!empty($website) && !filter_var($website, FILTER_VALIDATE_URL))
             Response()->jsonError("Forkert hjemmeside-format.", ['blame_field' => 'website']);
-        if(!empty($contactEmail) && !filter_var($args["contact_email"], FILTER_VALIDATE_EMAIL))
+        if(!filter_var($primaryEmail, FILTER_VALIDATE_EMAIL))
+            Response()->jsonError("Den primære email har et forkert format.", ['blame_field' => 'email']);
+        if(!empty($contactEmail) && !filter_var($contactEmail, FILTER_VALIDATE_EMAIL))
             Response()->jsonError("Forkert email-format.", ['blame_field' => 'contact_email']);
 
         if(strlen($name) > 30) Response()->jsonError("Navnet er for langt. Maximum 30 tegn", ['blame_field' => 'name']);
@@ -76,6 +79,7 @@ class ApiController {
         if(strlen($companyPostalCode) > 30) Response()->jsonError("Virksomhedens postnummer er for langt. Maximum 30 tegn", ['blame_field' => 'company_postal_code']);
         if(strlen($website ?? '') > 50) Response()->jsonError("Hjemmesiden er for lang. Maximum 50 tegn", ['blame_field' => 'website']);
         if(strlen($contactEmail ?? '') > 50) Response()->jsonError("Kontakt e-mailen er for lang. Maximum 50 tegn", ['blame_field' => 'contact_email']);
+        if(strlen($primaryEmail) > 50) Response()->jsonError("Den primære e-mail er for lang. Maximum 50 tegn", ['blame_field' => 'email']);
         if(strlen($contactPhone ?? '') > 15) Response()->jsonError("Kontaktnummeret er for langt. Maximum 15 tegn", ['blame_field' => 'contact_phone']);
         if(strlen($industry ?? '') > 30) Response()->jsonError("Industrinavnet er for langt. Maximum 30 tegn", ['blame_field' => 'industry']);
         if(strlen($companyCvr) > 20) Response()->jsonError("Cvr nummeret er for langt. Maximum 20 tegn", ['blame_field' => 'company_cvr']);
@@ -102,6 +106,8 @@ class ApiController {
         if($companyCvr !== $organisation->cvr) $params['cvr'] = $companyCvr;
         if($website !== $organisation->website) $params['website'] = $website;
         if($contactEmail !== $organisation->contact_email) $params['contact_email'] = $contactEmail;
+        if($primaryEmail !== $organisation->primary_email) $params['primary_email'] = $primaryEmail;
+
         if($contactPhone !== $organisation->contact_phone) $params['contact_phone'] = $contactPhone;
         if($industry !== $organisation->industry) $params['industry'] = $industry;
         if($description !== $organisation->description) $params['description'] = $description;
@@ -118,12 +124,13 @@ class ApiController {
     }
 
     #[NoReturn] public static function createOrganisation(array $args): void {
-        $requiredKeys = ["name", "company_name", "company_cvr", "company_line_1", "company_city", "company_postal_code", "company_country"];
+        $requiredKeys = ["name", "email", "company_name", "company_cvr", "company_line_1", "company_city", "company_postal_code", "company_country"];
         foreach ($requiredKeys as $key) if(!array_key_exists($key, $args) || empty(trim($args[$key])))
             Response()->jsonError("Venligst udfyld alle påkrævet felter", ['blame_field' => $key]);
 
         $name = Titles::cleanUcAll(trim($args["name"]));
         $companyName = Titles::cleanUcAll(trim($args["company_name"]));
+        $primaryEmail = trim($args["email"]);
         $companyCvr = trim($args["company_cvr"]);
         $companyLine1 = trim($args["company_line_1"]);
         $companyCity = trim($args["company_city"]);
@@ -136,9 +143,11 @@ class ApiController {
         $contactPhoneCountry = array_key_exists('contact_phone_country', $args) ? trim($args["contact_phone_country"]) : null;
         $description = array_key_exists('description', $args) ? ucfirst(trim($args["description"])) : null;
 
-        if(!empty($website) && !filter_var($args["website"], FILTER_VALIDATE_URL))
+        if(!empty($website) && !filter_var($website, FILTER_VALIDATE_URL))
             Response()->jsonError("Forkert hjemmeside-format.", ['blame_field' => 'website']);
-        if(!empty($contactEmail) && !filter_var($args["contact_email"], FILTER_VALIDATE_EMAIL))
+        if(!filter_var($primaryEmail, FILTER_VALIDATE_EMAIL))
+            Response()->jsonError("Den primære email har et forkert format.", ['blame_field' => 'email']);
+        if(!empty($contactEmail) && !filter_var($contactEmail, FILTER_VALIDATE_EMAIL))
             Response()->jsonError("Forkert email-format.", ['blame_field' => 'contact_email']);
 
         if(strlen($name) > 30) Response()->jsonError("Navnet er for langt. Maximum 30 tegn", ['blame_field' => 'name']);
@@ -148,6 +157,7 @@ class ApiController {
         if(strlen($companyPostalCode) > 30) Response()->jsonError("Virksomhedens postnummer er for langt. Maximum 30 tegn", ['blame_field' => 'company_postal_code']);
         if(strlen($website ?? '') > 50) Response()->jsonError("Hjemmesiden er for lang. Maximum 50 tegn", ['blame_field' => 'website']);
         if(strlen($contactEmail ?? '') > 50) Response()->jsonError("Kontakt e-mailen er for lang. Maximum 50 tegn", ['blame_field' => 'contact_email']);
+        if(strlen($primaryEmail) > 50) Response()->jsonError("Den primære e-mail er for lang. Maximum 50 tegn", ['blame_field' => 'email']);
         if(strlen($contactPhone ?? '') > 15) Response()->jsonError("Kontaktnummeret er for langt. Maximum 15 tegn", ['blame_field' => 'contact_phone']);
         if(strlen($industry ?? '') > 30) Response()->jsonError("Industrinavnet er for langt. Maximum 30 tegn", ['blame_field' => 'industry']);
         if(strlen($companyCvr) > 20) Response()->jsonError("Cvr nummeret er for langt. Maximum 20 tegn", ['blame_field' => 'company_cvr']);
@@ -168,7 +178,7 @@ class ApiController {
         if(isEmpty($country) || !$country->enabled) Response()->jsonError("Ugyldigt land valgt.", ['blame_field' => 'company_country']);
 
         $organisationId = Methods::organisations()->createNewOrganisation(
-            $name, $companyName, $companyCvr, $companyLine1, $companyCity, $companyPostalCode, $country,
+            $name, $companyName, $primaryEmail, $companyCvr, $companyLine1, $companyCity, $companyPostalCode, $country,
             $website, $industry, $description, $contactEmail, $contactPhone, $contactPhoneCountry
         );
         if(empty($organisationId)) Response()->jsonError("Der opstod en fejl under oprettelsen. Prøv igen senere");
@@ -180,6 +190,90 @@ class ApiController {
     }
 
 
+    #[NoReturn] public static function createVivaConnectedAccount(array $args): void {
+        $organisationId = __oUuid();
+        if(empty($organisationId))
+            Response()->jsonError("Ugyldig organisation. Venligst vælg en organisation.", [], 400);
+        if(!OrganisationPermissions::__oModify("billing", "wallet"))
+            Response()->jsonError("Du har ikke tilladelse til denne handling.", [], 401);
+
+        $handler = Methods::organisations();
+        $organisation = $handler->get($organisationId);
+        if(isEmpty($organisation))
+            Response()->jsonError("Ugyldig organisation. Venligst vælg en organisation.", [], 400);
+        if(isEmpty($organisation->primary_email))
+            Response()->jsonError("Organisationen har ingen primær email. Venligst tilføj en først.", [], 400);
+
+        $connectedAccountsHandler = Methods::vivaConnectedAccounts();
+        $existingAccount = $connectedAccountsHandler->myConnection();
+        if(!isEmpty($existingAccount) && $existingAccount->state === 'COMPLETED') {
+            if($existingAccount->state === 'COMPLETED')
+                Response()->jsonError("Du har allerede en opsat Viva wallet. Hvis du ønsker at ændre den bør du først fjerne den eksisterende.");
+        }
+
+        if($existingAccount?->state === 'DRAFT' && $existingAccount->email === $organisation->primary_email) {
+            $vivaAccount = Methods::viva()->getConnectedMerchant($existingAccount->prid);
+            if(!empty(nestedArray($vivaAccount, ['merchantId']))) $link = VIVA_LOGIN_URL;
+            else $link = $existingAccount->link;
+
+            Response()->jsonSuccess('Fortsæt oprettelsen direkte hos Viva.', ['onboarding' => $link]);
+        }
+
+        $response = Methods::viva()->createConnectedMerchantAccount($organisation->primary_email);
+        $accountId = nestedArray($response, ['accountId']);
+        $redirectUrl = nestedArray($response, ['invitation', 'redirectUrl']);
+        if(empty($accountId) || empty($redirectUrl)) {
+            debugLog($response, 'viva-connected-account-error');
+            Response()->jsonError("Der opstod en fejl. Prøv igen senere", [], 500);
+        }
+
+        $connectedAccountsHandler->update(['state' => "VOID"], ['organisation' => $organisationId, 'state' => 'DRAFT']);
+        if(!$connectedAccountsHandler->insert($organisation->primary_email, $organisationId, $accountId, $redirectUrl))
+            Response()->jsonError("Der opstod en fejl under oprettelsen. Prøv igen senere", [], 500);
+
+        Response()->jsonSuccess('Fortsæt oprettelsen direkte hos Viva.', ['onboarding' => $redirectUrl]);
+    }
+
+    #[NoReturn] public static function vivaWalletStatus(array $args): void {
+        $organisationId = __oUuid();
+        if(empty($organisationId))
+            Response()->jsonError("Ugyldig organisation. Venligst vælg en organisation.", [], 400);
+        if(!OrganisationPermissions::__oRead("billing", "wallet"))
+            Response()->jsonError("Du har ikke tilladelse til denne handling.", [], 401);
+
+
+        $connectedAccountsHandler = Methods::vivaConnectedAccounts();
+        $existingAccount = $connectedAccountsHandler->excludeForeignKeys()->myConnection();
+        if(isEmpty($existingAccount)) Response()->jsonSuccess("Ingen tilknytter Viva  Wallet blev fundet");
+        if($existingAccount->state === 'COMPLETED')
+            Response()->jsonSuccess("Din Viva Wallet er opsat korrekt og er klar til brug.", $existingAccount);
+
+        $response = Methods::viva()->getConnectedMerchant($existingAccount->prid);
+        if(!nestedArray($response, ['verified'], false))
+            Response()->jsonSuccess("Din Viva Wallet er under opsætning men endnu ikke færdiggjort", $existingAccount);
+
+        $merchantId = nestedArray($response, ['merchantId']);
+        $vat = nestedArray($response, ['vatNumber']);
+        $taxNumber = nestedArray($response, ['taxNumber']);
+        $legalName = nestedArray($response, ['legalName']);
+        $cvr = nestedArray($response, ['registrationNumber']);
+        if(empty($cvr) && !empty($vat)) $cvr = $vat;
+        if(empty($cvr) && !empty($taxNumber)) $cvr = $taxNumber;
+
+
+
+        Methods::organisations()->update(
+            ['cvr' => $cvr, "company_name" => $legalName, "merchant_prid" => $merchantId],
+            ['uid' => $organisationId]
+        );
+        $connectedAccountsHandler->update(['state' => 'COMPLETED'], ['uid' => $existingAccount->uid]);
+
+        Response()->jsonSuccess(
+            "Din Viva Wallet er blevet opsat korrekt og er nu klar til brug.",
+            $connectedAccountsHandler->get($existingAccount->uid)
+        );
+    }
+
 
     #[NoReturn] public static function createLocation(array $args): void {
         $requiredKeys = ["name", "slug", "caption"];
@@ -187,7 +281,7 @@ class ApiController {
             Response()->jsonError("Venligst udfyld alle påkrævet felter", ['blame_field' => $key]);
         $organisationId = __oUuid();
         if(empty($organisationId))
-            Response()->jsonError("Ugyldig organisation. Venligst vælg en organisation at tilføje lokationen til");
+            Response()->jsonError("Ugyldig organisation. Venligst vælg en organisation for at tilføje lokationen til");
         if(empty(Settings::$organisation->organisation->merchant_prid))
             Response()->jsonError("Organisationen er endnu ikke tilknyttet en VIVA wallet. Tilknyt en wallet før du opretter lokationer");
 

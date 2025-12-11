@@ -87,6 +87,7 @@ define("LOGO_ICON_WHITE", "media/logos/icon.png"); //Transparent version of the 
 define("LOGO_SQUARE", "media/images/logo.jpg"); //Transparent version of the logo
 define("GMT_TIME", "GMT+1 (CET)"); //Timezone that is visually displayed on graphs on most pages.
 
+define("VIVA_LOGIN_URL", "https://accounts.vivapayments.com/Account/Login");
 
 
 

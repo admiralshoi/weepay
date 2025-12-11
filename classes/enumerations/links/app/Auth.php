@@ -6,6 +6,7 @@ class Auth {
 
 
     public string $merchantLogin = "merchant/login";
+    public string $merchantSignup = "merchant/signup";
     public string $consumerLogin = "consumer/login";
 
     public Oicd $oicd;

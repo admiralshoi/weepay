@@ -79,7 +79,7 @@ class CustomerPurchaseFlow extends \routing\paths\Paths {
                 "js.utility.js",
                 "js.modalHandler.js",
                 "js.oidc.js",
-                "js.async_search.js",
+                "js.features.js",
                 "js.initializer.js",
             ],
             "base" => null,

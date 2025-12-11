@@ -67,25 +67,31 @@ $accountCreationBody = [
         'partnerName' => 'Content Stage',
         'primaryColor' => '#28bfbf',
         'logoUrl' => 'https://app.contentstage.de/public/media/images/logo-icon.png',
-
     ],
 ];
 
 
-//$requests =  Methods::requests();
-//$requests->setBearerToken($accessToken);
-//$requests->setHeaderContentTypeJson();
-//$requests->setBody($accountCreationBody);
-//$requests->post($baseApiUrl . $endpoint);
-//
-//$responseHeaders = $requests->getHeaders();
-//$responseBody = $requests->getResponse();
-//
-//prettyPrint($responseHeaders);
-//prettyPrint($responseBody);
+$requests =  Methods::requests();
+$requests->setBearerToken($accessToken);
+$requests->setHeaderContentTypeJson();
+$requests->setBody($accountCreationBody);
+$requests->post($baseApiUrl . $endpoint);
+
+$responseHeaders = $requests->getHeaders();
+$responseBody = $requests->getResponse();
+
+prettyPrint([
+    'url' => $baseApiUrl . $endpoint,
+    'payload' => $accountCreationBody,
+    'headers' => $requests->getRequestHeaders(),
+    'code' => $requests->getResponseCode(),
+]);
+prettyPrint($responseHeaders);
+prettyPrint($responseBody);
 
 
 
+exit;
 
 
 

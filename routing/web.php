@@ -21,6 +21,7 @@ require_once ROOT . "routing/middleware/middleware.php";
 Routes::get(Links::$app->home, "LandingController::home");
 Routes::get(Links::$app->auth->consumerLogin, "auth.PageController::consumerDashboardLogin");
 Routes::get(Links::$app->auth->merchantLogin, "auth.PageController::merchantDashboardLogin");
+Routes::get(Links::$app->auth->merchantSignup, "auth.PageController::merchantDashboardSignup");
 /**
  *  =========================================
  *  ============= OPEN PAGES END ============
@@ -99,6 +100,7 @@ Routes::group(['api', "requiresApiLogout"], function() {
     Routes::post("api/password-recovery/reset", "api.AuthController::passwordRecoveryResetPassword");
     Routes::post("api/create-user/{account_type}", "api.AuthController::createUser");
     Routes::post(Links::$api->auth->merchantLogin, "auth.ApiController::loginUser");
+    Routes::post(Links::$api->auth->merchantSignup, "auth.ApiController::signupUser");
     Routes::post(Links::$api->auth->consumerLogin, "auth.ApiController::loginUser");
     /**
      *  =========================================
@@ -122,6 +124,8 @@ Routes::group(['api', "requiresApiLogout"], function() {
  */
 Routes::group(['api','requiresApiLogin'], function() {
     Routes::group(['merchant'], function() {
+        Routes::get(Links::$api->organisation->vivaConnectedAccount, "merchants.ApiController::vivaWalletStatus");
+        Routes::post(Links::$api->organisation->vivaConnectedAccount, "merchants.ApiController::createVivaConnectedAccount");
         Routes::post(Links::$api->organisation->team->update, "merchants.ApiController::updateTeamMember");
         Routes::post(Links::$api->organisation->team->role->create, "merchants.ApiController::createNewRole");
         Routes::post(Links::$api->organisation->team->role->rename, "merchants.ApiController::renameRole");
@@ -251,7 +255,7 @@ Routes::group(['requiresLoggedOut'], function() {
     Routes::get(Links::$policies->merchant->privacy, "GeneralController::pageNotReady");
     Routes::get(Links::$policies->merchant->termsOfUse, "GeneralController::pageNotReady");
     Routes::get(Links::$support->public, "GeneralController::pageNotReady");
-    Routes::get(Links::$merchant->public->signup, "GeneralController::pageNotReady");
+//    Routes::get(Links::$merchant->public->signup, "GeneralController::pageNotReady");
     Routes::get(Links::$merchant->public->recovery, "GeneralController::pageNotReady");
     Routes::get(Links::$consumer->public->signup, "GeneralController::pageNotReady");
     Routes::get(Links::$consumer->public->recovery, "GeneralController::pageNotReady");

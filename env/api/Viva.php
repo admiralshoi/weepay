@@ -25,7 +25,7 @@ class Viva {
 
 
 
-    private static bool $sandbox = true;
+    private static bool $sandbox = false;
     private const SANDBOX_CLIENT_ID = "067jg2zsb0g51m923ez87ic03n8isrqughtqpjldn5bu6.apps.vivapayments.com";
     private const SANDBOX_CLIENT_SECRET = "7nUK8kkFW442A3q9Od4r9FmdP6t31K";
     private const SANDBOX_RESELLER_ID = "7e416dfc-aa89-4335-9be5-4b3ce2dc359b";
@@ -35,19 +35,19 @@ class Viva {
     private const RESELLER_ID = "0fb66aa8-ba5b-49f0-877f-64e8649a3da9";
     private const RESELLER_API_KEY = "tH8KWe94dTa7k9ta6h6o700Rfc2y3D";
     private const SANDBOX_OAUTH_URL = "https://demo-accounts.vivapayments.com/connect/token";
-    private const OAUTH_URL = "";
+    private const OAUTH_URL = "https://accounts.vivapayments.com/connect/token";
     private const SANDBOX_MERCHANT_CREATE_URL = "https://demo-api.vivapayments.com/isv/v1/accounts";
-    private const MERCHANT_CREATE_URL = "";
+    private const MERCHANT_CREATE_URL = "https://api.vivapayments.com/isv/v1/accounts";
     private const SANDBOX_MERCHANT_READ_URL = "https://demo-api.vivapayments.com/isv/v1/accounts/";
-    private const MERCHANT_READ_URL = "";
+    private const MERCHANT_READ_URL = "https://api.vivapayments.com/isv/v1/accounts/";
     private const SANDBOX_SOURCE_CREATE_URL = "https://demo.vivapayments.com/api/sources";
-    private const SOURCE_CREATE_URL = "";
+    private const SOURCE_CREATE_URL = "https://www.vivapayments.com/api/sources";
     private const SANDBOX_PAYMENT_CREATE_URL = "https://demo-api.vivapayments.com/checkout/v2/isv/orders?merchantId=";
-    private const PAYMENT_CREATE_URL = "";
+    private const PAYMENT_CREATE_URL = "https://api.vivapayments.com/checkout/v2/isv/orders?merchantId=";
     private const SANDBOX_PAYMENT_READ_URL = "https://demo.vivapayments.com/api/transactions/?ordercode=";
-    private const PAYMENT_READ_URL = "";
+    private const PAYMENT_READ_URL = "https://www.vivapayments.com/api/transactions/?ordercode=";
     private const SANDBOX_ORDER_READ_URL = "https://demo.vivapayments.com/api/orders/";
-    private const ORDER_READ_URL = "";
+    private const ORDER_READ_URL = "https://www.vivapayments.com/api/orders/";
 
 
 

@@ -1,0 +1,25 @@
+{
+    "sourceCode": "726wp4",
+    "amount": 6900,
+    "dynamicDescriptor": "Fredes Fisk",
+    "customerTrns": "Fredes Fisk: fiskefars",
+    "merchantTrns": "Fredes Fisk - fiskefars",
+    "allowRecurring": true,
+    "preauth": false,
+    "disableCash": true,
+    "disableWallet": true,
+    "customer": {
+        "email": null,
+        "phone": null,
+        "fullName": "Alvin Christensen",
+        "countryCode": "DK"
+    },
+    "currencyCode": "978",
+    "tags": [
+        "Fredes Fisk",
+        "fiskefars",
+        "Alvin Christensen",
+        "1996-05-12"
+    ],
+    "isvAmount": 342
+}

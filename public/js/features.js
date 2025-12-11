@@ -166,27 +166,27 @@ async function setDateRangePicker() {
 async function hasUserSession() {
     if(!userSession) return false;
 
-    var checkUserActiveSession = setInterval(async function (){
-        await get("api/has-session")
-            .then(res => {
-                let refresh = false;
-                if(typeof res !== "object" || empty(res)) {
-                    console.log("Failed to check session");
-                    refresh = true;
-                }
-                else if(!("session" in res) || !res.session) {
-                    console.log("Session expired");
-                    refresh = true;
-                }
-
-                // if(refresh) window.location = serverHost + "logout";
-            })
-            .catch(res => {
-                console.log(res);
-                // clearInterval(checkUserActiveSession);
-                // setTimeout(function (){ window.location = serverHost; }, (2 * 1000))
-            })
-    }, (1000 * 60));
+    // var checkUserActiveSession = setInterval(async function (){
+    //     await get("api/has-session")
+    //         .then(res => {
+    //             let refresh = false;
+    //             if(typeof res !== "object" || empty(res)) {
+    //                 console.log("Failed to check session");
+    //                 refresh = true;
+    //             }
+    //             else if(!("session" in res) || !res.session) {
+    //                 console.log("Session expired");
+    //                 refresh = true;
+    //             }
+    //
+    //             // if(refresh) window.location = serverHost + "logout";
+    //         })
+    //         .catch(res => {
+    //             console.log(res);
+    //             // clearInterval(checkUserActiveSession);
+    //             // setTimeout(function (){ window.location = serverHost; }, (2 * 1000))
+    //         })
+    // }, (1000 * 60));
 }
 
 

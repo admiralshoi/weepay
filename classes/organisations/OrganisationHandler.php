@@ -14,6 +14,24 @@ class OrganisationHandler extends Crud {
 
 
     const BASE_PERMISSIONS = [
+        'billing' => [
+            'icon' => 'mdi mdi-wallet',
+            'read' => true,
+            'modify' => true,
+            'delete' => true,
+            "permissions" => [
+                'settings' => [
+                    'read' => true,
+                    'modify' => true,
+                    'delete' => true
+                ],
+                'wallet' => [
+                    'read' => true,
+                    'modify' => true,
+                    'delete' => true
+                ],
+            ]
+        ],
         'team' => [
             'icon' => 'fa-solid fa-users',
             'read' => true,
@@ -195,6 +213,28 @@ class OrganisationHandler extends Crud {
     }
 
 
+    public function updateNewBasePermissions(): void {
+        $organisations = $this->getByX([], ['uid', 'permissions']);
+        foreach ($organisations->list() as $org) {
+            $rolePermissions = toArray($org->permissions);
+
+            foreach ($rolePermissions as  &$permissions) {
+                foreach (self::BASE_PERMISSIONS as $main => $item) {
+                    if(!array_key_exists($main, $permissions)) {
+                        $permissions[$main] = $item;
+                        continue;
+                    }
+                    foreach ($item['permissions'] as $sub => $subPermissions) {
+                        if(!array_key_exists($sub, $permissions[$main]['permissions'])) {
+                            $permissions[$main]['permissions'][$sub] = $subPermissions;
+                        }
+                    }
+                }
+
+            }
+            $this->update(['permissions' => $rolePermissions], ['uid' => $org->uid]);
+        }
+    }
 
 
 
@@ -208,6 +248,7 @@ class OrganisationHandler extends Crud {
     public function createNewOrganisation(
         string $name,
         string $companyName,
+        string $primaryEmail,
         string|int $companyCvr,
         string $companyLine1,
         string $companyCity,
@@ -222,6 +263,7 @@ class OrganisationHandler extends Crud {
     ): ?string {
         $params = [
             "name" => $name,
+            "primary_email" => $primaryEmail,
             "company_name" => $companyName,
             "cvr" => $companyCvr,
             "company_address" => [

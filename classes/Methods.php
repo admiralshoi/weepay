@@ -9,6 +9,7 @@ use classes\auth\PasswordHandler;
 use classes\utility\SortByKey;
 use classes\auth\UserCreation;
 use classes\auth\LocalAuthentication;
+use classes\auth\LocalSignup;
 use classes\user\Roles;
 use classes\app\Meta;
 use classes\user\Sidebars;
@@ -44,6 +45,7 @@ class Methods {
 
     public static function toCollection(array|object $items = []): Collection { return new Collection($items); }
     public static function qr(): QrHandler { return new QrHandler(); }
+    public static function vivaConnectedAccounts(): \classes\organisations\VivaConnectedAccountsHandler { return new \classes\organisations\VivaConnectedAccountsHandler(); }
     public static function oidcAuthentication(): \classes\auth\OidcAuthentication { return new \classes\auth\OidcAuthentication(); }
     public static function oidcSession(): \classes\auth\OidcSessionHandler { return new \classes\auth\OidcSessionHandler(); }
     public static function viva(): \classes\api\Viva { return new \classes\api\Viva(); }
@@ -78,6 +80,7 @@ class Methods {
     public static function roles(): Roles { return new Roles(); }
     #[Pure] public static function appMeta(): Meta { return new Meta(); }
     public static function localAuthentication(): LocalAuthentication { return new LocalAuthentication(); }
+    public static function localSignup(): LocalSignup { return new LocalSignup(); }
     #[Pure] public static function cronWorker(string $type = ""): CronWorker { return new CronWorker($type); }
     public static function cronLogFiles(string $type): ?array { return (new CronWorker())->getLogFiles($type); }
     public static function userCreation(array $params, bool $thirdParty = false): bool { return UserCreation::run($params, $thirdParty); }

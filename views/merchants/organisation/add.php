@@ -222,6 +222,17 @@ $countries = Methods::countries()->getByX(['enabled' => 1], ['uid', 'name', 'cod
                                         <input type="text" name="name" placeholder="Roses Frisør" class="form-field-v2" maxlength="30">
                                     </div>
                                 </div>
+                                <div class="col-12">
+                                    <div class="flex-col-start " style="row-gap: .5rem">
+                                        <div class="flex-col-start " style="row-gap: 0">
+                                            <p class="font-13 font-weight-bold mb-0">Primær email</p>
+                                            <p class="font-12 color-gray mb-0">
+                                                Bruges til at associere organisationens indgående betalinger. Er ikke synlig for kunder.
+                                            </p>
+                                        </div>
+                                        <input type="email" name="email" placeholder="admin@mitfirma.dk" class="form-field-v2" maxlength="30">
+                                    </div>
+                                </div>
                             </div>
                             <div class="flex-col-start " style="row-gap: .5rem">
                                 <p class="font-13 font-weight-bold mb-0">Beskrivelse (Valgfri)</p>

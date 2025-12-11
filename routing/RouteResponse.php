@@ -59,7 +59,8 @@ class RouteResponse {
         }
         $this->json(["status" => "error", "error" => array_merge(["message" => $message], $data)], $responseCode);
     }
-    #[NoReturn] public function jsonSuccess(string $message, array $data = [], int $responseCode = 200): void {
+    #[NoReturn] public function jsonSuccess(string $message, array|object $data = [], int $responseCode = 200): void {
+        if(is_object($data)) $data = toArray($data);
         if($this->redirect) {
             $data["redirect"] = $this->redirect;
             if(!empty($this->redirectUrl)) $data["redirect_uri"] = $this->redirectUrl;

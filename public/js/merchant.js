@@ -613,6 +613,88 @@ const LocationActions = {
 
 
 
+const VivaWallet = {
+    onboardingWindow: null,
+    onboardingInterval: null,
+    accountStatus: "DRAFT",
+    init(accountStatus) {
+        this.accountStatus = accountStatus;
+        this.bindEvents();
+    },
+    bindEvents() {
+        if(this.accountStatus !== 'COMPLETED') {
+            this.onboardingInterval = setInterval(this.checkAccountStatus.bind(this), 3500);
+        }
+    },
+    async checkAccountStatus() {
+        let result = await get(platformLinks.api.organisation.vivaConnectedAccount);
+        if(result.status === "error") {
+            console.warn("Der opstod en fejl", result.error.message)
+            clearInterval(this.onboardingInterval)
+            this.onboardingInterval = null;
+            return;
+        }
+
+        if(this.onboardingWindow !== null && result?.data?.state !== 'DRAFT') {
+            if(!this.onboardingWindow.closed) {
+                this.onboardingWindow.close();
+                this.onboardingWindow = null;
+            }
+        }
+
+        if(result?.data?.state === 'COMPLETED') {
+            clearInterval(this.onboardingInterval)
+            this.onboardingInterval = null;
+            if(this.accountStatus !== 'COMPLETED') {
+                queueNotificationOnLoad(
+                    'Din Viva wallet er opsat',
+                    "Du kan nu begynde at oprette lokationer og tage imod betalinger",
+                    'success'
+                )
+                window.location.reload();
+                return;
+            }
+        }
+    },
+    async setupVivaWallet(btn) {
+        if(this.accountStatus !== 'DRAFT' && this.accountStatus !== null) return;
+        btn.disabled = true;
+
+        let result = await post(platformLinks.api.organisation.vivaConnectedAccount);
+        if(result.status === "error") {
+            btn.disabled = false;
+            showErrorNotification("Der opstod en fejl", result.error.message)
+            return;
+        }
+
+        if(!('onboarding' in result.data)) {
+            showErrorNotification("Der opstod en fejl", 'Kunne ikke finde onoarding linket');
+            btn.disabled = false;
+            return;
+        }
+
+        showNeutralNotification("Klargøre opsættelse...", result.message)
+
+        this.onboardingWindow = window.open(
+            result.data.onboarding,
+            'onboardingWindow',
+            'width="100%",height="100%"'
+        )
+        if (!this.onboardingWindow) {
+            window.location.href = result.data.onboarding;
+        }
+
+        btn.disabled = false;
+    }
+};
+
+
+
+
+
+
+
+
 
 
 

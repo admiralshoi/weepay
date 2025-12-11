@@ -58,24 +58,24 @@ class Viva {
 
 
 
-    public function createConnectedMerchant(
-        string $returnUrl,
+    public function createConnectedMerchantAccount(
         string $email,
-        string $name,
+        ?string $returnUrl = null,
+        ?string $name = null,
         ?string $color = null,
         ?string $logoUrl = null,
-        ?string $token = null
     ): ?array {
         $requests =  Methods::requests();
-        $branding = ['partnerName' => $name];
-        if(!empty($color)) $branding['primaryColor'] = $color;
-        if(!empty($logoUrl)) $branding['logoUrl'] = $logoUrl;
+        $branding = ["partnerName" => !empty($name) ? $name : "WeePay"];
+        $branding['primaryColor'] = !empty($color) ? $color : "#173c90";
+        $branding['logoUrl'] = !empty($logoUrl) ? $logoUrl : "https://wee-pay.dk/public/media/logos/weepay_pos.svg";
         $payload = [
             'email' => $email,
-            'returnUrl' => $returnUrl,
-            'branding' => $branding,
+            'returnUrl' => !empty($returnUrl) ? $returnUrl : __url(Links::$merchant->organisation->home),
+            "branding" => $branding,
         ];
-        if(empty($token)) $token = $this->fetchToken($requests);
+
+        if(empty($token)) $token = $this->fetchToken();
         if(empty($token)) {
             //set some error somewhere
             return null;
@@ -95,9 +95,9 @@ class Viva {
     }
 
 
-    public function getConnectedMerchant(string $accountId, ?string $token = null): ?array {
+    public function getConnectedMerchant(string $accountId): ?array {
         $requests =  Methods::requests();
-        if(empty($token)) $token = $this->fetchToken($requests);
+        $token = $this->fetchToken();
         if(empty($token)) {
             //set some error somewhere
             return null;
@@ -199,6 +199,13 @@ class Viva {
 
         $requests->post(API::paymentCreateUrl($merchantId));
 
+        testLog([
+            "url" => API::paymentCreateUrl($merchantId),
+            "token" => $token,
+            "headers" => $requests->getRequestHeaders(),
+            "response_headers" => $requests->getHeaders(),
+            "response_body" => $requests->getResponse(),
+        ], 'create-payment-response');
 
         $response = $requests->getResponse();
         if(nestedArray($response, ['status']) === 'error') {
