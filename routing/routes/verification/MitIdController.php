@@ -2,6 +2,7 @@
 
 namespace routing\routes\verification;
 
+use classes\enumerations\Links;
 use classes\Methods;
 use Database\model\Locations;
 use JetBrains\PhpStorm\NoReturn;
@@ -19,7 +20,7 @@ class MitIdController {
         if(!in_array($session->status, ['DRAFT', 'PENDING'])) Response()->jsonError("Denied.", [], 401);
 
         $response = $handler->getProviderSession($session->prid);
-        testLog($response, 'oidc-cb-response');
+        testLog($response, 'oidc-cb-response-' . time());
 
         switch ($response?->status) {
             default:
@@ -27,13 +28,13 @@ class MitIdController {
                 break;
             case "ABORT":
                 $handler->statusCancelled($ref);
-                Response()->jsonError('The authentication was aborted', [], 400);
+                Response()->jsonError('Verificeringen blev stoppet', [], 400);
             case "CREATED":
                 $handler->statusVoid($ref);
-                Response()->jsonError('The authentication is not complete', [], 400);
+                Response()->jsonError('Verificeringen blev ikke fuldført', [], 400);
             case "ERROR":
                 $handler->statusError($ref);
-                Response()->jsonError('An error occurred. Try again later.', [], 400);
+                Response()->jsonError('Der opstod en fejl. Prøv igen senere.', [], 400);
         }
 
         $info = $session->info;
@@ -41,7 +42,7 @@ class MitIdController {
         $tsId = property_exists($info, "tsid") ? $info->tsid : null;
 
         switch ($next) {
-            default: Response()->jsonError('Unknown next action.', [], 400);
+            default: Response()->jsonError('Unknown handling.', [], 400);
             case 'cpf':
                 if(empty($tsId)) Response()->jsonError('Missing tsid.', [], 400);
 
@@ -57,6 +58,27 @@ class MitIdController {
                         http_build_query(['tsid' => $terminalSession->uid, 'sid' => $ref])
                     )
                 );
+
+            case 'consumer_login':
+            case 'consumer_signup':
+                // Handle consumer authentication (failsafe if popup didn't work)
+                $authHandler = Methods::oidcAuthentication();
+
+                $authId = $authHandler->login($response);
+                if(empty($authId)) Response()->jsonError('Verificeringen fejlede.', [], 500);
+
+                // Get user to check if profile completion is needed
+                $user = Methods::users()->get(__uuid());
+                if(isEmpty($user)) Response()->jsonError('Brugeren kunne ikke findes.', [], 500);
+
+                // Determine redirect URL
+                if(isEmpty($user->email) || isEmpty($user->phone)) {
+                    // Needs to complete profile
+                    Response()->redirect(__url(Links::$app->auth->consumerSignup . '/complete-profile'));
+                } else {
+                    // Profile complete, go to dashboard
+                    Response()->redirect(__url(Links::$consumer->dashboard));
+                }
 
         }
     }

@@ -1,0 +1,45 @@
+<div class="modal" tabindex="-1" role="dialog" id="terminal-details-modal">
+  <div class="modal-dialog responsive" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Rediger terminal</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="post" class="modal-body">
+        <div  class="flex-col-start " style="row-gap: 1.5rem;">
+          <input type="hidden" name="terminal_id" value="{{terminal.uid}}">
+
+          <div class="flex-col-start" style="row-gap: .5rem;">
+            <label class="font-13 font-weight-bold mb-0">Terminal navn</label>
+            <input type="text" name="name" value="{{terminal.name}}" placeholder="Terminal 1" class="form-field-v2" maxlength="30" required>
+          </div>
+
+          <div class="flex-col-start" style="row-gap: .5rem;">
+            <label class="font-13 font-weight-bold mb-0">Status</label>
+            <select class="form-select-v2 h-45px w-100" name="status" required>
+              <option value="DRAFT" {{#eq terminal.status "DRAFT"}} selected {{/eq}}>Udkast</option>
+              <option value="ACTIVE" {{#eq terminal.status "ACTIVE"}} selected {{/eq}}>Aktiv</option>
+              <option value="INACTIVE" {{#eq terminal.status "INACTIVE"}} selected {{/eq}}>Inaktiv</option>
+              <option value="DELETED" {{#eq terminal.status "DELETED"}} selected {{/eq}}>Slettet</option>
+            </select>
+          </div>
+
+          <p class="mt-2 color-red font-12 d-none modalErrorBox"></p>
+        </div>
+      </form>
+      <div class="modal-footer">
+        <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Luk</button>
+        <button type="button" class="btn-v2 action-btn flex-row-center-center flex-nowrap g-05" data-run="update">
+          <span>Gem ændringer</span>
+          <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
+              <span class="spinner-border color-white square-15" role="status" style="border-width: 2px;">
+                <span class="sr-only">Loading...</span>
+              </span>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

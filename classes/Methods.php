@@ -10,6 +10,7 @@ use classes\utility\SortByKey;
 use classes\auth\UserCreation;
 use classes\auth\LocalAuthentication;
 use classes\auth\LocalSignup;
+use classes\auth\TwoFactorAuth;
 use classes\user\Roles;
 use classes\app\Meta;
 use classes\user\Sidebars;
@@ -66,6 +67,7 @@ class Methods {
     #[Pure] public static function locationMembers(): LocationMemberHandler { return new LocationMemberHandler(); }
     #[Pure] public static function organisationMembers(): OrganisationMemberHandler { return new OrganisationMemberHandler(); }
     #[Pure] public static function organisations(): OrganisationHandler { return new OrganisationHandler(); }
+    #[Pure] public static function organisationFees(): \classes\organisations\OrganisationFeesHandler { return new \classes\organisations\OrganisationFeesHandler(); }
     #[Pure] public static function paymentHandler(): PaymentHandler { return new PaymentHandler(); }
     #[Pure] public static function calc(): Calculate { return new Calculate(); }
     #[Pure] public static function openAi(): OpenAi { return new OpenAi(); }
@@ -81,6 +83,7 @@ class Methods {
     #[Pure] public static function appMeta(): Meta { return new Meta(); }
     public static function localAuthentication(): LocalAuthentication { return new LocalAuthentication(); }
     public static function localSignup(): LocalSignup { return new LocalSignup(); }
+    public static function twoFactorAuth(): TwoFactorAuth { return new TwoFactorAuth(); }
     #[Pure] public static function cronWorker(string $type = ""): CronWorker { return new CronWorker($type); }
     public static function cronLogFiles(string $type): ?array { return (new CronWorker())->getLogFiles($type); }
     public static function userCreation(array $params, bool $thirdParty = false): bool { return UserCreation::run($params, $thirdParty); }

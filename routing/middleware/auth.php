@@ -1,6 +1,7 @@
 <?php
 
 
+use classes\enumerations\Links;
 use JetBrains\PhpStorm\Pure;
 use Database\model\UserRoles;
 use classes\Methods;
@@ -57,13 +58,21 @@ function admin(): bool {
     return Methods::isAdmin();
 }
 function merchant(): bool {
-    return Methods::isMerchant();
+    $result = Methods::isMerchant();
+    $user = Methods::users()->get(__uuid());
+    $accessLevel = $user->access_level ?? 'none';
+    debugLog(['isMerchant' => $result, 'access_level' => $accessLevel, 'user_id' => __uuid()], 'middleware-merchant');
+    return $result;
 }
 function merchantOrConsumer(): bool {
     return merchant()  || consumer();
 }
 function consumer(): bool {
-    return Methods::isConsumer();
+    $result = Methods::isConsumer();
+    $user = Methods::users()->get(__uuid());
+    $accessLevel = $user->access_level ?? 'none';
+    debugLog(['isConsumer' => $result, 'access_level' => $accessLevel, 'user_id' => __uuid()], 'middleware-consumer');
+    return $result;
 }
 function guest(): bool {
     return Methods::isGuest();
@@ -74,4 +83,9 @@ function notAdmin(): bool { return !admin(); }
 
 function cronJobAuth(array $args): bool {
     return isset($args["token"]) && $args["token"] === CRONJOB_TOKEN;
+}
+
+function consumerProfileComplete(): bool {
+    if(!Methods::isConsumer()) return true;
+    return !isEmpty(\features\Settings::$user?->phone) && !isEmpty(\features\Settings::$user?->full_name);
 }

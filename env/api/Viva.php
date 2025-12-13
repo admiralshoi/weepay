@@ -22,6 +22,7 @@ class Viva {
     public static function paymentCreateUrl(string $merchantId): string { return (self::$sandbox ? self::SANDBOX_PAYMENT_CREATE_URL : self::PAYMENT_CREATE_URL) . $merchantId; }
     public static function paymentReadUrl(string $orderId): string { return (self::$sandbox ? self::SANDBOX_PAYMENT_READ_URL : self::PAYMENT_READ_URL) . $orderId; }
     public static function orderReadUrl(string $orderId): string { return (self::$sandbox ? self::SANDBOX_ORDER_READ_URL : self::ORDER_READ_URL) . $orderId; }
+    public static function checkoutUrl(string $orderId): string { return (self::$sandbox ? self::SANDBOX_CHECKOUT_URL : self::CHECKOUT_URL) . $orderId; }
 
 
 
@@ -48,6 +49,8 @@ class Viva {
     private const PAYMENT_READ_URL = "https://www.vivapayments.com/api/transactions/?ordercode=";
     private const SANDBOX_ORDER_READ_URL = "https://demo.vivapayments.com/api/orders/";
     private const ORDER_READ_URL = "https://www.vivapayments.com/api/orders/";
+    private const SANDBOX_CHECKOUT_URL = "https://demo.vivapayments.com/web/checkout?ref=";
+    private const CHECKOUT_URL = "https://www.vivapayments.com/web/checkout?ref=";
 
 
 

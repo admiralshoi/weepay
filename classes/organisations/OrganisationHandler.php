@@ -260,6 +260,7 @@ class OrganisationHandler extends Crud {
         ?string $contactEmail = null,
         null|int|string $contactPhone = null,
         ?string $contactPhoneCountryCode = null,
+        ?string $defaultCurrency = null,
     ): ?string {
         $params = [
             "name" => $name,
@@ -279,6 +280,7 @@ class OrganisationHandler extends Crud {
             "contact_phone" => $contactPhone,
             "contact_phone_country_code" => $contactPhoneCountryCode,
             "description" => $description,
+            "default_currency" => $defaultCurrency,
             "permissions" => [],
             "status" => "ACTIVE"
         ];

@@ -6,9 +6,10 @@
 use classes\enumerations\Links;
 use classes\Methods;
 use features\Settings;
+use classes\lang\Translate;
 
 
-$pageTitle = "Organisation - Tilføj ny";
+$pageTitle = ucfirst(Translate::word("Organisation")) . " - Tilføj ny";
 $countries = Methods::countries()->getByX(['enabled' => 1], ['uid', 'name', 'code']);
 
 ?>
@@ -32,8 +33,8 @@ $countries = Methods::countries()->getByX(['enabled' => 1], ['uid', 'name', 'cod
                     <span>Tilbage</span>
                 </a>
                 <?php endif; ?>
-                <p class="font-25 font-weight-700 text-center">Organisation - <?=BRAND_NAME?> Forhandler</p>
-                <p class="font-14 font-weight-medium text-gray text-center">Opret en ny- eller tilmeld dig en eksisterende- organisation for at komme i gang</p>
+                <p class="font-25 font-weight-700 text-center"><?=ucfirst(Translate::word("Organisation"))?> - <?=BRAND_NAME?> Forhandler</p>
+                <p class="font-14 font-weight-medium text-gray text-center">Opret en ny- eller tilmeld dig en eksisterende- <?=(Translate::word("Organisation"))?> for at komme i gang</p>
 
                 <div class="mt-5" data-switchParent data-switch-id="organisation-join"
                      data-active-btn-class="color-dark bg-wrapper"
@@ -42,11 +43,11 @@ $countries = Methods::countries()->getByX(['enabled' => 1], ['uid', 'name', 'cod
                     <div class="d-flex flex-align-center w-100 bg-cta-container border-radius-5px p-1 mb-4" >
                         <div class="switchViewBtn text-center color-dark bg-wrapper cursor-pointer font-14 p-2 w-50 noSelect"
                              data-toggle-switch-object="create" data-switch-id="organisation-join" style="border-radius: 5px 0 0 5px;">
-                            Opret ny organisation
+                            Opret ny <?=(Translate::word("Organisation"))?>
                         </div>
                         <div class="switchViewBtn text-center color-cta-inactive bg-cta-container p-2 w-50 cursor-pointer font-14 noSelect"
                              data-toggle-switch-object="join" data-switch-id="organisation-join" style="border-radius: 0 5px 5px 0;">
-                            Tilmeld dig en eksisterende organisation
+                            Tilmeld dig en eksisterende <?=(Translate::word("Organisation"))?>
                         </div>
                     </div>
 
@@ -59,8 +60,8 @@ $countries = Methods::countries()->getByX(['enabled' => 1], ['uid', 'name', 'cod
                                         <div class="mb-2">
                                             <i class="fa-solid fa-building color-blue font-30"></i>
                                         </div>
-                                        <p class="mb-0 font-weight-bold font-16">Opret Organisation</p>
-                                        <p class="mb-2 text-gray font-14">Opret en virksomhedsorganisation til at administrere lokationer og medarbejdere</p>
+                                        <p class="mb-0 font-weight-bold font-16">Opret <?=ucfirst(Translate::word("Organisation"))?></p>
+                                        <p class="mb-2 text-gray font-14">Opret en <?=(Translate::word("Organisation"))?> til at administrere lokationer og medarbejdere</p>
                                     </div>
                                     <p class="mb-0 mt-2 font-14 vision-button organisation-show-form">
                                         <span>Kom i gang</span>
@@ -102,7 +103,7 @@ $countries = Methods::countries()->getByX(['enabled' => 1], ['uid', 'name', 'cod
                             <div class="col-12 mt-3">
                                 <button class="btn-v2 action-btn-lg organisation-show-form flex-row-center flex-align-center flex-nowrap"
                                     style="gap: .5rem;">
-                                    <span>Opret organisation</span>
+                                    <span>Opret <?=(Translate::word("Organisation"))?></span>
 
                                     <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
                                         <span class="spinner-border color-white square-15" role="status" style="border-width: 2px;">
@@ -122,16 +123,16 @@ $countries = Methods::countries()->getByX(['enabled' => 1], ['uid', 'name', 'cod
                             <div class="col-12 d-flex">
                                 <div class="vision-card transition-all w-100">
                                     <div class="flex-col-start">
-                                        <p class="mb-0 font-weight-bold font-20">Tilmeld dig en eksisterende orgnisation</p>
+                                        <p class="mb-0 font-weight-bold font-20">Tilmeld dig en eksisterende <?=(Translate::word("Organisation"))?></p>
                                         <p class="mb-2 text-gray font-14 font-weight-medium">
-                                            Bed din organisations-administrator om at sende dig en invitation på <u><?=$_SESSION["email"]?></u>.
+                                            Bed din <?=(Translate::word("Organisation"))?>s-administrator om at sende dig en invitation på <u><?=$_SESSION["email"]?></u>.
                                         </p>
 
                                         <div class="mt-3">
                                             <table class="table-v2 table-v2-hover">
                                                 <thead>
                                                 <tr>
-                                                    <th>Organisation</th>
+                                                    <th><?=ucfirst(Translate::word("Organisation"))?></th>
                                                     <th>Rolle</th>
                                                     <th>Dato</th>
                                                     <th class="text-right">Handling</th>
@@ -209,8 +210,8 @@ $countries = Methods::countries()->getByX(['enabled' => 1], ['uid', 'name', 'cod
                         <div class="flex-row-start flex-align-center flex-nowrap mb-4" style="column-gap: 1rem">
                             <i class="fa-regular fa-building color-blue font-40"></i>
                             <div class="flex-col-start">
-                                <p class="font-25 font-weight-bold mb-0">Opret Organisation</p>
-                                <p class="font-13 color-gray mb-0" style="margin-top: -.25rem">Opsæt din forretningsorganisation hos <?=BRAND_NAME?></p>
+                                <p class="font-25 font-weight-bold mb-0">Opret <?=ucfirst(Translate::word("Organisation"))?></p>
+                                <p class="font-13 color-gray mb-0" style="margin-top: -.25rem">Opsæt din <?=(Translate::word("Organisation"))?> hos <?=BRAND_NAME?></p>
                             </div>
                         </div>
 
@@ -218,7 +219,7 @@ $countries = Methods::countries()->getByX(['enabled' => 1], ['uid', 'name', 'cod
                             <div class="row" style="row-gap: .5rem;">
                                 <div class="col-12">
                                     <div class="flex-col-start " style="row-gap: .5rem">
-                                        <p class="font-13 font-weight-bold mb-0">Organisationsnavn</p>
+                                        <p class="font-13 font-weight-bold mb-0"><?=(Translate::word("Organisationsnavn"))?></p>
                                         <input type="text" name="name" placeholder="Roses Frisør" class="form-field-v2" maxlength="30">
                                     </div>
                                 </div>
@@ -227,7 +228,7 @@ $countries = Methods::countries()->getByX(['enabled' => 1], ['uid', 'name', 'cod
                                         <div class="flex-col-start " style="row-gap: 0">
                                             <p class="font-13 font-weight-bold mb-0">Primær email</p>
                                             <p class="font-12 color-gray mb-0">
-                                                Bruges til at associere organisationens indgående betalinger. Er ikke synlig for kunder.
+                                                Bruges til at associere <?=(Translate::word("Organisationens"))?> indgående betalinger. Er ikke synlig for kunder.
                                             </p>
                                         </div>
                                         <input type="email" name="email" placeholder="admin@mitfirma.dk" class="form-field-v2" maxlength="30">
@@ -236,7 +237,7 @@ $countries = Methods::countries()->getByX(['enabled' => 1], ['uid', 'name', 'cod
                             </div>
                             <div class="flex-col-start " style="row-gap: .5rem">
                                 <p class="font-13 font-weight-bold mb-0">Beskrivelse (Valgfri)</p>
-                                <textarea name="description" placeholder="Tell us about your organisation" class="mnh-100px form-field-v2" maxlength="1000"></textarea>
+                                <textarea name="description" placeholder="Fortæl os om din <?=(Translate::word("Organisation"))?>" class="mnh-100px form-field-v2" maxlength="1000"></textarea>
                             </div>
                             <div class="row" style="row-gap: .5rem;">
                                 <div class="col-12 col-md-6">
@@ -329,10 +330,24 @@ $countries = Methods::countries()->getByX(['enabled' => 1], ['uid', 'name', 'cod
                                     </div>
                                 </div>
                             </div>
+                            <div class="row" style="row-gap: .5rem;">
+                                <div class="col-12 col-md-6">
+                                    <div class="flex-col-start " style="row-gap: .5rem">
+                                        <p class="font-13 font-weight-bold mb-0">Valuta</p>
+                                        <select class="form-select-v2 h-45px w-100 " name="default_currency">
+                                            <?php foreach (Settings::$app->currencies as $currency): ?>
+                                            <option value="<?=$currency?>" <?=$currency === Settings::$app->default_currency ? 'selected' : ''?>>
+                                                <?=$currency?>
+                                            </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="flex-col-start " style="row-gap: .5rem">
                                 <button class="btn-v2 action-btn-lg flex-row-center flex-align-center flex-nowrap"
                                         name="create_new_organisation" style="gap: .5rem;" onclick="createOrganisation(this)">
-                                    <span>Opret organisation</span>
+                                    <span>Opret <?=(Translate::word("Organisation"))?></span>
 
                                     <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
                                         <span class="spinner-border color-white square-15" role="status" style="border-width: 2px;">

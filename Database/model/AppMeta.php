@@ -54,6 +54,11 @@ class AppMeta extends \Database\Model {
             "type" => "string",
         ],
         [
+            "name" => "currencies",
+            "value" => '["DKK","EUR","GBP","RON","PLN","CZK","HUF","SEK","BGN"]',
+            "type" => "array",
+        ],
+        [
             "name" => "organisation_roles",
             "value" => '["owner","admin","team_manager","analyst"]',
             "type" => "array",

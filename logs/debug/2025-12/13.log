@@ -1,0 +1,1808 @@
+[2025-12-13 16:23:37] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:23:37] - []
+[2025-12-13 16:23:37] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:23:37] - [9]
+[2025-12-13 16:23:37] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:23:37] -  queryBuilder-first-bindings  [9]
+[2025-12-13 16:23:37] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:23:37] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:23:37] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:23:37] - [1]
+[2025-12-13 16:23:37] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:23:37] - [9]
+[2025-12-13 16:23:37] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:23:37] -  queryBuilder-first-bindings  [9]
+[2025-12-13 16:23:37] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:23:37] -  queryBuilder-first-bindings  ["29852698833154"]
+[2025-12-13 16:23:37] -  user-cookies  
+[2025-12-13 16:23:37] -  user-no-organisation-cookies  
+[2025-12-13 16:23:37] -  request-path  
+[2025-12-13 16:23:37] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-12-13 16:23:37] - [1]
+[2025-12-13 16:23:38] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:23:38] - []
+[2025-12-13 16:23:38] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:23:38] - [9]
+[2025-12-13 16:23:38] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:23:38] -  queryBuilder-first-bindings  [9]
+[2025-12-13 16:23:38] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:23:38] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:23:38] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:23:38] - [1]
+[2025-12-13 16:23:38] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:23:38] - [9]
+[2025-12-13 16:23:38] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:23:38] -  queryBuilder-first-bindings  [9]
+[2025-12-13 16:23:38] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:23:38] -  queryBuilder-first-bindings  ["29852698833154"]
+[2025-12-13 16:23:38] -  user-cookies  
+[2025-12-13 16:23:38] -  user-no-organisation-cookies  
+[2025-12-13 16:23:38] -  request-path  api/track
+[2025-12-13 16:23:41] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:23:41] - []
+[2025-12-13 16:23:41] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:23:41] - [9]
+[2025-12-13 16:23:41] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:23:41] -  queryBuilder-first-bindings  [9]
+[2025-12-13 16:23:41] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:23:41] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:23:41] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:23:41] - [1]
+[2025-12-13 16:23:41] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:23:41] - [9]
+[2025-12-13 16:23:41] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:23:41] -  queryBuilder-first-bindings  [9]
+[2025-12-13 16:23:41] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:23:41] -  queryBuilder-first-bindings  ["29852698833154"]
+[2025-12-13 16:23:41] -  user-cookies  
+[2025-12-13 16:23:41] -  user-no-organisation-cookies  
+[2025-12-13 16:23:41] -  request-path  terminals
+[2025-12-13 16:23:41] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:23:41] -  queryBuilder-first-bindings  ["29852698833154"]
+[2025-12-13 16:23:41] -  middleware-merchant  {"isMerchant":false,"access_level":9,"user_id":"29852698833154"}
+[2025-12-13 16:23:42] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:23:42] - []
+[2025-12-13 16:23:42] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:23:42] - [9]
+[2025-12-13 16:23:42] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:23:42] -  queryBuilder-first-bindings  [9]
+[2025-12-13 16:23:42] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:23:42] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:23:42] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:23:42] - [1]
+[2025-12-13 16:23:42] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:23:42] - [9]
+[2025-12-13 16:23:42] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:23:42] -  queryBuilder-first-bindings  [9]
+[2025-12-13 16:23:42] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:23:42] -  queryBuilder-first-bindings  ["29852698833154"]
+[2025-12-13 16:23:42] -  user-cookies  
+[2025-12-13 16:23:42] -  user-no-organisation-cookies  
+[2025-12-13 16:23:42] -  request-path  
+[2025-12-13 16:23:42] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-12-13 16:23:42] - [1]
+[2025-12-13 16:23:43] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:23:43] - []
+[2025-12-13 16:23:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:23:43] - [9]
+[2025-12-13 16:23:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:23:43] -  queryBuilder-first-bindings  [9]
+[2025-12-13 16:23:43] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:23:43] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:23:43] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:23:43] - [1]
+[2025-12-13 16:23:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:23:43] - [9]
+[2025-12-13 16:23:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:23:43] -  queryBuilder-first-bindings  [9]
+[2025-12-13 16:23:43] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:23:43] -  queryBuilder-first-bindings  ["29852698833154"]
+[2025-12-13 16:23:43] -  user-cookies  
+[2025-12-13 16:23:43] -  user-no-organisation-cookies  
+[2025-12-13 16:23:43] -  request-path  api/track
+[2025-12-13 16:23:43] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:23:43] - []
+[2025-12-13 16:23:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:23:43] - [9]
+[2025-12-13 16:23:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:23:43] -  queryBuilder-first-bindings  [9]
+[2025-12-13 16:23:43] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:23:43] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:23:43] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:23:43] - [1]
+[2025-12-13 16:23:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:23:43] - [9]
+[2025-12-13 16:23:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:23:43] -  queryBuilder-first-bindings  [9]
+[2025-12-13 16:23:43] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:23:43] -  queryBuilder-first-bindings  ["29852698833154"]
+[2025-12-13 16:23:43] -  user-cookies  
+[2025-12-13 16:23:43] -  user-no-organisation-cookies  
+[2025-12-13 16:23:43] -  request-path  terminals
+[2025-12-13 16:23:43] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:23:43] -  queryBuilder-first-bindings  ["29852698833154"]
+[2025-12-13 16:23:43] -  middleware-merchant  {"isMerchant":false,"access_level":9,"user_id":"29852698833154"}
+[2025-12-13 16:23:44] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:23:44] - []
+[2025-12-13 16:23:44] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:23:44] - [9]
+[2025-12-13 16:23:44] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:23:44] -  queryBuilder-first-bindings  [9]
+[2025-12-13 16:23:44] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:23:44] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:23:44] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:23:44] - [1]
+[2025-12-13 16:23:44] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:23:44] - [9]
+[2025-12-13 16:23:44] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:23:44] -  queryBuilder-first-bindings  [9]
+[2025-12-13 16:23:44] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:23:44] -  queryBuilder-first-bindings  ["29852698833154"]
+[2025-12-13 16:23:44] -  user-cookies  
+[2025-12-13 16:23:44] -  user-no-organisation-cookies  
+[2025-12-13 16:23:44] -  request-path  
+[2025-12-13 16:23:44] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-12-13 16:23:44] - [1]
+[2025-12-13 16:23:45] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:23:45] - []
+[2025-12-13 16:23:45] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:23:45] - [9]
+[2025-12-13 16:23:45] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:23:45] -  queryBuilder-first-bindings  [9]
+[2025-12-13 16:23:45] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:23:45] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:23:45] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:23:45] - [1]
+[2025-12-13 16:23:45] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:23:45] - [9]
+[2025-12-13 16:23:45] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:23:45] -  queryBuilder-first-bindings  [9]
+[2025-12-13 16:23:45] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:23:45] -  queryBuilder-first-bindings  ["29852698833154"]
+[2025-12-13 16:23:45] -  user-cookies  
+[2025-12-13 16:23:45] -  user-no-organisation-cookies  
+[2025-12-13 16:23:45] -  request-path  api/track
+[2025-12-13 16:23:47] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:23:47] - []
+[2025-12-13 16:23:47] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:23:47] - [9]
+[2025-12-13 16:23:47] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:23:47] -  queryBuilder-first-bindings  [9]
+[2025-12-13 16:23:47] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:23:47] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:23:47] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:23:47] - [1]
+[2025-12-13 16:23:47] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:23:47] - [9]
+[2025-12-13 16:23:47] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:23:47] -  queryBuilder-first-bindings  [9]
+[2025-12-13 16:23:47] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:23:47] -  queryBuilder-first-bindings  ["29852698833154"]
+[2025-12-13 16:23:47] -  user-cookies  
+[2025-12-13 16:23:47] -  user-no-organisation-cookies  
+[2025-12-13 16:23:47] -  request-path  logout
+[2025-12-13 16:23:47] - SELECT * FROM `PROD_FKF_terminalsession` WHERE `customer` = ? AND `state` IN (?,?)
+[2025-12-13 16:23:47] - ["29852698833154","ACTIVE","PENDING"]
+[2025-12-13 16:23:47] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:23:47] - []
+[2025-12-13 16:23:47] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:23:47] - [1]
+[2025-12-13 16:23:47] -  request-path  
+[2025-12-13 16:23:47] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-12-13 16:23:47] - [1]
+[2025-12-13 16:23:48] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:23:48] - []
+[2025-12-13 16:23:48] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:23:48] - [1]
+[2025-12-13 16:23:48] -  request-path  api/track
+[2025-12-13 16:23:49] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:23:49] - []
+[2025-12-13 16:23:49] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:23:49] - [1]
+[2025-12-13 16:23:49] -  request-path  consumer/login
+[2025-12-13 16:23:50] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_oidcsessions` WHERE `uid` = ?
+[2025-12-13 16:23:50] - ["oidc_8rzakiqfwwhlhd7"]
+[2025-12-13 16:23:50] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_oidcsessions` (`prid`, `reason`, `expires_at`, `status`, `provider`, `info`, `token`, `uid`) VALUES (?,?,?,?,?,?,?,?)
+[2025-12-13 16:23:50] -  querybuilder-insert-values  [null,"authenticate",1765639730,"DRAFT","mitid","eyJuZXh0IjoiY29uc3VtZXJfbG9naW4ifQ==",2858986338,"oidc_8rzakiqfwwhlhd7"]
+[2025-12-13 16:23:50] - UPDATE `PROD_FKF_oidcsessions` SET `prid`=? WHERE `uid` = ?
+[2025-12-13 16:23:50] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-12-13 16:23:50] - [1]
+[2025-12-13 16:23:51] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:23:51] - []
+[2025-12-13 16:23:51] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:23:51] - [1]
+[2025-12-13 16:23:51] -  request-path  api/track
+[2025-12-13 16:24:03] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:03] - []
+[2025-12-13 16:24:03] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:03] - [1]
+[2025-12-13 16:24:03] -  request-path  consumer/login
+[2025-12-13 16:24:03] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_oidcsessions` WHERE `uid` = ?
+[2025-12-13 16:24:03] - ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:03] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_oidcsessions` (`prid`, `reason`, `expires_at`, `status`, `provider`, `info`, `token`, `uid`) VALUES (?,?,?,?,?,?,?,?)
+[2025-12-13 16:24:03] -  querybuilder-insert-values  [null,"authenticate",1765639743,"DRAFT","mitid","eyJuZXh0IjoiY29uc3VtZXJfbG9naW4ifQ==",2858986338,"oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:04] - UPDATE `PROD_FKF_oidcsessions` SET `prid`=? WHERE `uid` = ?
+[2025-12-13 16:24:04] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-12-13 16:24:04] - [1]
+[2025-12-13 16:24:04] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:04] - []
+[2025-12-13 16:24:04] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:04] - [1]
+[2025-12-13 16:24:04] -  request-path  api/track
+[2025-12-13 16:24:06] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:06] - []
+[2025-12-13 16:24:06] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:06] - [1]
+[2025-12-13 16:24:06] -  request-path  auth/user/preauth/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:06] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:06] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:06] -  oidc-session  {"id":"7d3853d9-5a75-43ce-aab6-3636197e7d12","accountId":"a-spge-j25bjJdoKxJQ9mQSF6ex","authenticationUrl":"https:\/\/in-via-aps.sandbox.signicat.com\/broker\/sp\/external-service\/login?messageId=d6398477-d124-1744-9b2f-6bc15eb59e46&transactionId=9bce4176-713c-6d4b-a0ac-9a0759a98f9e","status":"CREATED","callbackUrls":{"success":"https:\/\/localhost:443\/weepay\/auth\/user\/verify\/success?ref=oidc_xk2c7f6w1w7ixy6&sessionId=7d3853d9-5a75-43ce-aab6-3636197e7d12","abort":"https:\/\/localhost:443\/weepay\/auth\/user\/verify\/abort?ref=oidc_xk2c7f6w1w7ixy6&sessionId=7d3853d9-5a75-43ce-aab6-3636197e7d12","error":"https:\/\/localhost:443\/weepay\/auth\/user\/verify\/error?ref=oidc_xk2c7f6w1w7ixy6&sessionId=7d3853d9-5a75-43ce-aab6-3636197e7d12"},"allowedProviders":{"0":"mitid"},"flow":"redirect","requestedAttributes":{"0":"dateOfBirth","1":"family_name","2":"firstName","3":"given_name","4":"lastName","5":"mitidAal","6":"mitidCprSource","7":"mitidFal","8":"mitidHasCpr","9":"mitidIal","10":"mitidLoa","11":"mitidNameAndAddressProtection","12":"mitidReferenceTextBody","13":"mitidUuid","14":"name","15":"nin","16":"nin_type"},"sessionLifetime":1200,"expiresAt":"2025-12-13T15:44:04.2446287+00:00"}
+[2025-12-13 16:24:06] - UPDATE `PROD_FKF_oidcsessions` SET `status`=? WHERE `uid` = ?
+[2025-12-13 16:24:06] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:06] - []
+[2025-12-13 16:24:06] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:06] - [1]
+[2025-12-13 16:24:06] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:06] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:06] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:07] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:07] - []
+[2025-12-13 16:24:07] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:07] - [1]
+[2025-12-13 16:24:07] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:07] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:07] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:08] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:08] - []
+[2025-12-13 16:24:08] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:08] - [1]
+[2025-12-13 16:24:08] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:08] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:08] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:09] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:09] - []
+[2025-12-13 16:24:09] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:09] - [1]
+[2025-12-13 16:24:09] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:09] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:09] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:09] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:09] - []
+[2025-12-13 16:24:09] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:09] - [1]
+[2025-12-13 16:24:09] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:09] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:09] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:10] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:10] - []
+[2025-12-13 16:24:10] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:10] - [1]
+[2025-12-13 16:24:10] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:10] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:10] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:11] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:11] - []
+[2025-12-13 16:24:11] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:11] - [1]
+[2025-12-13 16:24:11] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:11] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:11] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:12] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:12] - []
+[2025-12-13 16:24:12] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:12] - [1]
+[2025-12-13 16:24:12] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:12] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:12] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:13] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:13] - []
+[2025-12-13 16:24:13] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:13] - [1]
+[2025-12-13 16:24:13] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:13] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:13] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:13] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:13] - []
+[2025-12-13 16:24:13] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:13] - [1]
+[2025-12-13 16:24:13] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:13] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:13] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:14] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:14] - []
+[2025-12-13 16:24:14] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:14] - [1]
+[2025-12-13 16:24:14] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:14] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:14] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:15] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:15] - []
+[2025-12-13 16:24:15] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:15] - [1]
+[2025-12-13 16:24:15] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:15] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:15] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:16] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:16] - []
+[2025-12-13 16:24:16] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:16] - [1]
+[2025-12-13 16:24:16] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:16] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:16] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:17] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:17] - []
+[2025-12-13 16:24:17] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:17] - [1]
+[2025-12-13 16:24:17] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:17] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:17] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:19] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:19] - []
+[2025-12-13 16:24:19] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:19] - [1]
+[2025-12-13 16:24:19] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:19] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:19] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:20] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:20] - []
+[2025-12-13 16:24:20] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:20] - [1]
+[2025-12-13 16:24:20] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:20] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:20] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:21] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:21] - []
+[2025-12-13 16:24:21] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:21] - [1]
+[2025-12-13 16:24:21] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:21] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:21] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:21] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:21] - []
+[2025-12-13 16:24:21] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:21] - [1]
+[2025-12-13 16:24:21] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:21] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:21] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:22] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:22] - []
+[2025-12-13 16:24:22] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:22] - [1]
+[2025-12-13 16:24:22] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:22] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:22] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:23] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:23] - []
+[2025-12-13 16:24:23] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:23] - [1]
+[2025-12-13 16:24:23] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:23] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:23] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:24] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:24] - []
+[2025-12-13 16:24:24] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:24] - [1]
+[2025-12-13 16:24:24] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:24] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:24] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:24] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:24] - []
+[2025-12-13 16:24:24] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:24] - [1]
+[2025-12-13 16:24:24] -  request-path  auth/user/verify/success
+[2025-12-13 16:24:24] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:24] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:24] - UPDATE `PROD_FKF_oidcsessions` SET `status`=? WHERE `uid` = ?
+[2025-12-13 16:24:24] - SELECT * FROM `PROD_FKF_authoidc` WHERE `nin` = ? AND `provider` = ? LIMIT 1
+[2025-12-13 16:24:24] -  queryBuilder-first-bindings  ["MjB4L1hQTXlEZUR5TVE9PQ==","mitid"]
+[2025-12-13 16:24:24] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:24] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:24:24] - SELECT * FROM `PROD_FKF_authoidc` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:24] -  queryBuilder-first-bindings  ["authoidc__xfikcfkl5kw20x9"]
+[2025-12-13 16:24:24] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:24] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:24:25] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:25] - []
+[2025-12-13 16:24:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:25] - [1]
+[2025-12-13 16:24:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:25] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:24:25] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:25] - [1]
+[2025-12-13 16:24:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:25] - [1]
+[2025-12-13 16:24:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:25] - [1]
+[2025-12-13 16:24:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:25] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:24:25] -  user-cookies  
+[2025-12-13 16:24:25] -  user-no-organisation-cookies  
+[2025-12-13 16:24:25] -  request-path  api/auth/user/oidc-session/oidc_xk2c7f6w1w7ixy6
+[2025-12-13 16:24:25] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  ["oidc_xk2c7f6w1w7ixy6"]
+[2025-12-13 16:24:25] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:24:25] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:25] - []
+[2025-12-13 16:24:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:25] - [1]
+[2025-12-13 16:24:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:25] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:24:25] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:25] - [1]
+[2025-12-13 16:24:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:25] - [1]
+[2025-12-13 16:24:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:25] - [1]
+[2025-12-13 16:24:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:25] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:24:25] -  user-cookies  
+[2025-12-13 16:24:25] -  user-no-organisation-cookies  
+[2025-12-13 16:24:25] -  request-path  consumer/signup/complete-profile
+[2025-12-13 16:24:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:25] - [1]
+[2025-12-13 16:24:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:25] - [1]
+[2025-12-13 16:24:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:25] - [1]
+[2025-12-13 16:24:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:25] - [1]
+[2025-12-13 16:24:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:25] - [1]
+[2025-12-13 16:24:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:25] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:24:25] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:24:25] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:24:25] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-12-13 16:24:25] - [1]
+[2025-12-13 16:24:25] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:25] - []
+[2025-12-13 16:24:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:25] - [1]
+[2025-12-13 16:24:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:25] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:24:25] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:25] - [1]
+[2025-12-13 16:24:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:25] - [1]
+[2025-12-13 16:24:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:25] - [1]
+[2025-12-13 16:24:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:25] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:25] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:24:25] -  user-cookies  
+[2025-12-13 16:24:25] -  user-no-organisation-cookies  
+[2025-12-13 16:24:25] -  request-path  api/track
+[2025-12-13 16:24:33] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:33] - []
+[2025-12-13 16:24:33] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:33] - [1]
+[2025-12-13 16:24:33] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:33] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:33] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:24:33] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:24:33] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:33] - [1]
+[2025-12-13 16:24:33] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:33] - [1]
+[2025-12-13 16:24:33] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:33] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:33] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:33] - [1]
+[2025-12-13 16:24:33] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:33] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:33] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:33] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:24:33] -  user-cookies  
+[2025-12-13 16:24:33] -  user-no-organisation-cookies  
+[2025-12-13 16:24:33] -  request-path  logout
+[2025-12-13 16:24:33] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:33] - [1]
+[2025-12-13 16:24:33] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:33] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:33] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:33] - [1]
+[2025-12-13 16:24:33] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:33] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:33] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:33] - [1]
+[2025-12-13 16:24:33] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:33] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:33] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:33] - [1]
+[2025-12-13 16:24:33] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:33] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:33] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:24:33] - [1]
+[2025-12-13 16:24:33] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:24:33] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:24:33] - SELECT * FROM `PROD_FKF_terminalsession` WHERE `customer` = ? AND `state` IN (?,?)
+[2025-12-13 16:24:33] - ["_soqzqomw43tqwwk","ACTIVE","PENDING"]
+[2025-12-13 16:24:33] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:33] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:24:33] - SELECT * FROM `PROD_FKF_terminals` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:33] -  queryBuilder-first-bindings  ["ter_8b0ltcwzjteazxf"]
+[2025-12-13 16:24:33] - SELECT * FROM `PROD_FKF_organisations` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:33] -  queryBuilder-first-bindings  ["org_ui83pv3b0fgdjvp"]
+[2025-12-13 16:24:33] - SELECT * FROM `PROD_FKF_countries` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:33] -  queryBuilder-first-bindings  ["ctr_4389rfjd"]
+[2025-12-13 16:24:33] - SELECT * FROM `PROD_FKF_locations` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:24:33] -  queryBuilder-first-bindings  ["loc_yle1gyklw2t1mat"]
+[2025-12-13 16:24:33] - UPDATE `PROD_FKF_terminalsession` SET `state`=? WHERE `uid` = ?
+[2025-12-13 16:24:33] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:33] - []
+[2025-12-13 16:24:33] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:33] - [1]
+[2025-12-13 16:24:33] -  request-path  
+[2025-12-13 16:24:33] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-12-13 16:24:33] - [1]
+[2025-12-13 16:24:34] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:24:34] - []
+[2025-12-13 16:24:34] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:24:34] - [1]
+[2025-12-13 16:24:34] -  request-path  api/track
+[2025-12-13 16:25:12] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:12] - []
+[2025-12-13 16:25:12] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:12] - [1]
+[2025-12-13 16:25:12] -  request-path  consumer/login
+[2025-12-13 16:25:12] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_oidcsessions` WHERE `uid` = ?
+[2025-12-13 16:25:12] - ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:12] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_oidcsessions` (`prid`, `reason`, `expires_at`, `status`, `provider`, `info`, `token`, `uid`) VALUES (?,?,?,?,?,?,?,?)
+[2025-12-13 16:25:12] -  querybuilder-insert-values  [null,"authenticate",1765639812,"DRAFT","mitid","eyJuZXh0IjoiY29uc3VtZXJfbG9naW4ifQ==",2858986338,"oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:12] - UPDATE `PROD_FKF_oidcsessions` SET `prid`=? WHERE `uid` = ?
+[2025-12-13 16:25:12] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-12-13 16:25:12] - [1]
+[2025-12-13 16:25:13] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:13] - []
+[2025-12-13 16:25:13] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:13] - [1]
+[2025-12-13 16:25:13] -  request-path  api/track
+[2025-12-13 16:25:14] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:14] - []
+[2025-12-13 16:25:14] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:14] - [1]
+[2025-12-13 16:25:14] -  request-path  auth/user/preauth/oidc_29lkc79i2yn4gw3
+[2025-12-13 16:25:14] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:14] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:14] -  oidc-session  {"id":"442147f5-93dc-4405-bd18-54a9bc767cd7","accountId":"a-spge-j25bjJdoKxJQ9mQSF6ex","authenticationUrl":"https:\/\/in-via-aps.sandbox.signicat.com\/broker\/sp\/external-service\/login?messageId=a94462e0-09fd-ad4d-a90c-712764e5e5a1&transactionId=b2f3a279-3ceb-bd43-879e-7ead46bfc51e","status":"CREATED","callbackUrls":{"success":"https:\/\/localhost:443\/weepay\/auth\/user\/verify\/success?ref=oidc_29lkc79i2yn4gw3&sessionId=442147f5-93dc-4405-bd18-54a9bc767cd7","abort":"https:\/\/localhost:443\/weepay\/auth\/user\/verify\/abort?ref=oidc_29lkc79i2yn4gw3&sessionId=442147f5-93dc-4405-bd18-54a9bc767cd7","error":"https:\/\/localhost:443\/weepay\/auth\/user\/verify\/error?ref=oidc_29lkc79i2yn4gw3&sessionId=442147f5-93dc-4405-bd18-54a9bc767cd7"},"allowedProviders":{"0":"mitid"},"flow":"redirect","requestedAttributes":{"0":"dateOfBirth","1":"family_name","2":"firstName","3":"given_name","4":"lastName","5":"mitidAal","6":"mitidCprSource","7":"mitidFal","8":"mitidHasCpr","9":"mitidIal","10":"mitidLoa","11":"mitidNameAndAddressProtection","12":"mitidReferenceTextBody","13":"mitidUuid","14":"name","15":"nin","16":"nin_type"},"sessionLifetime":1200,"expiresAt":"2025-12-13T15:45:12.8296117+00:00"}
+[2025-12-13 16:25:14] - UPDATE `PROD_FKF_oidcsessions` SET `status`=? WHERE `uid` = ?
+[2025-12-13 16:25:14] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:14] - []
+[2025-12-13 16:25:14] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:14] - [1]
+[2025-12-13 16:25:14] -  request-path  api/auth/user/oidc-session/oidc_29lkc79i2yn4gw3
+[2025-12-13 16:25:14] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:14] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:15] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:15] - []
+[2025-12-13 16:25:15] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:15] - [1]
+[2025-12-13 16:25:15] -  request-path  api/auth/user/oidc-session/oidc_29lkc79i2yn4gw3
+[2025-12-13 16:25:15] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:15] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:16] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:16] - []
+[2025-12-13 16:25:16] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:16] - [1]
+[2025-12-13 16:25:16] -  request-path  api/auth/user/oidc-session/oidc_29lkc79i2yn4gw3
+[2025-12-13 16:25:16] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:16] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:16] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:16] - []
+[2025-12-13 16:25:16] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:16] - [1]
+[2025-12-13 16:25:16] -  request-path  api/auth/user/oidc-session/oidc_29lkc79i2yn4gw3
+[2025-12-13 16:25:16] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:16] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:17] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:17] - []
+[2025-12-13 16:25:17] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:17] - [1]
+[2025-12-13 16:25:17] -  request-path  api/auth/user/oidc-session/oidc_29lkc79i2yn4gw3
+[2025-12-13 16:25:17] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:17] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:18] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:18] - []
+[2025-12-13 16:25:18] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:18] - [1]
+[2025-12-13 16:25:18] -  request-path  api/auth/user/oidc-session/oidc_29lkc79i2yn4gw3
+[2025-12-13 16:25:18] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:18] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:19] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:19] - []
+[2025-12-13 16:25:19] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:19] - [1]
+[2025-12-13 16:25:19] -  request-path  api/auth/user/oidc-session/oidc_29lkc79i2yn4gw3
+[2025-12-13 16:25:19] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:19] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:20] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:20] - []
+[2025-12-13 16:25:20] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:20] - [1]
+[2025-12-13 16:25:20] -  request-path  api/auth/user/oidc-session/oidc_29lkc79i2yn4gw3
+[2025-12-13 16:25:20] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:20] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:20] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:20] - []
+[2025-12-13 16:25:20] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:20] - [1]
+[2025-12-13 16:25:20] -  request-path  api/auth/user/oidc-session/oidc_29lkc79i2yn4gw3
+[2025-12-13 16:25:20] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:20] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:21] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:21] - []
+[2025-12-13 16:25:21] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:21] - [1]
+[2025-12-13 16:25:21] -  request-path  api/auth/user/oidc-session/oidc_29lkc79i2yn4gw3
+[2025-12-13 16:25:21] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:21] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:22] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:22] - []
+[2025-12-13 16:25:22] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:22] - [1]
+[2025-12-13 16:25:22] -  request-path  api/auth/user/oidc-session/oidc_29lkc79i2yn4gw3
+[2025-12-13 16:25:22] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:22] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:24] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:24] - []
+[2025-12-13 16:25:24] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:24] - [1]
+[2025-12-13 16:25:24] -  request-path  api/auth/user/oidc-session/oidc_29lkc79i2yn4gw3
+[2025-12-13 16:25:24] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:24] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:26] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:26] - []
+[2025-12-13 16:25:26] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:26] - [1]
+[2025-12-13 16:25:26] -  request-path  api/auth/user/oidc-session/oidc_29lkc79i2yn4gw3
+[2025-12-13 16:25:26] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:26] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:27] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:27] - []
+[2025-12-13 16:25:27] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:27] - [1]
+[2025-12-13 16:25:27] -  request-path  api/auth/user/oidc-session/oidc_29lkc79i2yn4gw3
+[2025-12-13 16:25:27] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:27] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:28] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:28] - []
+[2025-12-13 16:25:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:28] - [1]
+[2025-12-13 16:25:28] -  request-path  api/auth/user/oidc-session/oidc_29lkc79i2yn4gw3
+[2025-12-13 16:25:28] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:28] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:29] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:29] - []
+[2025-12-13 16:25:29] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:29] - [1]
+[2025-12-13 16:25:29] -  request-path  api/auth/user/oidc-session/oidc_29lkc79i2yn4gw3
+[2025-12-13 16:25:29] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:29] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:29] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:29] - []
+[2025-12-13 16:25:29] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:29] - [1]
+[2025-12-13 16:25:29] -  request-path  api/auth/user/oidc-session/oidc_29lkc79i2yn4gw3
+[2025-12-13 16:25:29] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:29] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:30] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:30] - []
+[2025-12-13 16:25:30] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:30] - [1]
+[2025-12-13 16:25:30] -  request-path  api/auth/user/oidc-session/oidc_29lkc79i2yn4gw3
+[2025-12-13 16:25:30] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:30] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:31] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:31] - []
+[2025-12-13 16:25:31] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:31] - [1]
+[2025-12-13 16:25:31] -  request-path  api/auth/user/oidc-session/oidc_29lkc79i2yn4gw3
+[2025-12-13 16:25:31] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:31] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:31] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:31] - []
+[2025-12-13 16:25:31] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:31] - [1]
+[2025-12-13 16:25:31] -  request-path  auth/user/verify/success
+[2025-12-13 16:25:31] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:31] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:32] - UPDATE `PROD_FKF_oidcsessions` SET `status`=? WHERE `uid` = ?
+[2025-12-13 16:25:32] - SELECT * FROM `PROD_FKF_authoidc` WHERE `nin` = ? AND `provider` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  ["MjB4L1hQTXlEZUR5TVE9PQ==","mitid"]
+[2025-12-13 16:25:32] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:32] - SELECT * FROM `PROD_FKF_authoidc` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  ["authoidc__xfikcfkl5kw20x9"]
+[2025-12-13 16:25:32] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:32] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:32] - []
+[2025-12-13 16:25:32] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:32] - [1]
+[2025-12-13 16:25:32] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:32] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:25:32] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:32] - [1]
+[2025-12-13 16:25:32] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:32] - [1]
+[2025-12-13 16:25:32] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:32] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:32] - [1]
+[2025-12-13 16:25:32] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:32] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:32] -  user-cookies  
+[2025-12-13 16:25:32] -  user-no-organisation-cookies  
+[2025-12-13 16:25:32] -  request-path  api/auth/user/oidc-session/oidc_29lkc79i2yn4gw3
+[2025-12-13 16:25:32] - SELECT * FROM `PROD_FKF_oidcsessions` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  ["oidc_29lkc79i2yn4gw3"]
+[2025-12-13 16:25:32] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:32] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:32] - []
+[2025-12-13 16:25:32] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:32] - [1]
+[2025-12-13 16:25:32] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:32] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:25:32] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:32] - [1]
+[2025-12-13 16:25:32] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:32] - [1]
+[2025-12-13 16:25:32] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:32] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:32] - [1]
+[2025-12-13 16:25:32] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:32] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:32] -  user-cookies  
+[2025-12-13 16:25:32] -  user-no-organisation-cookies  
+[2025-12-13 16:25:32] -  request-path  consumer/signup/complete-profile
+[2025-12-13 16:25:32] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:32] - [1]
+[2025-12-13 16:25:32] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:32] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:32] - [1]
+[2025-12-13 16:25:32] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:32] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:32] - [1]
+[2025-12-13 16:25:32] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:32] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:32] - [1]
+[2025-12-13 16:25:32] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:32] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:32] - [1]
+[2025-12-13 16:25:32] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:32] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:32] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:25:32] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:32] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:32] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-12-13 16:25:32] - [1]
+[2025-12-13 16:25:33] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:33] - []
+[2025-12-13 16:25:33] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:33] - [1]
+[2025-12-13 16:25:33] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:33] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:33] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:25:33] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:25:33] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:33] - [1]
+[2025-12-13 16:25:33] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:33] - [1]
+[2025-12-13 16:25:33] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:33] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:33] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:33] - [1]
+[2025-12-13 16:25:33] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:33] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:33] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:33] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:33] -  user-cookies  
+[2025-12-13 16:25:33] -  user-no-organisation-cookies  
+[2025-12-13 16:25:33] -  request-path  api/track
+[2025-12-13 16:25:40] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:40] - []
+[2025-12-13 16:25:40] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:40] - [1]
+[2025-12-13 16:25:40] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:40] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:25:40] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:40] - [1]
+[2025-12-13 16:25:40] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:40] - [1]
+[2025-12-13 16:25:40] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:40] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:40] - [1]
+[2025-12-13 16:25:40] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:40] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:40] -  user-cookies  
+[2025-12-13 16:25:40] -  user-no-organisation-cookies  
+[2025-12-13 16:25:40] -  request-path  api/consumer/check-phone-verification
+[2025-12-13 16:25:40] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:40] - [1]
+[2025-12-13 16:25:40] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:40] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:40] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:25:40] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:40] - []
+[2025-12-13 16:25:40] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:40] - [1]
+[2025-12-13 16:25:40] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:40] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:25:40] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:40] - [1]
+[2025-12-13 16:25:40] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:40] - [1]
+[2025-12-13 16:25:40] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:40] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:40] - [1]
+[2025-12-13 16:25:40] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:40] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:40] -  user-cookies  
+[2025-12-13 16:25:40] -  user-no-organisation-cookies  
+[2025-12-13 16:25:40] -  request-path  api/consumer/check-phone-verification
+[2025-12-13 16:25:40] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:40] - [1]
+[2025-12-13 16:25:40] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:40] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:40] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:25:40] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:40] - []
+[2025-12-13 16:25:40] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:40] - [1]
+[2025-12-13 16:25:40] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:40] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:25:40] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:40] - [1]
+[2025-12-13 16:25:40] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:40] - [1]
+[2025-12-13 16:25:40] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:40] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:40] - [1]
+[2025-12-13 16:25:40] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:40] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:40] -  user-cookies  
+[2025-12-13 16:25:40] -  user-no-organisation-cookies  
+[2025-12-13 16:25:40] -  request-path  api/consumer/check-phone-verification
+[2025-12-13 16:25:40] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:40] - [1]
+[2025-12-13 16:25:40] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:40] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:40] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:25:40] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:40] - []
+[2025-12-13 16:25:40] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:40] - [1]
+[2025-12-13 16:25:40] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:40] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:25:40] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:40] - [1]
+[2025-12-13 16:25:40] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:40] - [1]
+[2025-12-13 16:25:40] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:40] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:40] - [1]
+[2025-12-13 16:25:40] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:40] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:40] -  user-cookies  
+[2025-12-13 16:25:40] -  user-no-organisation-cookies  
+[2025-12-13 16:25:40] -  request-path  api/consumer/check-phone-verification
+[2025-12-13 16:25:40] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:40] - [1]
+[2025-12-13 16:25:40] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:40] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:40] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:40] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:25:42] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:42] - []
+[2025-12-13 16:25:42] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:42] - [1]
+[2025-12-13 16:25:42] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:42] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:42] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:25:42] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:25:42] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:42] - [1]
+[2025-12-13 16:25:42] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:42] - [1]
+[2025-12-13 16:25:42] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:42] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:42] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:42] - [1]
+[2025-12-13 16:25:42] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:42] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:42] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:42] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:42] -  user-cookies  
+[2025-12-13 16:25:42] -  user-no-organisation-cookies  
+[2025-12-13 16:25:42] -  request-path  api/consumer/check-phone-verification
+[2025-12-13 16:25:42] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:42] - [1]
+[2025-12-13 16:25:42] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:42] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:42] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:42] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:42] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:25:42] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:42] - []
+[2025-12-13 16:25:42] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:42] - [1]
+[2025-12-13 16:25:42] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:42] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:42] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:25:42] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:25:42] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:42] - [1]
+[2025-12-13 16:25:42] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:42] - [1]
+[2025-12-13 16:25:42] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:42] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:42] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:42] - [1]
+[2025-12-13 16:25:42] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:42] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:42] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:42] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:42] -  user-cookies  
+[2025-12-13 16:25:42] -  user-no-organisation-cookies  
+[2025-12-13 16:25:42] -  request-path  api/consumer/check-phone-verification
+[2025-12-13 16:25:42] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:42] - [1]
+[2025-12-13 16:25:42] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:42] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:42] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:42] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:42] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:25:43] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:43] - []
+[2025-12-13 16:25:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:43] - [1]
+[2025-12-13 16:25:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:43] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:43] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:25:43] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:25:43] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:43] - [1]
+[2025-12-13 16:25:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:43] - [1]
+[2025-12-13 16:25:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:43] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:43] - [1]
+[2025-12-13 16:25:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:43] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:43] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:43] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:43] -  user-cookies  
+[2025-12-13 16:25:43] -  user-no-organisation-cookies  
+[2025-12-13 16:25:43] -  request-path  api/consumer/check-phone-verification
+[2025-12-13 16:25:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:43] - [1]
+[2025-12-13 16:25:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:43] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:43] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:43] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:43] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:25:43] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:43] - []
+[2025-12-13 16:25:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:43] - [1]
+[2025-12-13 16:25:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:43] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:43] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:25:43] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:25:43] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:43] - [1]
+[2025-12-13 16:25:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:43] - [1]
+[2025-12-13 16:25:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:43] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:43] - [1]
+[2025-12-13 16:25:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:43] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:43] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:43] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:43] -  user-cookies  
+[2025-12-13 16:25:43] -  user-no-organisation-cookies  
+[2025-12-13 16:25:43] -  request-path  api/consumer/check-phone-verification
+[2025-12-13 16:25:43] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:43] - [1]
+[2025-12-13 16:25:43] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:43] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:43] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:43] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:43] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:25:43] - SELECT * FROM `PROD_FKF_twofactorverification` WHERE `user` = ? AND `identifier` = ? AND `purpose` = ? AND `verified` = ? AND `phone_country_code` = ? LIMIT 1
+[2025-12-13 16:25:43] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk","YXVGeTdIeFRicWM9","phone_verification",1,"DK"]
+[2025-12-13 16:25:45] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:25:45] - []
+[2025-12-13 16:25:45] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:45] - [1]
+[2025-12-13 16:25:45] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:45] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:45] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:25:45] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:25:45] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:25:45] - [1]
+[2025-12-13 16:25:45] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:45] - [1]
+[2025-12-13 16:25:45] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:45] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:45] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:45] - [1]
+[2025-12-13 16:25:45] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:45] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:45] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:45] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:45] -  user-cookies  
+[2025-12-13 16:25:45] -  user-no-organisation-cookies  
+[2025-12-13 16:25:45] -  request-path  api/consumer/check-phone-verification
+[2025-12-13 16:25:45] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:25:45] - [1]
+[2025-12-13 16:25:45] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:25:45] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:25:45] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:25:45] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:25:45] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:25:45] - SELECT * FROM `PROD_FKF_twofactorverification` WHERE `user` = ? AND `identifier` = ? AND `purpose` = ? AND `verified` = ? AND `phone_country_code` = ? LIMIT 1
+[2025-12-13 16:25:45] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk","YXVGeTdIeFRicWM9","phone_verification",1,"DK"]
+[2025-12-13 16:26:09] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:26:09] - []
+[2025-12-13 16:26:09] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:09] - [1]
+[2025-12-13 16:26:09] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:09] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:26:09] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:26:09] - [1]
+[2025-12-13 16:26:09] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:09] - [1]
+[2025-12-13 16:26:09] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:09] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:09] - [1]
+[2025-12-13 16:26:09] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:09] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:09] -  user-cookies  
+[2025-12-13 16:26:09] -  user-no-organisation-cookies  
+[2025-12-13 16:26:09] -  request-path  api/consumer/check-phone-verification
+[2025-12-13 16:26:09] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:09] - [1]
+[2025-12-13 16:26:09] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:09] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:09] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:26:09] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:26:09] - []
+[2025-12-13 16:26:09] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:09] - [1]
+[2025-12-13 16:26:09] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:09] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:26:09] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:26:09] - [1]
+[2025-12-13 16:26:09] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:09] - [1]
+[2025-12-13 16:26:09] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:09] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:09] - [1]
+[2025-12-13 16:26:09] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:09] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:09] -  user-cookies  
+[2025-12-13 16:26:09] -  user-no-organisation-cookies  
+[2025-12-13 16:26:09] -  request-path  api/consumer/check-phone-verification
+[2025-12-13 16:26:09] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:09] - [1]
+[2025-12-13 16:26:09] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:09] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:09] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:26:09] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:26:09] - []
+[2025-12-13 16:26:09] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:09] - [1]
+[2025-12-13 16:26:09] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:09] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:26:09] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:26:09] - [1]
+[2025-12-13 16:26:09] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:09] - [1]
+[2025-12-13 16:26:09] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:09] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:09] - [1]
+[2025-12-13 16:26:09] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:09] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:09] -  user-cookies  
+[2025-12-13 16:26:09] -  user-no-organisation-cookies  
+[2025-12-13 16:26:09] -  request-path  api/consumer/check-phone-verification
+[2025-12-13 16:26:09] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:09] - [1]
+[2025-12-13 16:26:09] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:09] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:09] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:26:09] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:26:09] - []
+[2025-12-13 16:26:09] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:09] - [1]
+[2025-12-13 16:26:09] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:09] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:26:09] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:26:09] - [1]
+[2025-12-13 16:26:09] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:09] - [1]
+[2025-12-13 16:26:09] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:09] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:09] - [1]
+[2025-12-13 16:26:09] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:09] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:09] -  user-cookies  
+[2025-12-13 16:26:09] -  user-no-organisation-cookies  
+[2025-12-13 16:26:09] -  request-path  api/consumer/check-phone-verification
+[2025-12-13 16:26:09] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:09] - [1]
+[2025-12-13 16:26:09] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:09] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:09] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:09] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:26:11] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:26:11] - []
+[2025-12-13 16:26:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:11] - [1]
+[2025-12-13 16:26:11] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:11] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:11] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:26:11] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:26:11] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:26:11] - [1]
+[2025-12-13 16:26:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:11] - [1]
+[2025-12-13 16:26:11] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:11] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:11] - [1]
+[2025-12-13 16:26:11] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:11] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:11] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:11] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:11] -  user-cookies  
+[2025-12-13 16:26:11] -  user-no-organisation-cookies  
+[2025-12-13 16:26:11] -  request-path  api/consumer/check-phone-verification
+[2025-12-13 16:26:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:11] - [1]
+[2025-12-13 16:26:11] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:11] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:11] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:11] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:11] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:26:11] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:26:11] - []
+[2025-12-13 16:26:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:11] - [1]
+[2025-12-13 16:26:11] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:11] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:11] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:26:11] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:26:11] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:26:11] - [1]
+[2025-12-13 16:26:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:11] - [1]
+[2025-12-13 16:26:11] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:11] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:11] - [1]
+[2025-12-13 16:26:11] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:11] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:11] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:11] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:11] -  user-cookies  
+[2025-12-13 16:26:11] -  user-no-organisation-cookies  
+[2025-12-13 16:26:11] -  request-path  api/consumer/check-phone-verification
+[2025-12-13 16:26:11] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:11] - [1]
+[2025-12-13 16:26:11] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:11] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:11] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:11] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:11] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:26:12] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:26:12] - []
+[2025-12-13 16:26:12] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:12] - [1]
+[2025-12-13 16:26:12] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:12] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:12] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:26:12] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:26:12] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:26:12] - [1]
+[2025-12-13 16:26:12] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:12] - [1]
+[2025-12-13 16:26:12] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:12] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:12] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:12] - [1]
+[2025-12-13 16:26:12] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:12] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:12] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:12] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:12] -  user-cookies  
+[2025-12-13 16:26:12] -  user-no-organisation-cookies  
+[2025-12-13 16:26:12] -  request-path  api/consumer/check-phone-verification
+[2025-12-13 16:26:12] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:12] - [1]
+[2025-12-13 16:26:12] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:12] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:12] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:12] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:12] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:26:13] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:26:13] - []
+[2025-12-13 16:26:13] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:13] - [1]
+[2025-12-13 16:26:13] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:13] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:13] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:26:13] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:26:13] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:26:13] - [1]
+[2025-12-13 16:26:13] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:13] - [1]
+[2025-12-13 16:26:13] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:13] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:13] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:13] - [1]
+[2025-12-13 16:26:13] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:13] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:13] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:13] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:13] -  user-cookies  
+[2025-12-13 16:26:13] -  user-no-organisation-cookies  
+[2025-12-13 16:26:13] -  request-path  api/consumer/check-phone-verification
+[2025-12-13 16:26:13] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:13] - [1]
+[2025-12-13 16:26:13] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:13] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:13] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:13] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:13] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:26:13] - SELECT * FROM `PROD_FKF_twofactorverification` WHERE `user` = ? AND `identifier` = ? AND `purpose` = ? AND `verified` = ? AND `phone_country_code` = ? LIMIT 1
+[2025-12-13 16:26:13] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk","YXVGeTdIOVZiYWM9","phone_verification",1,"DK"]
+[2025-12-13 16:26:15] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:26:15] - []
+[2025-12-13 16:26:15] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:15] - [1]
+[2025-12-13 16:26:15] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:15] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:15] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:26:15] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:26:15] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:26:15] - [1]
+[2025-12-13 16:26:15] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:15] - [1]
+[2025-12-13 16:26:15] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:15] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:15] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:15] - [1]
+[2025-12-13 16:26:15] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:15] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:15] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:15] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:15] -  user-cookies  
+[2025-12-13 16:26:15] -  user-no-organisation-cookies  
+[2025-12-13 16:26:15] -  request-path  api/consumer/check-phone-verification
+[2025-12-13 16:26:15] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:15] - [1]
+[2025-12-13 16:26:15] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:15] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:15] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:15] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:15] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:26:15] - SELECT * FROM `PROD_FKF_twofactorverification` WHERE `user` = ? AND `identifier` = ? AND `purpose` = ? AND `verified` = ? AND `phone_country_code` = ? LIMIT 1
+[2025-12-13 16:26:15] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk","YXVGeTdIOVZiYWM9","phone_verification",1,"DK"]
+[2025-12-13 16:26:15] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:26:15] - []
+[2025-12-13 16:26:15] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:15] - [1]
+[2025-12-13 16:26:15] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:15] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:15] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:26:15] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:26:15] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:26:15] - [1]
+[2025-12-13 16:26:15] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:15] - [1]
+[2025-12-13 16:26:15] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:15] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:15] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:15] - [1]
+[2025-12-13 16:26:15] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:15] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:15] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:15] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:15] -  user-cookies  
+[2025-12-13 16:26:15] -  user-no-organisation-cookies  
+[2025-12-13 16:26:15] -  request-path  api/consumer/send-verification-code
+[2025-12-13 16:26:15] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:15] - [1]
+[2025-12-13 16:26:15] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:15] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:15] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:15] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:15] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:26:15] - UPDATE `PROD_FKF_twofactorverification` SET `verified`=? WHERE `user` = ? AND `identifier` = ? AND `purpose` = ? AND `verified` = ?
+[2025-12-13 16:26:15] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_twofactorverification` WHERE `uid` = ?
+[2025-12-13 16:26:15] - ["2fa_8qrb1v2w35en0tn"]
+[2025-12-13 16:26:15] -  querybuilder-insert-sql  INSERT INTO `PROD_FKF_twofactorverification` (`user`, `type`, `purpose`, `code`, `identifier`, `phone_country_code`, `message`, `verified`, `expires_at`, `uid`) VALUES (?,?,?,?,?,?,?,?,?,?)
+[2025-12-13 16:26:15] -  querybuilder-insert-values  ["_soqzqomw43tqwwk","sms","phone_verification","123456","YXVGeTdIOVZiYWM9","DK","TGNGS09vdDVOQ3NzUExXV1UwT0NpMXlaUWtaWnNtMjlQSEtqYmNqUjlMT0FPcStZWjFDY1NRSDFhV0gzam9NaFdJaE5ZVVk4V0tURWpLSXoxN29LMlAvMzE4dThsNE09",0,1765640175,"2fa_8qrb1v2w35en0tn"]
+[2025-12-13 16:26:25] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:26:25] - []
+[2025-12-13 16:26:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:25] - [1]
+[2025-12-13 16:26:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:25] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:25] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:26:25] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:26:25] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:26:25] - [1]
+[2025-12-13 16:26:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:25] - [1]
+[2025-12-13 16:26:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:25] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:25] - [1]
+[2025-12-13 16:26:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:25] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:25] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:25] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:25] -  user-cookies  
+[2025-12-13 16:26:25] -  user-no-organisation-cookies  
+[2025-12-13 16:26:25] -  request-path  api/consumer/verify-code
+[2025-12-13 16:26:25] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:25] - [1]
+[2025-12-13 16:26:25] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:25] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:25] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:25] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:25] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:26:25] - SELECT * FROM `PROD_FKF_twofactorverification` WHERE `user` = ? AND `code` = ? AND `identifier` = ? AND `purpose` = ? AND `verified` = ? AND `phone_country_code` = ? LIMIT 1
+[2025-12-13 16:26:25] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk","123456","YXVGeTdIOVZiYWM9","phone_verification",0,"DK"]
+[2025-12-13 16:26:25] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:25] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:25] - UPDATE `PROD_FKF_twofactorverification` SET `verified`=?, `verified_at`=? WHERE `uid` = ?
+[2025-12-13 16:26:28] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:26:28] - []
+[2025-12-13 16:26:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:26:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:28] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:28] -  user-cookies  
+[2025-12-13 16:26:28] -  user-no-organisation-cookies  
+[2025-12-13 16:26:28] -  request-path  api/consumer/update-profile
+[2025-12-13 16:26:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:28] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:28] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:26:28] - SELECT * FROM `PROD_FKF_twofactorverification` WHERE `user` = ? AND `identifier` = ? AND `purpose` = ? AND `verified` = ? AND `phone_country_code` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk","YXVGeTdIOVZiYWM9","phone_verification",1,"DK"]
+[2025-12-13 16:26:28] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:28] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:28] - UPDATE `PROD_FKF_users` SET `phone`=?, `phone_country_code`=? WHERE `uid` = ?
+[2025-12-13 16:26:28] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:26:28] - []
+[2025-12-13 16:26:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:26:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:28] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:28] -  user-cookies  
+[2025-12-13 16:26:28] -  user-no-organisation-cookies  
+[2025-12-13 16:26:28] -  request-path  dashboard
+[2025-12-13 16:26:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:28] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:26:28] - []
+[2025-12-13 16:26:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:28] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:26:28] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:28] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:28] -  user-cookies  
+[2025-12-13 16:26:28] -  user-no-organisation-cookies  
+[2025-12-13 16:26:28] -  request-path  consumer/signup/complete-profile
+[2025-12-13 16:26:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:28] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:28] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:28] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:28] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:26:28] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:28] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:28] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-12-13 16:26:28] - [1]
+[2025-12-13 16:26:29] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:26:29] - []
+[2025-12-13 16:26:29] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:29] - [1]
+[2025-12-13 16:26:29] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:29] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:29] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:26:29] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:26:29] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:26:29] - [1]
+[2025-12-13 16:26:29] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:29] - [1]
+[2025-12-13 16:26:29] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:29] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:29] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:29] - [1]
+[2025-12-13 16:26:29] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:29] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:29] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:29] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:29] -  user-cookies  
+[2025-12-13 16:26:29] -  user-no-organisation-cookies  
+[2025-12-13 16:26:29] -  request-path  api/consumer/check-phone-verification
+[2025-12-13 16:26:29] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:29] - [1]
+[2025-12-13 16:26:29] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:29] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:29] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:29] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:29] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:26:29] - SELECT * FROM `PROD_FKF_twofactorverification` WHERE `user` = ? AND `identifier` = ? AND `purpose` = ? AND `verified` = ? AND `phone_country_code` = ? LIMIT 1
+[2025-12-13 16:26:29] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk","YXVGeTdIOVZiYWM9","phone_verification",1,"DK"]
+[2025-12-13 16:26:29] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:29] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:29] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:26:29] - []
+[2025-12-13 16:26:29] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:29] - [1]
+[2025-12-13 16:26:29] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:29] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:29] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:26:29] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:26:29] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:26:29] - [1]
+[2025-12-13 16:26:29] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:29] - [1]
+[2025-12-13 16:26:29] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:29] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:29] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:29] - [1]
+[2025-12-13 16:26:29] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:29] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:29] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:29] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:29] -  user-cookies  
+[2025-12-13 16:26:29] -  user-no-organisation-cookies  
+[2025-12-13 16:26:29] -  request-path  api/track
+[2025-12-13 16:26:46] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:26:46] - []
+[2025-12-13 16:26:46] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:46] - [1]
+[2025-12-13 16:26:46] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:46] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:26:46] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:26:46] - [1]
+[2025-12-13 16:26:46] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:46] - [1]
+[2025-12-13 16:26:46] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:46] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:46] - [1]
+[2025-12-13 16:26:46] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:46] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:46] -  user-cookies  
+[2025-12-13 16:26:46] -  user-no-organisation-cookies  
+[2025-12-13 16:26:46] -  request-path  api/consumer/update-profile
+[2025-12-13 16:26:46] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:46] - [1]
+[2025-12-13 16:26:46] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:46] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:46] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:26:46] - SELECT * FROM `PROD_FKF_twofactorverification` WHERE `user` = ? AND `identifier` = ? AND `purpose` = ? AND `verified` = ? AND `phone_country_code` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk","YXVGeTdIOVZiYWM9","phone_verification",1,"DK"]
+[2025-12-13 16:26:46] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:46] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:46] - UPDATE `PROD_FKF_users` SET `phone`=?, `phone_country_code`=?, `full_name`=? WHERE `uid` = ?
+[2025-12-13 16:26:46] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 16:26:46] - []
+[2025-12-13 16:26:46] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:46] - [1]
+[2025-12-13 16:26:46] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:46] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 16:26:46] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 16:26:46] - [1]
+[2025-12-13 16:26:46] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:46] - [1]
+[2025-12-13 16:26:46] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:46] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:46] - [1]
+[2025-12-13 16:26:46] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:46] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:46] -  user-cookies  
+[2025-12-13 16:26:46] -  user-no-organisation-cookies  
+[2025-12-13 16:26:46] -  request-path  dashboard
+[2025-12-13 16:26:46] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:46] - [1]
+[2025-12-13 16:26:46] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:46] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:46] - [1]
+[2025-12-13 16:26:46] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:46] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:46] - [1]
+[2025-12-13 16:26:46] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:46] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:46] - [1]
+[2025-12-13 16:26:46] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:46] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 16:26:46] - [1]
+[2025-12-13 16:26:46] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  [1]
+[2025-12-13 16:26:46] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:46] -  middleware-consumer  {"isConsumer":true,"access_level":1,"user_id":"_soqzqomw43tqwwk"}
+[2025-12-13 16:26:46] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 16:26:46] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 16:26:46] -  dashboard-controller  {"controller":"consumer.PageController::dashboard","user_id":"_soqzqomw43tqwwk","access_level":1}
+[2025-12-13 17:52:26] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 17:52:26] - []
+[2025-12-13 17:52:26] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 17:52:26] - [1]
+[2025-12-13 17:52:26] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 17:52:26] -  queryBuilder-first-bindings  [1]
+[2025-12-13 17:52:26] - SELECT * FROM `PROD_FKF_appmeta` WHERE `name` = ? LIMIT 1
+[2025-12-13 17:52:26] -  queryBuilder-first-bindings  ["user_role_settings"]
+[2025-12-13 17:52:26] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 17:52:26] - [1]
+[2025-12-13 17:52:26] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 17:52:26] - [1]
+[2025-12-13 17:52:26] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 17:52:26] -  queryBuilder-first-bindings  [1]
+[2025-12-13 17:52:26] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 17:52:26] - [1]
+[2025-12-13 17:52:26] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 17:52:26] -  queryBuilder-first-bindings  [1]
+[2025-12-13 17:52:26] - SELECT * FROM `PROD_FKF_users` WHERE `uid` = ? LIMIT 1
+[2025-12-13 17:52:26] -  queryBuilder-first-bindings  ["_soqzqomw43tqwwk"]
+[2025-12-13 17:52:26] -  user-cookies  
+[2025-12-13 17:52:26] -  user-no-organisation-cookies  
+[2025-12-13 17:52:26] -  request-path  logout
+[2025-12-13 17:52:26] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 17:52:26] - [1]
+[2025-12-13 17:52:26] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 17:52:26] -  queryBuilder-first-bindings  [1]
+[2025-12-13 17:52:26] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 17:52:26] - [1]
+[2025-12-13 17:52:26] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 17:52:26] -  queryBuilder-first-bindings  [1]
+[2025-12-13 17:52:26] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 17:52:26] - [1]
+[2025-12-13 17:52:26] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 17:52:26] -  queryBuilder-first-bindings  [1]
+[2025-12-13 17:52:26] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 17:52:26] - [1]
+[2025-12-13 17:52:26] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 17:52:26] -  queryBuilder-first-bindings  [1]
+[2025-12-13 17:52:26] -  count-sql  SELECT COUNT(*) AS count FROM `PROD_FKF_userroles` WHERE `access_level` = ?
+[2025-12-13 17:52:26] - [1]
+[2025-12-13 17:52:26] - SELECT `name` FROM `PROD_FKF_userroles` WHERE `access_level` = ? LIMIT 1
+[2025-12-13 17:52:26] -  queryBuilder-first-bindings  [1]
+[2025-12-13 17:52:26] - SELECT * FROM `PROD_FKF_terminalsession` WHERE `customer` = ? AND `state` IN (?,?)
+[2025-12-13 17:52:26] - ["_soqzqomw43tqwwk","ACTIVE","PENDING"]
+[2025-12-13 17:52:26] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 17:52:26] - []
+[2025-12-13 17:52:26] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 17:52:26] - [1]
+[2025-12-13 17:52:26] -  request-path  
+[2025-12-13 17:52:26] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-12-13 17:52:26] - [1]
+[2025-12-13 17:52:27] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 17:52:27] - []
+[2025-12-13 17:52:27] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 17:52:27] - [1]
+[2025-12-13 17:52:27] -  request-path  api/track
+[2025-12-13 17:52:46] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 17:52:46] - []
+[2025-12-13 17:52:46] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 17:52:46] - [1]
+[2025-12-13 17:52:46] -  request-path  
+[2025-12-13 17:52:46] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2025-12-13 17:52:46] - [1]
+[2025-12-13 17:52:46] - Creating table 'organisationfees' with schema, indexes, uniques, and foreign keys...
+[2025-12-13 17:52:46] - CREATE TABLE `PROD_FKF_organisationfees` (`id` INT AUTO_INCREMENT PRIMARY KEY, `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, `uid` VARCHAR(255) NOT NULL, `organisation` VARCHAR(255) NOT NULL, `fee` FLOAT(10, 2) DEFAULT '0' NOT NULL, `start_time` BIGINT DEFAULT 0 NOT NULL, `end_time` BIGINT NULL, `enabled` TINYINT DEFAULT 1 NOT NULL, `created_by` VARCHAR(255) NULL, `reason` VARCHAR(255) NULL, INDEX `idx_organisation` (`organisation`), INDEX `idx_enabled` (`enabled`), UNIQUE `uq_uid` (`uid`), FOREIGN KEY (`organisation`) REFERENCES `PROD_FKF_organisations`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT, FOREIGN KEY (`created_by`) REFERENCES `PROD_FKF_users`(`uid`) ON DELETE RESTRICT ON UPDATE RESTRICT)
+[2025-12-13 17:52:47] - SELECT * FROM `PROD_FKF_appmeta`
+[2025-12-13 17:52:47] - []
+[2025-12-13 17:52:47] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2025-12-13 17:52:47] - [1]
+[2025-12-13 17:52:47] -  request-path  api/track

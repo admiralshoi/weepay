@@ -34,6 +34,7 @@ class Signicat {
         $requests->setBody($authBody);
         $requests->post(API::oAuthUrl());
         $response = $requests->getResponse();
+        testLog($response, 'signicat-token');
 
         $token = nestedArray($requests->getResponse(), ['access_token']);
         if(empty($token)) {
@@ -68,6 +69,7 @@ class Signicat {
 
 
         $response = $requests->getResponse();
+        testLog($response, 'signicat-session-create');
         return $response;
         //Find the error response and at right...
 //        if(empty($token)) {
@@ -92,6 +94,7 @@ class Signicat {
         $requests->get(API::sessionReadUrl($sessionId));
 
         $response = $requests->getResponse();
+        testLog($response, 'signicat-session-get');
         return $response;
         //Find the error response and at right...
 //        if(empty($token)) {

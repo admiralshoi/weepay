@@ -5,6 +5,7 @@ namespace classes\auth;
 use classes\Methods;
 use classes\utility\Crud;
 use Database\model\AuthOidc;
+use features\Settings;
 
 class OidcAuthentication extends Crud {
 
@@ -61,12 +62,12 @@ class OidcAuthentication extends Crud {
 
         $provider = nestedArray($providerSession, ["provider"]);
         $prid = nestedArray($providerSession, ["subject", "id"]);
-        $name = nestedArray($providerSession, ["subject", "name"]);
+        $name = nestedArray($providerSession, ["subject", "name"], "Ukendt");
         $birthDate = nestedArray($providerSession, ["subject", "dateOfBirth"]);
         $nin = nestedArray($providerSession, ["subject", "nin", "value"]);
-        $ninCountry = nestedArray($providerSession, ["subject", "nin", "issuingCountry"]);
-        $ninUserType = nestedArray($providerSession, ["subject", "nin", "type"]);
-        if(empty($provider) || empty($prid) || empty($name) || empty($birthDate) || empty($nin) || empty($ninCountry) || empty($ninUserType)) {
+        $ninCountry = nestedArray($providerSession, ["subject", "nin", "issuingCountry"], Settings::$app->default_country);
+        $ninUserType = nestedArray($providerSession, ["subject", "nin", "type"], "PERSON");
+        if(empty($provider) || empty($prid)) {
             debugLog($providerSession, "newOidcUser-empty-error");
             return false;
         }

@@ -6,8 +6,9 @@
 use classes\enumerations\Links;
 use classes\Methods;
 use features\Settings;
+use classes\lang\Translate;
 
-$pageTitle = "Organisation";
+$pageTitle = ucfirst(Translate::word("Organisation"));
 if(!isEmpty(Settings::$organisation?->organisation)) $pageTitle .= " - " . Settings::$organisation->organisation->name;
 
 $organisation = Settings::$organisation?->organisation;
@@ -34,7 +35,7 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
             <a href="<?=__url(Links::$merchant->organisation->add)?>"
                class="btn-v2 action-btn flex-row-center flex-align-center flex-nowrap color-white" style="gap: .5rem;">
                 <i class="mdi mdi-plus"></i>
-                <span>Tilføj ny organisation</span>
+                <span>Tilføj ny <?=Translate::word("organisation")?></span>
             </a>
         </div>
     </div>
@@ -45,8 +46,8 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
 
     <div class="flex-row-between flex-align-center flex-wrap" style="column-gap: .75rem; row-gap: .5rem;">
         <div class="flex-col-start">
-            <p class="mb-0 font-30 font-weight-bold">Organisation</p>
-            <p class="mb-0 font-16 font-weight-medium color-gray">Administrer din organisation, branding og betalingsintegration</p>
+            <p class="mb-0 font-30 font-weight-bold"><?=ucfirst(Translate::word("Organisation"))?></p>
+            <p class="mb-0 font-16 font-weight-medium color-gray">Administrer din <?=Translate::word("organisation")?>, branding og betalingsintegration</p>
         </div>
     </div>
 
@@ -59,7 +60,7 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
                     <div class="flex-row-between-center g-1">
                         <div class="flex-row-start-center flex-nowrap g-075">
                             <i class="fa-regular fa-building font-18"></i>
-                            <p class="font-22 font-weight-bold">Detailjer</p>
+                            <p class="font-22 font-weight-bold">Oplysninger</p>
                         </div>
                         <div  class="flex-row-end">
                             <button class="btn-v2 mute-btn font-13 font-weight-medium flex-row-center-center cg-075"
@@ -79,7 +80,7 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
                             </div>
 
                             <div class="flex-col-start">
-                                <p class="font-14 color-gray font-weight-medium">Organisationsnavn</p>
+                                <p class="font-14 color-gray font-weight-medium"><?=ucfirst(Translate::word("Organisationsnavn"))?></p>
                                 <p class="font-15 mb-2 font-weight-medium"><?=$organisation->name?></p>
                                 <?php if($organisation->status === 'ACTIVE'): ?>
                                     <p class="success-box px-2">
@@ -209,7 +210,7 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
                             <i class="mdi mdi-open-in-new"></i>
                         </button>
                         <?php else: ?>
-                        <a href="#" class="btn-v2 mute-hover-design-action-btn-lg flex-row-between-center cg-1">
+                        <a href="<?=VIVA_LOGIN_URL?>" class="btn-v2 mute-hover-design-action-btn-lg flex-row-between-center cg-1">
                             <span class="font-14">Åbn Viva wallet</span>
                             <i class="mdi mdi-open-in-new"></i>
                         </a>

@@ -1855,10 +1855,10 @@ select[disabled] .select2-selection__choice__remove {
 }
 .form-switch:active input:checked + i::after { transform: translate3d(1px, 1px, 0); }
 .form-switch input { display: none; }
-.form-switch input:checked + i { background-color: var(--design-blue); }
+.form-switch input:checked + i { background-color: var(--blue); }
 .form-switch input:checked + i::before { transform: translate3d(15px, 1px, 0) scale3d(0, 0, 0); }
 .form-switch input:checked + i::after { transform: translate3d(22px, 1px, 0); }
-.form-switch.color-design-blue input:checked + i { background-color: var(--design-blue); }
+.form-switch.color-design-blue input:checked + i { background-color: var(--blue); }
 .form-switch.color-design-blue input[disabled]:checked + i { background-color: #95B0EF; }
 
 

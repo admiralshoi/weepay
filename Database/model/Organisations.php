@@ -24,6 +24,7 @@ class Organisations extends \Database\Model {
         "permissions" => ["type" => "text", "default" => null, "nullable" => true],
         "status" => ["type" => "enum", "default" => 'DRAFT', 'values' => ['DRAFT', 'ACTIVE', 'INACTIVE', 'DELETED']],
         "merchant_prid" => ["type" => "string", "default" => null, "nullable" => true],
+        "default_currency" => ['type' => "string", 'default' => null, 'nullable' => true],
     ];
 
     public static array $indexes = ['cvr'];

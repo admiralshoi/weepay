@@ -26,9 +26,9 @@ class Signicat {
         return [
             "flow" => $flow,
             "allowedProviders" => ['mitid'],
-            "additionalParameters" => [
-                "mitid_reference_text" => self::mitIdReferenceId()
-            ],
+//            "additionalParameters" => [
+//                "mitid_reference_text" => self::mitIdReferenceId()
+//            ],
             "requestedAttributes" => self::SESSION_BODY_ATTRIBUTES,
             "callbackUrls" => [
                 "success" => __url($successUrl),

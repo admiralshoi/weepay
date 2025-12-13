@@ -25,6 +25,7 @@ class Locations extends \Database\Model {
         "address" => ['type' => "text", 'default' => null, 'nullable' => true],
         "country" => ['type' => "string", 'default' => null, 'nullable' => true],
         "permissions" => ['type' => "text", 'default' => null, 'nullable' => true],
+        "default_currency" => ['type' => "string", 'default' => null, 'nullable' => true],
     ];
 
     public static array $indexes = ["uuid", "source_prid"];

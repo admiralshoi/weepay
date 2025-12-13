@@ -36,6 +36,7 @@ if(!\classes\Methods::isAdmin()) {
     const organisation = <?=json_encode(__unsetKey(toArray(Settings::$organisation?->organisation), ['permissions']))?>;
     var allowedCountries = <?=json_encode(\classes\Methods::countries()->mappedValues())?>;
     const defaultCountry = <?=json_encode(Settings::$app->default_country)?>;
+    const currencies = <?=json_encode(toArray(Settings::$app->currencies))?>;
     const platformLinks = <?=json_encode(\classes\enumerations\Links::toArray($linksToExclude))?>;
     var thirdPartyAuth = {}
 </script>

@@ -50,6 +50,7 @@ class LocationHandler extends Crud {
         ?string $contactPhoneCountryCode = null,
         ?array $openingHours = null,
         string $status = "DRAFT",
+        ?string $defaultCurrency = null,
     ): ?string {
         $params = [
             "uuid" => $organisationId,
@@ -72,6 +73,7 @@ class LocationHandler extends Crud {
             "caption" => $caption,
             "status" => $status,
             "opening_hours" => $openingHours,
+            "default_currency" => $defaultCurrency,
         ];
 
 

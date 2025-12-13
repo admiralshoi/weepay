@@ -20,6 +20,64 @@ class PageController {
             else return null;
             Response()->redirect(__url($url));
         }
-        return Views("CONSUMER_AUTH_DASHBOARD_LOGIN", $args);
+
+        // Create OIDC session for consumer login
+        $query = ['next' => 'consumer_login'];
+        $token = crc32(json_encode($query) . "_" . __csrf());
+        $oidcSessionId = Methods::oidcSession()->setSession("authenticate", $query, $token);
+
+        // If OIDC session creation fails, still show the page but OIDC button won't work
+        if(isEmpty($oidcSessionId)) {
+            debugLog("Failed to create OIDC session for consumer login", "oidc-session-error");
+            $oidcSessionId = null;
+        }
+
+        return Views("CONSUMER_AUTH_DASHBOARD_LOGIN", compact('oidcSessionId'));
+    }
+
+    public static function consumerDashboardSignup(array $args): mixed  {
+        if(isLoggedIn())  {
+            if(Methods::isAdmin()) $url = Links::$admin->dashboard;
+            elseif(Methods::isConsumer()) $url = Links::$consumer->dashboard;
+            elseif(Methods::isMerchant()) $url = Links::$merchant->dashboard;
+            else return null;
+            Response()->redirect(__url($url));
+        }
+
+        // Create OIDC session for consumer signup
+        $query = ['next' => 'consumer_signup'];
+        $token = crc32(json_encode($query) . "_" . __csrf());
+        $oidcSessionId = Methods::oidcSession()->setSession("authenticate", $query, $token);
+
+        // If OIDC session creation fails, still show the page but OIDC button won't work
+        if(isEmpty($oidcSessionId)) {
+            debugLog("Failed to create OIDC session for consumer signup", "oidc-session-error");
+            $oidcSessionId = null;
+        }
+
+        return Views("CONSUMER_AUTH_DASHBOARD_SIGNUP", compact('oidcSessionId'));
+    }
+
+    public static function consumerCompleteProfile(array $args): mixed  {
+        if(!isLoggedIn()) Response()->redirect(__url(Links::$app->auth->consumerSignup));
+        if(!Methods::isConsumer()) Response()->redirect(__url(Links::$app->home));
+
+        $user = Methods::users()->get(__uuid());
+        if(isEmpty($user)) Response()->redirect(__url(Links::$app->auth->consumerSignup));
+
+        // If user already has full_name, email and phone, redirect to intended destination or dashboard
+        if(!isEmpty($user->full_name) && !isEmpty($user->email) && !isEmpty($user->phone)) {
+            if(!empty($_SESSION['redirect_after_profile_completion'])) {
+                $redirectUrl = __url($_SESSION['redirect_after_profile_completion']);
+                unset($_SESSION['redirect_after_profile_completion']);
+                Response()->redirect($redirectUrl);
+            } else {
+                Response()->redirect(__url(Links::$consumer->dashboard));
+            }
+        }
+
+        $worldCountries = Methods::misc()::getCountriesLib(WORLD_COUNTRIES);
+
+        return Views("CONSUMER_AUTH_COMPLETE_PROFILE", compact('user', 'worldCountries'));
     }
 }

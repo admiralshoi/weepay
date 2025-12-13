@@ -5,6 +5,8 @@ namespace classes\enumerations\links\api\forms;
 class MerchantForms {
 
     public string $editOrganisationDetails = "api/organisations/general-settings";
+    public string $editLocationDetails = "api/locations/general-settings";
+    public string $editTerminalDetails = "api/terminals/general-settings";
     public string $addNewLocation = "api/locations";
     public string $addNewTerminal = "api/terminals";
 

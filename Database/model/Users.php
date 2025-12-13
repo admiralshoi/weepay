@@ -21,6 +21,7 @@ class Users extends \Database\Model {
         "address_street" => ["type" => "string", "default" => null, "nullable" => true],
         "payout_bank_info" => ["type" => "string", "default" => null, "nullable" => true],
         "birthdate" => ["type" => "string", "default" => null, "nullable" => true],
+        "phone_country_code" => ["type" => "string", "default" => null, "nullable" => true],
     ];
     public static array $indexes = [
 

@@ -1,21 +1,45 @@
-<div class="modal" tabindex="-1" role="dialog" id="location-add-new-modal">
+<div class="modal" tabindex="-1" role="dialog" id="location-details-modal">
   <div class="modal-dialog responsive" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Opret ny lokation</h5>
+        <h5 class="modal-title">Rediger lokationsdetaljer</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
-        <p class="color-gray text-sm mb-3">Lokationsdetaljer.</p>
-        <form method="post" class="flex-col-start " style="row-gap: 1.5rem;">
+      <form method="post" class="modal-body">
+        <div class="flex-row-start-center flex-nowrap cg-15 mb-3" >
+          <p class="color-gray text-sm">
+            Brug organisationsdetaljer
+            <i class="mdi mdi-information-outline" data-toggle="tooltip" title="Brug organisationens information for felter der ikke er udfyldt"></i>
+          </p>
+          <label class="form-switch">
+            <input name="inherit_details" type="checkbox" {{#if location.inherit_details}} checked {{/if}}>
+            <i></i>
+          </label>
+        </div>
+        <div  class="flex-col-start " style="row-gap: 1.5rem;">
+          <input type="hidden" name="location_id" value="{{location.uid}}">
 
           <div class="row" style="row-gap: .5rem;">
-            <div class="col-12">
+            <div class="col-12 col-md-6">
               <div class="flex-col-start " style="row-gap: .5rem">
                 <p class="font-13 font-weight-bold mb-0">Lokationsnavn (butiksnavn)</p>
-                <input type="text" name="name" value="{{location.name}}" placeholder="Roses Frisør" class="form-field-v2" maxlength="30">
+                  <input type="text" name="name" value="{{location.name}}" placeholder="Roses Frisør" class="form-field-v2" maxlength="30">
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="flex-col-start" style="row-gap: .5rem">
+                <p class="font-13 font-weight-bold mb-0">
+                  Kaldenavn
+                  <i class="mdi mdi-information-outline" data-toggle="tooltip" title="Kun små bogstaver (a-z) og bindestreg kan bruges"></i>
+                </p>
+                <div class="position-relative w-100 h-45px">
+                  <input type="text" name="slug" value="{{location.slug}}" style="padding-left: 120px;" placeholder="roses-frisor" class="form-field-v2 h-100" maxlength="30">
+                  <div class="bg-wrapper-hover position-absolute px-3 flex-row-center-center" style="border-radius: 5px 0 0 5px; left: 2px; top: 2px; bottom: 2px;">
+                    <span class="font-12">{{SITE_NAME}}/</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -36,22 +60,11 @@
           </div>
           <div class="row" style="row-gap: .5rem;">
             <div class="col-12 col-md-6">
-              <div class="flex-col-start" style="row-gap: .5rem">
-                <p class="font-13 font-weight-bold mb-0">
-                  Kaldenavn
-                  <i class="mdi mdi-information-outline" data-toggle="tooltip" title="Kun små bogstaver (a-z) og bindestreg kan bruges"></i>
-                </p>
-                <input type="text" name="slug" value="{{location.slug}}" placeholder="roses-frisor" class="form-field-v2" maxlength="50">
-              </div>
-            </div>
-            <div class="col-12 col-md-6">
               <div class="flex-col-start " style="row-gap: .5rem">
                 <p class="font-13 font-weight-bold mb-0">Industri (Valgfri)</p>
                 <input type="text" name="industry" value="{{location.industry}}" placeholder="Teknologi, Fashion, mv." class="form-field-v2" maxlength="30">
               </div>
             </div>
-          </div>
-          <div class="row" style="row-gap: .5rem;">
             <div class="col-12 col-md-6">
               <div class="flex-col-start " style="row-gap: .5rem">
                 <p class="font-13 font-weight-bold mb-0">Kontakt Email (Valgfri)</p>
@@ -85,22 +98,8 @@
                     {{/foreach}}
                   </select>
                   <input type="text" name="contact_phone" value="{{location.contact_phone}}" placeholder="12 34 56 78" class="form-field-v2"
-                         style="border-radius: 0 .5rem .5rem 0;" maxlength="15">
+                         style="border-radius: 0 .5rem .5rem 0; width: calc(100% - 70px - 3px);" maxlength="15">
                 </div>
-              </div>
-            </div>
-          </div>
-          <div class="row" style="row-gap: .5rem;">
-            <div class="col-12 col-md-6">
-              <div class="flex-col-start " style="row-gap: .5rem">
-                <p class="font-13 font-weight-bold mb-0">
-                  Brug organisationsdetaljer
-                  <i class="mdi mdi-information-outline" data-toggle="tooltip" title="Brug organisationens information for felter der ikke er udfyldt"></i>
-                </p>
-                <label class="form-switch">
-                  <input name="inherit_details" type="checkbox" {{#if location.inherit_details}} checked {{/if}}>
-                  <i></i>
-                </label>
               </div>
             </div>
             <div class="col-12 col-md-6">
@@ -109,52 +108,69 @@
                 <input type="text" name="cvr" value="{{location.cvr}}" placeholder="Lokationens CVR nummer" class="form-field-v2" maxlength="20">
               </div>
             </div>
-          </div>
-          <div class="row" style="row-gap: .5rem;">
             <div class="col-12 col-md-6">
               <div class="flex-col-start " style="row-gap: .5rem">
-                <p class="font-13 font-weight-bold mb-0">Vejnavn</p>
+                <p class="font-13 font-weight-bold mb-0">Vejnavn (Valgfri)</p>
                 <input type="text" name="line_1" value="{{location.address.line_1}}" placeholder="Lokationens vejnavn + nr." class="form-field-v2" maxlength="100">
               </div>
             </div>
             <div class="col-12 col-md-6">
               <div class="flex-col-start " style="row-gap: .5rem">
-                <p class="font-13 font-weight-bold mb-0">By</p>
+                <p class="font-13 font-weight-bold mb-0">By (Valgfri)</p>
                 <input type="text" name="city" value="{{location.address.city}}" placeholder="Lokationens Bynavn" class="form-field-v2" maxlength="50">
               </div>
             </div>
-          </div>
-          <div class="row" style="row-gap: .5rem;">
             <div class="col-12 col-md-6">
               <div class="flex-col-start " style="row-gap: .5rem">
-                <p class="font-13 font-weight-bold mb-0">Postnummer</p>
+                <p class="font-13 font-weight-bold mb-0">Postnummer (Valgfri)</p>
                 <input type="text" name="postal_code" value="{{location.address.postal_code}}" placeholder="Lokationens postnummer" class="form-field-v2" maxlength="30">
               </div>
             </div>
             <div class="col-12 col-md-6">
               <div class="flex-col-start " style="row-gap: .5rem">
-                <p class="font-13 font-weight-bold mb-0">Land</p>
+                <p class="font-13 font-weight-bold mb-0">Land (Valgfri)</p>
                 <select class="form-select-v2 h-45px w-100" name="country">
                   {{#foreachKeyValue allowedCountries}}
+                  {{#if ../location.country.code}}
                   <option value="{{key}}" {{#eq key ../location.country.code}}  selected {{/eq}}>{{value}}</option>
+                  {{else}}
+                  <option value="{{key}}" {{#eq key ../defaultCountry}}  selected {{/eq}}>{{value}}</option>
+                  {{/if}}
                   {{/foreachKeyValue}}
                 </select>
               </div>
             </div>
           </div>
 
+          <div class="row" style="row-gap: .5rem;">
+            <div class="col-12 col-md-6">
+              <div class="flex-col-start " style="row-gap: .5rem">
+                <p class="font-13 font-weight-bold mb-0">Valuta</p>
+                <select class="form-select-v2 h-45px w-100" name="default_currency">
+                  {{#foreach currencies}}
+                  {{#if ../location.default_currency}}
+                  <option value="{{value}}" {{#eq value ../location.default_currency}}  selected {{/eq}}>{{value}}</option>
+                  {{else}}
+                  <option value="{{value}}" {{#eq value ../organisation.default_currency}}  selected {{/eq}}>{{value}}</option>
+                  {{/if}}
+                  {{/foreach}}
+                </select>
+              </div>
+            </div>
+          </div>
+
           <p class="mt-2 color-red font-12 d-none modalErrorBox"></p>
-        </form>
-      </div>
+        </div>
+      </form>
       <div class="modal-footer">
         <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Close</button>
         <button type="button" class="btn-v2 action-btn flex-row-center-center flex-nowrap g-05" data-run="update">
           <span>Update Information</span>
           <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
-                        <span class="spinner-border color-white square-15" role="status" style="border-width: 2px;">
-                          <span class="sr-only">Loading...</span>
-                        </span>
-                    </span>
+              <span class="spinner-border color-white square-15" role="status" style="border-width: 2px;">
+                <span class="sr-only">Loading...</span>
+              </span>
+          </span>
         </button>
       </div>
     </div>

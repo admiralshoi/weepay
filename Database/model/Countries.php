@@ -25,7 +25,13 @@ class Countries extends \Database\Model {
             "code" => "DE",
             "name" => "Germany",
             "enabled" => 1,
-        ]
+        ],
+        [
+            "uid" => "ctr_4389rfjd",
+            "code" => "DK",
+            "name" => "Danmark",
+            "enabled" => 1,
+        ],
     ];
     protected static array $requiredRowsTesting = [];
     public static array $encodeColumns = [];

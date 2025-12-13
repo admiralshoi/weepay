@@ -21,6 +21,7 @@ class OidcController {
             $info = $session->info;
             $next = property_exists($info, "next") ? $info->next : null;
             $tsId = property_exists($info, "tsid") ? $info->tsid : null;
+
             if($next === 'cpf' && !empty($tsId)) {
                 $terminalSession = Methods::terminalSessions()->get($tsId);
                 if(isEmpty($terminalSession)) Response()->jsonError('Invalid tsid.', [], 400);
@@ -33,6 +34,23 @@ class OidcController {
                         http_build_query(['tsid' => $terminalSession->uid, 'sid' => $id])
                     )
                 )->jsonSuccess("", toArray($session));
+            }
+
+            if(in_array($next, ['consumer_login', 'consumer_signup'])) {
+                if(!isOidcAuthenticated()) Response()->jsonError('Kunne ikke verificere dig. Prøv igen', [], 500);
+                $user = Methods::users()->get(__uuid());
+                if(isEmpty($user)) Response()->jsonError('User not found.', [], 500);
+
+                // Determine redirect URL
+                if(isEmpty($user->email) || isEmpty($user->phone)) {
+                    // Needs to complete profile
+                    $redirectUrl = __url(Links::$app->auth->consumerSignup . '/complete-profile');
+                } else {
+                    // Profile complete, go to dashboard
+                    $redirectUrl = __url(Links::$consumer->dashboard);
+                }
+
+                Response()->setRedirect($redirectUrl)->jsonSuccess("", toArray($session));
             }
         }
 

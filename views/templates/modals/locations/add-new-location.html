@@ -127,6 +127,19 @@
             </div>
           </div>
 
+          <div class="row" style="row-gap: .5rem;">
+            <div class="col-12 col-md-6">
+              <div class="flex-col-start " style="row-gap: .5rem">
+                <p class="font-13 font-weight-bold mb-0">Valuta</p>
+                <select class="form-select-v2 h-45px w-100" name="default_currency">
+                  {{#foreach currencies}}
+                  <option value="{{value}}" {{#eq value ../organisation.default_currency}}  selected {{/eq}}>{{value}}</option>
+                  {{/foreach}}
+                </select>
+              </div>
+            </div>
+          </div>
+
           <p class="mt-2 color-red font-12 d-none modalErrorBox"></p>
         </div>
       </form>

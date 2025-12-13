@@ -3,6 +3,8 @@
 namespace routing\routes\auth;
 use classes\enumerations\Links;
 use classes\Methods;
+use classes\utility\Numbers;
+use features\Settings;
 use JetBrains\PhpStorm\NoReturn;
 
 class ApiController {
@@ -84,6 +86,214 @@ class ApiController {
         $user = $signupHandler->getUser();
         $redirectUrl = __url(Links::$merchant->organisation->add); // Redirect to create first organisation
         Response()->setRedirect($redirectUrl)->jsonSuccess("Velkommen til " . BRAND_NAME . ", " . $user->full_name);
+    }
+
+    #[NoReturn] public static function sendVerificationCode(array $args): void {
+        $userId = __uuid();
+        if(isEmpty($userId)) Response()->jsonError("Bruger ikke fundet", [], 404);
+
+        // Validate phone number
+        if(!array_key_exists('phone', $args) || empty($args['phone'])) {
+            Response()->jsonError("Telefonnummer er påkrævet", [], 400);
+        }
+
+        $phone = trim($args['phone']);
+        $phoneCountryCode = array_key_exists('phone_country_code', $args) ? trim($args['phone_country_code']) : null;
+
+        // Validate and clean phone number
+        if(empty($phoneCountryCode)) $phoneCountryCode = Settings::$app->default_country;
+        $calleInfo = Methods::misc()::callerCode($phoneCountryCode, false);
+        if(empty($calleInfo)) Response()->jsonError("Forkert landekode angivet til telefonnummeret", ['blame_field' => 'phone_country_code'], 400);
+
+        $callerCode = $calleInfo['phone'];
+        $phoneLength = $calleInfo['phoneLength'];
+        $cleanedPhone = Numbers::cleanPhoneNumber($phone, false, $phoneLength, $callerCode);
+        if(empty($cleanedPhone)) Response()->jsonError("Ugyldigt telefonnummer angivet", ['blame_field' => 'phone'], 400);
+
+        // Send verification code
+        $twoFactorAuth = Methods::twoFactorAuth();
+        $result = $twoFactorAuth->sendSmsCode($userId, $cleanedPhone, $phoneCountryCode, 'phone_verification');
+
+        if(isEmpty($result)) {
+            Response()->jsonError("Kunne ikke sende verifikationskode. Prøv igen.", [], 500);
+        }
+
+        Response()->jsonSuccess("Verifikationskode sendt til +" . $callerCode . " " . $cleanedPhone, [
+            'code_id' => $result['code_id'],
+            'expires_at' => $result['expires_at']
+        ]);
+    }
+
+    #[NoReturn] public static function checkPhoneVerification(array $args): void {
+        $userId = __uuid();
+        if(isEmpty($userId)) Response()->jsonError("Bruger ikke fundet", [], 404);
+
+        // Validate required fields
+        if(!array_key_exists('phone', $args) || empty($args['phone'])) {
+            Response()->jsonError("Telefonnummer er påkrævet", [], 400);
+        }
+
+        $phone = trim($args['phone']);
+        $phoneCountryCode = array_key_exists('phone_country_code', $args) ? trim($args['phone_country_code']) : null;
+
+        // Validate and clean phone number
+        if(empty($phoneCountryCode)) $phoneCountryCode = Settings::$app->default_country;
+        $calleInfo = Methods::misc()::callerCode($phoneCountryCode, false);
+        if(empty($calleInfo)) Response()->jsonError("Forkert landekode angivet til telefonnummeret", ['blame_field' => 'phone_country_code'], 400);
+
+        $callerCode = $calleInfo['phone'];
+        $phoneLength = $calleInfo['phoneLength'];
+        $cleanedPhone = Numbers::cleanPhoneNumber($phone, false, $phoneLength, $callerCode);
+        if(empty($cleanedPhone)) Response()->jsonError("Ugyldigt telefonnummer angivet", ['blame_field' => 'phone'], 400);
+
+        // Check if verified
+        $twoFactorAuth = Methods::twoFactorAuth();
+        $isVerified = $twoFactorAuth->isVerified($userId, $cleanedPhone, $phoneCountryCode, 'phone_verification');
+
+        Response()->jsonSuccess("", ['is_verified' => $isVerified]);
+    }
+
+    #[NoReturn] public static function verifyCode(array $args): void {
+        $userId = __uuid();
+        if(isEmpty($userId)) Response()->jsonError("Bruger ikke fundet", [], 404);
+
+        // Validate required fields
+        foreach (['phone', 'code'] as $key) {
+            if(!array_key_exists($key, $args) || empty($args[$key])) {
+                Response()->jsonError("Mangler obligatorisk felt: $key", [], 400);
+            }
+        }
+
+        $phone = trim($args['phone']);
+        $phoneCountryCode = array_key_exists('phone_country_code', $args) ? trim($args['phone_country_code']) : null;
+        $code = $args['code'];
+
+        // Validate and clean phone number
+        if(empty($phoneCountryCode)) $phoneCountryCode = Settings::$app->default_country;
+        $calleInfo = Methods::misc()::callerCode($phoneCountryCode, false);
+        if(empty($calleInfo)) Response()->jsonError("Forkert landekode angivet til telefonnummeret", ['blame_field' => 'phone_country_code'], 400);
+
+        $callerCode = $calleInfo['phone'];
+        $phoneLength = $calleInfo['phoneLength'];
+        $cleanedPhone = Numbers::cleanPhoneNumber($phone, false, $phoneLength, $callerCode);
+        if(empty($cleanedPhone)) Response()->jsonError("Ugyldigt telefonnummer angivet", ['blame_field' => 'phone'], 400);
+
+        // Verify the code
+        $twoFactorAuth = Methods::twoFactorAuth();
+        if(!$twoFactorAuth->verifyCode($userId, $code, $cleanedPhone, $phoneCountryCode, 'phone_verification')) {
+            Response()->jsonError("Ugyldig eller udløbet kode", [], 400);
+        }
+
+        Response()->jsonSuccess("Kode verificeret");
+    }
+
+    #[NoReturn] public static function updateConsumerProfile(array $args): void {
+        $userId = __uuid();
+        if(isEmpty($userId)) Response()->jsonError("Bruger ikke fundet", [], 404);
+
+        // Validate required phone field
+        if(!array_key_exists('phone', $args) || empty($args['phone'])) {
+            Response()->jsonError("Telefonnummer er påkrævet", [], 400);
+        }
+
+        $phone = trim($args['phone']);
+        $phoneCountryCode = array_key_exists('phone_country_code', $args) ? trim($args['phone_country_code']) : null;
+
+        // Validate and clean phone number
+        if(empty($phoneCountryCode)) $phoneCountryCode = Settings::$app->default_country;
+        $calleInfo = Methods::misc()::callerCode($phoneCountryCode, false);
+        if(empty($calleInfo)) Response()->jsonError("Forkert landekode angivet til telefonnummeret", ['blame_field' => 'phone_country_code'], 400);
+
+        $callerCode = $calleInfo['phone'];
+        $phoneLength = $calleInfo['phoneLength'];
+        $cleanedPhone = Numbers::cleanPhoneNumber($phone, false, $phoneLength, $callerCode);
+        if(empty($cleanedPhone)) Response()->jsonError("Ugyldigt telefonnummer angivet", ['blame_field' => 'phone'], 400);
+
+        // Verify that the phone number has been verified with 2FA
+        $twoFactorAuth = Methods::twoFactorAuth();
+        if(!$twoFactorAuth->isVerified($userId, $cleanedPhone, $phoneCountryCode, 'phone_verification')) {
+            Response()->jsonError("Telefonnummer skal verificeres først", [], 400);
+        }
+
+        $userHandler = Methods::users();
+        $user = $userHandler->get($userId);
+        if(isEmpty($user)) Response()->jsonError("Bruger ikke fundet", [], 404);
+
+        // Prepare update data
+        $updateData = [
+            'phone' => $cleanedPhone,
+            'phone_country_code' => $phoneCountryCode
+        ];
+
+        // Add full_name if provided and user doesn't have one
+        if(array_key_exists('full_name', $args) && !empty($args['full_name']) && isEmpty($user->full_name)) {
+            $fullName = trim($args['full_name']);
+            if(strlen($fullName) > 100) {
+                Response()->jsonError("Navnet er for langt. Maximum 100 tegn", ['blame_field' => 'full_name'], 400);
+            }
+            $updateData['full_name'] = $fullName;
+        }
+
+        // Add email if provided (optional)
+        if(array_key_exists('email', $args) && !empty($args['email'])) {
+            // Validate email format
+            if (!filter_var($args['email'], FILTER_VALIDATE_EMAIL)) {
+                Response()->jsonError("Ugyldig email-adresse", [], 400);
+            }
+
+            // Check if email is already taken by another user
+            $existingUser = $userHandler->getByX(['email' => $args['email']]);
+            if(!isEmpty($existingUser) && $existingUser->count() > 0) {
+                $existing = $existingUser->first();
+                if($existing->uid !== $userId) {
+                    Response()->jsonError("Denne email er allerede i brug", [], 409);
+                }
+            }
+
+            $updateData['email'] = $args['email'];
+        }
+
+        if(
+            $userHandler->queryBuilder()
+                ->where('phone', $phone)
+                ->where("phone_country_code", $phoneCountryCode)
+                ->where('uid', '!=', $userId)
+            ->exists()
+        ) {
+            $userHandler->queryBuilder()
+                ->where('phone', $phone)
+                ->where("phone_country_code", $phoneCountryCode)
+                ->where('uid', '!=', $userId)
+                ->update(['phone' => null, 'phone_country_code' => null]);
+        }
+        if(
+            Methods::localAuthentication()->queryBuilder()
+                ->where('phone', $phone)
+                ->where("phone_country_code", $phoneCountryCode)
+                ->where('user', '!=', $userId)
+            ->exists()
+        ) {
+            Methods::localAuthentication()->queryBuilder()
+                ->where('phone', $phone)
+                ->where("phone_country_code", $phoneCountryCode)
+                ->where('user', '!=', $userId)
+                ->update(['phone' => null, 'phone_country_code' => null]);
+        }
+
+        // Update user profile
+        if(!$userHandler->update($updateData, ['uid' => $userId])) {
+            Response()->jsonError("Kunne ikke opdatere profil. Prøv igen.", [], 500);
+        }
+
+        // Redirect to intended destination or dashboard
+        if(!empty($_SESSION['redirect_after_profile_completion'])) {
+            $redirectUrl = __url($_SESSION['redirect_after_profile_completion']);
+            unset($_SESSION['redirect_after_profile_completion']);
+        } else {
+            $redirectUrl = __url(Links::$consumer->dashboard);
+        }
+
+        Response()->setRedirect($redirectUrl)->jsonSuccess("Profil opdateret! Velkommen til " . BRAND_NAME);
     }
 
 

@@ -10,7 +10,7 @@ class LocationPermissions {
 
         //If they didn't have access  to the thing and are actual members, we then return false since membership access supersedes the org
         if(!isEmpty(Methods::locationMembers()->exists(['location' => $location->uid, 'uuid' => __uuid()]))) return false;
-        $organisationId = $location->uuid->uid;
+        $organisationId = is_string($location->uuid) ? $location->uuid : $location->uuid->uid;
 
         //Ensure they  are indeed members of the organisation
         $memberRole = Methods::organisationMembers()->getMember($organisationId, __uuid(), ['scoped_locations']);

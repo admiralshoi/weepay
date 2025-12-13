@@ -18,6 +18,8 @@ $pageTitle = "Butikslokationer";
     var pageTitle = <?=json_encode($pageTitle)?>;
     activePage = "locations";
     var worldCountries = <?=json_encode(toArray($args->worldCountries))?>;
+    var locations = <?=json_encode($args->locations->toArray())?>;
+
 </script>
 
 
@@ -78,7 +80,7 @@ $pageTitle = "Butikslokationer";
                                     <td><?=ucfirst(strtolower($location->status))?></td>
                                     <td>
                                         <div class="flex-col-start " style="row-gap: 0;">
-                                            <div class="nav-button font-14" data-location-id="<?=$location->uid?>" onclick="LocationActions.open()">
+                                            <div class="nav-button font-14" data-location-id="<?=$location->uid?>" onclick="LocationActions.open(this)">
                                                 <i class="mdi mdi-dots-horizontal font-14"></i>
                                             </div>
                                         </div>

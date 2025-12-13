@@ -25,9 +25,8 @@ use classes\Methods;
 
         <div class="flex-col-start " style="row-gap: 1.5rem;">
             <div class="flex-col-start " style="row-gap: .5rem;">
-<!--                <button class="btn-v2 design-action-btn-lg" id="save-creator-action-change">Save Changes</button>-->
+                <button class="btn-v2 action-btn-lg" onclick="LocationActions.editLocationDetails()">Rediger lokationsdetaljer</button>
                 <a href="<?=\classes\enumerations\Links::$merchant->locations->mangeTeamDynamic()?>" class="btn-v2 trans-btn-lg" id="manage-team">Administrer medarbejdere</a>
-<!--                <button class="btn-v2 danger-btn-lg" id="remove-campaign-creator">Remove From Campaign</button>-->
 
                 <ul id="error-box" class="error-box"></ul>
             </div>

@@ -20,11 +20,28 @@ require_once ROOT . "routing/middleware/middleware.php";
  */
 Routes::get(Links::$app->home, "LandingController::home");
 Routes::get(Links::$app->auth->consumerLogin, "auth.PageController::consumerDashboardLogin");
+Routes::get(Links::$app->auth->consumerSignup, "auth.PageController::consumerDashboardSignup");
 Routes::get(Links::$app->auth->merchantLogin, "auth.PageController::merchantDashboardLogin");
 Routes::get(Links::$app->auth->merchantSignup, "auth.PageController::merchantDashboardSignup");
 /**
  *  =========================================
  *  ============= OPEN PAGES END ============
+ *  =========================================
+ */
+
+
+/**
+ *  =========================================
+ *  ========= CONSUMER AUTH START ===========
+ *  =========================================
+ */
+Routes::group(['requiresLogin', 'consumer'], function() {
+    Routes::get(Links::$app->auth->consumerSignup . '/complete-profile', "auth.PageController::consumerCompleteProfile");
+    Routes::get(Links::$consumer->dashboard, "consumer.PageController::dashboard", ['consumerProfileComplete']);
+});
+/**
+ *  =========================================
+ *  ========== CONSUMER AUTH END ============
  *  =========================================
  */
 
@@ -123,6 +140,13 @@ Routes::group(['api', "requiresApiLogout"], function() {
  *  =========================================
  */
 Routes::group(['api','requiresApiLogin'], function() {
+    Routes::group(['consumer'], function() {
+        Routes::post(Links::$api->auth->consumerSendVerificationCode, "auth.ApiController::sendVerificationCode");
+        Routes::post(Links::$api->auth->consumerVerifyCode, "auth.ApiController::verifyCode");
+        Routes::post(Links::$api->auth->consumerCheckPhoneVerification, "auth.ApiController::checkPhoneVerification");
+        Routes::post(Links::$api->auth->consumerUpdateProfile, "auth.ApiController::updateConsumerProfile");
+    });
+
     Routes::group(['merchant'], function() {
         Routes::get(Links::$api->organisation->vivaConnectedAccount, "merchants.ApiController::vivaWalletStatus");
         Routes::post(Links::$api->organisation->vivaConnectedAccount, "merchants.ApiController::createVivaConnectedAccount");
@@ -135,6 +159,8 @@ Routes::group(['api','requiresApiLogin'], function() {
         Routes::post(Links::$api->forms->createOrganisation, "merchants.ApiController::createOrganisation");
         Routes::get(Links::$merchant->organisation->switch, "merchants.ApiController::selectOrganisation");
         Routes::post(Links::$api->forms->merchant->editOrganisationDetails, "merchants.ApiController::updateBasicDetails");
+        Routes::post(Links::$api->forms->merchant->editLocationDetails, "merchants.ApiController::updateLocationDetails");
+        Routes::post(Links::$api->forms->merchant->editTerminalDetails, "merchants.ApiController::updateTerminalDetails");
         Routes::post(Links::$api->forms->merchant->addNewLocation, "merchants.ApiController::createLocation");
         Routes::post(Links::$api->forms->merchant->addNewTerminal, "merchants.ApiController::createTerminal");
 
@@ -197,8 +223,6 @@ Routes::group(["requiresLogin"], function () {
      *  =========================================
      */
     Routes::group(["merchant"], function () {
-
-
         Routes::get(Links::$merchant->organisation->team, "merchants.pages.PageController::team");
         Routes::get(Links::$merchant->organisation->home, "merchants.pages.PageController::organisation");
         Routes::get(Links::$merchant->organisation->add, "merchants.pages.PageController::add");

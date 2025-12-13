@@ -3125,6 +3125,7 @@ input.form-field-v2:focus {
 .border-mute { border: 1px solid var(--color-mute-border) !important; }
 .border-warning { border: 1px solid var(--color-warning-border) !important; }
 .border-success { border: 1px solid var(--color-success-border) !important; }
+.border-color-card { border-color: var(--card-border-color) !important; }
 .border-primary-dark { border-color: var(--primary-dark) !important; }
 .border-primary-cta { border-color: var(--primary-cta) !important; }
 .border-transparent { border-color: transparent !important; }

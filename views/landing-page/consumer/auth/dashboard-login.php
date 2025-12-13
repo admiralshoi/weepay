@@ -1,9 +1,14 @@
 <?php
 /**
  * @var object $args
+ * @var string $oidcSessionId
  */
 
 use classes\enumerations\Links;
+
+$oidcSessionId = $args->oidcSessionId;
+
+
 ?>
 
 
@@ -32,10 +37,16 @@ use classes\enumerations\Links;
                         </div>
 
 
-                        <a href="javascript:void(0);" class="mt-3  btn-v2 design-action-btn-lg flex-row-center flex-align-center flex-nowrap" style="gap: .55rem;">
+                        <?php if(!isEmpty($oidcSessionId)): ?>
+                        <button type="button" class="mt-3  btn-v2 design-action-btn-lg flex-row-center flex-align-center flex-nowrap oidc-auth" style="gap: .75rem;" data-id="<?=$oidcSessionId?>">
                             <i class="mdi mdi-shield-outline font-16"></i>
                             <span class="font-16">Log ind med MitId</span>
-                        </a>
+                        </button>
+                        <?php else: ?>
+                        <div class="alert alert-warning">
+                            <i class="mdi mdi-alert"></i> MitID login er midlertidigt utilgængelig. Brug email og adgangskode nedenfor.
+                        </div>
+                        <?php endif; ?>
 
                         <div class="alternative-box color-gray">
                             <span class="alternative-line"></span>

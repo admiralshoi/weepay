@@ -1,6 +1,7 @@
 <?php
 namespace classes\user;
 use classes\enumerations\Links;
+use classes\lang\Translate;
 use classes\Methods;
 use features\Settings;
 
@@ -128,13 +129,6 @@ class Sidebars {
                     "icon-class" => "mdi mdi-cart-outline",
                     "access_level" => []
                 ),
-                "payouts" => array(
-                    "link" => Links::$merchant->payouts,
-                    "title" => "Udbetalinger",
-                    "data-value" => "payouts",
-                    "icon-class" => "mdi mdi-bank-outline",
-                    "access_level" => []
-                ),
                 "pending-payments" => array(
                     "link" => Links::$merchant->pendingPayments,
                     "title" => "Udestående",
@@ -179,7 +173,7 @@ class Sidebars {
                 ),
                 "organisation" => array(
                     "link" => Links::$merchant->organisation->home,
-                    "title" => "Organisation",
+                    "title" => ucfirst(Translate::word("Organisation")),
                     "data-value" => "organisation",
                     "icon-class" => "fa-regular fa-building",
                     "access_level" => []
@@ -331,13 +325,6 @@ class Sidebars {
                     "icon-class" => "mdi mdi-cart-outline",
                     "access_level" => []
                 ),
-                "payouts" => array(
-                    "link" => Links::$merchant->payouts,
-                    "title" => "Udbetalinger",
-                    "data-value" => "payouts",
-                    "icon-class" => "mdi mdi-bank-outline",
-                    "access_level" => []
-                ),
                 "pending-payments" => array(
                     "link" => Links::$merchant->pendingPayments,
                     "title" => "Udestående",
@@ -382,7 +369,7 @@ class Sidebars {
                 ),
                 "organisation" => array(
                     "link" => Links::$merchant->organisation->home,
-                    "title" => "Organisation",
+                    "title" => ucfirst(Translate::word("Organisation")),
                     "data-value" => "organisation",
                     "icon-class" => "fa-regular fa-building",
                     "access_level" => []

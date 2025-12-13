@@ -256,6 +256,8 @@ class PageController {
 
 
     public static function dashboard(array $args): mixed  {
+        $user = Methods::users()->get(__uuid());
+        debugLog(['controller' => 'merchants.pages.PageController::dashboard', 'user_id' => __uuid(), 'access_level' => $user->access_level ?? 'none'], 'dashboard-controller');
         $locationHandler = Methods::locations();
         $locations = $locationHandler->getMyLocations(null, ['uid', 'name']);
         $locationOptions = mapItemToKeyValuePairs($locations->list(), 'slug', 'name');

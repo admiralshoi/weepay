@@ -14,6 +14,7 @@ class AuthLocal extends \Database\Model {
         "enabled" => ["type" => "tinyInteger", "default" => 0],
         "restricted_logon_types" => ["type" => "text", "default" => null, "nullable" => true],
         "user" => ["type" => "string"],
+        "phone_country_code" => ["type" => "string", "default" => null, "nullable" => true],
     ];
     public static array $indexes = [
         "user"

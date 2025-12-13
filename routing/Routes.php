@@ -63,6 +63,18 @@ class Routes {
             header("location: " . __url(Links::$merchant->organisation->home));
             exit;
         }
+        if(requiresSelectedOrganisationWallet()) {
+            header("location: " . __url(Links::$merchant->organisation->home));
+            exit;
+        }
+        if(requiresProfileCompletion()) {
+            if(realUrlPath() !== Links::$app->auth->consumerSignup . '/complete-profile') {
+                $q = $_SERVER['QUERY_STRING'];
+                $_SESSION['redirect_after_profile_completion'] = realUrlPath() . (empty($q) ? '' : '?' . $q);
+            }
+            header("location: " . __url(Links::$app->auth->consumerSignup . '/complete-profile'));
+            exit;
+        }
 
         $matches = [];
         foreach (self::$routes as $index => $route) {
@@ -100,6 +112,7 @@ class Routes {
                     $pass = call_user_func($mw, $params);
                     if (!$pass) {
                         $failedMiddlewares[] = $mw;
+                        break;
                     }
                 } else {
                     throw new Exception("Invalid middleware: $mw");

@@ -1,0 +1,62 @@
+{
+    "id": "e9e3a381-6672-43dd-bb37-d698be70c562",
+    "accountId": "a-ppge-7yBfGYQ0OtoAt3bPaW7P",
+    "authenticationUrl": "https:\/\/in-via-aps.app.signicat.com\/broker\/sp\/external-service\/login?messageId=6ba4050c-496a-e440-b1ab-de02c0e3ee03&transactionId=78495a9e-b815-cf44-ac6a-15e1ab855f68",
+    "status": "SUCCESS",
+    "provider": "mitid",
+    "subject": {
+        "id": "c3hxx1eatonZjkB6CXlE6EMeNLsqTnPxpRld4kJXzgY=",
+        "name": "Frederik Admiralsh\u00f8i",
+        "firstName": "Frederik",
+        "lastName": "Admiralsh\u00f8i",
+        "dateOfBirth": "1996-05-12",
+        "nin": {
+            "value": "1205960909",
+            "issuingCountry": "DK",
+            "type": "PERSON"
+        },
+        "mitidFal": "HIGH",
+        "mitidHasCpr": "true",
+        "mitidAal": "SUBSTANTIAL",
+        "mitidUuid": "43689b4f-5089-418d-a247-02de4f09976b",
+        "mitidIal": "SUBSTANTIAL",
+        "mitidReferenceTextBody": " ",
+        "mitidLoa": "SUBSTANTIAL",
+        "mitidCprSource": "database"
+    },
+    "callbackUrls": {
+        "success": "https:\/\/localhost:443\/weepay\/auth\/user\/verify\/success?ref=oidc_coj1z6k2b87bc12&sessionId=e9e3a381-6672-43dd-bb37-d698be70c562",
+        "abort": "https:\/\/localhost:443\/weepay\/auth\/user\/verify\/abort?ref=oidc_coj1z6k2b87bc12&sessionId=e9e3a381-6672-43dd-bb37-d698be70c562",
+        "error": "https:\/\/localhost:443\/weepay\/auth\/user\/verify\/error?ref=oidc_coj1z6k2b87bc12&sessionId=e9e3a381-6672-43dd-bb37-d698be70c562"
+    },
+    "environment": {
+        "ipAddress": "213.229.171.138",
+        "userAgent": "Mozilla\/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/142.0.0.0 Safari\/537.36"
+    },
+    "loa": "substantial",
+    "allowedProviders": {
+        "0": "mitid"
+    },
+    "flow": "redirect",
+    "requestedAttributes": {
+        "0": "dateOfBirth",
+        "1": "family_name",
+        "2": "firstName",
+        "3": "given_name",
+        "4": "lastName",
+        "5": "mitidAal",
+        "6": "mitidCprSource",
+        "7": "mitidFal",
+        "8": "mitidHasCpr",
+        "9": "mitidIal",
+        "10": "mitidLoa",
+        "11": "mitidNameAndAddressProtection",
+        "12": "mitidReferenceTextBody",
+        "13": "mitidUuid",
+        "14": "name",
+        "15": "nin",
+        "16": "nin_type"
+    },
+    "sessionLifetime": 1200,
+    "expiresAt": "2025-12-12T14:39:44.3796046+00:00"
+}

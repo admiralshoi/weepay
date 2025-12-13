@@ -32,6 +32,9 @@ class DA {
         "october" => "oktober",
         "november" => "november",
         "december" => "december",
+        "organisation" => "virksomhed",
+        "organisationsnavn" => "virksomhedsnavn",
+        "organisationens" => "virksomhedens",
     ];
 
 

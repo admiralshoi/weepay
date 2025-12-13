@@ -39,7 +39,9 @@ class CustomerApiController {
 
         testLog($plan,'checkoutsessionplan');
 
-        $merchantId = "ee6d19b2-8b9e-41ed-874e-044680beeae7";
+//        $merchantId = "ee6d19b2-8b9e-41ed-874e-044680beeae7";
+        $merchantId = $terminalSession->terminal->uuid->merchant_prid;
+        if(isEmpty($merchantId)) Response()->jsonError("Forhandlers ID er ikke gyldigt. Prøv ige senere", [$location], 404);
         $paymentSession = Methods::viva()->createPayment(
             $merchantId,
             $plan->to_pay_now,
@@ -61,7 +63,7 @@ class CustomerApiController {
         if(isEmpty($paymentSession)) Response()->jsonError("Noget gik galt. Prøv igen senere.", [], 500);
 
         $orderCode = $paymentSession['orderCode'];
-        $paymentSessionUrl = "https://demo.vivapayments.com/web/checkout?ref=$orderCode";
+        $paymentSessionUrl = Methods::viva()->checkoutUrl($orderCode);
 
         $order = Methods::viva()->getOrder($merchantId, $orderCode);
         $resellerFee = (float)Settings::$app->resellerFee;

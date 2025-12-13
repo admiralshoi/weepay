@@ -5,6 +5,7 @@
 
 use classes\enumerations\Links;
 
+
 ?>
 
 
@@ -441,7 +442,7 @@ use classes\enumerations\Links;
                                 <div class="square-40 bg-lighter-blue border-radius-50 flex-row-center flex-align-center">
                                     <i class="font-20 color-blue mdi mdi-email"></i>
                                 </div>
-                                <p class="font-20 mb-0 font-weight-bold">weepay@outlook.dk</p>
+                                <p class="font-20 mb-0 font-weight-bold"><?=CONTACT_EMAIL?></p>
                             </div>
                         </div>
                     </div>

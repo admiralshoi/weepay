@@ -27,8 +27,7 @@ class Viva {
     }
 
     const ISO_CURRENCIES = [
-//        "DKK" => "208",
-        "DKK" => "978",
+        "DKK" => "208",
         "EUR" => "978",
         "GBP" => "826",
         "RON" => "946",
@@ -67,7 +66,7 @@ class Viva {
     ): ?array {
         $requests =  Methods::requests();
         $branding = ["partnerName" => !empty($name) ? $name : "WeePay"];
-        $branding['primaryColor'] = !empty($color) ? $color : "#173c90";
+        $branding['primaryColor'] = !empty($color) ? $color : "#f6f9fc";
         $branding['logoUrl'] = !empty($logoUrl) ? $logoUrl : "https://wee-pay.dk/public/media/logos/weepay_pos.svg";
         $payload = [
             'email' => $email,
@@ -140,6 +139,10 @@ class Viva {
         $requests->post(API::sourceCreateUrl());
 
         return $requests->getResponseCode() < 300;
+    }
+
+    public function checkoutUrl(string $orderCode): string {
+        return API::checkoutUrl($orderCode);
     }
 
 

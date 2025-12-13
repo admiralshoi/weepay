@@ -20,6 +20,7 @@ $pageTitle = "Kasseapparater";
     activePage = "terminals";
 
     var locations = <?=json_encode(toArray($args->locations))?>;
+    var terminals = <?=json_encode(toArray($args->terminals->list()))?>;
     var selectedLocation = null;
 </script>
 
@@ -115,16 +116,25 @@ $pageTitle = "Kasseapparater";
                                                 <i class="mdi mdi-play-outline font-18"></i>
                                                 <span class="font-14">Start POS</span>
                                             </a>
+
+                                            <?php \classes\app\LocationPermissions::__oModifyProtectedContent($terminal->location, 'terminals'); ?>
+                                            <button class="btn-v2 mute-btn flex-row-center flex-align-center flex-nowrap" style="gap: .5rem;"
+                                                    onclick="LocationActions.editTerminal('<?=$terminal->uid?>')">
+                                                <i class="mdi mdi-pencil-outline font-18"></i>
+                                                <span class="font-14">Rediger</span>
+                                            </button>
+                                            <?php \classes\app\LocationPermissions::__oEndContent(); ?>
+
+
                                             <a href="<?=__url(Links::$merchant->terminals->checkoutStart($terminal->location->slug,$terminal->uid))?>"
                                                target="_blank" class="btn-v2 danger-btn flex-row-center flex-align-center flex-nowrap" style="gap: .5rem;">
 
-                                            <!--                                            <button class="btn-v2 danger-btn flex-row-center flex-align-center flex-nowrap" style="gap: .5rem;"-->
-<!--                                                    data-terminal-id="--><?php //=$terminal->uid?><!--" onclick="">-->
+                                                <!--                                            <button class="btn-v2 danger-btn flex-row-center flex-align-center flex-nowrap" style="gap: .5rem;"-->
+                                                <!--                                                    data-terminal-id="--><?php //=$terminal->uid?><!--" onclick="">-->
                                                 <i class="mdi mdi-dots-horizontal font-14"></i>
                                                 <span class="font-14">Start Kundeflow</span>
-<!--                                            </button>-->
+                                                <!--                                            </button>-->
                                             </a>
-
                                         </div>
                                     </td>
                                 </tr>

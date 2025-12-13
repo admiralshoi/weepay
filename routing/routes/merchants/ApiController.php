@@ -2,6 +2,7 @@
 
 namespace routing\routes\merchants;
 
+use classes\app\LocationPermissions;
 use classes\app\OrganisationPermissions;
 use classes\enumerations\Links;
 use classes\Methods;
@@ -58,6 +59,7 @@ class ApiController {
         $companyCity = trim($args["company_city"]);
         $companyPostalCode = trim($args["company_postal_code"]);
         $companyCountry = trim($args["company_country"]);
+        $defaultCurrency = trim($args["default_currency"]);
         $website = array_key_exists('website', $args) ? trim($args["website"]) : null;
         $industry = array_key_exists('industry', $args) ? trim($args["industry"]) : null;
         $contactEmail = array_key_exists('contact_email', $args) ? trim($args["contact_email"]) : null;
@@ -71,6 +73,8 @@ class ApiController {
             Response()->jsonError("Den primære email har et forkert format.", ['blame_field' => 'email']);
         if(!empty($contactEmail) && !filter_var($contactEmail, FILTER_VALIDATE_EMAIL))
             Response()->jsonError("Forkert email-format.", ['blame_field' => 'contact_email']);
+        if(!in_array($defaultCurrency, toArray(Settings::$app->currencies)))
+            Response()->jsonError("Ugyldig valuta.", ['blame_field' => 'default_currency']);
 
         if(strlen($name) > 30) Response()->jsonError("Navnet er for langt. Maximum 30 tegn", ['blame_field' => 'name']);
         if(strlen($companyName) > 50) Response()->jsonError("Virksomhedsnavnet er for langt. Maximum 50 tegn", ['blame_field' => 'company_name']);
@@ -92,7 +96,7 @@ class ApiController {
 
             $callerCode = $calleInfo['phone'];
             $phoneLength = $calleInfo['phoneLength'];
-            $contactPhone = Numbers::cleanPhoneNumber($contactPhone, true, $phoneLength, $callerCode);
+            $contactPhone = Numbers::cleanPhoneNumber($contactPhone, false, $phoneLength, $callerCode);
             if(empty($contactPhone)) Response()->jsonError("Udgyldigt kontakt-telefonnummer angivet");
         }
 
@@ -113,6 +117,7 @@ class ApiController {
         if($description !== $organisation->description) $params['description'] = $description;
         if($country->uid !== $organisation->country) $params['country'] = $country->uid;
         if($contactPhoneCountry !== $organisation->contact_phone_country_code) $params['contact_phone_country_code'] = $contactPhoneCountry;
+        if($defaultCurrency !== $organisation->default_currency) $params['default_currency'] = $defaultCurrency;
         if($companyLine1 !== $organisation->company_address?->line_1) $address['line_1'] = $companyLine1;
         if($companyCity !== $organisation->company_address?->city) $address['city'] = $companyCity;
         if($companyPostalCode !== $organisation->company_address?->postal_code) $address['postal_code'] = $companyPostalCode;
@@ -142,7 +147,10 @@ class ApiController {
         $contactPhone = array_key_exists('contact_phone', $args) ? trim($args["contact_phone"]) : null;
         $contactPhoneCountry = array_key_exists('contact_phone_country', $args) ? trim($args["contact_phone_country"]) : null;
         $description = array_key_exists('description', $args) ? ucfirst(trim($args["description"])) : null;
+        $defaultCurrency = array_key_exists('default_currency', $args) ? trim($args["default_currency"]) : null;
 
+        if(!empty($defaultCurrency) && !in_array($defaultCurrency, toArray(Settings::$app->currencies)))
+            Response()->jsonError("Ugyldig valuta valgt.", ['blame_field' => 'default_currency']);
         if(!empty($website) && !filter_var($website, FILTER_VALIDATE_URL))
             Response()->jsonError("Forkert hjemmeside-format.", ['blame_field' => 'website']);
         if(!filter_var($primaryEmail, FILTER_VALIDATE_EMAIL))
@@ -170,7 +178,7 @@ class ApiController {
 
             $callerCode = $calleInfo['phone'];
             $phoneLength = $calleInfo['phoneLength'];
-            $contactPhone = Numbers::cleanPhoneNumber($contactPhone, true, $phoneLength, $callerCode);
+            $contactPhone = Numbers::cleanPhoneNumber($contactPhone, false, $phoneLength, $callerCode);
             if(empty($contactPhone)) Response()->jsonError("Udgyldigt kontakt-telefonnummer angivet");
         }
 
@@ -179,7 +187,7 @@ class ApiController {
 
         $organisationId = Methods::organisations()->createNewOrganisation(
             $name, $companyName, $primaryEmail, $companyCvr, $companyLine1, $companyCity, $companyPostalCode, $country,
-            $website, $industry, $description, $contactEmail, $contactPhone, $contactPhoneCountry
+            $website, $industry, $description, $contactEmail, $contactPhone, $contactPhoneCountry, $defaultCurrency
         );
         if(empty($organisationId)) Response()->jsonError("Der opstod en fejl under oprettelsen. Prøv igen senere");
 
@@ -302,7 +310,10 @@ class ApiController {
         $city = trim($args["city"]);
         $postalCode = trim($args["postal_code"]);
         $country = trim($args["country"]);
+        $defaultCurrency = array_key_exists('default_currency', $args) ? trim($args["default_currency"]) : null;
 
+        if(!empty($defaultCurrency) && !in_array($defaultCurrency, toArray(Settings::$app->currencies)))
+            Response()->jsonError("Ugyldig valuta valgt.", ['blame_field' => 'default_currency']);
         if(!empty($contactEmail) && !filter_var($args["contact_email"], FILTER_VALIDATE_EMAIL))
             Response()->jsonError("Forkert email-format.", ['blame_field' => 'contact_email']);
 
@@ -332,7 +343,7 @@ class ApiController {
 
             $callerCode = $calleInfo['phone'];
             $phoneLength = $calleInfo['phoneLength'];
-            $contactPhone = Numbers::cleanPhoneNumber($contactPhone, true, $phoneLength, $callerCode);
+            $contactPhone = Numbers::cleanPhoneNumber($contactPhone, false, $phoneLength, $callerCode);
             if(empty($contactPhone)) Response()->jsonError("Udgyldigt kontakt-telefonnummer angivet");
         }
 
@@ -342,11 +353,10 @@ class ApiController {
         $handler = Methods::locations();
         if($handler->exists(['slug' => $slug])) Response()->jsonError("Kaldenavnet '$slug' er allerede i brug", ['blame_field' => 'slug']);
 
-
         $locationId = $handler->createNewLocation(
             $organisationId, $name, $slug, $caption, $inheritParent,
             $cvr, $line1, $city, $postalCode, $country, $industry, $description,
-            $contactEmail, $contactPhone, $contactPhoneCountry, null, 'ACTIVE'
+            $contactEmail, $contactPhone, $contactPhoneCountry, null, 'ACTIVE', $defaultCurrency
         );
         if(empty($locationId)) Response()->jsonError("Der opstod en fejl under oprettelsen. Prøv igen senere");
 
@@ -365,6 +375,107 @@ class ApiController {
     }
 
 
+    #[NoReturn] public static function updateLocationDetails(array $args): void {
+        $requiredKeys = ["name", "slug", "caption"];
+        foreach ($requiredKeys as $key) if(!array_key_exists($key, $args) || empty(trim($args[$key])))
+            Response()->jsonError("Venligst udfyld alle påkrævet felter", ['blame_field' => $key]);
+
+        if(!array_key_exists('location_id', $args) || empty($args['location_id']))
+            Response()->jsonError("Ugyldig lokation", [], 400);
+
+        $locationId = $args['location_id'];
+        $handler = Methods::locations();
+        $location = $handler->get($locationId);
+
+        if(isEmpty($location)) Response()->jsonError("Lokation ikke fundet", [], 404);
+        if($location->uuid->uid !== __oUuid()) Response()->jsonError("Du har ikke tilladelse til denne handling", [], 403);
+
+        $name = Titles::cleanUcAll(trim($args["name"]));
+        $slug = strtolower(trim($args["slug"]));
+        $slug = str_replace([' ', 'ø', 'å', 'æ'], ['-', 'o', 'aa', 'ae'], $slug);
+        $slug = preg_replace('/[^a-zA-Z\- ]/', '', $slug);
+        $caption = ucfirst(trim($args["caption"]));
+        $inheritParent = array_key_exists('inherit_details', $args) ? $args["inherit_details"] : null;
+        $inheritParent = $inheritParent === "on" ? 1 : 0;
+        $description = array_key_exists('description', $args) ? ucfirst(trim($args["description"])) : null;
+        $industry = array_key_exists('industry', $args) ? trim($args["industry"]) : null;
+        $contactEmail = array_key_exists('contact_email', $args) ? trim($args["contact_email"]) : null;
+        $contactPhone = array_key_exists('contact_phone', $args) ? trim($args["contact_phone"]) : null;
+        $contactPhoneCountry = array_key_exists('contact_phone_country', $args) ? trim($args["contact_phone_country"]) : null;
+        $cvr = array_key_exists('cvr', $args) ? trim($args["cvr"]) : null;
+        $line1 = array_key_exists('line_1', $args) ? trim($args["line_1"]) : null;
+        $city = array_key_exists('city', $args) ? trim($args["city"]) : null;
+        $postalCode = array_key_exists('postal_code', $args) ? trim($args["postal_code"]) : null;
+        $country = array_key_exists('country', $args) ? trim($args["country"]) : null;
+        $defaultCurrency = array_key_exists('default_currency', $args) ? trim($args["default_currency"]) : null;
+
+        if(!empty($defaultCurrency) && !in_array($defaultCurrency, toArray(Settings::$app->currencies)))
+            Response()->jsonError("Ugyldig valuta valgt.", ['blame_field' => 'default_currency']);
+        if(!empty($contactEmail) && !filter_var($contactEmail, FILTER_VALIDATE_EMAIL))
+            Response()->jsonError("Forkert email-format.", ['blame_field' => 'contact_email']);
+
+        if(strlen($name) > 30) Response()->jsonError("Navnet er for langt. Maximum 30 tegn", ['blame_field' => 'name']);
+        if(strlen($slug) > 50) Response()->jsonError("Lokationsnavnet er for langt. Maximum 50 tegn", ['blame_field' => 'slug']);
+        if(strlen($line1 ?? '') > 100) Response()->jsonError("Lokationens vejnavn er for lang. Maximum 100 tegn", ['blame_field' => 'line_1']);
+        if(strlen($city ?? '') > 50) Response()->jsonError("Lokationens bynavn er for lang. Maximum 50 tegn", ['blame_field' => 'city']);
+        if(strlen($postalCode ?? '') > 30) Response()->jsonError("Lokationens postnummer er for langt. Maximum 30 tegn", ['blame_field' => 'postal_code']);
+        if(strlen($contactEmail ?? '') > 50) Response()->jsonError("Kontakt e-mailen er for lang. Maximum 50 tegn", ['blame_field' => 'contact_email']);
+        if(strlen($contactPhone ?? '') > 15) Response()->jsonError("Kontaktnummeret er for langt. Maximum 15 tegn", ['blame_field' => 'contact_phone']);
+        if(strlen($industry ?? '') > 30) Response()->jsonError("Industrinavnet er for langt. Maximum 30 tegn", ['blame_field' => 'industry']);
+        if(strlen($cvr ?? '') > 20) Response()->jsonError("Cvr nummeret er for langt. Maximum 20 tegn", ['blame_field' => 'cvr']);
+        if(strlen($description ?? '') > 1000) Response()->jsonError("Beskrivelsen er for lang. Maximum 1000 tegn", ['blame_field' => 'description']);
+        if(strlen($caption) > 250) Response()->jsonError("Underteksten er for lang. Maximum 250 tegn", ['blame_field' => 'caption']);
+
+        if(!empty($contactPhone)) {
+            if(empty($contactPhoneCountry)) $contactPhoneCountry = Settings::$app->default_country;
+            $calleInfo = Methods::misc()::callerCode($contactPhoneCountry, false);
+            if(empty($calleInfo)) Response()->jsonError("Forkert landekode angivet til telefonnummeret", ['blame_field' => 'contact_phone_country']);
+
+            $callerCode = $calleInfo['phone'];
+            $phoneLength = $calleInfo['phoneLength'];
+            $contactPhone = Numbers::cleanPhoneNumber($contactPhone, false, $phoneLength, $callerCode);
+            if(empty($contactPhone)) Response()->jsonError("Udgyldigt kontakt-telefonnummer angivet");
+        }
+
+        if(!empty($country)) {
+            $countryObj = Methods::countries()->getByCountryCode($country, ['uid', 'enabled', 'code']);
+            if(isEmpty($countryObj) || !$countryObj->enabled) Response()->jsonError("Ugyldigt land valgt.", ['blame_field' => 'country']);
+        } else {
+            $countryObj = null;
+        }
+
+        // Check slug uniqueness (excluding current location)
+        if($slug !== $location->slug && $handler->exists(['slug' => $slug]))
+            Response()->jsonError("Kaldenavnet '$slug' er allerede i brug", ['blame_field' => 'slug']);
+
+        $params = [];
+        $address = isEmpty($location->address) ? [] : toArray($location->address);
+
+        if($name !== $location->name) $params['name'] = $name;
+        if($slug !== $location->slug) $params['slug'] = $slug;
+        if($caption !== $location->caption) $params['caption'] = $caption;
+        if($inheritParent !== $location->inherit_details) $params['inherit_details'] = $inheritParent;
+        if($description !== $location->description) $params['description'] = $description;
+        if($industry !== $location->industry) $params['industry'] = $industry;
+        if($contactEmail !== $location->contact_email) $params['contact_email'] = $contactEmail;
+        if($contactPhone !== $location->contact_phone) $params['contact_phone'] = $contactPhone;
+        if($contactPhoneCountry !== $location->contact_phone_country_code) $params['contact_phone_country_code'] = $contactPhoneCountry;
+        if($cvr !== $location->cvr) $params['cvr'] = $cvr;
+        if($defaultCurrency !== $location->default_currency) $params['default_currency'] = $defaultCurrency;
+        if(!empty($countryObj) && $countryObj->uid !== $location->country) $params['country'] = $countryObj->uid;
+
+        if($line1 !== $location->address?->line_1) $address['line_1'] = $line1;
+        if($city !== $location->address?->city) $address['city'] = $city;
+        if($postalCode !== $location->address?->postal_code) $address['postal_code'] = $postalCode;
+        if(!empty($countryObj) && $countryObj->code !== $location->address?->country) $address['country'] = $countryObj->code;
+        if(!isEmpty($address)) $params['address'] = $address;
+
+        if(!isEmpty($params)) {
+            $handler->update($params, ['uid' => $locationId]);
+        }
+
+        Response()->setRedirect()->jsonSuccess("Lokationsdetaljerne er blevet opdateret");
+    }
 
 
     #[NoReturn] public static function createTerminal(array $args): void {
@@ -398,6 +509,52 @@ class ApiController {
         Response()->setRedirect()->jsonSuccess('Terminalen er blevet oprettet');
     }
 
+
+    #[NoReturn] public static function updateTerminalDetails(array $args): void {
+        $requiredKeys = ["name", "status"];
+        foreach ($requiredKeys as $key) if(!array_key_exists($key, $args) || empty(trim($args[$key])))
+            Response()->jsonError("Venligst udfyld alle påkrævet felter", ['blame_field' => $key]);
+
+        if(!array_key_exists('terminal_id', $args) || empty($args['terminal_id']))
+            Response()->jsonError("Ugyldig terminal", [], 400);
+
+        $terminalId = $args['terminal_id'];
+        $handler = Methods::terminals();
+        $terminal = $handler->get($terminalId);
+
+        if(isEmpty($terminal)) Response()->jsonError("Terminal ikke fundet", [], 404);
+        if($terminal->uuid->uid !== __oUuid()) Response()->jsonError("Du har ikke tilladelse til denne handling", [], 403);
+
+        // Check location permissions
+        $location = $terminal->location;
+        if(isEmpty($location)) Response()->jsonError("Lokation ikke fundet", [], 404);
+        if(!LocationPermissions::__oModify($location, 'terminals'))
+            Response()->jsonError("Du har ikke tilladelse til at redigere denne terminal", [], 403);
+
+        $name = Titles::cleanUcAll(trim($args["name"]));
+        $status = trim($args["status"]);
+
+        // Validate status
+        $allowedStatuses = ['DRAFT', 'ACTIVE', 'INACTIVE', 'DELETED'];
+        if(!in_array($status, $allowedStatuses))
+            Response()->jsonError("Ugyldig status valgt.", ['blame_field' => 'status']);
+
+        if(strlen($name) > 30) Response()->jsonError("Navnet er for langt. Maximum 30 tegn", ['blame_field' => 'name']);
+
+        // Check name uniqueness (excluding current terminal)
+        if($name !== $terminal->name && $handler->exists(['name' => $name, 'location' => $location->uid]))
+            Response()->jsonError("Terminalnavnet '$name' er allerede i brug.", ['blame_field' => 'name']);
+
+        $params = [];
+        if($name !== $terminal->name) $params['name'] = $name;
+        if($status !== $terminal->status) $params['status'] = $status;
+
+        if(!isEmpty($params)) {
+            $handler->update($params, ['uid' => $terminalId]);
+        }
+
+        Response()->setRedirect()->jsonSuccess("Terminaldetaljerne er blevet opdateret");
+    }
 
 
 

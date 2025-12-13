@@ -160,15 +160,23 @@ class ModalHandler {
         },
         organisationDetails: {
             file: 'organisation.edit-details',
-            keys: ['organisation', 'allowedCountries', 'worldCountries', 'defaultCountry']
+            keys: ['organisation', 'allowedCountries', 'worldCountries', 'defaultCountry', 'currencies']
         },
         locationAddNew: {
             file: 'locations.add-new-location',
-            keys: ['allowedCountries', 'worldCountries', 'defaultCountry', 'SITE_NAME']
+            keys: ['allowedCountries', 'worldCountries', 'defaultCountry', 'SITE_NAME', 'currencies']
+        },
+        locationDetails: {
+            file: 'locations.edit-details',
+            keys: ['location', 'organisation', 'allowedCountries', 'worldCountries', 'defaultCountry', 'SITE_NAME', 'currencies']
         },
         terminalAddNew: {
             file: 'terminals.add-new-terminal',
             keys: ['locations', 'selectedLocation']
+        },
+        terminalDetails: {
+            file: 'terminals.edit-details',
+            keys: ['terminal']
         },
     };
 

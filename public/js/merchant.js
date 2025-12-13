@@ -371,7 +371,7 @@ async function editRolePermissions(btn) {
 
 async function editOrganisationDetails() {
     let modal = new ModalHandler('organisationDetails')
-    modal.construct({organisation, allowedCountries, worldCountries, defaultCountry})
+    modal.construct({organisation, allowedCountries, worldCountries, defaultCountry, currencies})
     await modal.build()
         .then(() => {
             selectV2();
@@ -431,12 +431,10 @@ async function editOrganisationDetails() {
 
 
 
-
-
-
 const LocationActions = {
     isInit: false,
     isOpen: false,
+    locationId: null,
 
     init() {
         if(this.isInit) return;
@@ -467,8 +465,11 @@ const LocationActions = {
         if(!parent.length) return;
         parent.toggleClass('open')
     },
-    open() {
+    open(btn) {
         if(this.isOpen) return;
+        let locationId = btn.dataset.locationId;
+        if(empty(locationId)) return;
+        this.locationId = locationId;
         this.init();
         this.sidebar.classList.add('open');
         if (this.backdrop) this.backdrop.classList.add('active');
@@ -483,7 +484,7 @@ const LocationActions = {
 
     async addNewLocation() {
         let modal = new ModalHandler('locationAddNew')
-        modal.construct({SITE_NAME, allowedCountries, worldCountries, defaultCountry})
+        modal.construct({SITE_NAME, allowedCountries, worldCountries, defaultCountry, currencies})
         await modal.build()
             .then(() => {
                 selectV2();
@@ -527,6 +528,71 @@ const LocationActions = {
 
                 let formData = new FormData(form.get(0))
                 let result = await post(platformLinks.api.forms.merchant.addNewLocation, formData);
+
+                if(result.status === "error") {
+                    setError(result.error)
+                    return false;
+                }
+
+                queueNotificationOnLoad('Success', result.message, 'success')
+                handleStandardApiRedirect(result)
+                modalHandler.dispose()
+            }
+        })
+        modal.open()
+    },
+
+
+    async editLocationDetails() {
+        if(empty(this.locationId)) return;
+        let location = locations.find(l => l.uid === this.locationId)
+        console.log(location)
+
+
+        let modal = new ModalHandler('locationDetails')
+        modal.construct({location, organisation, allowedCountries, worldCountries, defaultCountry, SITE_NAME, currencies})
+        await modal.build()
+            .then(() => {
+                selectV2();
+            })
+        modal.bindEvents({
+            onclose: (modalHandler) => {
+                modalHandler.dispose();
+            },
+            update: async (btn, modalHandler) => {
+                let parent = btn.parents('.modal').first()
+                let form = parent.find("form").first();
+                if (empty(form)) return;
+                let errorBox = parent.find(".modalErrorBox").first();
+                if(empty(errorBox)) return;
+                const clearError = () => {
+                    errorBox.text('')
+                    errorBox.addClass('d-none')
+                    form.find('.error-shadow').each(function () { $(this).removeClass('error-shadow') })
+                }
+                const end = () => {
+                    btn.get(0).disabled = false;
+                }
+                const start = () => {
+                    btn.get(0).disabled = true;
+                    clearError()
+                }
+                const setError = (error) => {
+                    let txt = error.message
+                    errorBox.text(txt)
+                    errorBox.removeClass('d-none')
+                    if('blame_field' in error) {
+                        let blameId = error.blame_field;
+                        let blameElement = form.find(`[name=${blameId}]`).first();
+                        if(blameElement.length) blameElement.addClass('error-shadow')
+                    }
+                    end()
+                }
+                start();
+
+
+                let formData = new FormData(form.get(0))
+                let result = await post(platformLinks.api.forms.merchant.editLocationDetails, formData);
 
                 if(result.status === "error") {
                     setError(result.error)
@@ -601,6 +667,68 @@ const LocationActions = {
         modal.open()
     },
 
+    async editTerminal(terminalId) {
+        if(empty(terminalId)) return;
+        let terminal = terminals.find(t => t.uid === terminalId)
+        if(empty(terminal)) return;
+
+        let modal = new ModalHandler('terminalDetails')
+        modal.construct({terminal})
+        await modal.build()
+            .then(() => {
+                selectV2();
+            })
+        modal.bindEvents({
+            onclose: (modalHandler) => {
+                modalHandler.dispose();
+            },
+            update: async (btn, modalHandler) => {
+                let parent = btn.parents('.modal').first()
+                let form = parent.find("form").first();
+                if (empty(form)) return;
+                let errorBox = parent.find(".modalErrorBox").first();
+                if(empty(errorBox)) return;
+                const clearError = () => {
+                    errorBox.text('')
+                    errorBox.addClass('d-none')
+                    form.find('.error-shadow').each(function () { $(this).removeClass('error-shadow') })
+                }
+                const end = () => {
+                    btn.get(0).disabled = false;
+                }
+                const start = () => {
+                    btn.get(0).disabled = true;
+                    clearError()
+                }
+                const setError = (error) => {
+                    let txt = error.message
+                    errorBox.text(txt)
+                    errorBox.removeClass('d-none')
+                    if('blame_field' in error) {
+                        let blameId = error.blame_field;
+                        let blameElement = form.find(`[name=${blameId}]`).first();
+                        if(blameElement.length) blameElement.addClass('error-shadow')
+                    }
+                    end()
+                }
+                start();
+
+
+                let formData = new FormData(form.get(0))
+                let result = await post(platformLinks.api.forms.merchant.editTerminalDetails, formData);
+
+                if(result.status === "error") {
+                    setError(result.error)
+                    return false;
+                }
+
+                queueNotificationOnLoad('Success', result.message, 'success')
+                handleStandardApiRedirect(result)
+                modalHandler.dispose()
+            }
+        })
+        modal.open()
+    },
 
     qrAction(terminalId) {
         let link = HOST + platformLinks.merchant.terminals.terminalQr.replace("{id}", terminalId);
@@ -618,7 +746,7 @@ const VivaWallet = {
     onboardingInterval: null,
     accountStatus: "DRAFT",
     init(accountStatus) {
-        this.accountStatus = accountStatus;
+        if(!empty(accountStatus)) this.accountStatus = accountStatus;
         this.bindEvents();
     },
     bindEvents() {

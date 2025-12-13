@@ -829,6 +829,18 @@ function requiresSelectedOrganisationWallet(): bool {
         isEmpty(\features\Settings::$organisation?->organisation?->merchant_prid) &&
         !in_array(realUrlPath(), $exceptionPaths);
 }
+function requiresProfileCompletion(): bool {
+    $headers = apache_request_headers();
+    if(array_key_exists("Request-Type", $headers) && $headers["Request-Type"] === "api") return false;
+    $exceptionPaths = [
+        Links::$app->auth->consumerSignup . '/complete-profile',
+        Links::$app->logout
+    ];
+    return \classes\Methods::isConsumer() &&
+        (isEmpty(\features\Settings::$user?->phone) ||
+        isEmpty(\features\Settings::$user?->full_name)) &&
+        !in_array(realUrlPath(), $exceptionPaths);
+}
 
 function scriptStart(): void {
     if (!isset($_SESSION['registered_scripts'])) $_SESSION['registered_scripts'] = [];
