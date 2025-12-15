@@ -235,18 +235,22 @@ class Viva {
 //        return $token;
     }
 
-    public function getPayment(string $merchantId, string $orderId): ?array {
+    public function getPaymentByOrderId(string $merchantId, string $orderId): ?array {
         $requests =  Methods::requests();
         $requests->basicAuth(API::resellerBasicAuthId($merchantId), API::resellerApiKey());
-        $requests->get(API::paymentReadUrl($orderId));
+        $requests->get(API::paymentByOrderIdReadUrl($orderId));
 
-        $response = $requests->getResponse();
-        return $response;
-        //Find the error response and at right...
-//        if(empty($token)) {
-//            errorLog($response, 'viva-failed-token-authentication');
-//        }
-//        return $token;
+        return $requests->getResponse();
+    }
+
+    public function getPayment(string $merchantId, string $trxId): ?array {
+        $requests =  Methods::requests();
+        $token = $this->fetchToken();
+        $requests->setBearerToken($token);
+        $requests->get(API::paymentReadUrl($trxId, $merchantId));
+
+
+        return $requests->getResponse();
     }
 
 

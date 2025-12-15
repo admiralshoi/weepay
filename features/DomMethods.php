@@ -41,9 +41,11 @@ class DomMethods {
         if($options instanceof Collection) $options = $options->toArray();
         $element = '
             <div>
+            <div class="flex-row-start flex-align-center" style="gap: .5rem;">
             <div class="flex-row-start flex-align-center flex-nowrap" style="column-gap: .5rem;">
-            <i class="mdi mdi-store-outline font-16 color-blue"></i>
-            <p class="mb-0 font-18">Vis data for:</p>
+                <i class="mdi mdi-store-outline font-16 color-blue"></i>
+                <p class="mb-0 font-18 text-nowrap">Vis data for:</p>
+            </div>
             <select class="form-select-v2 w-200px" id="location-selection">';
         $element .= '<option value="all" data-href="' . __url(Links::$merchant->locations->main) . '">Alle butikker</option>';
 

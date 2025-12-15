@@ -112,7 +112,7 @@ class ApiController {
 
         // Send verification code
         $twoFactorAuth = Methods::twoFactorAuth();
-        $result = $twoFactorAuth->sendSmsCode($userId, $cleanedPhone, $phoneCountryCode, 'phone_verification');
+        $result = $twoFactorAuth->sendSmsCode($userId, $cleanedPhone, $phoneCountryCode, $calleInfo, 'phone_verification');
 
         if(isEmpty($result)) {
             Response()->jsonError("Kunne ikke sende verifikationskode. Prøv igen.", [], 500);

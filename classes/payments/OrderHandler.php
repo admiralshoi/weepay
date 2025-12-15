@@ -2,6 +2,7 @@
 
 namespace classes\payments;
 
+use classes\Methods;
 use classes\utility\Crud;
 use Database\Collection;
 use Database\model\Orders;
@@ -26,6 +27,22 @@ class OrderHandler extends Crud {
 
 
 
+    public function setCompleted(string $id): bool {
+        return $this->update(['status' => 'COMPLETED'], ['uid' => $id]);
+    }
+    public function setPending(string $id): bool {
+        return $this->update(['status' => 'PENDING'], ['uid' => $id]);
+    }
+    public function setCancelled(string $id): bool {
+        return $this->update(['status' => 'CANCELLED'], ['uid' => $id]);
+    }
+    public function setExpired(string $id): bool {
+        return $this->update(['status' => 'EXPIRED'], ['uid' => $id]);
+    }
+
+
+
+
     public function insert(
         string $organisation,
         string $location,
@@ -40,9 +57,13 @@ class OrderHandler extends Crud {
         string $caption,
         ?string $prid,
         ?string $terminalSessionId,
+        ?object $planObject = null,
+        float|int $creditScore = 0
     ): bool {
+        $user = Methods::users()->get($customerId);
+        $isTest = (int)Viva::isSandbox();
 
-        return $this->create([
+        $success = $this->create([
             "organisation" => $organisation,
             "location" => $location,
             "uuid" => $customerId,
@@ -55,10 +76,51 @@ class OrderHandler extends Crud {
             "source_code" => $sourceCode,
             "caption" => $caption,
             "prid" => $prid,
+            "credit_score" => $creditScore,
             "terminal_session" => $terminalSessionId,
-            "test" => (int)Viva::isSandbox()
+            "billing_details" => [
+                "customer_name" => $user?->full_name,
+                "address" => [
+                    "line_1" => $user?->address_street,
+                    "city" => $user?->address_city,
+                    "postal_code" => $user?->address_zip,
+                    "region" => $user?->address_region,
+                    "country" => $user?->address_country,
+                ]
+            ],
+            "test" => $isTest
         ]);
 
+        if (!$success) {
+            return false;
+        }
+
+        // Create payment installments for installments or pushed plans
+        if (in_array($plan, ['installments', 'pushed']) && !isEmpty($planObject)) {
+            $orderId = $this->recentUid;
+
+            $paymentsHandler = Methods::payments();
+            $success = $paymentsHandler->createInstallments(
+                orderId: $orderId,
+                customerId: $customerId,
+                organisation: $organisation,
+                location: $location,
+                provider: $provider,
+                currency: $currency,
+                plan: $planObject,
+                resellerFeePercent: $isvFee,
+                paymentPlan: $plan,
+                isTest: (bool)$isTest
+            );
+
+            if (!$success) {
+                // Rollback order creation if payment creation fails
+                $this->delete(['uid' => $orderId]);
+                return false;
+            }
+        }
+
+        return true;
     }
 
 

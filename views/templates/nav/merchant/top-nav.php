@@ -6,19 +6,33 @@ use classes\Methods;
 use classes\enumerations\Links;
 
 $organisation = \features\Settings::$organisation?->organisation;
+$setupRequirements = !isEmpty($organisation) ? Methods::organisations()->getSetupRequirements($organisation->uid) : null;
 ?>
 
 
 <div id="top-nav" class="home">
-    <div class="flex-row-start flex-align-center flex-nowrap" style="column-gap: .25rem; max-width: var(--left-nav-width)">
-        <sup>
+    <div class="flex-row-start flex-align-center flex-nowrap" style="column-gap: .75rem; max-width: var(--left-nav-width)">
+        <button class="mobileOnlyInlineFlex btn-unstyled p-0 m-0 border-0 bg-transparent" id="topNavSidebarToggle" style="cursor: pointer;">
+            <i class="mdi mdi-menu font-30 color-gray hover-color-blue"></i>
+        </button>
+        <sup class="hideOnSmallScreen">
         <img src="<?=__asset(LOGO_ICON)?>" class="w-30px" />
         </sup>
-        <p class="hideOnMobileInlineBlock mb-0 font-18 font-weight-bold color-blue text-nowrap">WeePay Forhandler</p>
+        <p class="hideOnSmallScreen mb-0 font-18 font-weight-bold color-blue text-nowrap">WeePay Forhandler</p>
     </div>
 
 
     <div class="flex-row-end flex-align-center" style="column-gap: 1rem">
+
+        <?php if(!isEmpty($setupRequirements) && $setupRequirements->has_incomplete): ?>
+            <a href="<?=__url(Links::$merchant->organisation->home)?>"
+               class="btn-v2 danger-btn flex-row-start flex-align-center flex-nowrap font-13"
+               style="gap: .35rem; padding: .35rem .65rem;"
+               title="Handlinger påkrævet - Klik for at se detaljer">
+                <i class="mdi mdi-alert-outline font-16"></i>
+                <span class="hideOnMobileInlineBlock">Handlinger påkrævet</span>
+            </a>
+        <?php endif; ?>
 
         <?php if(!isEmpty($organisation)): ?>
             <p class="mb-0 color-gray font-14 font-weight-medium ellipsis-single-line" style="max-width: 200px;">

@@ -41,9 +41,28 @@ class CheckoutBasketHandler extends Crud {
 
 
 
-    public function createCheckoutInfo(object $basket, string $planName, int $paymentTimeframe = 90): ?object {
+    public function createCheckoutInfo(object $basket, string $planName, int $paymentTimeframe = 90, ?string $birthdate = null, ?string $customerId = null): ?object {
         $plan = Settings::$app->paymentPlans->$planName;
         if(!$plan->enabled) return null;
+
+        // Check age restriction for BNPL plans (installments and pushed)
+        if(in_array($planName, ['installments', 'pushed'])) {
+            $age = $this->calculateAge($birthdate);
+            if($age < 18) {
+                return null; // User must be 18+ for BNPL
+            }
+
+            // Check BNPL limit
+            if(!isEmpty($customerId)) {
+                $bnplLimit = Methods::payments()->getBnplLimit($customerId);
+
+                // If basket amount exceeds available BNPL limit, don't show this plan
+                if($basket->price > $bnplLimit['available']) {
+                    return null;
+                }
+            }
+        }
+
         if($planName === 'installments' || !Settings::$app->paymentPlans->installments->enabled)  $plan->default = true;
         else $plan->default = false;
         $plan->name = $planName;
@@ -83,6 +102,29 @@ class CheckoutBasketHandler extends Crud {
         return $plan;
     }
 
+
+    /**
+     * Calculate age from birthdate
+     *
+     * @param string|null $birthdate Birthdate in Y-m-d format
+     * @return int Age in years, returns 0 if birthdate is empty (treated as child)
+     */
+    private function calculateAge(?string $birthdate): int {
+        // If birthdate is empty, treat as child (under 18)
+        if(isEmpty($birthdate)) {
+            return 0;
+        }
+
+        try {
+            $birthDate = new \DateTime($birthdate);
+            $today = new \DateTime('today');
+            $age = $birthDate->diff($today)->y;
+            return $age;
+        } catch (\Exception $e) {
+            // If invalid date format, treat as child for safety
+            return 0;
+        }
+    }
 
 
 

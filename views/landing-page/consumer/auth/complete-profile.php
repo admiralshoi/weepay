@@ -50,9 +50,9 @@ $worldCountries = $args->worldCountries;
                         <?php endif; ?>
 
                         <div class="flex-col-start w-100" style="row-gap: .75rem;">
-                            <div class="flex-col-start w-100" style="row-gap: .25rem;">
+                            <div class="flex-col-start w-100" style="row-gap: .25rem;" id="phone-input-section">
                                 <p class="mb-0 font-14 font-weight-bold">Telefonnummer <span class="color-red">*</span></p>
-                                <div class="flex-row-start flex-align-start flex-nowrap w-100" style="gap: 2px;">
+                                <div class="flex-row-start flex-align-start  flex-nowrap w-100" style="gap: 2px;">
                                     <select class="form-select-v2 h-45px w-70px dropdown-no-arrow border-radius-tr-br-0-5rem "
                                             data-search="true" name="phone_country_code" id="phone_country_code">
                                         <?php foreach ($worldCountries as $country): ?>
@@ -65,18 +65,18 @@ $worldCountries = $args->worldCountries;
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
-                                    <input type="tel" class="flex-1-current form-field-v2 h-45px" name="phone" id="phone" placeholder="12 34 56 78"
-                                           style="border-radius: 0;" required value="<?=htmlspecialchars($user->phone ?? '')?>">
-                                    <button type="button" class="btn-v2 action-btn flex-row-center flex-align-center flex-nowrap h-45px"
-                                            style="gap: .5rem; white-space: nowrap; border-radius: 0 10px 10px 0;" name="send-code-button" id="send-code-button">
-                                        <span>Send kode</span>
-                                        <span class="ml-2 flex-align-center flex-row-start button-disabled-spinner">
+                                    <input type="tel" class="form-field-v2 h-45px" name="phone" id="phone" placeholder="12 34 56 78"
+                                           style="width: calc(100% - 75px - 2px);" required value="<?=htmlspecialchars($user->phone ?? '')?>">
+                                </div>
+                                <button type="button" class="btn-v2 action-btn flex-row-center flex-align-center flex-nowrap h-45px"
+                                        style="gap: .5rem; white-space: nowrap;" name="send-code-button" id="send-code-button">
+                                    <span>Send kode</span>
+                                    <span class="ml-2 flex-align-center flex-row-start button-disabled-spinner">
                                             <span class="spinner-border color-white square-15" role="status" style="border-width: 2px;">
                                               <span class="sr-only">Loading...</span>
                                             </span>
                                         </span>
-                                    </button>
-                                </div>
+                                </button>
                                 <p class="mb-0 font-12 color-gray">Bruges til kontoadgendannelse og vigtige beskeder</p>
                             </div>
 
@@ -84,18 +84,26 @@ $worldCountries = $args->worldCountries;
                                 <p class="mb-0 font-14 font-weight-bold">Verifikationskode <span class="color-red">*</span></p>
                                 <div class="flex-row-start flex-align-start flex-nowrap w-100">
                                     <input type="text" class="flex-1-current form-field-v2 h-45px" name="verification_code"
-                                           style="border-radius: 10px 0 0 10px;" id="verification_code" placeholder="123456" maxlength="6">
-                                    <button type="button" class="btn-v2 green-btn flex-row-center flex-align-center flex-nowrap h-45px"
-                                            style="gap: .5rem; white-space: nowrap; border-radius: 0 10px 10px 0;" name="verify-code-button" id="verify-code-button">
-                                        <span>Verificer</span>
-                                        <span class="ml-2 flex-align-center flex-row-start button-disabled-spinner">
+                                           style="" id="verification_code" placeholder="123456" maxlength="6">
+
+                                </div>
+                                <button type="button" class="btn-v2 action-btn flex-row-center flex-align-center flex-nowrap h-45px"
+                                        style="gap: .5rem; white-space: nowrap;" name="verify-code-button" id="verify-code-button">
+                                    <span>Verificer</span>
+                                    <span class="ml-2 flex-align-center flex-row-start button-disabled-spinner">
                                             <span class="spinner-border color-white square-15" role="status" style="border-width: 2px;">
                                               <span class="sr-only">Loading...</span>
                                             </span>
                                         </span>
-                                    </button>
-                                </div>
+                                </button>
                                 <p class="mb-0 font-12 color-gray">Indtast den 6-cifrede kode sendt til dit telefonnummer</p>
+
+                                <div class="flex-row-start flex-align-center" style="gap: .5rem;" id="send-code-timer-display">
+                                    <i class="mdi mdi-timer-sand color-gray font-16"></i>
+                                    <p class="mb-0 font-12 color-gray">Du kan anmode om en ny kode om <span id="send-timer-countdown" class="font-weight-bold">60</span> sekunder</p>
+                                </div>
+
+                                <a href="#" class="font-12 color-blue text-decoration-underline d-none" id="try-new-number-link" style="cursor: pointer;">Prøv et nyt nummer</a>
                             </div>
 
                             <div class="alert alert-success d-none" id="verification-success">

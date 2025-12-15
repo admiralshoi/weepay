@@ -386,6 +386,15 @@ ul#error-box li:not(:last-of-type)  {
 }
 
 
+#hero-upload-area.drag-over {
+    background-color: #e3f2fd;
+    border-color: #2196f3;
+}
+#hero-upload-area.uploading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
 
 
 

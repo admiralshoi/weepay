@@ -93,7 +93,80 @@ class Landing extends \routing\paths\Paths {
         ],
     ];
 
+    const CONSUMER_PRIVACY_POLICY = [
+        "template" => "LANDING_INNER_HTML",
+        "view" => "policies.consumer-privacy",
+        "custom_scripts" => null,
+        "title" => 'Privatlivspolitik for forbrugere',
+        "head" => null,
+        "assets" => [
+            "main" => [
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+            ],
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
 
+    const CONSUMER_TERMS = [
+        "template" => "LANDING_INNER_HTML",
+        "view" => "policies.consumer-terms",
+        "custom_scripts" => null,
+        "title" => 'Vilkår for forbrugere',
+        "head" => null,
+        "assets" => [
+            "main" => [
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+            ],
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
 
+    const MERCHANT_PRIVACY_POLICY = [
+        "template" => "LANDING_INNER_HTML",
+        "view" => "policies.merchant-privacy",
+        "custom_scripts" => null,
+        "title" => 'Privatlivspolitik for forhandlere',
+        "head" => null,
+        "assets" => [
+            "main" => [
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+            ],
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
+
+    const MERCHANT_TERMS = [
+        "template" => "LANDING_INNER_HTML",
+        "view" => "policies.merchant-terms",
+        "custom_scripts" => null,
+        "title" => 'Vilkår for forhandlere',
+        "head" => null,
+        "assets" => [
+            "main" => [
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+            ],
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
 
 }

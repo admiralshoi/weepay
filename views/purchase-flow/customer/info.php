@@ -56,9 +56,25 @@ $pageTitle = "{$terminal->location->name} - Købsdetaljer";
 
             <div class="flex-col-start flex-align-center" style="row-gap: .25rem;">
                 <p class="mb-0 font-25 font-weight-bold"><?=$terminal?->location->name?></p>
-                <p class="mb-0 font-14 font-weight-medium color-gray"><?=$terminal?->location->caption?></p>
+                <p class="mb-0 font-14 font-weight-medium color-gray"><?=$args->page->caption?></p>
             </div>
 
+            <?php if(!isEmpty($args->bnplLimit)): ?>
+            <div class="alert alert-info border-radius-10px w-100" style="margin-bottom: 1rem;">
+                <div class="flex-col-start" style="row-gap: 0.5rem;">
+                    <div class="flex-row-start flex-align-center" style="gap: 0.5rem;">
+                        <i class="mdi mdi-information-outline font-20"></i>
+                        <p class="mb-0 font-16 font-weight-bold">Din BNPL kredit</p>
+                    </div>
+                    <p class="mb-0 font-14">
+                        Du har <strong><?=number_format($args->bnplLimit->available, 2)?> DKK</strong> tilgængelig til betal-senere muligheder.
+                        <?php if($args->bnplLimit->outstanding > 0): ?>
+                        <br>Du har <strong><?=number_format($args->bnplLimit->outstanding, 2)?> DKK</strong> udestående på tidligere køb.
+                        <?php endif; ?>
+                    </p>
+                </div>
+            </div>
+            <?php endif; ?>
 
             <div class="card border-radius-10px w-100">
                 <div class="w-100 h-200px overflow-hidden">
@@ -67,8 +83,8 @@ $pageTitle = "{$terminal->location->name} - Købsdetaljer";
                         style="
                             border-radius: 10px 10px 0 0;
                             aspect-ratio: 16/9;
-                            background-image: url('<?=resolveImportUrl($terminal?->location->hero_image)?>');
-                            "
+                            background-image: url('<?=resolveImportUrl($args->page->hero_image)?>');
+                        "
                     ></div>
                     <div style="position: absolute; top: 5px; right: 8px;">
                         <p class="design-box mb-0 font-18 font-weight-bold px-3  py-2">

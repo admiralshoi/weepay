@@ -2,9 +2,10 @@
 namespace classes\data;
 
 class MediaStream {
-    private int $requestingUsersId = 0;
+    private string $requestingUsersId = "";
     public string $tmpDir = "public/media/dynamic/tmp/";
     public string $metricUploads = "public/media/dynamic/metrics/";
+    public string $organisations = "public/content/organisations";
 
 
     function __construct() {
@@ -130,6 +131,148 @@ class MediaStream {
         }
         return array("success" => true,"content" => $res["filepath"]);
 
+    }
+
+    /**
+     * Generic method to upload organisation media with flexible validation
+     *
+     * @param array $FILES The uploaded file
+     * @param string $organisationId Organisation ID
+     * @param array $config Configuration array with keys:
+     *   - type: 'hero' or 'logo' (for subdirectory and filename prefix)
+     *   - minWidth: minimum width in pixels
+     *   - minHeight: minimum height in pixels
+     *   - recommendedRatio: recommended aspect ratio (width/height)
+     *   - minRatio: minimum acceptable ratio
+     *   - maxRatio: maximum acceptable ratio
+     *   - ratioDescription: description of ratio for error message
+     *   - maxFileSize: max file size in bytes (default 10MB)
+     *   - defaultConstant: constant to compare for default check (optional)
+     */
+    public function uploadOrganisationMedia($FILES, string $organisationId, array $config): array {
+        if(empty($FILES) || !isset($FILES["file"])) return array("success" => false, "error" => "Intet billede blev valgt");
+        if(array_key_exists("file", $FILES)) $FILES = $FILES["file"];
+
+        // Get image details
+        $details = $this->mediaTypeDetails("image");
+        if(empty($details)) return array("success" => false, "error" => "Kunne ikke hente billeddetaljer");
+
+        // Set max file size
+        $details["max_file_size"] = $config['maxFileSize'] ?? 10000000;
+
+        // First, save to tmp directory
+        $tmpDetails = $details;
+        $tmpDetails["destination_directory"] = $this->tmpDir;
+        if(!is_dir(ROOT . $tmpDetails["destination_directory"])) {
+            mkdir(ROOT . $tmpDetails["destination_directory"], 0755, true);
+        }
+
+        $res = $this->handle($FILES, $tmpDetails);
+        if(array_key_exists("error", $res)) return array("success" => false, "error" => $res["error"]);
+
+        // Move to tmp first
+        $tmpFilePath = $res["filepath"];
+        if(!move_uploaded_file($res["tmp"], ROOT . $tmpFilePath)) {
+            return array("success" => false, "error" => "Kunne ikke gemme midlertidig fil");
+        }
+
+        // Validate image dimensions and aspect ratio
+        $imageInfo = getimagesize(ROOT . $tmpFilePath);
+        if(!$imageInfo) {
+            unlink(ROOT . $tmpFilePath);
+            return array("success" => false, "error" => "Ugyldig billedfil");
+        }
+
+        list($width, $height) = $imageInfo;
+
+        // Check minimum dimensions
+        $minWidth = $config['minWidth'] ?? 0;
+        $minHeight = $config['minHeight'] ?? 0;
+
+        if($width < $minWidth || $height < $minHeight) {
+            unlink(ROOT . $tmpFilePath);
+            return array("success" => false, "error" => "Billedet skal være mindst {$minWidth}×{$minHeight}px. Dit billede er {$width}×{$height}px");
+        }
+
+        // Check aspect ratio if provided
+        if(isset($config['minRatio']) && isset($config['maxRatio'])) {
+            $actualRatio = $width / $height;
+
+            if($actualRatio < $config['minRatio'] || $actualRatio > $config['maxRatio']) {
+                unlink(ROOT . $tmpFilePath);
+                $recommendedWidth = isset($config['recommendedRatio']) ? round($height * $config['recommendedRatio']) : $width;
+                $ratioDesc = $config['ratioDescription'] ?? 'korrekt format';
+                return array(
+                    "success" => false,
+                    "error" => "Billedet skal have {$ratioDesc}. Dit billede er {$width}×{$height}px. Prøv {$recommendedWidth}×{$height}px"
+                );
+            }
+        }
+
+        // Prepare final destination
+        $type = $config['type'] ?? 'media';
+        $mediaDir = $this->organisations . "/" . $organisationId . "/media/{$type}/";
+        if(!is_dir(ROOT . $mediaDir)) {
+            mkdir(ROOT . $mediaDir, 0755, true);
+        }
+
+        $ext = strtolower(pathinfo($FILES['name'], PATHINFO_EXTENSION));
+        $filename = $type . "-" . time() . "." . $ext;
+        $finalPath = $mediaDir . $filename;
+
+        // Move from tmp to final destination
+        if(!rename(ROOT . $tmpFilePath, ROOT . $finalPath)) {
+            unlink(ROOT . $tmpFilePath);
+            return array("success" => false, "error" => "Kunne ikke flytte fil til endelig destination");
+        }
+
+        $result = array(
+            "success" => true,
+            "path" => $finalPath,
+            "width" => $width,
+            "height" => $height
+        );
+
+        // Check if this is default if constant provided
+        if(isset($config['defaultConstant'])) {
+            $result['default'] = $finalPath === $config['defaultConstant'];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Upload hero image for organisation location
+     */
+    public function uploadOrganisationHeroImage($FILES, string $organisationId): array {
+        return $this->uploadOrganisationMedia($FILES, $organisationId, [
+            'type' => 'hero',
+            'minWidth' => 0,
+            'minHeight' => 300,
+            'recommendedRatio' => 19 / 6,
+            'minRatio' => 19 / 12,
+            'maxRatio' => 20 / 5,
+            'ratioDescription' => 'et billedformat mellem 20:5 og 19:12 (19:6 anbefalet, f.eks. 1920×600px)',
+            'maxFileSize' => 10000000,
+            'defaultConstant' => DEFAULT_LOCATION_HERO
+        ]);
+    }
+
+    /**
+     * Upload logo/profile picture for organisation location
+     */
+    public function uploadOrganisationLogo($FILES, string $organisationId): array {
+        return $this->uploadOrganisationMedia($FILES, $organisationId, [
+            'type' => 'logo',
+            'minWidth' => 250,
+            'minHeight' => 250,
+            'recommendedRatio' => 1.0,
+            'minRatio' => 0.8,
+            'maxRatio' => 1.2,
+            'ratioDescription' => 'et kvadratisk format (1:1 anbefalet, f.eks. 500×500px)',
+            'maxFileSize' => 5000000,
+            'defaultConstant' => DEFAULT_LOCATION_LOGO
+        ]);
     }
 
 

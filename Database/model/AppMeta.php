@@ -80,13 +80,18 @@ class AppMeta extends \Database\Model {
         ],
         [
             "name" => "resellerFee",
-            "value" => '4.95',
+            "value" => '5.95',
             "type" => "float",
         ],
         [
             "name" => "oidc_session_lifetime",
             "value" => '300',
             "type" => "int",
+        ],
+        [
+            "name" => "platform_max_bnpl_amount",
+            "value" => '1000',
+            "type" => "float",
         ],
     ];
     protected static array $requiredRowsTesting = [];

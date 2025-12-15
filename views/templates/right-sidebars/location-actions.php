@@ -26,7 +26,8 @@ use classes\Methods;
         <div class="flex-col-start " style="row-gap: 1.5rem;">
             <div class="flex-col-start " style="row-gap: .5rem;">
                 <button class="btn-v2 action-btn-lg" onclick="LocationActions.editLocationDetails()">Rediger lokationsdetaljer</button>
-                <a href="<?=\classes\enumerations\Links::$merchant->locations->mangeTeamDynamic()?>" class="btn-v2 trans-btn-lg" id="manage-team">Administrer medarbejdere</a>
+                <a href="" class="btn-v2 trans-btn-lg" id="page-builder-link">Rediger side</a>
+                <a href="" class="btn-v2 trans-btn-lg" id="manage-team">Administrer medarbejdere</a>
 
                 <ul id="error-box" class="error-box"></ul>
             </div>

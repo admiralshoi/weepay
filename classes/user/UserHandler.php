@@ -47,8 +47,8 @@ class UserHandler extends Crud {
     public function username(string|int $userId = 0): ?string {
         return $this->getColumn(['uid' => $userId], "username");
     }
-    public function nickname(string|int $userId = 0): ?string {
-        return $this->getColumn(['uid' => $userId], "nickname");
+    public function name(?string $userId = null): ?string {
+        return $this->getColumn(['uid' => $userId], "full_name");
     }
     public function email(string|int $userId = 0): ?string {
         return $this->getColumn(['uid' => $userId], "email");

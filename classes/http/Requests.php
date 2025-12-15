@@ -209,9 +209,9 @@ class Requests {
     private function setDefaults(): void {
         $currentHeaders = $this->headers;
         $this->headers = [
-            "Origin: " . HOST,
-            "Referer: " . HOST,
-            "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+//            "Origin: " . HOST,
+//            "Referer: " . HOST,
+//            "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
         ];
         $importantKeys = ["authorization", "content-type"];
         foreach ($currentHeaders as $key => $header) {

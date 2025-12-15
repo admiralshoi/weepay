@@ -70,7 +70,7 @@ class TerminalSessionHandler extends Crud {
             }
             return $session;
         }
-        $this->update(['state' => 'VOID'], $params);
+        $this->update(['state' => 'VOID'], array_merge($params, ['state' => ['ACTIVE', 'PENDING']]));
         if(!$this->setNew($terminalId)) return null;
         return $this->get($this->recentUid);
     }

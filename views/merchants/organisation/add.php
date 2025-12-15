@@ -219,7 +219,7 @@ $countries = Methods::countries()->getByX(['enabled' => 1], ['uid', 'name', 'cod
                             <div class="row" style="row-gap: .5rem;">
                                 <div class="col-12">
                                     <div class="flex-col-start " style="row-gap: .5rem">
-                                        <p class="font-13 font-weight-bold mb-0"><?=(Translate::word("Organisationsnavn"))?></p>
+                                        <p class="font-13 font-weight-bold mb-0"><?=ucfirst(Translate::word("Organisationsnavn"))?></p>
                                         <input type="text" name="name" placeholder="Roses Frisør" class="form-field-v2" maxlength="30">
                                     </div>
                                 </div>
@@ -285,7 +285,7 @@ $countries = Methods::countries()->getByX(['enabled' => 1], ['uid', 'name', 'cod
                             <div class="row" style="row-gap: .5rem;">
                                 <div class="col-12 col-md-6">
                                     <div class="flex-col-start " style="row-gap: .5rem">
-                                        <p class="font-13 font-weight-bold mb-0">Virksomhedsnavn</p>
+                                        <p class="font-13 font-weight-bold mb-0">Officielt Virksomhedsnavn</p>
                                         <input type="text" name="company_name" placeholder="Din virksomheds navn" class="form-field-v2" maxlength="50">
                                     </div>
                                 </div>

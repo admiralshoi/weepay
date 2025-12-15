@@ -52,8 +52,10 @@ class Methods {
     public static function viva(): \classes\api\Viva { return new \classes\api\Viva(); }
     public static function reCaptcha(): \classes\api\ReCaptcha { return new \classes\api\ReCaptcha(); }
     public static function signicact(): \classes\api\Signicat { return new \classes\api\Signicat(); }
+    public static function gatewayApi(): \classes\api\GatewayApi { return new \classes\api\GatewayApi(); }
     public static function checkoutBasket(): \classes\organisations\CheckoutBasketHandler { return new \classes\organisations\CheckoutBasketHandler(); }
     public static function orders(): \classes\payments\OrderHandler { return new \classes\payments\OrderHandler(); }
+    public static function payments(): \classes\payments\PaymentsHandler { return new \classes\payments\PaymentsHandler(); }
     public static function terminals(): \classes\organisations\TerminalHandler { return new \classes\organisations\TerminalHandler(); }
     public static function terminalSessions(): \classes\organisations\TerminalSessionHandler { return new \classes\organisations\TerminalSessionHandler(); }
     public static function locations(): \classes\organisations\LocationHandler { return new \classes\organisations\LocationHandler(); }
@@ -68,6 +70,7 @@ class Methods {
     #[Pure] public static function organisationMembers(): OrganisationMemberHandler { return new OrganisationMemberHandler(); }
     #[Pure] public static function organisations(): OrganisationHandler { return new OrganisationHandler(); }
     #[Pure] public static function organisationFees(): \classes\organisations\OrganisationFeesHandler { return new \classes\organisations\OrganisationFeesHandler(); }
+    #[Pure] public static function locationPages(): \classes\organisations\LocationPagesHandler { return new \classes\organisations\LocationPagesHandler(); }
     #[Pure] public static function paymentHandler(): PaymentHandler { return new PaymentHandler(); }
     #[Pure] public static function calc(): Calculate { return new Calculate(); }
     #[Pure] public static function openAi(): OpenAi { return new OpenAi(); }

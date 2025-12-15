@@ -41,15 +41,7 @@ class OidcController {
                 $user = Methods::users()->get(__uuid());
                 if(isEmpty($user)) Response()->jsonError('User not found.', [], 500);
 
-                // Determine redirect URL
-                if(isEmpty($user->email) || isEmpty($user->phone)) {
-                    // Needs to complete profile
-                    $redirectUrl = __url(Links::$app->auth->consumerSignup . '/complete-profile');
-                } else {
-                    // Profile complete, go to dashboard
-                    $redirectUrl = __url(Links::$consumer->dashboard);
-                }
-
+                $redirectUrl = __url(Links::$consumer->dashboard);
                 Response()->setRedirect($redirectUrl)->jsonSuccess("", toArray($session));
             }
         }

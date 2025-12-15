@@ -1,0 +1,15 @@
+{
+    "10002": "https:\/\/api.signicat.com\/auth\/rest\/sessions\/e444b550-b0cb-4b86-9267-bfe453528300",
+    "19913": true,
+    "10036": "GET",
+    "52": 1,
+    "13": 500,
+    "10023": [
+        "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6InNpZ25pbmcta2V5LWFlZTU3NjI0NzAwODUzNDE5MmNmM2Q0NDEzYjU1NjZjIiwidHlwIjoiYXQrand0In0.eyJpc3MiOiJodHRwczovL2FwaS5zaWduaWNhdC5jb20vYXV0aC9vcGVuIiwibmJmIjoxNzY1Nzg3NTMxLCJpYXQiOjE3NjU3ODc1MzEsImV4cCI6MTc2NTc4NzY1MSwiYXVkIjoiaHR0cHM6Ly9hcGkuc2lnbmljYXQuY29tIiwic2NvcGUiOlsic2lnbmljYXQtYXBpIl0sImNsaWVudF9pZCI6InByb2QtYW5ub3llZC1icmFpbi03MDEiLCJhY2NvdW50X2lkIjoiYS1wcGdlLTd5QmZHWVEwT3RvQXQzYlBhVzdQIiwic2FuZGJveCI6ZmFsc2UsImNsaWVudF9nZW5lcmF0aW9uIjo0LCJqdGkiOiI3QkNCNzI4NTM5RjcwQzU3OTkxRjc1QjRGNzRCNDJBNCJ9.mgdfD1iywTIpeASZrQj00iIvAPuU22No0plRG3mUEZjlgBrs1ONW8cs4lMoO9CRpKBoJ_KOboLz4q9-FwbjZCSkTasVCMGxIM654X0-pMsf1pYVCT-_3_NQXI-afjDAIp__jXWxo8EA2QisvQC1Dbe_6F9PeoqlJdhKz4XEhrGEAMaqwFw8NQiV04uyEHKsEmmOT-78f8Tetp3mNv1ZZZHcmNBUf3yR4TzTlbqbE0FadtiSfRviK-_ygermItVCpB6clY_d77L9ALyQQpNYdGNWrwZNOsYpwoVgcnxb1snIGi6XTcoU8LMJhiHRK_dmgrZ7s2twLT_U7-fHpE6z9-g",
+        "Content-type: application\/json; charset=UTF-8"
+    ],
+    "42": true,
+    "10102": "",
+    "68": 10,
+    "84": "CURL_HTTP_VERSION_1_1"
+}

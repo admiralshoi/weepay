@@ -20,6 +20,7 @@ $pageTitle = $location->name . " - Lokation";
     var pageTitle = <?=json_encode($pageTitle)?>;
     activePage = "locations";
     var worldCountries = <?=json_encode(toArray($args->worldCountries))?>;
+    var locations = <?=json_encode([$location])?>;
 </script>
 
 
@@ -30,7 +31,7 @@ $pageTitle = $location->name . " - Lokation";
 
         <div class="flex-row-end">
             <button class="btn-v2 mute-btn font-13 font-weight-medium flex-row-center-center cg-075"
-                    onclick="" name="edit_location_details">
+                    onclick="LocationActions.editLocationDetails('<?=$location->uid?>')" name="edit_location_details">
                 <i class="mdi mdi-cog-outline"></i>
                 <span>Indstillinger</span>
             </button>
@@ -243,6 +244,14 @@ $pageTitle = $location->name . " - Lokation";
     <?php LocationPermissions::__oEndContent(); ?>
 </div>
 
+
+<?php scriptStart(); ?>
+<script>
+    $(document).ready(function () {
+        LocationActions.init();
+    })
+</script>
+<?php scriptEnd(); ?>
 
 
 

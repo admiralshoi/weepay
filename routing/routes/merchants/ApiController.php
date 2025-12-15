@@ -67,8 +67,8 @@ class ApiController {
         $contactPhoneCountry = array_key_exists('contact_phone_country', $args) ? trim($args["contact_phone_country"]) : null;
         $description = array_key_exists('description', $args) ? ucfirst(trim($args["description"])) : null;
 
-        if(!empty($website) && !filter_var($website, FILTER_VALIDATE_URL))
-            Response()->jsonError("Forkert hjemmeside-format.", ['blame_field' => 'website']);
+//        if(!empty($website) && !filter_var($website, FILTER_VALIDATE_URL))
+//            Response()->jsonError("Forkert hjemmeside-format.", ['blame_field' => 'website']);
         if(!filter_var($primaryEmail, FILTER_VALIDATE_EMAIL))
             Response()->jsonError("Den primære email har et forkert format.", ['blame_field' => 'email']);
         if(!empty($contactEmail) && !filter_var($contactEmail, FILTER_VALIDATE_EMAIL))
@@ -151,8 +151,8 @@ class ApiController {
 
         if(!empty($defaultCurrency) && !in_array($defaultCurrency, toArray(Settings::$app->currencies)))
             Response()->jsonError("Ugyldig valuta valgt.", ['blame_field' => 'default_currency']);
-        if(!empty($website) && !filter_var($website, FILTER_VALIDATE_URL))
-            Response()->jsonError("Forkert hjemmeside-format.", ['blame_field' => 'website']);
+//        if(!empty($website) && !filter_var($website, FILTER_VALIDATE_URL))
+//            Response()->jsonError("Forkert hjemmeside-format.", ['blame_field' => 'website']);
         if(!filter_var($primaryEmail, FILTER_VALIDATE_EMAIL))
             Response()->jsonError("Den primære email har et forkert format.", ['blame_field' => 'email']);
         if(!empty($contactEmail) && !filter_var($contactEmail, FILTER_VALIDATE_EMAIL))
@@ -749,6 +749,5 @@ class ApiController {
         if(!$status) Response()->jsonError("Var ikke i stand til at slette rollen. Prøv igen senere.");
         Response()->setRedirect()->jsonSuccess('Rollen er blevet slettet.');
     }
-
 
 }

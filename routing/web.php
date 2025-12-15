@@ -38,6 +38,12 @@ Routes::get(Links::$app->auth->merchantSignup, "auth.PageController::merchantDas
 Routes::group(['requiresLogin', 'consumer'], function() {
     Routes::get(Links::$app->auth->consumerSignup . '/complete-profile', "auth.PageController::consumerCompleteProfile");
     Routes::get(Links::$consumer->dashboard, "consumer.PageController::dashboard", ['consumerProfileComplete']);
+    Routes::get(Links::$consumer->orders, "consumer.PageController::orders", ['consumerProfileComplete']);
+    Routes::get(Links::$consumer->orderDetail . '/{id}', "consumer.PageController::orderDetail", ['consumerProfileComplete']);
+    Routes::get(Links::$consumer->receipts, "consumer.PageController::receipts", ['consumerProfileComplete']);
+    Routes::get(Links::$consumer->upcomingPayments, "consumer.PageController::upcomingPayments", ['consumerProfileComplete']);
+    Routes::get(Links::$consumer->outstandingPayments, "consumer.PageController::outstandingPayments", ['consumerProfileComplete']);
+    Routes::get(Links::$consumer->settings, "consumer.PageController::settings", ['consumerProfileComplete']);
 });
 /**
  *  =========================================
@@ -89,6 +95,8 @@ Routes::group([], function() {
     Routes::get("merchant/{slug}/checkout", "flows.purchase.CustomerPageController::start", ['notMerchant', 'notAdmin']);
     Routes::get("merchant/{slug}/checkout/info", "flows.purchase.CustomerPageController::info", ['notMerchant', 'notAdmin']);
     Routes::get(Links::$merchant->terminals->consumerChoosePlan, "flows.purchase.CustomerPageController::choosePlan", ['notMerchant', 'notAdmin']);
+    Routes::get(Links::$checkout->merchantCallbackPathSuccess, "flows.purchase.CustomerPageController::handlePaymentCallback");
+    Routes::get(Links::$checkout->orderConfirmation, "flows.purchase.CustomerPageController::orderConfirmation", ['consumer']);
 });
 
 
@@ -140,6 +148,14 @@ Routes::group(['api', "requiresApiLogout"], function() {
  *  =========================================
  */
 Routes::group(['api','requiresApiLogin'], function() {
+    // Common user settings API (for both merchants and consumers)
+    Routes::group(['merchantOrConsumer'], function() {
+        Routes::post(Links::$api->user->updateProfile, "UserApiController::updateProfile");
+        Routes::post(Links::$api->user->updateAddress, "UserApiController::updateAddress");
+        Routes::post(Links::$api->user->updatePassword, "UserApiController::updatePassword");
+        Routes::post(Links::$api->user->verifyPhone, "UserApiController::verifyPhone");
+    });
+
     Routes::group(['consumer'], function() {
         Routes::post(Links::$api->auth->consumerSendVerificationCode, "auth.ApiController::sendVerificationCode");
         Routes::post(Links::$api->auth->consumerVerifyCode, "auth.ApiController::verifyCode");
@@ -162,6 +178,12 @@ Routes::group(['api','requiresApiLogin'], function() {
         Routes::post(Links::$api->forms->merchant->editLocationDetails, "merchants.ApiController::updateLocationDetails");
         Routes::post(Links::$api->forms->merchant->editTerminalDetails, "merchants.ApiController::updateTerminalDetails");
         Routes::post(Links::$api->forms->merchant->addNewLocation, "merchants.ApiController::createLocation");
+        Routes::post(Links::$api->locations->merchantHeroImage, "merchants.PageBuilderApiController::uploadLocationHeroImage");
+        Routes::delete(Links::$api->locations->merchantHeroImage, "merchants.PageBuilderApiController::removeLocationHeroImage");
+        Routes::post(Links::$api->locations->merchantLogo, "merchants.PageBuilderApiController::uploadLocationLogo");
+        Routes::delete(Links::$api->locations->merchantLogo, "merchants.PageBuilderApiController::removeLocationLogo");
+        Routes::post(Links::$api->locations->savePageDraft, "merchants.PageBuilderApiController::saveLocationPageDraft");
+        Routes::post(Links::$api->locations->publishPageDraft, "merchants.PageBuilderApiController::publishPageDraft");
         Routes::post(Links::$api->forms->merchant->addNewTerminal, "merchants.ApiController::createTerminal");
 
 
@@ -189,6 +211,7 @@ Routes::group(['api','requiresApiLogin'], function() {
         Routes::get(Links::$api->checkout->consumerBasket, "flows.purchase.CustomerApiController::getBasket");
         Routes::post("api/checkout/payment/session", "flows.purchase.CustomerApiController::generateSession");
         Routes::post("api/checkout/order/status", "flows.purchase.CustomerApiController::checkOrderStatus");
+        Routes::post("api/checkout/order/evaluate", "flows.purchase.CustomerApiController::evaluateOrder");
 
     });
 
@@ -227,17 +250,27 @@ Routes::group(["requiresLogin"], function () {
         Routes::get(Links::$merchant->organisation->home, "merchants.pages.PageController::organisation");
         Routes::get(Links::$merchant->organisation->add, "merchants.pages.PageController::add");
         Routes::get(Links::$merchant->dashboard, "merchants.pages.PageController::dashboard");
+        Routes::get(Links::$merchant->settings, "merchants.pages.PageController::settings");
         Routes::get(Links::$merchant->orders, "merchants.pages.PageController::orders");
+        Routes::get("orders/{id}", "merchants.pages.PageController::orderDetail");
+        Routes::get(Links::$merchant->payments, "merchants.pages.PageController::payments");
+        Routes::get(Links::$merchant->pendingPayments, "merchants.pages.PageController::pendingPayments");
+        Routes::get(Links::$merchant->pastDuePayments, "merchants.pages.PageController::pastDuePayments");
+        Routes::get(Links::$merchant->customers, "merchants.pages.PageController::customers");
+        Routes::get("customers/{id}", "merchants.pages.PageController::customerDetail");
         Routes::get(Links::$merchant->terminals->main, "merchants.pages.PageController::terminals");
         Routes::get(Links::$merchant->locations->main, "merchants.pages.PageController::locations");
         Routes::get(Links::$merchant->locations->singleLocation, "merchants.pages.PageController::singleLocation");
         Routes::get(Links::$merchant->locations->locationMembers, "merchants.pages.PageController::locationMembers");
         Routes::get(Links::$merchant->locations->locationPageBuilder, "merchants.pages.PageController::locationPageBuilder");
+        Routes::get(Links::$merchant->locations->locationPreviewPage, "merchants.pages.PageController::locationPageBuilderPreview");
+        Routes::get(Links::$merchant->locations->locationPreviewCheckout, "merchants.pages.PageController::locationPageBuilderPreviewCheckout");
         Routes::get(Links::$merchant->terminals->terminalQr, "merchants.pages.PageController::getTerminalQrBytes");
 
         Routes::get(Links::$merchant->terminals->terminalPosStart, "flows.purchase.MerchantPageController::posStart");
         Routes::get(Links::$merchant->terminals->terminalPosDetails, "flows.purchase.MerchantPageController::posDetails");
         Routes::get(Links::$merchant->terminals->terminalPosCheckout, "flows.purchase.MerchantPageController::posCheckout");
+        Routes::get(Links::$merchant->terminals->terminalPosFulfilled, "flows.purchase.MerchantPageController::posFulfilled");
 
 
 
@@ -264,6 +297,11 @@ Routes::group(["requiresLogin"], function () {
 
 
 
+// Policy pages
+Routes::get(Links::$policies->consumer->privacy, "LandingController::consumerPrivacyPolicy");
+Routes::get(Links::$policies->consumer->termsOfUse, "LandingController::consumerTerms");
+Routes::get(Links::$policies->merchant->privacy, "LandingController::merchantPrivacyPolicy");
+Routes::get(Links::$policies->merchant->termsOfUse, "LandingController::merchantTerms");
 
 /**
  *  =========================================
@@ -274,10 +312,10 @@ Routes::group(['requiresLoggedOut'], function() {
 
 
 
-    Routes::get(Links::$policies->consumer->privacy, "GeneralController::pageNotReady");
-    Routes::get(Links::$policies->consumer->termsOfUse, "GeneralController::pageNotReady");
-    Routes::get(Links::$policies->merchant->privacy, "GeneralController::pageNotReady");
-    Routes::get(Links::$policies->merchant->termsOfUse, "GeneralController::pageNotReady");
+//    Routes::get(Links::$policies->consumer->privacy, "GeneralController::pageNotReady");
+//    Routes::get(Links::$policies->consumer->termsOfUse, "GeneralController::pageNotReady");
+//    Routes::get(Links::$policies->merchant->privacy, "GeneralController::pageNotReady");
+//    Routes::get(Links::$policies->merchant->termsOfUse, "GeneralController::pageNotReady");
     Routes::get(Links::$support->public, "GeneralController::pageNotReady");
 //    Routes::get(Links::$merchant->public->signup, "GeneralController::pageNotReady");
     Routes::get(Links::$merchant->public->recovery, "GeneralController::pageNotReady");

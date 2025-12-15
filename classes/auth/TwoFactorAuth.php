@@ -2,11 +2,13 @@
 
 namespace classes\auth;
 
+use classes\api\GatewayApi;
+use classes\Methods;
 use classes\utility\Crud;
+use classes\utility\Numbers;
 use Database\model\TwoFactorVerification;
 
 class TwoFactorAuth extends Crud {
-    private const FIXED_TEST_CODE = '123456'; // Fixed code for testing
     private const CODE_EXPIRY = 600; // 10 minutes
 
     function __construct() {
@@ -21,18 +23,18 @@ class TwoFactorAuth extends Crud {
      * @param string $purpose Purpose of verification (e.g., 'phone_verification', '2fa_auth')
      * @return array|null Returns array with code_id on success, null on failure
      */
-    public function sendSmsCode(string $userId, string $phone, string $phoneCountryCode, string $purpose = 'phone_verification'): ?array {
+    public function sendSmsCode(string $userId, string $phone, string $phoneCountryCode, array $callerInfo, string $purpose = 'phone_verification'): ?array {
         // Invalidate any existing pending codes for this user/identifier/purpose
         $this->update(
             ['verified' => -1], // -1 means invalidated
             ['user' => $userId, 'identifier' => $phone, 'purpose' => $purpose, 'verified' => 0]
         );
 
-        // For now, use fixed test code
-        $code = self::FIXED_TEST_CODE;
+        // Generate random 6-digit code
+        $code = GatewayApi::generateVerificationCode();
 
         // Create the message (will be encrypted in database)
-        $message = "Your verification code is: $code. This code will expire in 10 minutes.";
+        $message = "Din verificeringskode: $code. Koden udløber om 10 minutter.";
 
         // Create verification record
         $data = [
@@ -51,13 +53,39 @@ class TwoFactorAuth extends Crud {
             return null;
         }
 
+        // Send actual SMS via GatewayAPI
+        try {
+            $callerCode = $callerInfo['phone'];
+            $phoneLength = $callerInfo['phoneLength'];
+            $phoneNumber =  Numbers::cleanPhoneNumber($phone,  true, $phoneLength, $callerCode);
+            $gateway = new GatewayApi();
+            $smsResponse = $gateway->sendSms($phoneNumber, $message, 'WeePay');
+
+            // Log SMS response for debugging
+            if (!empty($smsResponse['ids']) && is_array($smsResponse['ids'])) {
+                debugLog([
+                    'success' => true,
+                    'phone' => $phone,
+                    'message_id' => $smsResponse['ids'][0] ?? null
+                ], '2fa-sms-sent');
+            } else {
+                debugLog([
+                    'success' => false,
+                    'phone' => $phone,
+                    'response' => $smsResponse
+                ], '2fa-sms-failed');
+            }
+        } catch (\Exception $e) {
+            errorLog([
+                'error' => $e->getMessage(),
+                'phone' => $phone
+            ], '2fa-sms-exception');
+        }
+
         return [
             'code_id' => $this->recentUid,
             'expires_at' => $data['expires_at'],
         ];
-
-        // TODO: When SMS provider is ready, send actual SMS here
-        // $this->sendActualSms($phone, $message);
     }
 
     /**
@@ -74,11 +102,11 @@ class TwoFactorAuth extends Crud {
             ['user' => $userId, 'identifier' => $email, 'purpose' => $purpose, 'verified' => 0]
         );
 
-        // For now, use fixed test code
-        $code = self::FIXED_TEST_CODE;
+        // Generate random 6-digit code
+        $code = GatewayApi::generateVerificationCode();
 
         // Create the message (will be encrypted in database)
-        $message = "Your verification code is: $code. This code will expire in 10 minutes.";
+        $message = "Your WeePay verification code is: $code. This code will expire in 10 minutes.";
 
         // Create verification record
         $data = [

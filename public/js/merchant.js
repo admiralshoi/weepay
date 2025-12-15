@@ -435,12 +435,19 @@ const LocationActions = {
     isInit: false,
     isOpen: false,
     locationId: null,
+    location: null,
+    buttons: {
+        manageTeam: null,
+        pageBuilder: null,
+    },
 
     init() {
         if(this.isInit) return;
         this.isInit = true;
         this.sidebar = document.getElementById('locationAction');
         this.closeRightSidebarBtn = this.sidebar.querySelector('.closeRightSidebarBtn');
+        this.buttons.pageBuilder = document.getElementById('page-builder-link');
+        this.buttons.manageTeam = document.getElementById('manage-team');
 
 
 
@@ -465,12 +472,23 @@ const LocationActions = {
         if(!parent.length) return;
         parent.toggleClass('open')
     },
+    setValues () {
+        let slug = this.location.slug;
+        this.buttons.pageBuilder.href = platformLinks.merchant.locations.locationPageBuilder.replace("{slug}", slug);
+        this.buttons.manageTeam.href = platformLinks.merchant.locations.locationMembers.replace("{slug}", slug);
+    },
+    setLocation () {
+        this.location = locations.find(l => l.uid === this.locationId)
+        console.log(this.location)
+    },
     open(btn) {
         if(this.isOpen) return;
         let locationId = btn.dataset.locationId;
         if(empty(locationId)) return;
         this.locationId = locationId;
+        this.setLocation();
         this.init();
+        this.setValues();
         this.sidebar.classList.add('open');
         if (this.backdrop) this.backdrop.classList.add('active');
         this.isOpen = true;
@@ -543,14 +561,15 @@ const LocationActions = {
     },
 
 
-    async editLocationDetails() {
+    async editLocationDetails(locationId) {
+        if(!empty(locationId)) this.locationId = locationId;
         if(empty(this.locationId)) return;
-        let location = locations.find(l => l.uid === this.locationId)
-        console.log(location)
+        if(!this.isInit) this.init();
+        this.setLocation();
 
 
         let modal = new ModalHandler('locationDetails')
-        modal.construct({location, organisation, allowedCountries, worldCountries, defaultCountry, SITE_NAME, currencies})
+        modal.construct({location: this.location, organisation, allowedCountries, worldCountries, defaultCountry, SITE_NAME, currencies})
         await modal.build()
             .then(() => {
                 selectV2();

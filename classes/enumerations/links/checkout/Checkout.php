@@ -6,8 +6,14 @@ class Checkout {
 
 
     public string $merchantCallbackPathSuccess = 'merchant/{slug}/checkout/capture';
+    public string $orderConfirmation = 'orders/confirmation/{orderid}';
+
     public function createMerchantCallbackPath(string $slug): string {
         return str_replace('{slug}', $slug, $this->merchantCallbackPathSuccess);
+    }
+
+    public function createOrderConfirmation(string $orderId): string {
+        return str_replace(['{orderid}'], [$orderId], $this->orderConfirmation);
     }
 
 

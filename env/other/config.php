@@ -15,7 +15,7 @@ define("LIVE", !str_contains($_SERVER["HTTP_HOST"], "localhost"));
 /**
  * ENV files
  */
-const PLATFORM_VERSION = "v1.008";
+const PLATFORM_VERSION = "v1.0012";
 const HTACCESS_PWD_FILE = "env/other/htaccessPwd.txt";
 const DB_LIVE_FILE = "env/db/live.php";
 const DB_LOCAL_FILE = "env/db/local.php";
@@ -80,6 +80,9 @@ define("PARTNER_BANK_LOGO", "media/images/viva-first-tech-bank.png");
 define("LOGO_ICON", "media/logos/icon.png");
 define("FAVICON", "media/icons/icon.ico");
 
+define("DEFAULT_LOCATION_HERO", "public/media/images/merchant-beauty-DuNYPCOQ.jpg");
+define("DEFAULT_LOCATION_LOGO", "public/media/images/nopp.png");
+
 
 define("LOGO_HEADER", "media/images/logo-goodbrands-04.svg"); //Transparent version of the logo
 define("LOGO_HEADER_WHITE", "media/images/logo_white.png"); //Transparent version of the logo
@@ -130,7 +133,7 @@ const KNOWN_CONTENT_TYPES = [
     "video/wmv" => "wmv",
     "video/webm" => "mp4",
 ];
-const DEFAULT_USER_PICTURE = "media/images/nopp.png";
+const DEFAULT_USER_PICTURE = "public/media/images/nopp.png";
 const ADMIN_PANEL_PATH = "panel";
 const ORGANISATION_PANEL_PATH = "organisation";
 

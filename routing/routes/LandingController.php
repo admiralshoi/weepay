@@ -80,10 +80,20 @@ class LandingController {
         return Views("LANDING_PASSWORD_RECOVERY", $args);
     }
 
+    public static function consumerPrivacyPolicy(array $args): mixed  {
+        return Views("CONSUMER_PRIVACY_POLICY", $args);
+    }
 
+    public static function consumerTerms(array $args): mixed  {
+        return Views("CONSUMER_TERMS", $args);
+    }
 
+    public static function merchantPrivacyPolicy(array $args): mixed  {
+        return Views("MERCHANT_PRIVACY_POLICY", $args);
+    }
 
-
-
+    public static function merchantTerms(array $args): mixed  {
+        return Views("MERCHANT_TERMS", $args);
+    }
 
 }

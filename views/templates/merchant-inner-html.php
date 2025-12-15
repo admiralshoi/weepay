@@ -22,45 +22,6 @@ use classes\Methods;
 
 
 
-    <?php if(Methods::isAdmin()):
-
-        $col1Notice = [
-            [
-                "criteria" => testingLiveDb(),
-                "text" => "Test env. currently showing LIVE data."
-            ],
-            [
-                "criteria" => \features\Settings::$app->live_campaign_dev,
-                "text" => "Webhook 'forwards' currently uses LIVE test campaigns."
-            ],
-        ];
-
-        $showCol = false;
-        foreach ($col1Notice as $item) {
-            if($item["criteria"]) {
-                $showCol = true;
-                break;
-            }
-        }
-
-        if($showCol): ?>
-            <div class="row mb-3 mx-md-4" style="row-gap: .5rem;">
-                <div class="col-12 col-lg-6 p">
-                    <div class="p-3 alert-warning">
-                        <p class="font-16 font-weight-bold">Admin notice</p>
-                        <ul>
-                            <?php foreach ($col1Notice as $item) :
-                                if(!$item["criteria"]) continue; ?>
-                                <li><?=$item["text"]?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        <?php endif; ?>
-    <?php endif; ?>
-
-
 
     <?php printView($viewList); ?>
 

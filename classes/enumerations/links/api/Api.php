@@ -10,8 +10,11 @@ class Api {
     public Auth $auth;
     public Forms $forms;
     public Organisation $organisation;
+    public Locations $locations;
     public Oidc $oidc;
     public Checkout $checkout;
+    public Consumer $consumer;
+    public User $user;
 
 
 

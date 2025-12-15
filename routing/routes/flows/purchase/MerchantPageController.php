@@ -15,6 +15,18 @@ class MerchantPageController {
         $handler = Methods::terminals();
         $terminal = $handler->get($terminalId);
         if(isEmpty($terminal)) return null;
+
+        $paymentCheck = Methods::locations()->canAcceptPayments($terminal->location);
+        if(!$paymentCheck['canAccept']) {
+            return Views("CHECKOUT_UNAVAILABLE", ['location' => $terminal->location, 'reason' => $paymentCheck['reason']]);
+        }
+
+        // Check if location can accept payments
+        $paymentCheck = Methods::locations()->canAcceptPayments($terminal->location);
+        if(!$paymentCheck['canAccept']) {
+            return Views("CHECKOUT_UNAVAILABLE", ['location' => $terminal->location, 'reason' => $paymentCheck['reason']]);
+        }
+
         if($terminal->status !== 'ACTIVE') return null;
         if(is_string($terminal->location->uuid)) $terminal->location->uuid = $terminal->uuid;
         if(!LocationPermissions::__oRead($terminal->location, "checkout")) return null;
@@ -33,9 +45,22 @@ class MerchantPageController {
         $sessionHandler = Methods::terminalSessions();
 
 
+
         $session = $sessionHandler->get($sessionId);
         if(isEmpty($session)) return null;
         $terminal = $session->terminal;
+
+        $paymentCheck = Methods::locations()->canAcceptPayments($terminal->location);
+        if(!$paymentCheck['canAccept']) {
+            return Views("CHECKOUT_UNAVAILABLE", ['location' => $terminal->location, 'reason' => $paymentCheck['reason']]);
+        }
+
+        // Check if location can accept payments
+        $paymentCheck = Methods::locations()->canAcceptPayments($terminal->location);
+        if(!$paymentCheck['canAccept']) {
+            return Views("CHECKOUT_UNAVAILABLE", ['location' => $terminal->location, 'reason' => $paymentCheck['reason']]);
+        }
+
         if($terminal?->status !== 'ACTIVE') return null;
         if($session->state === 'VOID') {
             $prevUrl = __url(
@@ -81,6 +106,18 @@ class MerchantPageController {
         $session = $sessionHandler->get($sessionId);
         if(isEmpty($session)) return null;
         $terminal = $session->terminal;
+
+        $paymentCheck = Methods::locations()->canAcceptPayments($terminal->location);
+        if(!$paymentCheck['canAccept']) {
+            return Views("CHECKOUT_UNAVAILABLE", ['location' => $terminal->location, 'reason' => $paymentCheck['reason']]);
+        }
+
+        // Check if location can accept payments
+        $paymentCheck = Methods::locations()->canAcceptPayments($terminal->location);
+        if(!$paymentCheck['canAccept']) {
+            return Views("CHECKOUT_UNAVAILABLE", ['location' => $terminal->location, 'reason' => $paymentCheck['reason']]);
+        }
+
         if($terminal?->status !== 'ACTIVE') return null;
         if($session?->state !== 'ACTIVE') {
             $prevUrl = __url(
@@ -97,6 +134,46 @@ class MerchantPageController {
         $customer = $session->customer;
 
         return Views("MERCHANT_POS_CHECKOUT", compact('session', 'slug', 'terminal', 'customer', 'basket'));
+    }
+
+
+    public static function posFulfilled(array $args): mixed {
+        $slug = $args['slug'];
+        $terminalId = $args['id'];
+        $sessionId = $args['tsid'];
+        $sessionHandler = Methods::terminalSessions();
+
+        $session = $sessionHandler->get($sessionId);
+        if(isEmpty($session)) return null;
+        $terminal = $session->terminal;
+
+        $paymentCheck = Methods::locations()->canAcceptPayments($terminal->location);
+        if(!$paymentCheck['canAccept']) {
+            return Views("CHECKOUT_UNAVAILABLE", ['location' => $terminal->location, 'reason' => $paymentCheck['reason']]);
+        }
+
+        // Check if location can accept payments
+        $paymentCheck = Methods::locations()->canAcceptPayments($terminal->location);
+        if(!$paymentCheck['canAccept']) {
+            return Views("CHECKOUT_UNAVAILABLE", ['location' => $terminal->location, 'reason' => $paymentCheck['reason']]);
+        }
+
+        if($terminal?->status !== 'ACTIVE') return null;
+        if($session->state !== 'COMPLETED') return null;
+        if(is_string($terminal->location->uuid)) $terminal->location->uuid = $terminal->uuid;
+        if(!LocationPermissions::__oRead($terminal->location, "checkout")) return null;
+
+        // Get the fulfilled basket
+        $basket = Methods::checkoutBasket()->getFirst(['terminal_session' => $sessionId, 'status' => 'FULFILLED']);
+        if(isEmpty($basket)) return null;
+
+        // Get customer info
+        $customer = $session->customer;
+
+        // Get order info
+        $order = Methods::orders()->getFirst(['terminal_session' => $sessionId]);
+
+        return Views("MERCHANT_POS_FULFILLED", compact('session', 'slug', 'terminal', 'customer', 'basket', 'order'));
     }
 
 }

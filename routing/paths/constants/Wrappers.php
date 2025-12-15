@@ -7,6 +7,40 @@ class Wrappers extends \routing\paths\Paths {
 
 
 
+    const CONSUMER_INNER_HTML = [
+        "template" => "CONSUMER_OUTER_HTML",
+        "view" => "templates.consumer-inner-html",
+        "custom_scripts" => null,
+        "title" => null,
+        "head" => null,
+        "assets" => [
+            "main" => null,
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
+
+
+    const CONSUMER_OUTER_HTML = [
+        "template" => null,
+        "view" => "templates.consumer-outer-html",
+        "custom_scripts" => "templates.scripts",
+        "title" => null,
+        "head" => "templates.head",
+        "assets" => [
+            "main" => [
+                "css.main.css",
+                "css.styles2.css",
+                "css.responsiveness.css",
+            ],
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
+
+
     const MERCHANT_INNER_HTML = [
         "template" => "MERCHANT_OUTER_HTML",
         "view" => "templates.merchant-inner-html",

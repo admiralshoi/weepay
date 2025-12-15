@@ -1,0 +1,16 @@
+{
+    "10002": "https:\/\/gatewayapi.eu\/rest\/mtsms",
+    "19913": true,
+    "10036": "POST",
+    "52": 1,
+    "13": 500,
+    "10023": [
+        "Authorization: Basic Zm00Qm5vMzhTZS1TSnJwYUZ2eWNSY253YWlzeHBnV3RrbEV5YkZ5MlNBQU12c1kzS3lkQUJmMUNrdWc2VGk5Rjo=",
+        "Content-type: application\/json; charset=UTF-8"
+    ],
+    "42": true,
+    "10102": "",
+    "68": 10,
+    "84": "CURL_HTTP_VERSION_1_1",
+    "10015": "{\"recipients\":[{\"msisdn\":4532545433}],\"message\":\"Din verificeringskode: 675726. Koden udl\\u00f8ber om 10 minutter.\",\"sender\":\"WeePay\"}"
+}

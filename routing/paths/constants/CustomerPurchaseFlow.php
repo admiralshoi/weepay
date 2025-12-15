@@ -4,7 +4,28 @@ namespace routing\paths\constants;
 
 class CustomerPurchaseFlow extends \routing\paths\Paths {
 
-
+    const CUSTOMER_LOCATION_HOME = [
+        "template" => "CUSTOMER_PURCHASE_FLOW_INNER_HTML",
+        "view" => "purchase-flow.customer.home",
+        "custom_scripts" => null,
+        "title" => null,
+        "head" => null,
+        "assets" => [
+            "main" => [
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.initializer.js",
+            ],
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
 
     const CUSTOMER_PURCHASE_FLOW_PLAN = [
         "template" => "CUSTOMER_PURCHASE_FLOW_INNER_HTML",
@@ -90,6 +111,33 @@ class CustomerPurchaseFlow extends \routing\paths\Paths {
         ],
     ];
 
+
+    const CUSTOMER_ORDER_CONFIRMATION = [
+        "template" => "CUSTOMER_PURCHASE_FLOW_INNER_HTML",
+        "view" => "purchase-flow.customer.order-confirmation",
+        "custom_scripts" => null,
+        "title" => "Ordrebekræftelse",
+        "head" => "templates.head",
+        "assets" => [
+            "main" => [
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.order-confirmation.css",
+                "css.responsiveness.css",
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.modalHandler.js",
+                "js.async_search.js",
+                "js.payments.customer-checkout.js",
+                "js.initializer.js",
+            ],
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
 
 
 
@@ -182,6 +230,53 @@ class CustomerPurchaseFlow extends \routing\paths\Paths {
         ],
     ];
 
+
+    const MERCHANT_POS_FULFILLED = [
+        "template" => "CUSTOMER_PURCHASE_FLOW_INNER_HTML",
+        "view" => "purchase-flow.merchant.fulfilled",
+        "custom_scripts" => null,
+        "title" => null,
+        "head" => null,
+        "assets" => [
+            "main" => [
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.initializer.js",
+            ],
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
+
+
+    const CHECKOUT_UNAVAILABLE = [
+        "template" => "CUSTOMER_PURCHASE_FLOW_INNER_HTML",
+        "view" => "purchase-flow.unavailable",
+        "custom_scripts" => null,
+        "title" => "Betalinger ikke tilgængelige",
+        "head" => null,
+        "assets" => [
+            "main" => [
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.initializer.js",
+            ],
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
 
 
 

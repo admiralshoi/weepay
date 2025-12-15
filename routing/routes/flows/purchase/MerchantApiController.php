@@ -6,6 +6,7 @@ use classes\app\LocationPermissions;
 use classes\enumerations\Links;
 use classes\lang\Translate;
 use classes\Methods;
+use features\Settings;
 use JetBrains\PhpStorm\NoReturn;
 
 class MerchantApiController {
@@ -101,7 +102,7 @@ class MerchantApiController {
         $basketHandler = Methods::checkoutBasket();
         $currentActiveBasket = $basketHandler->getActiveBasket($sessionId);
         if(!isEmpty($currentActiveBasket)) $basketHandler->setVoid($currentActiveBasket->uid);
-        $basketId = $basketHandler->setNew($sessionId, $name, $price, 'DKK', $note);
+        $basketId = $basketHandler->setNew($sessionId, $name, $price, Methods::locations()->tradingCurrency($session->terminal->location), $note);
         if(isEmpty($basketId)) Response()->jsonError("Noget gik galt.", [], 500);
         Response()->jsonSuccess("Kurven er blevet oprettet", ['id' => $basketId]);
     }
@@ -185,6 +186,32 @@ class MerchantApiController {
         if($terminalSession->terminal->location->status !== 'ACTIVE') Response()->jsonError("Sessionen er ikke aktiv", [], 404);
 
         $terminalSession->statusTitle = Translate::context("checkout.status.$terminalSession->state");
+
+        // Only handle completion redirect for merchant users (not customers)
+        // Customers have their own polling via checkOrderStatus endpoint
+
+        if(Methods::isMerchant()) {
+            if($terminalSession->state === 'ACTIVE') {
+                $basket = Methods::checkoutBasket()->getFirst(['terminal_session' => $terminalSessionId, 'status' => 'FULFILLED'], ['uid']);
+                if(!isEmpty($basket)) {
+                    debugLog("SETTING SESSION COMPLETE");
+                    Methods::terminalSessions()->setCompleted($terminalSessionId);
+
+                    response()
+                        ->setRedirect(__url(Links::$merchant->terminals->posFulfilled(
+                            $terminalSession->terminal->location->slug, $terminalSession->terminal->uid, $terminalSessionId
+                        )))
+                        ->jsonSuccess("Købet blev gennemført uden problemer.", toArray($terminalSession));
+                }
+            }
+            elseif($terminalSession->state === 'COMPLETED') {
+                response()
+                    ->setRedirect(__url(Links::$merchant->terminals->posFulfilled(
+                        $terminalSession->terminal->location->slug, $terminalSession->terminal->uid, $terminalSessionId
+                    )))
+                    ->jsonSuccess("Købet blev gennemført uden problemer.", toArray($terminalSession));
+            }
+        }
 
         response()->jsonSuccess("", toArray($terminalSession));
     }

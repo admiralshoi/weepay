@@ -323,4 +323,70 @@ class OrganisationHandler extends Crud {
         return true;
     }
 
+
+    /**
+     * Get setup requirements status for an organisation
+     * Returns object with status of Viva Wallet, locations, terminals, and published pages
+     */
+    public function getSetupRequirements(?string $organisationUid = null): object {
+        if(isEmpty($organisationUid)) $organisationUid = __oUuid();
+
+        $organisation = $this->first(['uid' => $organisationUid]);
+        if(isEmpty($organisation)) return (object)[];
+
+        // Check Viva Wallet status
+        $hasMerchantId = !isEmpty($organisation->merchant_prid);
+        $connectedAccount = Methods::vivaConnectedAccounts()->first(['organisation' => $organisationUid]);
+        $vivaStatus = 'not_started'; // not_started, in_progress, completed
+
+        if($hasMerchantId) {
+            $vivaStatus = 'completed';
+        } elseif(!isEmpty($connectedAccount) && !in_array($connectedAccount->state ?? '', ['VOID', 'REMOVED', ''])) {
+            $vivaStatus = 'in_progress';
+        }
+
+        // Check if locations exist
+        $locations = Methods::locations()->getByX(['uuid' => $organisationUid]);
+        $hasLocations = $locations->count() > 0;
+
+        // Check if any location has terminals
+        $hasTerminals = false;
+        foreach($locations->list() as $location) {
+            if(Methods::terminals()->count(['location' => $location->uid]) > 0) {
+                $hasTerminals = true;
+                break;
+            }
+        }
+
+        // Check if any location has a published page
+        $hasPublishedPage = false;
+        foreach($locations->list() as $location) {
+            if(Methods::locationPages()->exists(['location' => $location->uid, 'state' => 'PUBLISHED'])) {
+                $hasPublishedPage = true;
+                break;
+            }
+        }
+
+        return (object)[
+            'viva_wallet' => (object)[
+                'status' => $vivaStatus,
+                'completed' => $vivaStatus === 'completed',
+            ],
+            'locations' => (object)[
+                'status' => $hasLocations ? 'completed' : 'not_started',
+                'completed' => $hasLocations,
+            ],
+            'terminals' => (object)[
+                'status' => $hasTerminals ? 'completed' : 'not_started',
+                'completed' => $hasTerminals,
+            ],
+            'published_page' => (object)[
+                'status' => $hasPublishedPage ? 'completed' : 'not_started',
+                'completed' => $hasPublishedPage,
+            ],
+            'all_completed' => $vivaStatus === 'completed' && $hasLocations && $hasTerminals && $hasPublishedPage,
+            'has_incomplete' => $vivaStatus !== 'completed' || !$hasLocations || !$hasTerminals || !$hasPublishedPage,
+        ];
+    }
+
 }

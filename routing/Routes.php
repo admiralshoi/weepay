@@ -129,7 +129,7 @@ class Routes {
 
                 $responseCode = 200;
                 if (is_array($result)) {
-                    http_response_code($responseCode);
+                    if(!headers_sent()) http_response_code($responseCode);
                     if (array_key_exists("return_as", $result) && $result["return_as"] === "view") {
                         printView($result);
                         return;

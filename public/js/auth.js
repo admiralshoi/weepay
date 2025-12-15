@@ -241,6 +241,10 @@ const consumerCompleteProfileHandler = () => {
     const startSendCodeTimer = (seconds = 60) => {
         sendCodeCooldownEnd = Date.now() + (seconds * 1000);
 
+        // Hide "try new number" link and show timer
+        $("#try-new-number-link").addClass("d-none");
+        $("#send-code-timer-display").removeClass("d-none");
+
         const updateTimer = () => {
             let remaining = Math.ceil((sendCodeCooldownEnd - Date.now()) / 1000);
             if (remaining <= 0) {
@@ -249,9 +253,14 @@ const consumerCompleteProfileHandler = () => {
                 sendCodeCooldownEnd = 0;
                 $("#send-code-button span").first().text("Send kode");
                 $("#send-code-button").get(0).disabled = false;
+
+                // Hide timer and show "try new number" link
+                $("#send-code-timer-display").addClass("d-none");
+                $("#try-new-number-link").removeClass("d-none");
             } else {
                 $("#send-code-button span").first().text(`Vent ${remaining}s`);
                 $("#send-code-button").get(0).disabled = true;
+                $("#send-timer-countdown").text(remaining);
             }
         };
 
@@ -285,14 +294,30 @@ const consumerCompleteProfileHandler = () => {
         $("#verification-success").addClass("d-none");
         $("#verification-code-section").addClass("d-none");
         $("#verification_code").val('');
-        $("#send-code-button").show();
+        $("#phone-input-section").show();
+    }
+
+    const tryNewNumber = (e) => {
+        e.preventDefault();
+
+        // Fade out verification section, fade in phone input section
+        $("#verification-code-section").fadeOut(300, function() {
+            $("#verification-code-section").addClass("d-none");
+            $("#phone-input-section").hide().fadeIn(300);
+            $("#verification_code").val('');
+            $("#phone").focus();
+
+            // Hide timer display and try new number link when going back
+            $("#send-code-timer-display").addClass("d-none");
+            $("#try-new-number-link").addClass("d-none");
+        });
     }
 
     const showVerifiedUI = () => {
         isVerified = true;
         $("#verification-success").removeClass("d-none");
         $("#verification-code-section").addClass("d-none");
-        $("#send-code-button").hide();
+        $("#phone-input-section").hide();
     }
 
     const checkPhoneVerification = async () => {
@@ -301,7 +326,10 @@ const consumerCompleteProfileHandler = () => {
 
         // If empty, reset
         if(!phone || phone.trim() === '') {
-            resetVerificationUI();
+            isVerified = false;
+            $("#verification-success").addClass("d-none");
+            $("#verification-code-section").addClass("d-none");
+            $("#phone-input-section").show();
             return;
         }
 
@@ -324,7 +352,10 @@ const consumerCompleteProfileHandler = () => {
             showVerifiedUI();
         } else {
             // This number is not verified or API call failed
-            resetVerificationUI();
+            isVerified = false;
+            $("#verification-success").addClass("d-none");
+            $("#verification-code-section").addClass("d-none");
+            $("#phone-input-section").show();
         }
     }
 
@@ -353,8 +384,12 @@ const consumerCompleteProfileHandler = () => {
         }
 
         showSuccessNotification("Kode sendt", result.message);
-        $("#verification-code-section").removeClass("d-none");
-        $("#verification_code").focus();
+
+        // Fade out phone input section, fade in verification section
+        $("#phone-input-section").fadeOut(300, function() {
+            $("#verification-code-section").removeClass("d-none").hide().fadeIn(300);
+            $("#verification_code").focus();
+        });
 
         // Start global cooldown timer
         startSendCodeTimer(60);
@@ -449,6 +484,8 @@ const consumerCompleteProfileHandler = () => {
         e.preventDefault();
         completeProfile($(this));
     })
+
+    $("#try-new-number-link").on("click", tryNewNumber)
 
     // Watch for phone number changes
     $("#phone, #phone_country_code").on("input change", function() {

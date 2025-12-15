@@ -14,12 +14,17 @@ $sidebarHandler = Methods::sidebars();
 <div id="sidebar" class="flex-col-between flex-align-start">
     <div class="flex-col-between h-100">
         <div class="flex-col-start">
-            <div class="flex-row-end flex-align-center px-2 pt-2 color-gray flex-nowrap" style="column-gap: .25rem" id="leftSidebarCloseBtn">
-                <i class="font-16  fa-solid fa-xmark" id="" ></i>
-                <span class="text-sm">Close</span>
+            <button class="btn-unstyled p-2 m-0 ml-auto border-0 bg-transparent" id="leftSidebarCloseBtn" style="cursor: pointer;" title="Luk menu">
+                <i class="mdi mdi-close font-24 color-gray hover-color-red"></i>
+            </button>
+
+            <div class="tabletOnlyFlex justify-content-center" id="sidebar-top-nav">
+                <div class="flex-row-center">
+                    <i class="font-25 text-gray fa-solid fa-bars " id="leftSidebarOpenBtn"></i>
+                </div>
             </div>
 
-            <div id="side-bar-menu-content" style="max-height: calc(100vh - 225px); overflow-x: auto;" class="w-100 px-2 py-2">
+            <div id="side-bar-menu-content" style="max-height: calc(100vh - 50px); overflow-x: auto;" class="w-100 px-2 py-2">
 
 
                 <?php

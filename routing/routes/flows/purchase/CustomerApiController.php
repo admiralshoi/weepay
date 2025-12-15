@@ -32,7 +32,10 @@ class CustomerApiController {
         $basket = $basketHandler->getActiveBasket($terminalSession->uid);
         if(isEmpty($basket)) Response()->jsonError("Kurven blev ikke fundet", [], 404);
 
-        $plan = $basketHandler->createCheckoutInfo($basket, $planName);
+        // Get customer birthdate and ID for age restriction and BNPL limit
+        $birthdate = $customer->user?->birthdate ?? null;
+        $customerId = $customer->user?->uid ?? null;
+        $plan = $basketHandler->createCheckoutInfo($basket, $planName, 90, $birthdate, $customerId);
         if(isEmpty($plan)) Response()->jsonError("Ugyldigetalingsplan.", [], 404);
 
         $slug = $location->slug;
@@ -42,6 +45,10 @@ class CustomerApiController {
 //        $merchantId = "ee6d19b2-8b9e-41ed-874e-044680beeae7";
         $merchantId = $terminalSession->terminal->uuid->merchant_prid;
         if(isEmpty($merchantId)) Response()->jsonError("Forhandlers ID er ikke gyldigt. Prøv ige senere", [$location], 404);
+        $organisationId = $terminalSession->terminal->location->uuid;
+        if(!is_string($organisationId)) $organisationId = $organisationId->uid;
+        $resellerFee = Methods::organisationFees()->resellerFee($organisationId);
+
         $paymentSession = Methods::viva()->createPayment(
             $merchantId,
             $plan->to_pay_now,
@@ -54,7 +61,8 @@ class CustomerApiController {
             !($plan->start === 'now' && $plan->installments === 1),
             false,
             [$location->name, $basket->name, $customer->user->full_name, $customer->user->birthdate],
-            null
+            null,
+            $resellerFee
         );
 
         if(nestedArray($paymentSession, ['status']) === 'error')
@@ -73,14 +81,17 @@ class CustomerApiController {
             $customer->user->uid,
             "ppr_fheioflje98f",
             $planName,
-            "EUR",
-            $order['RequestAmount'],
-            ceil($order['RequestAmount'] * $resellerFee / 100),
+            $basket->currency,
+            $basket->price,
+//            $order['RequestAmount'],
+            ceil($basket->price * $resellerFee / 100),
             $resellerFee,
             $location->source_prid,
             $order['MerchantTrns'],
             $orderCode,
-            $terminalSession->uid
+            $terminalSession->uid,
+            $plan,
+            .8
         );
 
 
@@ -103,7 +114,9 @@ class CustomerApiController {
 
         $order = $orderHandler->getByPrid($orderCode);
         if(isEmpty($order)) Response()->jsonError("Ugyldig ordre.", [], 404);
-        $merchantId = "ee6d19b2-8b9e-41ed-874e-044680beeae7";
+        $merchantId = nestedArray($order, ['location', 'uuid', 'merchant_prid']);
+        if(isEmpty($merchantId)) Response()->jsonError("Ugyldigt forhandler id", toArray($order), 404);
+
         $providerOrder = Methods::viva()->getOrder($merchantId, $orderCode);
         if(isEmpty($providerOrder)) Response()->jsonError("Ugyldig betalingsudbyder.", [], 404);
         if(!array_key_exists("OrderCode", $providerOrder)) Response()->jsonError("Der opstod  en fejl hos betalingsudbyderen", [], 404);
@@ -117,15 +130,27 @@ class CustomerApiController {
         };
 
         if($order->status !== $status) {
+            debugLog($status, 'checkorderstatus');
             $basket = Methods::checkoutBasket()->getActiveBasket($terminalSessionId, ['uid']);
             $orderHandler->update(['status' => $status], ['uid' => $order->uid]);
             if(in_array($status, ["EXPIRED", "CANCELLED"])) {
                 Methods::terminalSessions()->setVoid($terminalSessionId);
-                Methods::checkoutBasket()->setFulfilled($basket->uid);
+                Methods::checkoutBasket()->setVoid($basket->uid);
+                if($status === 'CANCELLED') $orderHandler->setCancelled($order->uid);
+                if($status === 'EXPIRED') $orderHandler->setExpired($order->uid);
             }
             elseif($status === 'COMPLETED') {
                 Methods::terminalSessions()->setCompleted($terminalSessionId);
-                Methods::checkoutBasket()->setVoid($basket->uid);
+                Methods::checkoutBasket()->setFulfilled($basket->uid);
+                $orderHandler->setCompleted($order->uid);
+
+                Response()
+                    ->setRedirect(__url(Links::$checkout->createOrderConfirmation($order->uid)))
+                    ->jsonSuccess("Betalingen er gennemført. Tak fordi du handlede hos {$terminalSession->terminal->location->name}",
+                        compact(
+                    'status', 'terminalSessionId','orderCode',
+                        )
+                    );
             }
         }
 
@@ -211,6 +236,11 @@ class CustomerApiController {
 
         $redirect = __url(Links::$merchant->terminals->checkoutStart($terminalSession->terminal->location->slug, $terminalSession->terminal->uid));
 
+        // If session is completed, basket hash doesn't matter anymore - customer will be redirected by checkOrderStatus
+        if($terminalSession->state === 'COMPLETED') {
+            Response()->jsonSuccess("Session completed", ['hash' => '', 'goto' => '']);
+        }
+
         if(!in_array($terminalSession->state, ['PENDING', 'ACTIVE']))
             Response()->setRedirect($redirect)->jsonError("Sessionen er ikke længere aktiv. Opretter ny", [], 404);
         if($terminalSession->terminal->status !== 'ACTIVE') Response()->setRedirect($redirect)->jsonError("Sessionen er ikke længere aktiv", [], 404);
@@ -226,9 +256,13 @@ class CustomerApiController {
                 ->setRedirect($redirect)
                 ->jsonError("Kurven kunne ikke findes", [], 404);
 
+        // Get customer birthdate and ID for age restriction and BNPL limit
+        $birthdate = $terminalSession->customer?->birthdate ?? null;
+        $customerId = $terminalSession->customer?->uid ?? null;
+
         $paymentPlans = [];
         foreach (Settings::$app->paymentPlans as $name => $plan){
-            $plan = $basketHandler->createCheckoutInfo($basket, $name);
+            $plan = $basketHandler->createCheckoutInfo($basket, $name, 90, $birthdate, $customerId);
             if(isEmpty($plan)) continue;
             $paymentPlans[] = $plan;
         }
@@ -237,5 +271,57 @@ class CustomerApiController {
         $basketHash = hash("sha256", json_encode($basket) . "_" . json_encode($paymentPlans));
         response()->jsonSuccess("", ['hash' => $basketHash, 'goto' => $redirectIfDifferent]);
     }
+
+
+    #[NoReturn] public static function evaluateOrder(array $args): void  {
+        foreach (['ts_id', 'order_code'] as $key) if(!array_key_exists($key, $args))
+            Response()->jsonError("Mangler parametre", [], 400);
+
+        $terminalSessionId = $args["ts_id"];
+        $orderCode = $args["order_code"];
+        $orderHandler = Methods::orders();
+        $paymentsHandler = Methods::payments();
+
+        // Get the order
+        $order = $orderHandler->getByPrid($orderCode);
+        if(isEmpty($order)) {
+            // Order doesn't exist, nothing to cleanup
+            Response()->jsonSuccess("Ordre ikke fundet", []);
+        }
+
+        // Verify order belongs to this terminal session
+        if($order->terminal_session->uid !== $terminalSessionId) {
+            Response()->jsonError("Ugyldig session", [], 401);
+        }
+
+        // Get all payments for this order
+        $payments = $paymentsHandler->getByOrder($order->uid);
+
+        // Check if all payments are still in initial state (not processed)
+        $allUnprocessed = true;
+        foreach ($payments->list() as $payment) {
+            if(!in_array($payment->status, ['PENDING', 'SCHEDULED', 'DRAFT'])) {
+                $allUnprocessed = false;
+                break;
+            }
+        }
+
+        // If all payments are unprocessed, cleanup the order
+        if($allUnprocessed && $payments->count() > 0) {
+            // Delete all payment rows
+            foreach ($payments->list() as $payment) {
+                $paymentsHandler->delete(['uid' => $payment->uid]);
+            }
+
+            // Delete the order
+            $orderHandler->delete(['uid' => $order->uid]);
+
+            Response()->jsonSuccess("Ordre ryddet op", ['cleaned' => true]);
+        }
+
+        // Order was processed or no payments exist, just return success
+        Response()->jsonSuccess("Ordre allerede behandlet", ['cleaned' => false]);
+    }
+
 
 }

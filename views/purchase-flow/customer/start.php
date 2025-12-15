@@ -3,9 +3,19 @@
  * @var object $args
  */
 
+use classes\Methods;
+
 $terminal = $args->terminal;
 
 $pageTitle = "{$terminal->location->name} - Start Køb";
+
+
+$locationHandler = Methods::locations();
+$location = $locationHandler->get($terminal->location->uid);
+$address = $locationHandler->locationAddress($location);
+$addressString = Methods::misc()::extractCompanyAddressString($address, false, false);
+$contactEmail = $locationHandler->contactEmail($location);
+$contactPhone = $locationHandler->contactPhone($location);
 ?>
 
 
@@ -16,7 +26,6 @@ $pageTitle = "{$terminal->location->name} - Start Køb";
 
 <div class="page-content mt-5">
     <div class="page-inner-content">
-
         <div class="stepper-progress">
             <div class="stepper-item stepper-item--active">
                 <div class="stepper-circle">1</div>
@@ -53,8 +62,9 @@ $pageTitle = "{$terminal->location->name} - Start Køb";
 
             <div class="flex-col-start flex-align-center" style="row-gap: .25rem;">
                 <p class="mb-0 font-25 font-weight-bold"><?=$terminal->location->name?></p>
-                <p class="mb-0 font-14 font-weight-medium color-gray"><?=$terminal->location->caption?></p>
+                <p class="mb-0 font-14 font-weight-medium color-gray"><?=$args->page->caption?></p>
             </div>
+
 
 
 
@@ -63,19 +73,27 @@ $pageTitle = "{$terminal->location->name} - Start Køb";
                     <div
                             class="w-100 h-100 overflow-hidden bg-cover"
                             style="
-                                    border-radius: 10px 10px 0 0;
-                                    aspect-ratio: 16/9;
-                                    background-image: url('<?=resolveImportUrl($terminal->location->hero_image)?>');
-                                    "
+                                border-radius: 10px 10px 0 0;
+                                aspect-ratio: 16/9;
+                                background-image: url('<?=resolveImportUrl($args->page->hero_image)?>');
+                            "
                     ></div>
                 </div>
 
                 <div class="py-3 px-4 w-100 flex-col-start" style="row-gap: .5rem;">
                     <div class="flex-col-start border-bottom-card pb-3" style="row-gap: .5rem;">
-                        <?php if(!empty($terminal->location->contact_email)): ?>
+                        <div class="flex-row-start flex-align-center flex-nowrap" style="gap: .5rem">
+                            <i class="mdi mdi-email-outline color-design-blue font-16"></i>
+                            <p class="mb-0 font-14"><?=$contactEmail?></p>
+                        </div>
+                        <div class="flex-row-start flex-align-center flex-nowrap" style="gap: .5rem">
+                            <i class="mdi mdi-phone-outline color-design-blue font-16"></i>
+                            <p class="mb-0 font-14"><?=$contactPhone?></p>
+                        </div>
+                        <?php if(!isEmpty($addressString)): ?>
                             <div class="flex-row-start flex-align-center flex-nowrap" style="gap: .5rem">
-                                <i class="mdi mdi-email-outline color-design-blue font-16"></i>
-                                <p class="mb-0 font-14"><?=$terminal->location->contact_email?></p>
+                                <i class="mdi mdi-map-marker-outline color-design-blue font-16"></i>
+                                <p class="mb-0 font-14"><?=$addressString?></p>
                             </div>
                         <?php endif; ?>
                     </div>

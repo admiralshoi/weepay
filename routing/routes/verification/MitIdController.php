@@ -70,16 +70,7 @@ class MitIdController {
                 // Get user to check if profile completion is needed
                 $user = Methods::users()->get(__uuid());
                 if(isEmpty($user)) Response()->jsonError('Brugeren kunne ikke findes.', [], 500);
-
-                // Determine redirect URL
-                if(isEmpty($user->email) || isEmpty($user->phone)) {
-                    // Needs to complete profile
-                    Response()->redirect(__url(Links::$app->auth->consumerSignup . '/complete-profile'));
-                } else {
-                    // Profile complete, go to dashboard
-                    Response()->redirect(__url(Links::$consumer->dashboard));
-                }
-
+                Response()->redirect(__url(Links::$consumer->dashboard));
         }
     }
 

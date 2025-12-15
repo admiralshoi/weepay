@@ -60,6 +60,22 @@ $paymentPlans = $args->paymentPlans;
                 <p class="mb-0 font-14 font-weight-medium color-gray">Vælg den løsning der passer dig bedst</p>
             </div>
 
+            <?php if(!isEmpty($args->bnplLimit)): ?>
+            <div class="alert alert-info border-radius-10px w-100">
+                <div class="flex-col-start" style="row-gap: 0.5rem;">
+                    <div class="flex-row-start flex-align-center" style="gap: 0.5rem;">
+                        <i class="mdi mdi-information-outline font-20"></i>
+                        <p class="mb-0 font-16 font-weight-bold">Din BNPL kredit</p>
+                    </div>
+                    <p class="mb-0 font-14">
+                        Du har <strong><?=number_format($args->bnplLimit->available, 2)?> DKK</strong> tilgængelig til betal-senere muligheder.
+                        <?php if($args->bnplLimit->outstanding > 0): ?>
+                        <br>Du har <strong><?=number_format($args->bnplLimit->outstanding, 2)?> DKK</strong> udestående på tidligere køb.
+                        <?php endif; ?>
+                    </p>
+                </div>
+            </div>
+            <?php endif; ?>
 
             <div class="flex-col-start w-100" style="row-gap: 1rem;">
 
@@ -128,7 +144,7 @@ $paymentPlans = $args->paymentPlans;
                 <div class="note-info-box">
                     <div class="flex-row-start flex-align-center flex-nowrap" style="column-gap: 5px">
                         <div class="square-25 flex-row-center flex-align-center"><i class="font-16 mdi mdi-exclamation-thick"></i></div>
-                        <p class="mb-0 info-title">Sammentykke</p>
+                        <p class="mb-0 info-title">Samtykke</p>
                     </div>
                     <div class="info-content">
                         <div class="flex-row-start flex-align-center flex-nowrap mt-1" style="gap: .5rem">

@@ -7,6 +7,7 @@ use classes\enumerations\Links;
 
 $pageTitle = "Ordrer";
 
+
 ?>
 
 
@@ -29,12 +30,32 @@ $pageTitle = "Ordrer";
 
 
 
+    <?php  //prettyPrint(\classes\Methods::viva()->getPayment('ee6d19b2-8b9e-41ed-874e-044680beeae7', 'f3781870-0105-4122-ae21-551560022e27')); ?>
+
+
     <div class="flex-row-between flex-align-center flex-wrap" style="column-gap: .75rem; row-gap: .5rem;">
         <div class="flex-col-start">
             <p class="mb-0 font-30 font-weight-bold">Ordrer</p>
             <p class="mb-0 font-16 font-weight-medium color-gray">Oversigt over alle ordrer</p>
         </div>
 
+        <!-- Date Filter -->
+        <div class="flex-row-start flex-align-center flex-wrap" style="column-gap: .5rem; row-gap: .5rem;">
+            <input type="date" id="start-date" class="form-control" style="max-width: 160px;"
+                   value="<?=$args->startDate ?? ''?>" placeholder="Start dato">
+            <input type="date" id="end-date" class="form-control" style="max-width: 160px;"
+                   value="<?=$args->endDate ?? ''?>" placeholder="Slut dato">
+            <button onclick="applyDateFilter()" class="btn-v2 action-btn flex-row-center flex-align-center" style="gap: .5rem;">
+                <i class="mdi mdi-filter"></i>
+                <span>Filtrer</span>
+            </button>
+            <?php if(!isEmpty($args->startDate) || !isEmpty($args->endDate)): ?>
+                <button onclick="clearDateFilter()" class="btn-v2 mute-btn flex-row-center flex-align-center" style="gap: .5rem;">
+                    <i class="mdi mdi-close"></i>
+                    <span>Ryd</span>
+                </button>
+            <?php endif; ?>
+        </div>
     </div>
 
     <div class="row mt-4">
@@ -57,7 +78,7 @@ $pageTitle = "Ordrer";
                             <th>Udestående</th>
                             <th>Risikoscore</th>
                             <th>Status</th>
-                            <th >Handlinger</th>
+                            <th>Handlinger</th>
                             </thead>
                             <tbody>
                             <?php foreach ($args->orders->list() as $order): ?>
@@ -67,7 +88,12 @@ $pageTitle = "Ordrer";
                                         <p class="mb-0 font-12 text-wrap"><?=date("d/m-Y H:i", strtotime($order->created_at))?></p>
                                     </td>
                                     <td>
-                                        <p class="mb-0 font-12 text-wrap">Customer Name...</p>
+                                            <?php if(!isEmpty($order->uuid)): ?>
+                                            <a href="<?=__url(Links::$merchant->customerDetail($order->uuid->uid))?>"
+                                               class="color-blue hover-underline"><?=$order->uuid->full_name?></a>
+                                            <?php else: ?>
+                                            <p class="mb-0 font-12 text-wrap">Ukendt</p>
+                                            <?php endif; ?>
                                     </td>
                                     <td>
                                         <p class="mb-0 font-12 text-wrap"><?=number_format($order->amount) . currencySymbol($order->currency)?></p>
@@ -95,7 +121,7 @@ $pageTitle = "Ordrer";
                                         </p>
                                     </td>
                                     <td>
-                                        <a href="<?=__url()?>" target="_blank" class="btn-v2 trans-btn flex-row-start flex-align-center flex-nowrap" style="gap: .5rem;">
+                                        <a href="<?=__url(Links::$merchant->orderDetail($order->uid))?>" class="btn-v2 trans-btn flex-row-start flex-align-center flex-nowrap" style="gap: .5rem;">
                                             <i class="mdi mdi-eye-outline font-16"></i>
                                             <span class="font-14">Detaljer</span>
                                         </a>
@@ -114,5 +140,36 @@ $pageTitle = "Ordrer";
 </div>
 
 
+<?php scriptStart(); ?>
+<script>
+    function applyDateFilter() {
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+
+        const url = new URL(window.location.href);
+
+        if (startDate) {
+            url.searchParams.set('start', startDate);
+        } else {
+            url.searchParams.delete('start');
+        }
+
+        if (endDate) {
+            url.searchParams.set('end', endDate);
+        } else {
+            url.searchParams.delete('end');
+        }
+
+        window.location.href = url.toString();
+    }
+
+    function clearDateFilter() {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('start');
+        url.searchParams.delete('end');
+        window.location.href = url.toString();
+    }
+</script>
+<?php scriptEnd(); ?>
 
 

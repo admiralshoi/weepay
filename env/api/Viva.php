@@ -20,9 +20,16 @@ class Viva {
     public static function merchantReadUrl(string $merchantId): string { return (self::$sandbox ? self::SANDBOX_MERCHANT_READ_URL : self::MERCHANT_READ_URL) . $merchantId; }
     public static function sourceCreateUrl(): string { return self::$sandbox ? self::SANDBOX_SOURCE_CREATE_URL : self::SOURCE_CREATE_URL; }
     public static function paymentCreateUrl(string $merchantId): string { return (self::$sandbox ? self::SANDBOX_PAYMENT_CREATE_URL : self::PAYMENT_CREATE_URL) . $merchantId; }
-    public static function paymentReadUrl(string $orderId): string { return (self::$sandbox ? self::SANDBOX_PAYMENT_READ_URL : self::PAYMENT_READ_URL) . $orderId; }
     public static function orderReadUrl(string $orderId): string { return (self::$sandbox ? self::SANDBOX_ORDER_READ_URL : self::ORDER_READ_URL) . $orderId; }
     public static function checkoutUrl(string $orderId): string { return (self::$sandbox ? self::SANDBOX_CHECKOUT_URL : self::CHECKOUT_URL) . $orderId; }
+    public static function paymentByOrderIdReadUrl(string $orderId): string { return (self::$sandbox ? self::SANDBOX_PAYMENT_BY_ORDER_ID_READ_URL : self::PAYMENT_BY_ORDER_ID_READ_URL) . $orderId; }
+    public static function paymentReadUrl(string $id, string $merchantId): string {
+        return str_replace(
+            ['{transactionId}', '{merchantId}'],
+            [$id,$merchantId],
+            self::$sandbox ? self::SANDBOX_PAYMENT_READ_URL : self::PAYMENT_READ_URL
+        );
+    }
 
 
 
@@ -45,8 +52,10 @@ class Viva {
     private const SOURCE_CREATE_URL = "https://www.vivapayments.com/api/sources";
     private const SANDBOX_PAYMENT_CREATE_URL = "https://demo-api.vivapayments.com/checkout/v2/isv/orders?merchantId=";
     private const PAYMENT_CREATE_URL = "https://api.vivapayments.com/checkout/v2/isv/orders?merchantId=";
-    private const SANDBOX_PAYMENT_READ_URL = "https://demo.vivapayments.com/api/transactions/?ordercode=";
-    private const PAYMENT_READ_URL = "https://www.vivapayments.com/api/transactions/?ordercode=";
+    private const SANDBOX_PAYMENT_READ_URL = "https://demo-api.vivapayments.com/checkout/v2/isv/transactions/{transactionId}?merchantId={merchantId}";
+    private const PAYMENT_READ_URL = "https://api.vivapayments.com/checkout/v2/isv/transactions/{transactionId}?merchantId={merchantId}";
+    private const SANDBOX_PAYMENT_BY_ORDER_ID_READ_URL = "https://demo.vivapayments.com/api/transactions/?ordercode=";
+    private const PAYMENT_BY_ORDER_ID_READ_URL = "https://www.vivapayments.com/api/transactions/?ordercode=";
     private const SANDBOX_ORDER_READ_URL = "https://demo.vivapayments.com/api/orders/";
     private const ORDER_READ_URL = "https://www.vivapayments.com/api/orders/";
     private const SANDBOX_CHECKOUT_URL = "https://demo.vivapayments.com/web/checkout?ref=";

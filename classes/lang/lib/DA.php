@@ -18,6 +18,9 @@ class DA {
                 "completed" => "Fuldført",
             ],
         ],
+        "order" => [
+            "installments" => "betalingsrater"
+        ]
     ];
     const WORD = [
         "january" => "januar",

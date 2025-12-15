@@ -1,0 +1,262 @@
+<?php
+/**
+ * @var object $args
+ */
+
+use classes\enumerations\Links;
+
+$order = $args->order;
+$location = $order->location;
+$payments = $args->payments;
+$billingDetails = toArray($order->billing_details ?? []);
+
+$pageTitle = "Ordre Detaljer - " . substr($order->uid, 0, 8);
+?>
+
+<script>
+    var pageTitle = <?=json_encode($pageTitle)?>;
+    activePage = "orders";
+</script>
+
+<div class="page-content">
+
+    <div class="flex-row-between flex-align-center flex-nowrap mb-4" id="nav" style="column-gap: .5rem;">
+        <a href="<?=__url(Links::$consumer->orders)?>" class="btn-v2 trans-btn flex-row-start flex-align-center flex-nowrap" style="gap: .5rem;">
+            <i class="mdi mdi-arrow-left font-16"></i>
+            <span class="font-14">Tilbage til ordrer</span>
+        </a>
+    </div>
+
+    <div class="flex-col-start mb-4">
+        <p class="mb-0 font-30 font-weight-bold">Ordre Detaljer</p>
+        <p class="mb-0 font-16 font-weight-medium color-gray">Ordre ID: <?=substr($order->uid, 0, 8)?></p>
+    </div>
+
+    <div class="row">
+        <!-- Order Information -->
+        <div class="col-12 col-lg-8">
+            <div class="card border-radius-10px mb-4">
+                <div class="card-body">
+                    <div class="flex-row-start flex-align-center flex-nowrap mb-3" style="column-gap: .5rem;">
+                        <i class="mdi mdi-information-outline font-18 color-blue"></i>
+                        <p class="mb-0 font-20 font-weight-bold">Ordre Information</p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 col-md-4 mb-3">
+                            <p class="mb-1 font-13 color-gray font-weight-medium">Status</p>
+                            <?php if($order->status === 'COMPLETED'): ?>
+                                <span class="success-box">Gennemført</span>
+                            <?php elseif($order->status === 'DRAFT'): ?>
+                                <span class="mute-box">Draft</span>
+                            <?php elseif($order->status === 'PENDING'): ?>
+                                <span class="action-box">Afvikles</span>
+                            <?php elseif($order->status === 'CANCELLED'): ?>
+                                <span class="danger-box">Annulleret</span>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="col-6 col-md-4 mb-3">
+                            <p class="mb-1 font-13 color-gray font-weight-medium">Dato & Tid</p>
+                            <p class="mb-0 font-14 font-weight-medium"><?=date("d/m-Y H:i", strtotime($order->created_at))?></p>
+                        </div>
+
+                        <div class="col-6 col-md-4 mb-3">
+                            <p class="mb-1 font-13 color-gray font-weight-medium">Beløb</p>
+                            <p class="mb-0 font-14 font-weight-medium"><?=number_format($order->amount, 2)?> <?=currencySymbol($order->currency)?></p>
+                        </div>
+
+                        <div class="col-6 col-md-4 mb-3">
+                            <p class="mb-1 font-13 color-gray font-weight-medium">Valuta</p>
+                            <p class="mb-0 font-14 font-weight-medium"><?=$order->currency?></p>
+                        </div>
+
+                        <div class="col-6 col-md-4 mb-3">
+                            <p class="mb-1 font-13 color-gray font-weight-medium">Betalingsplan</p>
+                            <p class="mb-0 font-14 font-weight-medium">
+                                <?php if($order->payment_plan === 'installments'): ?>
+                                    Afdrag
+                                <?php elseif($order->payment_plan === 'pushed'): ?>
+                                    Udskudt
+                                <?php else: ?>
+                                    Fuld betaling
+                                <?php endif; ?>
+                            </p>
+                        </div>
+
+                        <?php if(!isEmpty($order->caption)): ?>
+                        <div class="col-12 mb-3">
+                            <p class="mb-1 font-13 color-gray font-weight-medium">Beskrivelse</p>
+                            <p class="mb-0 font-14"><?=$order->caption?></p>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Location Information -->
+            <?php if(!isEmpty($location)): ?>
+            <div class="card border-radius-10px mb-4">
+                <div class="card-body">
+                    <div class="flex-row-start flex-align-center flex-nowrap mb-3" style="column-gap: .5rem;">
+                        <i class="mdi mdi-store-outline font-18 color-blue"></i>
+                        <p class="mb-0 font-20 font-weight-bold">Butik Information</p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <p class="mb-1 font-13 color-gray font-weight-medium">Butik Navn</p>
+                            <p class="mb-0 font-14 font-weight-medium"><?=htmlspecialchars($location->name ?? 'N/A')?></p>
+                        </div>
+
+                        <?php if(!isEmpty($location->address)): ?>
+                        <?php $address = toArray($location->address); ?>
+                        <div class="col-12 mb-3">
+                            <p class="mb-1 font-13 color-gray font-weight-medium">Adresse</p>
+                            <div class="flex-col-start" style="row-gap: .25rem;">
+                                <?php if(!isEmpty($address['line_1'])): ?>
+                                <p class="mb-0 font-14"><?=htmlspecialchars($address['line_1'])?></p>
+                                <?php endif; ?>
+
+                                <?php if(!isEmpty($address['city']) || !isEmpty($address['postal_code'])): ?>
+                                <p class="mb-0 font-14">
+                                    <?=trim(htmlspecialchars(($address['postal_code'] ?? '') . ' ' . ($address['city'] ?? '')))?>
+                                </p>
+                                <?php endif; ?>
+
+                                <?php if(!isEmpty($address['country'])): ?>
+                                <p class="mb-0 font-14 font-weight-medium"><?=htmlspecialchars($address['country'])?></p>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if(!isEmpty($location->contact_phone)): ?>
+                        <div class="col-6 mb-3">
+                            <p class="mb-1 font-13 color-gray font-weight-medium">Telefon</p>
+                            <p class="mb-0 font-14"><?=\classes\Methods::locations()->contactPhone($location)?></p>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if(!isEmpty($location->contact_email)): ?>
+                        <div class="col-6 mb-3">
+                            <p class="mb-1 font-13 color-gray font-weight-medium">Email</p>
+                            <p class="mb-0 font-14"><?=\classes\Methods::locations()->contactEmail($location)?></p>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <!-- Billing Details -->
+            <?php if(!isEmpty($billingDetails)): ?>
+            <div class="card border-radius-10px mb-4">
+                <div class="card-body">
+                    <div class="flex-row-start flex-align-center flex-nowrap mb-3" style="column-gap: .5rem;">
+                        <i class="mdi mdi-receipt-text-outline font-18 color-blue"></i>
+                        <p class="mb-0 font-20 font-weight-bold">Faktureringsoplysninger</p>
+                    </div>
+
+                    <div class="row">
+                        <?php if(!isEmpty($billingDetails['customer_name'])): ?>
+                        <div class="col-12 mb-3">
+                            <p class="mb-1 font-13 color-gray font-weight-medium">Kunde Navn</p>
+                            <p class="mb-0 font-14 font-weight-medium"><?=htmlspecialchars($billingDetails['customer_name'])?></p>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php
+                        $billingAddress = $billingDetails['address'] ?? [];
+                        if(!isEmpty($billingAddress['line_1']) || !isEmpty($billingAddress['city']) || !isEmpty($billingAddress['postal_code'])):
+                        ?>
+                        <div class="col-12 mb-3">
+                            <p class="mb-1 font-13 color-gray font-weight-medium">Adresse</p>
+                            <div class="flex-col-start" style="row-gap: .25rem;">
+                                <?php if(!isEmpty($billingAddress['line_1'])): ?>
+                                <p class="mb-0 font-14"><?=htmlspecialchars($billingAddress['line_1'])?></p>
+                                <?php endif; ?>
+
+                                <?php if(!isEmpty($billingAddress['city']) || !isEmpty($billingAddress['postal_code'])): ?>
+                                <p class="mb-0 font-14">
+                                    <?=trim(htmlspecialchars(($billingAddress['postal_code'] ?? '') . ' ' . ($billingAddress['city'] ?? '')))?>
+                                </p>
+                                <?php endif; ?>
+
+                                <?php if(!isEmpty($billingAddress['country'])): ?>
+                                <p class="mb-0 font-14 font-weight-medium"><?=htmlspecialchars($billingAddress['country'])?></p>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+        </div>
+
+        <!-- Payment Summary Sidebar -->
+        <div class="col-12 col-lg-4">
+            <div class="card border-radius-10px mb-4">
+                <div class="card-body">
+                    <div class="flex-row-start flex-align-center flex-nowrap mb-3" style="column-gap: .5rem;">
+                        <i class="mdi mdi-cash-multiple font-18 color-blue"></i>
+                        <p class="mb-0 font-20 font-weight-bold">Betalingsoversigt</p>
+                    </div>
+
+                    <?php if($payments->count() === 0): ?>
+                        <p class="mb-0 font-14 color-gray">Ingen betalinger endnu</p>
+                    <?php else: ?>
+                        <div class="flex-col-start" style="row-gap: 1rem;">
+                            <?php foreach($payments->list() as $payment): ?>
+                                <div class="flex-col-start border-bottom-card pb-3" style="row-gap: .5rem;">
+                                    <div class="flex-row-between flex-align-center">
+                                        <p class="mb-0 font-13 color-gray">Betaling</p>
+                                        <p class="mb-0 font-14 font-weight-bold"><?=number_format($payment->amount, 2)?> <?=currencySymbol($order->currency)?></p>
+                                    </div>
+
+                                    <div class="flex-row-between flex-align-center">
+                                        <p class="mb-0 font-13 color-gray">Status</p>
+                                        <?php if($payment->status === 'COMPLETED'): ?>
+                                            <span class="success-box">Gennemført</span>
+                                        <?php elseif($payment->status === 'SCHEDULED'): ?>
+                                            <span class="action-box">Planlagt</span>
+                                        <?php elseif($payment->status === 'PAST_DUE'): ?>
+                                            <span class="danger-box">Forsinket</span>
+                                        <?php elseif($payment->status === 'PENDING'): ?>
+                                            <span class="action-box">Afventer</span>
+                                        <?php else: ?>
+                                            <span class="mute-box"><?=$payment->status?></span>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <?php if($payment->status === 'COMPLETED' && !isEmpty($payment->paid_at)): ?>
+                                    <div class="flex-row-between flex-align-center">
+                                        <p class="mb-0 font-13 color-gray">Betalt dato</p>
+                                        <p class="mb-0 font-13"><?=date('d/m/Y', strtotime($payment->paid_at))?></p>
+                                    </div>
+                                    <?php elseif(!isEmpty($payment->due_date)): ?>
+                                    <div class="flex-row-between flex-align-center">
+                                        <p class="mb-0 font-13 color-gray">Forfaldsdato</p>
+                                        <p class="mb-0 font-13 <?=$payment->status === 'PAST_DUE' ? 'color-red font-weight-bold' : ''?>">
+                                            <?=date('d/m/Y', strtotime($payment->due_date))?>
+                                        </p>
+                                    </div>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+
+                            <div class="flex-col-start pt-2" style="row-gap: .5rem;">
+                                <div class="flex-row-between flex-align-center">
+                                    <p class="mb-0 font-16 font-weight-bold">Total</p>
+                                    <p class="mb-0 font-18 font-weight-bold"><?=number_format($order->amount, 2)?> <?=currencySymbol($order->currency)?></p>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

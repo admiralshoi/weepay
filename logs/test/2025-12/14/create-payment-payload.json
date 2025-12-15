@@ -1,0 +1,25 @@
+{
+    "sourceCode": "3135a",
+    "amount": 500,
+    "dynamicDescriptor": "Ny Butik!",
+    "customerTrns": "Ny Butik!: hejmeddig",
+    "merchantTrns": "Ny Butik! - hejmeddig",
+    "allowRecurring": true,
+    "preauth": false,
+    "disableCash": true,
+    "disableWallet": true,
+    "customer": {
+        "email": "hejmeddig@ok.com",
+        "phone": "627201309",
+        "fullName": "Alvin",
+        "countryCode": "DK"
+    },
+    "currencyCode": "208",
+    "tags": [
+        "Ny Butik!",
+        "hejmeddig",
+        "Alvin",
+        "1996-05-12"
+    ],
+    "isvAmount": 25
+}

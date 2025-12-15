@@ -44,6 +44,15 @@ class Calculate {
         return round($freq, $precision);
     }
 
+    public static function percentageChange(int|float $oldValue, int|float $newValue, int $precision = 2): int|float {
+        if ((int)$oldValue === 0) {
+            // If old value is 0 and new value is not 0, return 100% (or -100% if new is negative)
+            if ((int)$newValue === 0) return 0;
+            return $newValue > 0 ? 100 : -100;
+        }
+        return round((($newValue - $oldValue) / $oldValue) * 100, $precision);
+    }
+
 
 
 

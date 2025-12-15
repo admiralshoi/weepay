@@ -282,7 +282,9 @@ const MerchantPOS = {
             this.elements.pageTitleVoid.style.display = 'block';
         }
         if(result.data.state === 'COMPLETED') {
-            //something!
+            queueNotificationOnLoad("Købet er fuldført", result.message, 'success')
+            window.clearInterval(this.checkSessionInterval)
+            this.checkSessionInterval = null;
             handleStandardApiRedirect(result)
         }
 

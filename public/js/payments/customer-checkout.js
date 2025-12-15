@@ -119,6 +119,7 @@ const CustomerCheckout = {
     interval: null,
     tsId: null,
     basketHash: null,
+    sessionPopup: null,
     elements: {
         payButton: null,
         toPayNow: null,
@@ -171,10 +172,15 @@ const CustomerCheckout = {
 
         let hash = result.data.hash;
         if(hash !== this.basketHash) {
-            showNeutralNotification("Kurven er blevet opdateret", "Omredigerer...")
-            setTimeout(()=> window.location =  result.data.goto, 1000);
+            if(!empty(result.data.goto)) {
+                // Close popup if it's open before redirecting
+                if(this.sessionPopup && !this.sessionPopup.closed) {
+                    this.sessionPopup.close();
+                }
+                showNeutralNotification("Kurven er blevet opdateret", "Omredigerer...")
+                setTimeout(()=> window.location =  result.data.goto, 1000);
+            }
         }
-
     },
     updateSelectedPlan(planName) {
         for(let plan of this.plans) {
@@ -202,16 +208,21 @@ const CustomerCheckout = {
             // showErrorNotification("Unable to fetch order", result.error.message)
             this.elements.payButton.disabled = false;
             this.elements.paymentButtonLoader.style.display = 'none';
-            window.clearInterval(this.orderListenerInterval);
             this.listenStatus = false;
             return false
         }
 
         if(result.data.status === 'COMPLETED') {
-            showSuccessNotification("Order completed")
+            queueNotificationOnLoad("Ordre fuldført", result.message, 'success')
             this.elements.paymentButtonLoader.style.display = 'none';
-            window.clearInterval(this.orderListenerInterval);
             this.listenStatus = false;
+
+            if (this.sessionPopup && !this.sessionPopup.closed) {
+                this.sessionPopup.close();
+                this.sessionPopup = null;
+            }
+
+            handleStandardApiRedirect(result)
             return true
         }
 
@@ -219,7 +230,6 @@ const CustomerCheckout = {
             showSuccessNotification("Order Cancelled")
             this.elements.payButton.disabled = false;
             this.elements.paymentButtonLoader.style.display = 'none';
-            window.clearInterval(this.orderListenerInterval);
             this.listenStatus = false;
             return true
         }
@@ -228,7 +238,6 @@ const CustomerCheckout = {
             showSuccessNotification("Checkout expired")
             this.elements.payButton.disabled = false;
             this.elements.paymentButtonLoader.style.display = 'none';
-            window.clearInterval(this.orderListenerInterval);
             this.listenStatus = false;
             return true
         }
@@ -254,22 +263,36 @@ const CustomerCheckout = {
 
         let paymentSessionUrl = result.data.paymentSessionUrl;
         let orderCode = result.data.orderCode
-        const sessionPopup = window.open(
+        this.sessionPopup = window.open(
             paymentSessionUrl,
             'paymentSessionPopup',
             'width="100%",height="100%"'
         )
-        if (!sessionPopup) {
+        if (!this.sessionPopup) {
             window.location.href = paymentSessionUrl;
         }
         else {
+            // Stop basket hash checking while popup is open
+            if(this.interval) {
+                window.clearInterval(this.interval);
+                this.interval = null;
+            }
+
             let popupIntervalCheck = setInterval(() => {
-                if (sessionPopup.closed) {
+                if (this.sessionPopup.closed) {
                     console.warn("Payment window closed.");
                     this.elements.payButton.disabled = false;
                     this.elements.paymentButtonLoader.style.display = 'none';
                     this.listenStatus = false;
                     window.clearInterval(popupIntervalCheck);
+
+                    // Restart basket hash checking when popup closes
+                    if(this.basketHash) {
+                        this.interval = window.setInterval(this.fetchBasketHash.bind(this), 1200);
+                    }
+
+                    // Cleanup abandoned order if payment wasn't completed
+                    this.evaluateAbandonedOrder(orderCode);
                 }
             }, 500);
         }
@@ -278,5 +301,18 @@ const CustomerCheckout = {
 
         this.listenStatus = true;
         this.listenOrderStatus.bind(this)(orderCode);
+    },
+
+    async evaluateAbandonedOrder(orderCode) {
+        // Silently send request to cleanup abandoned order if not processed
+        try {
+            await post(`api/checkout/order/evaluate`, {
+                ts_id: this.tsId,
+                order_code: orderCode
+            });
+        } catch (error) {
+            // Silent cleanup - don't show errors to user
+            console.log('Order evaluation completed');
+        }
     }
 }

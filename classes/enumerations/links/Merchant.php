@@ -10,13 +10,23 @@ class Merchant {
     public Terminals $terminals;
     public string $dashboard = "dashboard";
     public string $orders = "orders";
+    public string $payments = "payments";
     public string $payouts = "payouts";
     public string $pendingPayments = "pending-payments";
+    public string $pastDuePayments = "past-due-payments";
     public string $locationPages = "location-pages";
     public string $customers = "customers";
     public string $settings = "settings";
     public string $reports = "reports";
     public string $support = "support";
+
+    public function orderDetail(string $orderId): string {
+        return "orders/{$orderId}";
+    }
+
+    public function customerDetail(string $customerId): string {
+        return "customers/{$customerId}";
+    }
 
     function __construct() {
         $ref = new \ReflectionClass(self::class);

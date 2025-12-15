@@ -12,10 +12,9 @@ $sidebarHandler = Methods::sidebars();
 <div id="sidebar" class="flex-col-between flex-align-start">
     <div class="flex-col-between h-100">
         <div class="flex-col-start">
-            <div class="flex-row-end flex-align-center px-2 pt-2 color-gray flex-nowrap" style="column-gap: .25rem" id="leftSidebarCloseBtn">
-                <i class="font-16  fa-solid fa-xmark" id="" ></i>
-                <span class="text-sm">Close</span>
-            </div>
+            <button class="btn-unstyled p-2 m-0 ml-auto border-0 bg-transparent" id="leftSidebarCloseBtn" style="cursor: pointer;" title="Luk menu">
+                <i class="mdi mdi-close font-24 color-gray hover-color-red"></i>
+            </button>
             <div id="sidebar-top-logo">
                 <div class="flex-row-start flex-align-center w-100 cursor-pointer">
                     <img src="<?=__asset(LOGO_ICON_WHITE)?>" class="w-10 noSelect mr-2"/>

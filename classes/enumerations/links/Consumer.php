@@ -6,6 +6,13 @@ class Consumer {
 
     public ConsumerPublic $public;
     public string $dashboard = "dashboard";
+    public string $orders = "orders";
+    public string $orderDetail = "order";
+    public string $receipts = "receipts";
+    public string $upcomingPayments = "upcoming-payments";
+    public string $outstandingPayments = "outstanding-payments";
+    public string $settings = "settings";
+    public string $support = "support";
 
 
     function __construct() {

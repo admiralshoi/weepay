@@ -12,7 +12,6 @@ class Locations extends \Database\Model {
         "name" => "string",
         "description" => ['type' => "string", 'default' => null, 'nullable' => true],
         "caption" => ['type' => "string", 'default' => null, 'nullable' => true],
-        "hero_image" => ['type' => "text", 'default' => null, 'nullable' => true],
         "status" => ["type" => "enum", "default" => 'DRAFT', 'values' => ['DRAFT', 'ACTIVE', 'INACTIVE', 'DELETED']],
         "source_prid" => ['type' => "string", 'default' => null, 'nullable' => true],
         "opening_hours" => ['type' => "text", 'default' => null, 'nullable' => true],

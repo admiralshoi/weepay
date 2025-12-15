@@ -43,6 +43,69 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
 
     <?php  if(!isEmpty($organisation)): ?>
 
+    <?php if($args->setupRequirements->has_incomplete): ?>
+    <!-- Setup Requirements Notice -->
+    <div class="danger-info-box px-4 py-3 mb-4">
+        <div class="flex-row-start flex-align-center flex-nowrap" style="column-gap: .75rem">
+            <div class="square-40 flex-row-center flex-align-center bg-danger-bread border-radius-50">
+                <i class="font-20 mdi mdi-alert-outline color-white"></i>
+            </div>
+            <div class="flex-col-start flex-1">
+                <p class="mb-2 font-18 font-weight-bold color-dark">Handlinger påkrævet</p>
+                <p class="mb-2 font-14 color-gray">For at kunne modtage betalinger skal du færdiggøre følgende opsætning:</p>
+
+                <div class="flex-col-start mt-2" style="row-gap: .75rem;">
+                    <!-- Viva Wallet -->
+                    <div class="flex-row-start flex-align-center" style="column-gap: .5rem;">
+                        <?php if($args->setupRequirements->viva_wallet->completed): ?>
+                            <i class="mdi mdi-check-circle color-success-text font-18"></i>
+                            <span class="font-14 color-gray">Viva Wallet tilsluttet</span>
+                        <?php elseif($args->setupRequirements->viva_wallet->status === 'in_progress'): ?>
+                            <i class="mdi mdi-clock-outline color-warning font-18"></i>
+                            <span class="font-14 font-weight-medium">Viva Wallet afventer godkendelse</span>
+                        <?php else: ?>
+                            <i class="mdi mdi-close-circle color-danger-bread font-18"></i>
+                            <span class="font-14 font-weight-medium">Tilslut Viva Wallet nedenfor</span>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="flex-row-start flex-align-center" style="column-gap: .5rem;">
+                        <?php if($args->setupRequirements->locations->completed): ?>
+                            <i class="mdi mdi-check-circle color-success-text font-18"></i>
+                            <span class="font-14 color-gray">Lokation oprettet</span>
+                        <?php else: ?>
+                            <i class="mdi mdi-close-circle color-danger-bread font-18"></i>
+                            <a href="<?=__url(Links::$merchant->locations->main)?>" class="font-14 font-weight-medium color-design-blue">Opret lokation</a>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Terminal -->
+                    <div class="flex-row-start flex-align-center" style="column-gap: .5rem;">
+                        <?php if($args->setupRequirements->terminals->completed): ?>
+                            <i class="mdi mdi-check-circle color-success-text font-18"></i>
+                            <span class="font-14 color-gray">Terminal oprettet</span>
+                        <?php else: ?>
+                            <i class="mdi mdi-close-circle color-danger-bread font-18"></i>
+                            <a href="<?=__url(Links::$merchant->terminals->main)?>" class="font-14 font-weight-medium color-design-blue">Opret terminal</a>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Published Page -->
+                    <div class="flex-row-start flex-align-center" style="column-gap: .5rem;">
+                        <?php if($args->setupRequirements->published_page->completed): ?>
+                            <i class="mdi mdi-check-circle color-success-text font-18"></i>
+                            <span class="font-14 color-gray">Lokationsside publiceret</span>
+                        <?php else: ?>
+                            <i class="mdi mdi-close-circle color-danger-bread font-18"></i>
+                            <a href="<?=__url(Links::$merchant->locations->main)?>" class="font-14 font-weight-medium color-design-blue">Publicer lokationsside</a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <div class="flex-row-between flex-align-center flex-wrap" style="column-gap: .75rem; row-gap: .5rem;">
         <div class="flex-col-start">

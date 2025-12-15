@@ -242,7 +242,7 @@ docReady(function() {
     if('doAuthenticate' in window) doAuthenticate();
     togglePasswordVisibility();
 
-    $(document).on("click", "#leftSidebarOpenBtn", function () {
+    $(document).on("click", "#leftSidebarOpenBtn, #topNavSidebarToggle", function () {
         if($(document).find("#sidebar").length) {
             $(document).find("#sidebar").addClass("mb-open");
             $(document).find(".page-wrapper").first().addClass("overlay-blur-dark-small-screen");
@@ -261,6 +261,17 @@ docReady(function() {
             $(document).find("#sidebar-admin-panel").removeClass("mb-open");
             $(document).find(".page-wrapper").first().removeClass("overlay-blur-dark-small-screen");
         }
+    })
+
+    // Close sidebar when clicking on the blurred overlay
+    $(document).on("click", ".overlay-blur-dark-small-screen", function () {
+        if($(document).find("#sidebar").length) {
+            $(document).find("#sidebar").removeClass("mb-open");
+        }
+        else if($(document).find("#sidebar-admin-panel").length) {
+            $(document).find("#sidebar-admin-panel").removeClass("mb-open");
+        }
+        $(this).removeClass("overlay-blur-dark-small-screen");
     })
 
     selectV2();

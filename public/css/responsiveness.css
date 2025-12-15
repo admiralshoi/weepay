@@ -68,6 +68,11 @@
         width: 300px;
     }
 }
+@media screen and (max-width: 600px) {
+    .page-inner-content {
+        padding: 0 .5rem 2rem .5rem !important;
+    }
+}
 @media screen and (max-width: 775px) {
     .pricing-container {
         flex-basis: auto;
@@ -175,14 +180,24 @@
         width: 100%;
     }
 
-
+    /* Show mobile burger button and hide brand text */
+    .mobileOnlyInlineFlex {
+        display: inline-flex !important;
+    }
+    .hideOnSmallScreen {
+        display: none !important;
+    }
 
     #sidebar #leftSidebarCloseBtn { display: flex !important; }
     #sidebar #sidebar-top-logo { padding: .25rem 1rem 1rem 1rem; }
     #fixed-top-nav {
         width: calc(100%);
     }
+    /* Make sidebar start from top of screen when fully hidden */
     #sidebar, #sidebar-admin-panel {
+        top: 0 !important;
+        height: 100vh !important;
+        margin-top: 0 !important;
         margin-left: calc(var(--left-nav-width) * -1) !important;
         transition: margin-left 200ms ease;
         z-index: 99;
@@ -397,4 +412,17 @@
 }
 
 
+
+
+
+
+/* Hide mobile burger button on larger screens (above 630px) */
+@media (min-width: 631px) {
+    .mobileOnlyInlineFlex {
+        display: none !important;
+    }
+    .hideOnSmallScreen {
+        display: block !important;
+    }
+}
 

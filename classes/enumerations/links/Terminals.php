@@ -20,6 +20,9 @@ class Terminals {
     public function posCheckout(string $slug, string $id, string $tsId): string {
         return str_replace(["{slug}", "{id}", "{tsid}"] , [$slug, $id, $tsId], $this->terminalPosCheckout);
     }
+    public function posFulfilled(string $slug, string $id, string $tsId): string {
+        return str_replace(["{slug}", "{id}", "{tsid}"] , [$slug, $id, $tsId], $this->terminalPosFulfilled);
+    }
     public function getConsumerChoosePlan(string $slug, string $tsId): string {
         return str_replace(["{slug}", "{tsid}"] , [$slug, $tsId], $this->consumerChoosePlan);
     }
