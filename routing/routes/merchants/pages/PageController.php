@@ -6,6 +6,7 @@ use classes\data\Calculate;
 use classes\enumerations\Links;
 use classes\Methods;
 use classes\organisations\MemberEnum;
+use Database\Collection;
 use features\Settings;
 use JetBrains\PhpStorm\NoReturn;
 
@@ -741,11 +742,18 @@ class PageController {
         // Get setup requirements
         $setupRequirements = Methods::organisations()->getSetupRequirements();
 
+        // Get active terminals for quick access
+        $terminalsHandler = Methods::terminals();
+        $activeTerminals = $terminalsHandler->queryBuilder()
+            ->whereList(['uuid' => __oUuid(), 'status' => 'ACTIVE'])
+            ->order('created_at', 'DESC');
+        $terminals = $terminalsHandler->queryGetAll($activeTerminals);
+
         return Views("MERCHANT_DASHBOARD", compact(
             'locationOptions', 'grossRevenue', 'netRevenue', 'totalFees', 'orders', 'orderCount',
             'orderAverage', 'customerCount', 'totalPaid', 'totalOutstanding', 'totalPastDue',
             'bnplUsageRate', 'revenueChange', 'orderCountChange', 'customerCountChange',
-            'averageChange', 'setupRequirements', 'chartData', 'startDate', 'endDate'
+            'averageChange', 'setupRequirements', 'chartData', 'startDate', 'endDate', 'terminals'
         ));
     }
 

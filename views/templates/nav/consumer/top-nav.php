@@ -13,9 +13,6 @@ use classes\enumerations\Links;
         <button class="mobileOnlyInlineFlex btn-unstyled p-0 m-0 border-0 bg-transparent" id="topNavSidebarToggle" style="cursor: pointer;">
             <i class="mdi mdi-menu font-30 color-gray hover-color-blue"></i>
         </button>
-        <sup class="hideOnSmallScreen">
-            <img src="<?=__asset(LOGO_ICON)?>" class="w-30px" />
-        </sup>
         <p class="hideOnSmallScreen mb-0 font-18 font-weight-bold color-blue text-nowrap">WeePay Kunde</p>
     </div>
 

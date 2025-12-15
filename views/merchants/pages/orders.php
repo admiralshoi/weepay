@@ -81,7 +81,9 @@ $pageTitle = "Ordrer";
                             <th>Handlinger</th>
                             </thead>
                             <tbody>
-                            <?php foreach ($args->orders->list() as $order): ?>
+                            <?php foreach ($args->orders->list() as $order):
+                                $cus = is_string($order->uuid) ? \classes\Methods::users()->get($order->uuid) : $order->uuid;
+                                ?>
                                 <tr>
                                     <td><?=$order->uid?></td>
                                     <td>
@@ -89,8 +91,8 @@ $pageTitle = "Ordrer";
                                     </td>
                                     <td>
                                             <?php if(!isEmpty($order->uuid)): ?>
-                                            <a href="<?=__url(Links::$merchant->customerDetail($order->uuid->uid))?>"
-                                               class="color-blue hover-underline"><?=$order->uuid->full_name?></a>
+                                            <a href="<?=__url(Links::$merchant->customerDetail($cus->uid))?>"
+                                               class="color-blue hover-underline"><?=$cus->full_name?></a>
                                             <?php else: ?>
                                             <p class="mb-0 font-12 text-wrap">Ukendt</p>
                                             <?php endif; ?>

@@ -84,11 +84,11 @@ $pageTitle = "Kasseapparater";
                                     <td class="desktopOnlyTableCell"><?=$terminal->location->name?></td>
                                     <td class="hideOnMobileTableCell">
                                         <?php if($terminal->status === 'ACTIVE'): ?>
-                                            <div class="flex-row-start flex-align-center flex-nowrap cursor-pointer"
-                                                 onclick="LocationActions.qrAction('<?=$terminal->uid?>');" style="gap: .25rem;">
-                                                <i class="mdi mdi-qrcode color-green"></i>
-                                                <span class="color-green">Aktiv</span>
-                                            </div>
+                                            <button class="btn-v2 green-btn flex-row-center-center flex-nowrap g-05"
+                                                onclick="LocationActions.qrAction('<?=$terminal->uid?>');">
+                                                <i class="mdi mdi-qrcode"></i>
+                                                <span class="">Vis QR</span>
+                                            </button>
                                         <?php elseif($terminal->status === 'DRAFT'): ?>
                                             <div class="flex-row-start flex-align-center flex-nowrap cursor-pointer"
                                                  onclick="LocationActions.qrAction('<?=$terminal->uid?>');" style="gap: .25rem;">
@@ -101,18 +101,12 @@ $pageTitle = "Kasseapparater";
                                                 <i class="mdi mdi-qrcode color-dark"></i>
                                                 <span class="color-dark">Inaktiv</span>
                                             </div>
-                                        <?php elseif($terminal->status === 'DELETED'): ?>
-                                            <div class="flex-row-start flex-align-center flex-nowrap cursor-pointer"
-                                                 onclick="LocationActions.qrAction('<?=$terminal->uid?>');" style="gap: .25rem;">
-                                                <i class="mdi mdi-qrcode color-danger"></i>
-                                                <span class="color-dark">Slettet</span>
-                                            </div>
                                         <?php endif; ?>
                                     </td>
                                     <td>
                                         <div class="flex-row-start flex-align-center flex-wrap w-100 mxw-200px" style="gap: .25rem;">
                                             <a href="<?=__url(Links::$merchant->terminals->posStart($terminal->location->slug,$terminal->uid))?>"
-                                                target="_blank" class="btn-v2 trans-btn flex-row-center flex-align-center flex-nowrap" style="gap: .5rem;">
+                                                target="_blank" class="btn-v2 action-btn flex-row-center flex-align-center flex-nowrap" style="gap: .5rem;">
                                                 <i class="mdi mdi-play-outline font-18"></i>
                                                 <span class="font-14">Start POS</span>
                                             </a>
@@ -124,17 +118,6 @@ $pageTitle = "Kasseapparater";
                                                 <span class="font-14">Rediger</span>
                                             </button>
                                             <?php \classes\app\LocationPermissions::__oEndContent(); ?>
-
-
-                                            <a href="<?=__url(Links::$merchant->terminals->checkoutStart($terminal->location->slug,$terminal->uid))?>"
-                                               target="_blank" class="btn-v2 danger-btn flex-row-center flex-align-center flex-nowrap" style="gap: .5rem;">
-
-                                                <!--                                            <button class="btn-v2 danger-btn flex-row-center flex-align-center flex-nowrap" style="gap: .5rem;"-->
-                                                <!--                                                    data-terminal-id="--><?php //=$terminal->uid?><!--" onclick="">-->
-                                                <i class="mdi mdi-dots-horizontal font-14"></i>
-                                                <span class="font-14">Start Kundeflow</span>
-                                                <!--                                            </button>-->
-                                            </a>
                                         </div>
                                     </td>
                                 </tr>

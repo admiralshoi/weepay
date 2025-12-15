@@ -7,6 +7,10 @@ use classes\enumerations\Links;
 
 $pageTitle = "Forhandler Dashboard";
 
+
+$kpiContainerCol = $args->terminals->count() > 0 ? 'col-lg-7' : '';
+$kpiCardCol = $args->terminals->count() > 0 ? 'col-md-4 col-lg-6' : 'col-lg-3';
+
 ?>
 
 
@@ -117,25 +121,193 @@ $pageTitle = "Forhandler Dashboard";
 
 
 
+
     <div class="row flex-align-stretch rg-15 mt-4">
-        <!-- Gross Revenue -->
-        <div class="col-12 col-md-6 col-lg-3 d-flex">
-            <div class="card border-radius-10px w-100">
-                <div class="card-body">
-                    <div class="flex-row-between-center flex-nowrap g-075">
-                        <div class="flex-col-start rg-025">
-                            <p class="color-gray font-13 font-weight-medium">Total omsætning</p>
-                            <p class="font-22 font-weight-700"><?=number_format($args->grossRevenue, 2) . currencySymbol("DKK")?></p>
-                            <?php $colorClass = $args->revenueChange > 0 ? 'color-green' : ($args->revenueChange < 0 ? 'color-danger' : 'color-gray'); ?>
-                            <p class="<?=$colorClass?>">
-                                <?=$args->revenueChange > 0 ? '+' : ''?>
-                                <?=round($args->revenueChange, 2)?>%
-                            </p>
-                        </div>
+        <div class="col-12 <?=$kpiContainerCol?> d-flex">
+            <div class="row w-100 flex-align-stretch rg-15">
+                <!-- Gross Revenue -->
+                <div class="col-12 <?=$kpiCardCol?> d-flex">
+                    <div class="card border-radius-10px w-100">
+                        <div class="card-body">
+                            <div class="flex-row-between-center flex-wrap g-075">
+                                <div class="flex-col-start rg-025">
+                                    <p class="color-gray font-13 font-weight-medium">Total omsætning</p>
+                                    <p class="font-22 font-weight-700"><?=number_format($args->grossRevenue, 2) . currencySymbol("DKK")?></p>
+                                    <?php $colorClass = $args->revenueChange > 0 ? 'color-green' : ($args->revenueChange < 0 ? 'color-danger' : 'color-gray'); ?>
+                                    <p class="<?=$colorClass?>">
+                                        <?=$args->revenueChange > 0 ? '+' : ''?>
+                                        <?=round($args->revenueChange, 2)?>%
+                                    </p>
+                                </div>
 
-                        <div class="flex-row-end">
-                            <div class="square-50 bg-blue border-radius-10px flex-row-center-center">
-                                <i class="mdi mdi-currency-usd color-white font-30"></i>
+                                <div class="flex-row-end">
+                                    <div class="square-50 bg-blue border-radius-10px flex-row-center-center">
+                                        <i class="mdi mdi-currency-usd color-white font-30"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Net Revenue -->
+                <div class="col-12 <?=$kpiCardCol?> d-flex">
+                    <div class="card border-radius-10px w-100">
+                        <div class="card-body">
+                            <div class="flex-row-between-center flex-wrap g-075">
+                                <div class="flex-col-start rg-025">
+                                    <p class="color-gray font-13 font-weight-medium">Nettoomsætning</p>
+                                    <p class="font-22 font-weight-700"><?=number_format($args->netRevenue, 2) . currencySymbol("DKK")?></p>
+                                    <p class="color-gray font-12">Efter gebyrer</p>
+                                </div>
+
+                                <div class="flex-row-end">
+                                    <div class="square-50 bg-success border-radius-10px flex-row-center-center">
+                                        <i class="mdi mdi-chart-line color-green font-30"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Outstanding -->
+                <div class="col-12 <?=$kpiCardCol?> d-flex">
+                    <div class="card border-radius-10px w-100">
+                        <div class="card-body">
+                            <div class="flex-row-between-center flex-wrap g-075">
+                                <div class="flex-col-start rg-025">
+                                    <p class="color-gray font-13 font-weight-medium">Udestående</p>
+                                    <p class="font-22 font-weight-700"><?=number_format($args->totalOutstanding, 2) . currencySymbol("DKK")?></p>
+                                    <?php if($args->totalPastDue > 0): ?>
+                                        <p class="color-danger font-12"><?=number_format($args->totalPastDue, 2)?> DKK forsinket</p>
+                                    <?php else: ?>
+                                        <p class="color-gray font-12">Ingen forsinkede</p>
+                                    <?php endif; ?>
+                                </div>
+
+                                <div class="flex-row-end">
+                                    <div class="square-50 bg-warning border-radius-10px flex-row-center-center">
+                                        <i class="mdi mdi-clock-outline color-acoustic-yellow font-30"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Paid -->
+                <div class="col-12 <?=$kpiCardCol?> d-flex">
+                    <div class="card border-radius-10px w-100">
+                        <div class="card-body">
+                            <div class="flex-row-between-center flex-wrap g-075">
+                                <div class="flex-col-start rg-025">
+                                    <p class="color-gray font-13 font-weight-medium">Gennemført betalinger</p>
+                                    <p class="font-22 font-weight-700"><?=number_format($args->totalPaid, 2) . currencySymbol("DKK")?></p>
+                                    <p class="color-gray font-12">Alle transaktioner</p>
+                                </div>
+
+                                <div class="flex-row-end">
+                                    <div class="square-50 bg-success border-radius-10px flex-row-center-center">
+                                        <i class="mdi mdi-check-circle-outline color-green font-30"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customers -->
+                <div class="col-12 <?=$kpiCardCol?> d-flex">
+                    <div class="card border-radius-10px w-100">
+                        <div class="card-body">
+                            <div class="flex-row-between-center flex-wrap g-075">
+                                <div class="flex-col-start rg-025">
+                                    <p class="color-gray font-13 font-weight-medium">Kunder</p>
+                                    <p class="font-22 font-weight-700"><?=$args->customerCount?></p>
+                                    <?php $colorClass = $args->customerCountChange > 0 ? 'color-green' : ($args->customerCountChange < 0 ? 'color-danger' : 'color-gray'); ?>
+                                    <p class="<?=$colorClass?>">
+                                        <?=$args->customerCountChange > 0 ? '+' : ''?>
+                                        <?=round($args->customerCountChange, 2)?>%
+                                    </p>
+                                </div>
+
+                                <div class="flex-row-end">
+                                    <div class="square-50 bg-blue border-radius-10px flex-row-center-center">
+                                        <i class="mdi mdi-account-heart-outline color-white font-30"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orders Count -->
+                <div class="col-12 <?=$kpiCardCol?> d-flex">
+                    <div class="card border-radius-10px w-100">
+                        <div class="card-body">
+                            <div class="flex-row-between-center flex-wrap g-075">
+                                <div class="flex-col-start rg-025">
+                                    <p class="color-gray font-13 font-weight-medium">Antal ordrer</p>
+                                    <p class="font-22 font-weight-700"><?=$args->orderCount?></p>
+                                    <?php $colorClass = $args->orderCountChange > 0 ? 'color-green' : ($args->orderCountChange < 0 ? 'color-danger' : 'color-gray'); ?>
+                                    <p class="<?=$colorClass?>">
+                                        <?=$args->orderCountChange > 0 ? '+' : ''?>
+                                        <?=round($args->orderCountChange, 2)?>%
+                                    </p>
+                                </div>
+
+                                <div class="flex-row-end">
+                                    <div class="square-50 bg-blue border-radius-10px flex-row-center-center">
+                                        <i class="mdi mdi-cart-outline color-white font-30"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Average Order -->
+                <div class="col-12 <?=$kpiCardCol?> d-flex">
+                    <div class="card border-radius-10px w-100">
+                        <div class="card-body">
+                            <div class="flex-row-between-center flex-wrap g-075">
+                                <div class="flex-col-start rg-025">
+                                    <p class="color-gray font-13 font-weight-medium">Gennemsnitlig ordre</p>
+                                    <p class="font-22 font-weight-700"><?=number_format($args->orderAverage, 2) . currencySymbol("DKK")?></p>
+                                    <?php $colorClass = $args->averageChange > 0 ? 'color-green' : ($args->averageChange < 0 ? 'color-danger' : 'color-gray'); ?>
+                                    <p class="<?=$colorClass?>">
+                                        <?=$args->averageChange > 0 ? '+' : ''?>
+                                        <?=round($args->averageChange, 2)?>%
+                                    </p>
+                                </div>
+
+                                <div class="flex-row-end">
+                                    <div class="square-50 bg-blue border-radius-10px flex-row-center-center">
+                                        <i class="mdi mdi-trending-up color-white font-30"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BNPL Usage Rate -->
+                <div class="col-12 <?=$kpiCardCol?> d-flex">
+                    <div class="card border-radius-10px w-100">
+                        <div class="card-body">
+                            <div class="flex-row-between-center flex-wrap g-075">
+                                <div class="flex-col-start rg-025">
+                                    <p class="color-gray font-13 font-weight-medium">BNPL brug</p>
+                                    <p class="font-22 font-weight-700"><?=round($args->bnplUsageRate, 1)?>%</p>
+                                    <p class="color-gray font-12">Af alle ordrer</p>
+                                </div>
+
+                                <div class="flex-row-end">
+                                    <div class="square-50 bg-lighter-blue border-radius-10px flex-row-center-center">
+                                        <i class="mdi mdi-calendar-clock color-blue font-30"></i>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -143,169 +315,48 @@ $pageTitle = "Forhandler Dashboard";
             </div>
         </div>
 
-        <!-- Net Revenue -->
-        <div class="col-12 col-md-6 col-lg-3 d-flex">
+        <?php if(!$args->terminals->empty()): ?>
+        <div class="d-none d-lg-flex col-lg-5">
             <div class="card border-radius-10px w-100">
                 <div class="card-body">
-                    <div class="flex-row-between-center flex-nowrap g-075">
-                        <div class="flex-col-start rg-025">
-                            <p class="color-gray font-13 font-weight-medium">Nettoomsætning</p>
-                            <p class="font-22 font-weight-700"><?=number_format($args->netRevenue, 2) . currencySymbol("DKK")?></p>
-                            <p class="color-gray font-12">Efter gebyrer</p>
-                        </div>
+                    <div class="flex-col-start rg-1">
+                        <p class="font-16 font-weight-bold">Aktive Terminaler</p>
 
-                        <div class="flex-row-end">
-                            <div class="square-50 bg-success border-radius-10px flex-row-center-center">
-                                <i class="mdi mdi-chart-line color-green font-30"></i>
-                            </div>
-                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Start</th>
+                                    <th>Navn & butik</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?php foreach ($args->terminals->list() as $terminal): ?>
+                                <tr>
+                                    <td>
+                                        <a href="<?=__url(Links::$merchant->terminals->posStart($terminal->location->slug,$terminal->uid))?>"
+                                           target="_blank" class="btn-v2 action-btn flex-row-center flex-align-center flex-nowrap" style="gap: .5rem;">
+                                            <i class="mdi mdi-play-outline font-18"></i>
+                                            <span class="font-14">Start POS</span>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <div class="flex-col-start">
+                                            <p class="font-14 font-weight-bold"><?=$terminal->name?></p>
+                                            <p class="font-14 color-gray"><?=$terminal->location->name?></p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Total Outstanding -->
-        <div class="col-12 col-md-6 col-lg-3 d-flex">
-            <div class="card border-radius-10px w-100">
-                <div class="card-body">
-                    <div class="flex-row-between-center flex-nowrap g-075">
-                        <div class="flex-col-start rg-025">
-                            <p class="color-gray font-13 font-weight-medium">Udestående</p>
-                            <p class="font-22 font-weight-700"><?=number_format($args->totalOutstanding, 2) . currencySymbol("DKK")?></p>
-                            <?php if($args->totalPastDue > 0): ?>
-                                <p class="color-danger font-12"><?=number_format($args->totalPastDue, 2)?> DKK forsinket</p>
-                            <?php else: ?>
-                                <p class="color-gray font-12">Ingen forsinkede</p>
-                            <?php endif; ?>
-                        </div>
-
-                        <div class="flex-row-end">
-                            <div class="square-50 bg-warning border-radius-10px flex-row-center-center">
-                                <i class="mdi mdi-clock-outline color-acoustic-yellow font-30"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Total Paid -->
-        <div class="col-12 col-md-6 col-lg-3 d-flex">
-            <div class="card border-radius-10px w-100">
-                <div class="card-body">
-                    <div class="flex-row-between-center flex-nowrap g-075">
-                        <div class="flex-col-start rg-025">
-                            <p class="color-gray font-13 font-weight-medium">Gennemført betalinger</p>
-                            <p class="font-22 font-weight-700"><?=number_format($args->totalPaid, 2) . currencySymbol("DKK")?></p>
-                            <p class="color-gray font-12">Alle transaktioner</p>
-                        </div>
-
-                        <div class="flex-row-end">
-                            <div class="square-50 bg-success border-radius-10px flex-row-center-center">
-                                <i class="mdi mdi-check-circle-outline color-green font-30"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Customers -->
-        <div class="col-12 col-md-6 col-lg-3 d-flex">
-            <div class="card border-radius-10px w-100">
-                <div class="card-body">
-                    <div class="flex-row-between-center flex-nowrap g-075">
-                        <div class="flex-col-start rg-025">
-                            <p class="color-gray font-13 font-weight-medium">Kunder</p>
-                            <p class="font-22 font-weight-700"><?=$args->customerCount?></p>
-                            <?php $colorClass = $args->customerCountChange > 0 ? 'color-green' : ($args->customerCountChange < 0 ? 'color-danger' : 'color-gray'); ?>
-                            <p class="<?=$colorClass?>">
-                                <?=$args->customerCountChange > 0 ? '+' : ''?>
-                                <?=round($args->customerCountChange, 2)?>%
-                            </p>
-                        </div>
-
-                        <div class="flex-row-end">
-                            <div class="square-50 bg-blue border-radius-10px flex-row-center-center">
-                                <i class="mdi mdi-account-heart-outline color-white font-30"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Orders Count -->
-        <div class="col-12 col-md-6 col-lg-3 d-flex">
-            <div class="card border-radius-10px w-100">
-                <div class="card-body">
-                    <div class="flex-row-between-center flex-nowrap g-075">
-                        <div class="flex-col-start rg-025">
-                            <p class="color-gray font-13 font-weight-medium">Antal ordrer</p>
-                            <p class="font-22 font-weight-700"><?=$args->orderCount?></p>
-                            <?php $colorClass = $args->orderCountChange > 0 ? 'color-green' : ($args->orderCountChange < 0 ? 'color-danger' : 'color-gray'); ?>
-                            <p class="<?=$colorClass?>">
-                                <?=$args->orderCountChange > 0 ? '+' : ''?>
-                                <?=round($args->orderCountChange, 2)?>%
-                            </p>
-                        </div>
-
-                        <div class="flex-row-end">
-                            <div class="square-50 bg-blue border-radius-10px flex-row-center-center">
-                                <i class="mdi mdi-cart-outline color-white font-30"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Average Order -->
-        <div class="col-12 col-md-6 col-lg-3 d-flex">
-            <div class="card border-radius-10px w-100">
-                <div class="card-body">
-                    <div class="flex-row-between-center flex-nowrap g-075">
-                        <div class="flex-col-start rg-025">
-                            <p class="color-gray font-13 font-weight-medium">Gennemsnitlig ordre</p>
-                            <p class="font-22 font-weight-700"><?=number_format($args->orderAverage, 2) . currencySymbol("DKK")?></p>
-                            <?php $colorClass = $args->averageChange > 0 ? 'color-green' : ($args->averageChange < 0 ? 'color-danger' : 'color-gray'); ?>
-                            <p class="<?=$colorClass?>">
-                                <?=$args->averageChange > 0 ? '+' : ''?>
-                                <?=round($args->averageChange, 2)?>%
-                            </p>
-                        </div>
-
-                        <div class="flex-row-end">
-                            <div class="square-50 bg-blue border-radius-10px flex-row-center-center">
-                                <i class="mdi mdi-trending-up color-white font-30"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- BNPL Usage Rate -->
-        <div class="col-12 col-md-6 col-lg-3 d-flex">
-            <div class="card border-radius-10px w-100">
-                <div class="card-body">
-                    <div class="flex-row-between-center flex-nowrap g-075">
-                        <div class="flex-col-start rg-025">
-                            <p class="color-gray font-13 font-weight-medium">BNPL brug</p>
-                            <p class="font-22 font-weight-700"><?=round($args->bnplUsageRate, 1)?>%</p>
-                            <p class="color-gray font-12">Af alle ordrer</p>
-                        </div>
-
-                        <div class="flex-row-end">
-                            <div class="square-50 bg-lighter-blue border-radius-10px flex-row-center-center">
-                                <i class="mdi mdi-calendar-clock color-blue font-30"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <?php endif; ?>
     </div>
+
+
 
     <!-- Chart Section -->
     <div class="row mt-4">
@@ -457,7 +508,3 @@ $pageTitle = "Forhandler Dashboard";
 
 </script>
 <?php scriptEnd(); ?>
-
-
-
-

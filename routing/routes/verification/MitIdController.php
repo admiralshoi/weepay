@@ -22,25 +22,69 @@ class MitIdController {
         $response = $handler->getProviderSession($session->prid);
         testLog($response, 'oidc-cb-response-' . time());
 
+        // Extract context info for error handling
+        $info = $session->info;
+        $next = property_exists($info, "next") ? $info->next : null;
+        $tsId = property_exists($info, "tsid") ? $info->tsid : null;
+
+        // Check for errors and redirect appropriately
+        $errorMessage = null;
         switch ($response?->status) {
             default:
                 $handler->statusSuccess($ref);
                 break;
             case "ABORT":
                 $handler->statusCancelled($ref);
-                Response()->jsonError('Verificeringen blev stoppet', [], 400);
+                $errorMessage = 'Verificeringen blev annulleret. Prøv venligst igen.';
+                break;
             case "CREATED":
                 $handler->statusVoid($ref);
-                Response()->jsonError('Verificeringen blev ikke fuldført', [], 400);
+                $errorMessage = 'Verificeringen blev ikke fuldført. Prøv venligst igen.';
+                break;
             case "ERROR":
                 $handler->statusError($ref);
-                Response()->jsonError('Der opstod en fejl. Prøv igen senere.', [], 400);
+                $errorMessage = 'Der opstod en fejl under verificeringen. Prøv igen senere.';
+                break;
         }
 
-        $info = $session->info;
-        $next = property_exists($info, "next") ? $info->next : null;
-        $tsId = property_exists($info, "tsid") ? $info->tsid : null;
+        // If there's an error, redirect to appropriate error page
+        if(!isEmpty($errorMessage)) {
+            switch ($next) {
+                case 'cpf':
+                    // Checkout flow - redirect back to start page with error
+                    if(!empty($tsId)) {
+                        $terminalSession = Methods::terminalSessions()->get($tsId);
+                        if(!isEmpty($terminalSession)) {
+                            Response()->redirect(
+                                __url(
+                                    "merchant/" . $terminalSession->terminal->location->slug .
+                                    '/checkout?' .
+                                    http_build_query(['tid' => $terminalSession->terminal->uid, 'auth_error' => $errorMessage])
+                                )
+                            );
+                        }
+                    }
+                    // Fallback if we can't determine checkout context
+                    Response()->jsonError($errorMessage, [], 400);
 
+                case 'consumer_login':
+                    // Redirect back to login page with error
+                    Response()->redirect(
+                        __url(Links::$app->auth->consumerLogin . '?' . http_build_query(['auth_error' => $errorMessage]))
+                    );
+
+                case 'consumer_signup':
+                    // Redirect back to signup page with error
+                    Response()->redirect(
+                        __url(Links::$app->auth->consumerSignup . '?' . http_build_query(['auth_error' => $errorMessage]))
+                    );
+
+                default:
+                    Response()->jsonError($errorMessage, [], 400);
+            }
+        }
+
+        // Success flow - continue with authentication
         switch ($next) {
             default: Response()->jsonError('Unknown handling.', [], 400);
             case 'cpf':
@@ -65,11 +109,26 @@ class MitIdController {
                 $authHandler = Methods::oidcAuthentication();
 
                 $authId = $authHandler->login($response);
-                if(empty($authId)) Response()->jsonError('Verificeringen fejlede.', [], 500);
+                if(empty($authId)) {
+                    // Authentication failed - redirect back with error
+                    $redirectUrl = $next === 'consumer_login'
+                        ? Links::$app->auth->consumerLogin
+                        : Links::$app->auth->consumerSignup;
+                    Response()->redirect(
+                        __url($redirectUrl . '?' . http_build_query(['auth_error' => 'Verificeringen fejlede. Prøv venligst igen.']))
+                    );
+                }
 
                 // Get user to check if profile completion is needed
                 $user = Methods::users()->get(__uuid());
-                if(isEmpty($user)) Response()->jsonError('Brugeren kunne ikke findes.', [], 500);
+                if(isEmpty($user)) {
+                    $redirectUrl = $next === 'consumer_login'
+                        ? Links::$app->auth->consumerLogin
+                        : Links::$app->auth->consumerSignup;
+                    Response()->redirect(
+                        __url($redirectUrl . '?' . http_build_query(['auth_error' => 'Brugeren kunne ikke findes. Prøv venligst igen.']))
+                    );
+                }
                 Response()->redirect(__url(Links::$consumer->dashboard));
         }
     }

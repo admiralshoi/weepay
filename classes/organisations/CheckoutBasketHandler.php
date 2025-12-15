@@ -71,7 +71,11 @@ class CheckoutBasketHandler extends Crud {
         $installments = $plan->installments;
         $pricePerInstallment =  round($price / $installments, 2);
         if($installments === 1) $plan->price_title = number_format($pricePerInstallment, 2) . currencySymbol($basket->currency);
-        else $plan->price_title = number_format($pricePerInstallment, 2) . currencySymbol($basket->currency) . " &times; " . $installments;
+        else {
+            if(floor($pricePerInstallment) === $pricePerInstallment)
+                $plan->price_title = number_format($pricePerInstallment, 2) . currencySymbol($basket->currency) . " &times; " . $installments;
+            else $plan->price_title = "";
+        }
 
         if($plan->start === 'now' && $installments === 1) $plan->subtitle = 'Ingen gebyrer';
         elseif($installments > 1) $plan->subtitle = 'Første betaling nu &bullet; Ingen renter';

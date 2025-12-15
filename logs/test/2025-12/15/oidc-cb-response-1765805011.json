@@ -1,0 +1,40 @@
+{
+    "id": "d53d738a-b547-42a7-92c3-cd6414f21d02",
+    "accountId": "a-spge-j25bjJdoKxJQ9mQSF6ex",
+    "authenticationUrl": "https:\/\/in-via-aps.sandbox.signicat.com\/broker\/sp\/external-service\/login?messageId=20025c54-20f4-5e48-9dae-ddfb163e7e9b&transactionId=0a6397a8-38b8-3041-9d24-cc329346be0d",
+    "status": "ABORT",
+    "callbackUrls": {
+        "success": "https:\/\/localhost:443\/weepay\/auth\/user\/verify\/success?ref=oidc_eddta85yrkpqvvm&sessionId=d53d738a-b547-42a7-92c3-cd6414f21d02",
+        "abort": "https:\/\/localhost:443\/weepay\/auth\/user\/verify\/abort?ref=oidc_eddta85yrkpqvvm&sessionId=d53d738a-b547-42a7-92c3-cd6414f21d02",
+        "error": "https:\/\/localhost:443\/weepay\/auth\/user\/verify\/error?ref=oidc_eddta85yrkpqvvm&sessionId=d53d738a-b547-42a7-92c3-cd6414f21d02"
+    },
+    "environment": {
+        "ipAddress": "213.229.171.138",
+        "userAgent": "Mozilla\/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/142.0.0.0 Safari\/537.36"
+    },
+    "allowedProviders": {
+        "0": "mitid"
+    },
+    "flow": "redirect",
+    "requestedAttributes": {
+        "0": "dateOfBirth",
+        "1": "family_name",
+        "2": "firstName",
+        "3": "given_name",
+        "4": "lastName",
+        "5": "mitidAal",
+        "6": "mitidCprSource",
+        "7": "mitidFal",
+        "8": "mitidHasCpr",
+        "9": "mitidIal",
+        "10": "mitidLoa",
+        "11": "mitidNameAndAddressProtection",
+        "12": "mitidReferenceTextBody",
+        "13": "mitidUuid",
+        "14": "name",
+        "15": "nin",
+        "16": "nin_type"
+    },
+    "sessionLifetime": 1200,
+    "expiresAt": "2025-12-15T13:43:16.2428133+00:00"
+}

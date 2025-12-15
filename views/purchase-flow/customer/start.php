@@ -9,7 +9,6 @@ $terminal = $args->terminal;
 
 $pageTitle = "{$terminal->location->name} - Start Køb";
 
-
 $locationHandler = Methods::locations();
 $location = $locationHandler->get($terminal->location->uid);
 $address = $locationHandler->locationAddress($location);
@@ -120,6 +119,13 @@ $contactPhone = $locationHandler->contactPhone($location);
 
                             <p  class="mb-0 font-22 font-weight-bold text-center">Log ind med MitID</p>
                             <p  class="mb-0 font-14 color-gray font-weight-medium text-center">Vi bruger MitID for at verificere din identitet sikkert</p>
+
+                            <?php if(!isEmpty($args->authError)): ?>
+                            <div class="alert alert-danger w-100 flex-row-start flex-align-center" style="gap: .5rem;">
+                                <i class="mdi mdi-alert-circle-outline font-20"></i>
+                                <span><?=htmlspecialchars($args->authError)?></span>
+                            </div>
+                            <?php endif; ?>
 
                             <button data-id="<?=$args->oidcSessionId?>"
                                     class="mt-3  btn-v2 design-action-btn-lg flex-row-center flex-align-center flex-nowrap oidc-auth" style="gap: .55rem;">

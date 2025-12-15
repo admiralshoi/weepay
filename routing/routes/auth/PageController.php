@@ -32,7 +32,10 @@ class PageController {
             $oidcSessionId = null;
         }
 
-        return Views("CONSUMER_AUTH_DASHBOARD_LOGIN", compact('oidcSessionId'));
+        // Get auth error from query params if redirected back from failed OIDC
+        $authError = $args['auth_error'] ?? null;
+
+        return Views("CONSUMER_AUTH_DASHBOARD_LOGIN", compact('oidcSessionId', 'authError'));
     }
 
     public static function consumerDashboardSignup(array $args): mixed  {
@@ -55,7 +58,10 @@ class PageController {
             $oidcSessionId = null;
         }
 
-        return Views("CONSUMER_AUTH_DASHBOARD_SIGNUP", compact('oidcSessionId'));
+        // Get auth error from query params if redirected back from failed OIDC
+        $authError = $args['auth_error'] ?? null;
+
+        return Views("CONSUMER_AUTH_DASHBOARD_SIGNUP", compact('oidcSessionId', 'authError'));
     }
 
     public static function consumerCompleteProfile(array $args): mixed  {

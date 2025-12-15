@@ -87,6 +87,15 @@ const OidcAuth = {
             this.isRunning = false;
             this.elements.button.disabled = false;
             screenLoader.hide();
+
+            // If popup was closed by user, reload page to get fresh OIDC session
+            // This prevents "session expired" errors when user tries to open popup again
+            if(popupWindow.closed) {
+                console.log("OIDC popup closed by user - reloading page to refresh session");
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500); // Small delay so user sees the popup close
+            }
             return;
         }
         let endpoint = platformLinks.api.oidc.sessionPolling.replace("{id}", this.id);

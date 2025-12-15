@@ -83,7 +83,10 @@ class CustomerPageController {
         if(isEmpty($oidcSessionId)) return null;
         $page = Methods::locationPages()->getFirst(['location' => $locationId, 'state' => 'PUBLISHED']);
 
-        return Views("CUSTOMER_PURCHASE_FLOW_START", compact('slug', 'terminal', 'session', 'oidcSessionId', 'page'));
+        // Get auth error from query params if redirected back from failed OIDC
+        $authError = $args['auth_error'] ?? null;
+
+        return Views("CUSTOMER_PURCHASE_FLOW_START", compact('slug', 'terminal', 'session', 'oidcSessionId', 'page', 'authError'));
     }
 
     public static function info(array $args): mixed  {
@@ -157,10 +160,13 @@ class CustomerPageController {
         $customerId = $customer->user?->uid ?? null;
         $bnplLimit = !isEmpty($customerId) ? Methods::payments()->getBnplLimit($customerId) : null;
 
+        // Get payment error from query params if redirected back from failed payment
+        $paymentError = $args['payment_error'] ?? null;
+
         $page = Methods::locationPages()->getFirst(['location' => $terminalSession->terminal->location->uid, 'state' => 'PUBLISHED']);
         return Views("CUSTOMER_PURCHASE_FLOW_INFO", compact(
             'slug', 'terminalSession', 'customer', 'basket', 'nextStepLink',
-            'page', 'bnplLimit'
+            'page', 'bnplLimit', 'paymentError'
         ));
     }
 
@@ -238,36 +244,67 @@ class CustomerPageController {
         $transactionId = $args['t'] ?? null;
         $slug = $args['slug'] ?? null;
 
-        if(isEmpty($transactionId)) {
-            Response()->jsonError("Mangler transaktions ID", [], 400);
-        }
-
-        // First get order code from query param 's'
+        // Get order code from query param 's'
         $orderCode = $args['s'] ?? null;
-        if(isEmpty($orderCode)) {
-            Response()->jsonError("Mangler ordre kode", [], 400);
+
+        // For any errors, we need to redirect back to the checkout flow
+        // First try to get basic order info for redirect context
+        $order = null;
+        $terminalSession = null;
+
+        if(!isEmpty($orderCode)) {
+            $orderHandler = Methods::orders();
+            $order = $orderHandler->getByPrid($orderCode);
+            if(!isEmpty($order)) {
+                $terminalSession = $order->terminal_session;
+            }
         }
 
-        // Get the order to find merchant ID
-        $orderHandler = Methods::orders();
-        $order = $orderHandler->getByPrid($orderCode);
+        // Helper function to redirect with error
+        $redirectWithError = function($errorMessage) use ($slug, $terminalSession, $order) {
+            // Try to redirect to checkout info page if we have terminal session
+            if(!isEmpty($terminalSession) && !isEmpty($slug)) {
+                Response()->redirect(
+                    __url(
+                        "merchant/{$slug}/checkout/info?" .
+                        http_build_query(['tsid' => $terminalSession->uid, 'payment_error' => $errorMessage])
+                    )
+                );
+            }
+            // Fallback: redirect to checkout start if we have terminal
+            if(!isEmpty($terminalSession) && !isEmpty($terminalSession->terminal)) {
+                Response()->redirect(
+                    __url(
+                        "merchant/{$slug}/checkout?" .
+                        http_build_query(['tid' => $terminalSession->terminal->uid, 'payment_error' => $errorMessage])
+                    )
+                );
+            }
+            // Last resort: JSON error
+            Response()->jsonError($errorMessage, [], 400);
+        };
+
+        if(isEmpty($transactionId)) {
+            $redirectWithError("Mangler transaktions ID. Betalingen kunne ikke behandles.");
+        }
+
+        if(isEmpty($orderCode)) {
+            $redirectWithError("Mangler ordre kode. Betalingen kunne ikke bekræftes.");
+        }
+
         if(isEmpty($order)) {
-            Response()->jsonError("Ugyldig ordre", [], 404);
+            $redirectWithError("Ugyldig ordre. Betalingen kunne ikke findes.");
         }
 
         $merchantId = nestedArray($order, ['location', 'uuid', 'merchant_prid']);
         if(isEmpty($merchantId)) {
-            Response()->jsonError("Ugyldigt forhandler id", [], 404);
+            $redirectWithError("Ugyldigt forhandler id. Betalingen kunne ikke behandles.");
         }
-
-
-
-
 
         // Get payment details from Viva
         $vivaPayment = Methods::viva()->getPayment($merchantId, $transactionId);
         if(isEmpty($vivaPayment)) {
-            Response()->jsonError("Kunne ikke hente betalingsoplysninger", [], 404);
+            $redirectWithError("Kunne ikke hente betalingsoplysninger. Prøv venligst igen.");
         }
 
         // Map Viva status to our payment status
@@ -283,6 +320,10 @@ class CustomerPageController {
         // Find the pending payment for this order
         $paymentsHandler = Methods::payments();
         $currentPayment = $paymentsHandler->getFirst(['order' => $order->uid, 'status' => 'PENDING']);
+
+
+        testLog($vivaPayment, 'viva-payment-pmcb');
+        testLog($currentPayment, 'current-payment-pmcb');
 
         if(!isEmpty($currentPayment)) {
             // Update payment status
@@ -306,13 +347,36 @@ class CustomerPageController {
             Methods::terminalSessions()->setCompleted($order->terminal_session?->uid);
             $basket = Methods::checkoutBasket()->getFirst(['terminal_session' => $order->terminal_session->uid, 'status' => 'FULFILLED']);
             if(isEmpty($basket)) Methods::checkoutBasket()->update(['status' => 'FULFILLED'], ['terminal_session' => $order->terminal_session->uid]);
+
+            // Success: redirect to confirmation page
+            $confirmationUrl = __url(Links::$checkout->createOrderConfirmation($order->uid));
+            response()->redirect('', $confirmationUrl);
         } elseif(in_array($paymentStatus, ['FAILED', 'CANCELLED'])) {
             $orderHandler->setCancelled($order->uid);
-        }
 
-        // Redirect to confirmation page
-        $confirmationUrl = __url(Links::$checkout->createOrderConfirmation($order->uid));
-        response()->redirect('', $confirmationUrl);
+            // Failed/Cancelled: redirect back to checkout with error message
+            $errorMessage = match($paymentStatus) {
+                'FAILED' => 'Betalingen fejlede. Prøv venligst igen eller vælg en anden betalingsmetode.',
+                'CANCELLED' => 'Betalingen blev annulleret. Du kan prøve igen hvis du ønsker.',
+                default => 'Betalingen kunne ikke gennemføres. Prøv venligst igen.'
+            };
+
+            Response()->redirect(
+                __url(
+                    "merchant/{$slug}/checkout/info?" .
+                    http_build_query(['tsid' => $terminalSession->uid, 'payment_error' => $errorMessage])
+                )
+            );
+        } else {
+            // Pending/Refunded or other status: redirect back with generic message
+            $errorMessage = 'Betalingsstatus kunne ikke bekræftes. Kontakt venligst support hvis beløbet er trukket.';
+            Response()->redirect(
+                __url(
+                    "merchant/{$slug}/checkout/info?" .
+                    http_build_query(['tsid' => $terminalSession->uid, 'payment_error' => $errorMessage])
+                )
+            );
+        }
     }
 
 

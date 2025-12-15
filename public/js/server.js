@@ -20,8 +20,12 @@ async function get(path, params = {}) {
                 console.error(`GET request to ${path} failed:`, textStatus, errorThrown);
 
                 let errorData;
-                if (httpStatus === 0 || (textStatus === "error" && errorThrown === "Network Error")) {
-                    showOfflineNotification();
+                // Ignore aborted requests (e.g., cancelled by page redirect/navigation)
+                if (textStatus === "abort") {
+                    console.log("Request aborted (likely due to navigation) - ignoring");
+                    return { error: "Request aborted", status: 0 };
+                } else if (httpStatus === 0 || (textStatus === "error" && errorThrown === "Network Error")) {
+                    // showOfflineNotification();
                     return { error: "No internet connection", status: 0 };
                 } else if (httpStatus === 401) {
                     modalAuthentication()
@@ -72,8 +76,12 @@ async function post(path, data = {}) {
                 console.error(`POST request to ${path} failed:`, textStatus, errorThrown);
 
                 let errorData;
-                if (httpStatus === 0 || (textStatus === "error" && errorThrown === "Network Error")) {
-                    showOfflineNotification();
+                // Ignore aborted requests (e.g., cancelled by page redirect/navigation)
+                if (textStatus === "abort") {
+                    console.log("Request aborted (likely due to navigation) - ignoring");
+                    return { error: "Request aborted", status: 0 };
+                } else if (httpStatus === 0 || (textStatus === "error" && errorThrown === "Network Error")) {
+                    // showOfflineNotification();
                     return { error: "No internet connection", status: 0 };
                 } else if (xhr.responseJSON && Object.keys(xhr.responseJSON).length > 0) {
                     errorData = xhr.responseJSON; // Return JSON data if available
@@ -123,8 +131,12 @@ async function del(path, params = {}) {
                 console.error(`DELETE request to ${path} failed:`, textStatus, errorThrown);
 
                 let errorData;
-                if (httpStatus === 0 || (textStatus === "error" && errorThrown === "Network Error")) {
-                    showOfflineNotification();
+                // Ignore aborted requests (e.g., cancelled by page redirect/navigation)
+                if (textStatus === "abort") {
+                    console.log("Request aborted (likely due to navigation) - ignoring");
+                    return { error: "Request aborted", status: 0 };
+                } else if (httpStatus === 0 || (textStatus === "error" && errorThrown === "Network Error")) {
+                    // showOfflineNotification();
                     return { error: "No internet connection", status: 0 };
                 } else if (xhr.responseJSON && Object.keys(xhr.responseJSON).length > 0) {
                     errorData = xhr.responseJSON;

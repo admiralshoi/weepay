@@ -231,6 +231,11 @@ const CustomerCheckout = {
             this.elements.payButton.disabled = false;
             this.elements.paymentButtonLoader.style.display = 'none';
             this.listenStatus = false;
+
+            if (this.sessionPopup && !this.sessionPopup.closed) {
+                this.sessionPopup.close();
+                this.sessionPopup = null;
+            }
             return true
         }
 
@@ -239,6 +244,11 @@ const CustomerCheckout = {
             this.elements.payButton.disabled = false;
             this.elements.paymentButtonLoader.style.display = 'none';
             this.listenStatus = false;
+
+            if (this.sessionPopup && !this.sessionPopup.closed) {
+                this.sessionPopup.close();
+                this.sessionPopup = null;
+            }
             return true
         }
 

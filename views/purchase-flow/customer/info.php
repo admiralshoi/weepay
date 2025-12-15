@@ -59,6 +59,13 @@ $pageTitle = "{$terminal->location->name} - Købsdetaljer";
                 <p class="mb-0 font-14 font-weight-medium color-gray"><?=$args->page->caption?></p>
             </div>
 
+            <?php if(!isEmpty($args->paymentError)): ?>
+            <div class="alert alert-danger w-100 flex-row-start flex-align-center" style="gap: .5rem;">
+                <i class="mdi mdi-alert-circle-outline font-20"></i>
+                <span><?=htmlspecialchars($args->paymentError)?></span>
+            </div>
+            <?php endif; ?>
+
             <?php if(!isEmpty($args->bnplLimit)): ?>
             <div class="alert alert-info border-radius-10px w-100" style="margin-bottom: 1rem;">
                 <div class="flex-col-start" style="row-gap: 0.5rem;">

@@ -2,11 +2,13 @@
 /**
  * @var object $args
  * @var string $oidcSessionId
+ * @var string|null $authError
  */
 
 use classes\enumerations\Links;
 
 $oidcSessionId = $args->oidcSessionId;
+$authError = $args->authError ?? null;
 ?>
 
 
@@ -32,6 +34,12 @@ $oidcSessionId = $args->oidcSessionId;
                             <p class="mb-0 font-14 color-gray font-weight-medium">Opret din konto med MitID</p>
                         </div>
 
+                        <?php if(!isEmpty($authError)): ?>
+                        <div class="alert alert-danger flex-row-start flex-align-center" style="gap: .5rem;">
+                            <i class="mdi mdi-alert-circle-outline font-20"></i>
+                            <span><?=htmlspecialchars($authError)?></span>
+                        </div>
+                        <?php endif; ?>
 
                         <div class="flex-col-start w-100" style="row-gap: .75rem;">
                             <p class="mb-0 font-14 color-gray text-center">

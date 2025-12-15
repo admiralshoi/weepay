@@ -26,7 +26,6 @@ $sidebarHandler = Methods::sidebars();
 
             <div id="side-bar-menu-content" style="max-height: calc(100vh - 50px); overflow-x: auto;" class="w-100 px-2 py-2">
 
-
                 <?php
                 $sections = $sidebarHandler::sideBarMenuAccess();
                 $accessLevel = __accessLevel();
