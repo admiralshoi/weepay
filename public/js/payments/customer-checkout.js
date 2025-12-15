@@ -263,6 +263,21 @@ const CustomerCheckout = {
 
         let paymentSessionUrl = result.data.paymentSessionUrl;
         let orderCode = result.data.orderCode
+
+        // Use redirect on mobile instead of popup
+        if (isMobileDevice()) {
+            // Stop basket hash checking before redirect
+            if(this.interval) {
+                window.clearInterval(this.interval);
+                this.interval = null;
+            }
+
+            // Full redirect on mobile - callback will handle return
+            window.location.href = paymentSessionUrl;
+            return;
+        }
+
+        // Desktop: use popup
         this.sessionPopup = window.open(
             paymentSessionUrl,
             'paymentSessionPopup',

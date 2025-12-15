@@ -391,6 +391,25 @@
     }
 }
 
+@media (max-width: 450px) { /* when menu displays again in narrow column */
+
+    .hero-font {
+        font-size: 30px !important;
+    }
+    .hero-sub-font {
+        font-size: 25px !important;
+    }
+}
+@media (max-width: 350px) { /* when menu displays again in narrow column */
+
+    .hero-font {
+        font-size: 25px !important;
+    }
+    .hero-sub-font {
+        font-size: 20px !important;
+    }
+}
+
 
 @media (min-width: 768px) {
     .modal-dialog.responsive {

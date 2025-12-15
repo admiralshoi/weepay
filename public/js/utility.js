@@ -10,6 +10,11 @@ function handleStandardApiRedirect(result, timeout = 1) {
     }
 }
 
+function isMobileDevice() {
+    return window.innerWidth < 630 ||
+           /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
 
 document.addEventListener('click', function (e) {
     const overlay = e.target.closest('.video-overlay');

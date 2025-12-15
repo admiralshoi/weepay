@@ -43,6 +43,12 @@ const OidcAuth = {
         this.isRunning = true;
         screenLoader.show("Afventer verificering...")
 
+        // Use redirect on mobile instead of popup
+        if (isMobileDevice()) {
+            window.location.href = this.link;
+            return; // Don't start polling - callback will handle redirect
+        }
+
         const windowName = 'OIDCAuthWindow';
         const windowFeatures = 'width=600,height=750,scrollbars=yes';
 

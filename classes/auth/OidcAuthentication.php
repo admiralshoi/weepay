@@ -49,7 +49,7 @@ class OidcAuthentication extends Crud {
         $keys[] = "logged_in";
         $keys[] = "oidcAuth";
         setSessions($user,$keys);
-        return $this->recentUid;
+        return $uid;
     }
 
     public function newOidcUser(

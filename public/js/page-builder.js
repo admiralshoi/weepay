@@ -437,8 +437,8 @@
         if (aboutUsTextarea) formData.about_us = aboutUsTextarea.value;
         if (creditWidgetCheckbox) formData.credit_widget_enabled = creditWidgetCheckbox.checked ? 1 : 0;
 
-        // Collect dynamic sections
-        const sectionElements = document.querySelectorAll('[data-section-index]');
+        // Collect dynamic sections (only from form, not preview)
+        const sectionElements = document.querySelectorAll('.section-item[data-section-index]');
         sectionElements.forEach((sectionEl) => {
             const index = sectionEl.dataset.sectionIndex;
             const titleInput = sectionEl.querySelector(`input[name="section_title_${index}"]`);
@@ -574,12 +574,25 @@
         // Setup delete button for the new section
         setupSectionDeleteButtons();
 
-        // Focus on title input
+        // Get the newly added section
         const newSection = sectionsContainer.lastElementChild;
-        const titleInput = newSection.querySelector('input[type="text"]');
-        if (titleInput) titleInput.focus();
 
-        // Broadcast update to preview
+        // Add event listeners to new inputs for live preview updates
+        const titleInput = newSection.querySelector('input[type="text"]');
+        const contentTextarea = newSection.querySelector('textarea');
+
+        if (titleInput) {
+            titleInput.addEventListener('input', broadcastPreviewUpdate);
+            titleInput.addEventListener('change', checkForChanges);
+            titleInput.focus();
+        }
+
+        if (contentTextarea) {
+            contentTextarea.addEventListener('input', broadcastPreviewUpdate);
+            contentTextarea.addEventListener('change', checkForChanges);
+        }
+
+        // Broadcast initial update to preview
         broadcastPreviewUpdate();
     }
 
@@ -723,8 +736,8 @@
                 logo: ''
             };
 
-            // Collect sections
-            const sectionElements = document.querySelectorAll('[data-section-index]');
+            // Collect sections (only from form, not preview)
+            const sectionElements = document.querySelectorAll('.section-item[data-section-index]');
             sectionElements.forEach((sectionEl) => {
                 const index = sectionEl.dataset.sectionIndex;
                 const title = formData[`section_title_${index}`] || '';

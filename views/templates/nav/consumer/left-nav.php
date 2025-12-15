@@ -37,7 +37,7 @@ $sidebarHandler = Methods::sidebars();
                     foreach ($menuItems as $key => $items):
                         ?>
 
-                        <a class="sidebar-nav-link py-2 px-3 font-18 font-weight-medium m-0 flex-row-start flex-align-center"
+                        <a class="sidebar-nav-link py-2 px-3 font-18 font-weight-medium m-0 flex-row-start flex-align-center flex-nowrap"
                            data-page="<?=$items["data-value"]?>" href="<?=__url($items["link"])?>"
                            title="<?=$items["title"]?>" >
 
