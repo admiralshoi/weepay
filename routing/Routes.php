@@ -59,14 +59,7 @@ class Routes {
             header("location: " . __url(Links::$merchant->organisation->home));
             exit;
         }
-        if(requiresSelectedOrganisationWallet()) {
-            header("location: " . __url(Links::$merchant->organisation->home));
-            exit;
-        }
-        if(requiresSelectedOrganisationWallet()) {
-            header("location: " . __url(Links::$merchant->organisation->home));
-            exit;
-        }
+
         if(requiresProfileCompletion()) {
             if(realUrlPath() !== Links::$app->auth->consumerSignup . '/complete-profile') {
                 $q = $_SERVER['QUERY_STRING'];

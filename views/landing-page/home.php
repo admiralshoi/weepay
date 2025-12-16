@@ -275,7 +275,7 @@ use classes\enumerations\Links;
                             <div class="flex-col-start flex-align-center w-100">
                                 <p class="mb-0 font-16 font-weight-medium color-gray">
                                     Nu kan du tilbyde det samme <strong class="color-dark">i din fysiske forretning</strong> – og undersøgelser
-                                    viser <strong class="color-dark">op til 58% højere kurvstørrelse</strong> når kunder får fleksible betalingsmuligheder
+                                    viser <strong class="color-dark">op til 50% højere kurvstørrelse</strong> når kunder får fleksible betalingsmuligheder
                                 </p>
                             </div>
 

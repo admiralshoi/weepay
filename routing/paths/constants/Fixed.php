@@ -29,6 +29,7 @@ class Fixed extends \routing\paths\Paths {
         "js.server.js",
         "js.main.js",
         "js.utility.js",
+        "js.translator.js",
         "js.features.js",
         "js.initializer.js",
         "css.main.css",

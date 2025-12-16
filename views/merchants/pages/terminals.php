@@ -68,7 +68,9 @@ $pageTitle = "Kasseapparater";
                             <th class="desktopOnlyTableCell">Navn</th>
                             <th class="desktopOnlyTableCell">Butik</th>
                             <th class="hideOnMobileTableCell">QR-kode status</th>
-                            <th >Handlinger</th>
+                            <th class="hideOnDesktopTableCell">Handlinger</th>
+                            <th class="desktopOnlyTableCell">Start</th>
+                            <th class="desktopOnlyTableCell">Rediger</th>
                             </thead>
                             <tbody>
                             <?php foreach ($args->terminals->list() as $terminal): ?>
@@ -103,7 +105,7 @@ $pageTitle = "Kasseapparater";
                                             </div>
                                         <?php endif; ?>
                                     </td>
-                                    <td>
+                                    <td class="hideOnDesktopTableCell">
                                         <div class="flex-row-start flex-align-center flex-wrap w-100 mxw-200px" style="gap: .25rem;">
                                             <a href="<?=__url(Links::$merchant->terminals->posStart($terminal->location->slug,$terminal->uid))?>"
                                                 target="_blank" class="btn-v2 action-btn flex-row-center flex-align-center flex-nowrap" style="gap: .5rem;">
@@ -119,6 +121,22 @@ $pageTitle = "Kasseapparater";
                                             </button>
                                             <?php \classes\app\LocationPermissions::__oEndContent(); ?>
                                         </div>
+                                    </td>
+                                    <td class="desktopOnlyTableCell">
+                                        <a href="<?=__url(Links::$merchant->terminals->posStart($terminal->location->slug,$terminal->uid))?>"
+                                            target="_blank" class="btn-v2 action-btn flex-row-center flex-align-center flex-nowrap" style="gap: .5rem;">
+                                            <i class="mdi mdi-play-outline font-18"></i>
+                                            <span class="font-14">Start POS</span>
+                                        </a>
+                                    </td>
+                                    <td class="desktopOnlyTableCell">
+                                        <?php \classes\app\LocationPermissions::__oModifyProtectedContent($terminal->location, 'terminals'); ?>
+                                        <button class="btn-v2 mute-btn flex-row-center flex-align-center flex-nowrap" style="gap: .5rem;"
+                                                onclick="LocationActions.editTerminal('<?=$terminal->uid?>')">
+                                            <i class="mdi mdi-pencil-outline font-18"></i>
+                                            <span class="font-14">Rediger</span>
+                                        </button>
+                                        <?php \classes\app\LocationPermissions::__oEndContent(); ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

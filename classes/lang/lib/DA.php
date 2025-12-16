@@ -35,9 +35,32 @@ class DA {
         "october" => "oktober",
         "november" => "november",
         "december" => "december",
+
+        // Organisation translations
         "organisation" => "virksomhed",
-        "organisationsnavn" => "virksomhedsnavn",
+        "organisations" => "virksomheder",
+        "organisationen" => "virksomheden",
+        "organisationerne" => "virksomhederne",
         "organisationens" => "virksomhedens",
+        "organisationsnavn" => "virksomhedsnavn",
+        "organisationsmedlem" => "virksomhedsmedlem",
+        "organisationsmedlemmer" => "virksomhedsmedlemmer",
+        "organisationsindstillinger" => "virksomhedsindstillinger",
+        "organisationsinfo" => "virksomhedsinfo",
+        "organisationsoversigt" => "virksomhedsoversigt",
+
+        // Capital variations
+        "Organisation" => "Virksomhed",
+        "Organisations" => "Virksomheder",
+        "Organisationen" => "Virksomheden",
+        "Organisationerne" => "Virksomhederne",
+        "Organisationens" => "Virksomhedens",
+        "Organisationsnavn" => "Virksomhedsnavn",
+        "Organisationsmedlem" => "Virksomhedsmedlem",
+        "Organisationsmedlemmer" => "Virksomhedsmedlemmer",
+        "Organisationsindstillinger" => "Virksomhedsindstillinger",
+        "Organisationsinfo" => "Virksomhedsinfo",
+        "Organisationsoversigt" => "Virksomhedsoversigt",
     ];
 
 

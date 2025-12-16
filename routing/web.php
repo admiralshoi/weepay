@@ -166,11 +166,13 @@ Routes::group(['api','requiresApiLogin'], function() {
     Routes::group(['merchant'], function() {
         Routes::get(Links::$api->organisation->vivaConnectedAccount, "merchants.ApiController::vivaWalletStatus");
         Routes::post(Links::$api->organisation->vivaConnectedAccount, "merchants.ApiController::createVivaConnectedAccount");
-        Routes::post(Links::$api->organisation->team->update, "merchants.ApiController::updateTeamMember");
-        Routes::post(Links::$api->organisation->team->role->create, "merchants.ApiController::createNewRole");
-        Routes::post(Links::$api->organisation->team->role->rename, "merchants.ApiController::renameRole");
-        Routes::delete(Links::$api->organisation->team->role->delete, "merchants.ApiController::deleteRole");
-        Routes::post(Links::$api->organisation->team->role->permissions, "merchants.ApiController::updateRolePermissions");
+        Routes::post(Links::$api->organisation->team->update, "merchants.OrganisationApiController::updateTeamMember");
+        Routes::post(Links::$api->organisation->team->invite, "merchants.OrganisationApiController::inviteTeamMember");
+        Routes::post(Links::$api->organisation->team->respond, "merchants.OrganisationApiController::respondToInvitation");
+        Routes::post(Links::$api->organisation->team->role->create, "merchants.OrganisationApiController::createNewRole");
+        Routes::post(Links::$api->organisation->team->role->rename, "merchants.OrganisationApiController::renameRole");
+        Routes::delete(Links::$api->organisation->team->role->delete, "merchants.OrganisationApiController::deleteRole");
+        Routes::post(Links::$api->organisation->team->role->permissions, "merchants.OrganisationApiController::updateRolePermissions");
 
         Routes::post(Links::$api->forms->createOrganisation, "merchants.ApiController::createOrganisation");
         Routes::get(Links::$merchant->organisation->switch, "merchants.ApiController::selectOrganisation");

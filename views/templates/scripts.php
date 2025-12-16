@@ -39,4 +39,10 @@ if(!\classes\Methods::isAdmin()) {
     const currencies = <?=json_encode(toArray(Settings::$app->currencies))?>;
     const platformLinks = <?=json_encode(\classes\enumerations\Links::toArray($linksToExclude))?>;
     var thirdPartyAuth = {}
+
+    // Translation data from PHP (synced with classes/lang/lib/DA.php)
+    const translationData = {
+        WORD: <?=json_encode(\classes\lang\lib\DA::WORD)?>,
+        CONTEXT: <?=json_encode(\classes\lang\lib\DA::CONTEXT)?>
+    };
 </script>

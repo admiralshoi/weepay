@@ -15,7 +15,7 @@ define("LIVE", !str_contains($_SERVER["HTTP_HOST"], "localhost"));
 /**
  * ENV files
  */
-const PLATFORM_VERSION = "v1.0017";
+const PLATFORM_VERSION = "v1.0018";
 const HTACCESS_PWD_FILE = "env/other/htaccessPwd.txt";
 const DB_LIVE_FILE = "env/db/live.php";
 const DB_LOCAL_FILE = "env/db/local.php";

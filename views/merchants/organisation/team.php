@@ -9,8 +9,9 @@ use classes\enumerations\Links;
 use classes\Methods;
 use classes\utility\Titles;
 use features\Settings;
+use classes\lang\Translate;
 
-$pageTitle = "Organisationsmedlemmer";
+$pageTitle = ucfirst(Translate::word("Organisationsmedlemmer"));
 
 $organisationRoles = [];
 foreach ($args->permissions as $role => $items) $organisationRoles[$role] = \classes\utility\Titles::cleanUcAll($role);
@@ -38,8 +39,8 @@ $organisation = Settings::$organisation?->organisation;
     </div>
 
     <div class="mb-4">
-        <p class="font-25 font-weight-bold">Organisationsmedlemmer</p>
-        <p class="font-14 color-gray font-weight-medium">Administrer din organisations medlemmer og deres tilladelser</p>
+        <p class="font-25 font-weight-bold"><?=ucfirst(Translate::word("Organisationsmedlemmer"))?></p>
+        <p class="font-14 color-gray font-weight-medium">Administrer din <?=Translate::word("organisations")?> medlemmer og deres tilladelser</p>
         <p class="font-14 color-gray font-weight-medium">Du kan tilføje medarbejdere til dine lokationer direkte på butikssiden</p>
     </div>
 
@@ -54,7 +55,7 @@ $organisation = Settings::$organisation?->organisation;
                                 Ved at tilføje medlemmer behøver I ikke dele den samme konto
                             </p>
                             <p class="font-14 color-gray font-weight-medium text-wrap">
-                                Når du inviterer en ny person, sender vi dem en email, hvor de kan registrere og tilknytte sig din organisation.
+                                Når du inviterer en ny person, sender vi dem en email, hvor de kan registrere og tilknytte sig din <?=Translate::word("organisation")?>.
                             </p>
                         </div>
                         <div class="flex-row-end">
@@ -160,7 +161,7 @@ $organisation = Settings::$organisation?->organisation;
 
     <div class="mb-4">
         <p class="font-25 font-weight-bold">Rolle administrering</p>
-        <p class="font-14 color-gray font-weight-medium">Konfigurer tilladelser for medlemsroller i organisationen</p>
+        <p class="font-14 color-gray font-weight-medium">Konfigurer tilladelser for medlemsroller i <?=Translate::word("organisationen")?></p>
     </div>
 
     <div class="row">
@@ -174,7 +175,7 @@ $organisation = Settings::$organisation?->organisation;
                                 <p class="font-weight-medium">Administrer rolle</p>
                             </div>
                             <p class="font-14 color-gray font-weight-medium text-wrap">
-                                Konfigurer tilladelser for de medlemsroller i organisationen
+                                Konfigurer tilladelser for de medlemsroller i <?=Translate::word("organisationen")?>
                             </p>
                         </div>
                         <div class="flex-row-end flex-align-center flex-nowrap" style="column-gap: .5rem;">

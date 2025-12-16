@@ -108,7 +108,7 @@ class LocationPagesHandler extends Crud {
      */
     public function updateDraft(string $draftUid, array $data): bool {
         $draft = $this->get($draftUid);
-        if(isEmpty($draft) || $draft->state !== 'DRAFT') return false;
+        if(isEmpty($draft) || $draft->state === 'PUBLISHED') return false;
         return $this->update($data, ['uid' => $draftUid]);
     }
 }

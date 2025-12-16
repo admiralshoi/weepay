@@ -10,6 +10,7 @@ use classes\enumerations\Links;
 use classes\Methods;
 use classes\utility\Titles;
 use features\Settings;
+use classes\lang\Translate;
 
 $location = $args->location;
 $pageTitle = $location->name . " - Medlemmer";
@@ -74,7 +75,7 @@ $organisation = $location->uuid;
                                 Ved at tilføje medlemmer behøver I ikke dele den samme konto
                             </p>
                             <p class="font-14 color-gray font-weight-medium text-wrap">
-                                Når du inviterer en ny person, sender vi dem en email, hvor de kan registrere og tilknytte sig din organisation.
+                                Når du inviterer en ny person, sender vi dem en email, hvor de kan registrere og tilknytte sig din <?=Translate::word("organisation")?>.
                             </p>
                         </div>
                         <div class="flex-row-end">

@@ -5,6 +5,7 @@ namespace routing\routes\merchants;
 use classes\app\LocationPermissions;
 use classes\app\OrganisationPermissions;
 use classes\enumerations\Links;
+use classes\lang\Translate;
 use classes\Methods;
 use classes\organisations\MemberEnum;
 use classes\utility\Numbers;
@@ -125,7 +126,7 @@ class ApiController {
         $params['company_address'] = $address;
 
         Methods::organisations()->updateOrganisationDetails($organisationId, $params);
-        Response()->setRedirect()->jsonSuccess("Organisationsdetaljerne er blevet opdateret");
+        Response()->setRedirect()->jsonSuccess(Translate::word("Organisationsdetaljerne") . " er blevet opdateret");
     }
 
     #[NoReturn] public static function createOrganisation(array $args): void {
@@ -194,23 +195,23 @@ class ApiController {
         Methods::organisationMembers()->createNewMember($organisationId, __uuid(), "owner", MemberEnum::INVITATION_ACCEPTED);
         Methods::organisations()->setChosenOrganisation($organisationId);
 
-        Response()->setRedirect(__url(Links::$merchant->organisation->home))->jsonSuccess('Din organisation er blevet oprettet');
+        Response()->setRedirect(__url(Links::$merchant->organisation->home))->jsonSuccess('Din ' . Translate::word('organisation') . ' er blevet oprettet');
     }
 
 
     #[NoReturn] public static function createVivaConnectedAccount(array $args): void {
         $organisationId = __oUuid();
         if(empty($organisationId))
-            Response()->jsonError("Ugyldig organisation. Venligst vælg en organisation.", [], 400);
+            Response()->jsonError("Ugyldig " . Translate::word("organisation") . ". Venligst vælg en " . Translate::word("organisation") . ".", [], 400);
         if(!OrganisationPermissions::__oModify("billing", "wallet"))
             Response()->jsonError("Du har ikke tilladelse til denne handling.", [], 401);
 
         $handler = Methods::organisations();
         $organisation = $handler->get($organisationId);
         if(isEmpty($organisation))
-            Response()->jsonError("Ugyldig organisation. Venligst vælg en organisation.", [], 400);
+            Response()->jsonError("Ugyldig " . Translate::word("organisation") . ". Venligst vælg en " . Translate::word("organisation") . ".", [], 400);
         if(isEmpty($organisation->primary_email))
-            Response()->jsonError("Organisationen har ingen primær email. Venligst tilføj en først.", [], 400);
+            Response()->jsonError(ucfirst(Translate::word("Organisationen")) . " har ingen primær email. Venligst tilføj en først.", [], 400);
 
         $connectedAccountsHandler = Methods::vivaConnectedAccounts();
         $existingAccount = $connectedAccountsHandler->myConnection();
@@ -245,7 +246,7 @@ class ApiController {
     #[NoReturn] public static function vivaWalletStatus(array $args): void {
         $organisationId = __oUuid();
         if(empty($organisationId))
-            Response()->jsonError("Ugyldig organisation. Venligst vælg en organisation.", [], 400);
+            Response()->jsonError("Ugyldig " . Translate::word("organisation") . ". Venligst vælg en " . Translate::word("organisation") . ".", [], 400);
         if(!OrganisationPermissions::__oRead("billing", "wallet"))
             Response()->jsonError("Du har ikke tilladelse til denne handling.", [], 401);
 
@@ -289,9 +290,9 @@ class ApiController {
             Response()->jsonError("Venligst udfyld alle påkrævet felter", ['blame_field' => $key]);
         $organisationId = __oUuid();
         if(empty($organisationId))
-            Response()->jsonError("Ugyldig organisation. Venligst vælg en organisation for at tilføje lokationen til");
+            Response()->jsonError("Ugyldig " . Translate::word("organisation") . ". Venligst vælg en " . Translate::word("organisation") . " for at tilføje lokationen til");
         if(empty(Settings::$organisation->organisation->merchant_prid))
-            Response()->jsonError("Organisationen er endnu ikke tilknyttet en VIVA wallet. Tilknyt en wallet før du opretter lokationer");
+            Response()->jsonError(ucfirst(Translate::word("Organisationen")) . " er endnu ikke tilknyttet en VIVA wallet. Tilknyt en wallet før du opretter lokationer");
 
         $name = Titles::cleanUcAll(trim($args["name"]));
         $slug = strtolower(trim($args["slug"]));
@@ -320,7 +321,7 @@ class ApiController {
         if(!$inheritParent) {
             foreach (["industry", "contact_email", "contact_phone", "cvr", "line_1", "city", "postal_code", "country"] as $key) {
                 if(!array_key_exists($key, $args) || empty(trim($args[$key])))
-                    Response()->jsonError("Venligst udfyld pågældende felt, hvis du har slået brug af organisations-detaljerne fra", ['blame_field' => $key]);
+                    Response()->jsonError("Venligst udfyld pågældende felt, hvis du har slået brug af " . Translate::word("organisations") . "-detaljerne fra", ['blame_field' => $key]);
             }
         }
 
@@ -367,7 +368,7 @@ class ApiController {
             $slug
         )){
             $handler->delete(['uid' => $locationId]);
-            Response()->jsonError("Det var ikke muligt at oprette forbindelse til organisations VIVA wallet. Prøv igen senere.");
+            Response()->jsonError("Det var ikke muligt at oprette forbindelse til " . Translate::word("organisations") . " VIVA wallet. Prøv igen senere.");
         }
 
         $handler->setSource($locationId, $sourceCode);
@@ -559,195 +560,5 @@ class ApiController {
 
 
 
-
-    #[NoReturn] public static function updateTeamMember(array $args): void {
-        foreach (["action", "role", "member_uuid"] as $key)
-            if(!array_key_exists($key, $args) || empty(trim($args[$key]))) Response()->jsonError("Der mangler påkrævede felter.");
-
-        $role = trim($args["role"]);
-        $action = trim($args["action"]);
-        $uuid = trim($args["member_uuid"]);
-
-        if($uuid === __uuid()) Response()->jsonError("Du kan ikke lave ændringer til din egen konto.");
-        if(isEmpty(Settings::$organisation)) Response()->jsonError("Du er ikke medlem af nogen aktiv organisation.");
-
-        $organisationId = Settings::$organisation->organisation->uid;
-        $member = Methods::organisationMembers()->getMember($organisationId, $uuid);
-        if(isEmpty($member)) Response()->jsonError("Denne bruger er ikke medlem af denne organisation.");
-
-        $user = Methods::users()->get($uuid, ['uid', "access_level"]);
-        if(isEmpty($user)) Response()->jsonError("Denne bruger eksisterer ikke, eller så har du ikke tilladelse til at se den.");
-        if(!property_exists(Settings::$organisation->organisation->permissions, $role)) Response()->jsonError("Ugyldig rolle.");
-
-
-        switch ($action) {
-            default: Response()->jsonError("Ugyldig handling.");
-            case "unsuspend":
-                if(!OrganisationPermissions::__oModify('team', 'members')) Response()->jsonPermissionError("redigerings", 'medlemmer');
-                if($member->status !== MemberEnum::MEMBER_SUSPENDED) Response()->jsonSuccess("Ingen ændringer at foretage.");
-                Methods::organisationMembers()->updateMemberDetails($organisationId, $uuid, [
-                    "status" => MemberEnum::MEMBER_ACTIVE,
-                    "change_activity" => Methods::organisationMembers()->getEventDetails(MemberEnum::MEMBER_UNSUSPENDED)
-                ]);
-                $responseMessage = "Suspenderingen fra dette medlem er blevet fjernet.";
-                break;
-            case "suspend":
-                if(!OrganisationPermissions::__oDelete('team', 'members')) Response()->jsonPermissionError("slette", 'medlemsinvitationer');
-                if($member->status === MemberEnum::MEMBER_SUSPENDED) Response()->jsonSuccess("Ingen ændringer at foretage.");
-                Methods::organisationMembers()->updateMemberDetails($organisationId, $uuid, [
-                    "status" => MemberEnum::MEMBER_SUSPENDED,
-                    "change_activity" => Methods::organisationMembers()->getEventDetails(MemberEnum::MEMBER_SUSPENDED)
-                ]);
-                $responseMessage = "Medlemmet er blevet suspenderet.";
-                break;
-            case "resend-invitation":
-                if(!OrganisationPermissions::__oModify('team', 'invitations')) Response()->jsonPermissionError("redigerings", 'medlemsinvitationer');
-                if($member->invitation_status === MemberEnum::INVITATION_ACCEPTED)
-                    Response()->jsonSuccess("Brugeren har allerede accepteret invitationen.");
-                $params = [
-                    "invitation_status" => MemberEnum::INVITATION_PENDING,
-                    "status" => MemberEnum::MEMBER_ACTIVE,
-                    "invitation_activity" => Methods::organisationMembers()->getEventDetails(MemberEnum::INVITATION_RESEND)
-                ];
-                if($member->status !== MemberEnum::MEMBER_ACTIVE)
-                    $params['change_activity'] = Methods::organisationMembers()->getEventDetails(MemberEnum::ROLE_CHANGE, "", ["role" => $member->role]);
-                Methods::organisationMembers()->updateMemberDetails($organisationId, $uuid, $params);
-                $responseMessage = "Invitationen er blevet gensendt og medlemmets status er blevet sat til 'aktiv'";
-
-                //Send some notification?
-                break;
-            case "update-role":
-                if(!OrganisationPermissions::__oModify('team', 'roles')) Response()->jsonPermissionError("redigerings", 'medlemmer');
-                if($member->role === $role) Response()->jsonSuccess("Medlemmet har allerede denne rolle.");
-                Methods::organisationMembers()->updateMemberDetails($organisationId, $uuid, [
-                    "role" => $role,
-                    "change_activity" => Methods::organisationMembers()->getEventDetails(MemberEnum::ROLE_CHANGE, "", ["role" => $member->role])
-                ]);
-                $responseMessage = "Medlemmets rolle er blevet opdateret til " . Titles::cleanUcAll($role) . ".";
-
-                break;
-            case "retract-invitation":
-                if(!OrganisationPermissions::__oModify('team', 'invitations')) Response()->jsonPermissionError("redigerings", 'medlemsinvitationer');
-                if($member->invitation_status !== MemberEnum::INVITATION_PENDING)
-                    Response()->jsonSuccess("Du kan ikke trække en invitation tilbage som ikke afventer godkendelse.", ["refresh" => false]);
-                Methods::organisationMembers()->updateMemberDetails($organisationId, $uuid, [
-                    "invitation_status" => MemberEnum::INVITATION_RETRACTED,
-                    "invitation_activity" => Methods::organisationMembers()->getEventDetails(MemberEnum::INVITATION_RETRACTED)
-                ]);
-                $responseMessage = "Medlemsinvitationen er blevet trukket tilbage.";
-
-                break;
-        }
-
-        Response()->setRedirect()->jsonSuccess($responseMessage);
-    }
-
-
-
-
-    #[NoReturn] public static function updateRolePermissions(array $args): void {
-        $basePermissions = Methods::organisations()::BASE_PERMISSIONS;
-        if(!array_key_exists("role", $args)) Response()->jsonError("Missing role.");
-        $role = $args["role"];
-        unset($args["role"]);
-        $organisation = Methods::organisations()->get(__oid());
-        if(isEmpty($organisation)) Response()->jsonError("Bad request", ["reason" => "Ugyldig organisation"], 400);
-        if(!OrganisationPermissions::__oModify("roles", "permissions")) Response()->jsonPermissionError("redigerings", 'rolletilladelser');
-
-        foreach ($basePermissions as $mainObject => &$mainPermissions) {
-            $newMain = array_key_exists($mainObject, $args) ? $args[$mainObject] : [];
-            $mainPermissions["read"] = array_key_exists("read", $newMain) && $newMain["read"] === "on";
-            $mainPermissions["modify"] = array_key_exists("modify", $newMain) && $newMain["modify"] === "on";
-            $mainPermissions["delete"] = array_key_exists("delete", $newMain) && $newMain["delete"] === "on";
-
-            if(!array_key_exists("permissions", $newMain)) $newMain["permissions"] = [];
-            foreach ($mainPermissions["permissions"] as $subObject => &$permissions) {
-                $newSub = array_key_exists($subObject, $newMain["permissions"]) ? $newMain["permissions"][$subObject] : [];
-                $permissions["read"] = $mainPermissions["read"] !== false && array_key_exists("read", $newSub) && $newSub["read"] === "on";
-                $permissions["modify"] = $mainPermissions["modify"] !== false && array_key_exists("modify", $newSub) && $newSub["modify"] === "on";
-                $permissions["delete"] = $mainPermissions["delete"] !== false && array_key_exists("delete", $newSub) && $newSub["delete"] === "on";
-            }
-        }
-
-        $organisation->permissions->$role = $basePermissions;
-        $params = ["permissions" => toArray($organisation->permissions)];
-        Methods::organisations()->updateOrganisationDetails(__oid(), $params);
-        Response()->setRedirect()->jsonSuccess("Rollen '" . Titles::cleanUcAll($role) . "'s tilladelser er blevet opdateret.");
-    }
-
-
-    #[NoReturn] public static function createNewRole(array $args): void {
-        if(!array_key_exists("role_name", $args) || empty(trim($args["role_name"])))
-            Response()->jsonError("Venligst angiv et gyldigt rollenavn");
-
-        $organisation = Methods::organisations()->get(__oid());
-        if(isEmpty($organisation)) Response()->jsonError("Bad request", ["reason" => "Ugyldig organisation"], 400);
-        if(!OrganisationPermissions::__oModify('roles', 'roles')) Response()->jsonPermissionError("redigere", "organisationsroller");
-
-        $name = Titles::reverseClean(trim($args["role_name"]));
-        $permissions = toArray($organisation->permissions);
-        if(array_key_exists($name,$permissions)) Response()->jsonError("En rolle med dette navn eksisterer allerede. Prøv et andet navn.");
-
-        $permissions[$name] = Methods::organisations()::BASE_PERMISSIONS;
-        $status = Methods::organisations()->updateOrganisationDetails(__oid(), ["permissions" => $permissions]);
-        if(!$status) Response()->jsonError("Var ikke i stand til at oprette den nye rolle. Prøv igen senere.");
-        Response()->setRedirect()->jsonSuccess('Den nye rolle er blevet oprettet.');
-    }
-
-
-
-
-    #[NoReturn] public static function renameRole(array $args): void {
-        if(!array_key_exists("role", $args) || empty(trim($args["role"]))) Response()->jsonError("Venligst angiv et gyldigt rollenavn");
-        if(!array_key_exists("new_role_name", $args) || empty(trim($args["new_role_name"])))
-            Response()->jsonError("Venligst angiv et nyt gyldigt rollenavn");
-
-        $organisation = Methods::organisations()->get(__oid());
-        if(isEmpty($organisation)) Response()->jsonError("Bad request", ["reason" => "Ugyldig organisation"], 400);
-        if(!OrganisationPermissions::__oModify('roles', 'roles')) Response()->jsonPermissionError("redigerings", "organisationsroller");
-
-        $newName = Titles::reverseClean(trim($args["new_role_name"]));
-        $role = trim($args["role"]);
-        if($role === "owner") Response()->jsonError("Ejerrollen kan ikke omdøbes.");
-        $permissions = toArray($organisation->permissions);
-        if(!array_key_exists($role,$permissions)) Response()->jsonError("Bad request", ["reason" => "Ugyldig role"], 400);
-        if(array_key_exists($newName,$permissions)) Response()->jsonError("En rolle med dette navn eksisterer allerede. Prøv et andet navn.");
-
-        $permissions = array_combine(
-            array_map(function ($k) use($newName, $role) {
-                return $k === $role ? $newName : $k;
-            }, array_keys($permissions)),
-            array_values($permissions)
-        );
-
-        $status = Methods::organisations()->updateOrganisationDetails(__oid(), ["permissions" => $permissions]);
-        if(!$status) Response()->jsonError("Var ikke i stand til at omdøbe rollen. Prøv igen senere.");
-        Methods::organisationMembers()->update(["role" => $newName], ["role" => $role]);
-
-        Response()->setRedirect()->jsonSuccess('Rollen er blevet omdøbt.');
-    }
-
-    #[NoReturn] public static function deleteRole(array $args): void {
-        if(!array_key_exists("role", $args) || empty(trim($args["role"])))
-            Response()->jsonError("Venligst angiv en gyldig rolle", $args);
-
-        $organisation = Methods::organisations()->get(__oid());
-        if(isEmpty($organisation)) Response()->jsonError("Bad request", ["reason" => "Ugyldig organisation"], 400);
-        if(!OrganisationPermissions::__oDelete('roles', 'roles')) Response()->jsonPermissionError("slette", "organisationsroller");
-
-        $role = trim($args["role"]);
-        if($role === "owner") Response()->jsonError("Ejerrollen kan ikke slettes.");
-        $permissions = toArray($organisation->permissions);
-        if(!array_key_exists($role,$permissions)) Response()->jsonError("Bad request", ["reason" => "Ugyldig role"], 400);
-
-        if(Methods::organisationMembers()->exists(["organisation" => __oid(), "role" => $role]))
-            Response()->jsonError("En eller flere medlemmer er tildelt denne rolle. Venligst fjern rollen for alle medlemmer før du sletter den.");
-
-        unset($permissions[$role]);
-
-        $status = Methods::organisations()->updateOrganisationDetails(__oid(), ["permissions" => $permissions]);
-        if(!$status) Response()->jsonError("Var ikke i stand til at slette rollen. Prøv igen senere.");
-        Response()->setRedirect()->jsonSuccess('Rollen er blevet slettet.');
-    }
 
 }

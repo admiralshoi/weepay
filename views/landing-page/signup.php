@@ -1,6 +1,7 @@
 <?php
 
 use classes\Methods;
+use classes\lang\Translate;
 
 ?>
 <div id="main-wrapper" class="">
@@ -48,8 +49,7 @@ use classes\Methods;
                                             <input type="hidden" value="<?=Methods::roles()->accessLevel("brand")?>" name="access_level" />
                                             <h6 class="h5 mb-0">Signup as a brand / agency</h6>
                                             <p class="text-muted mt-2 mb-3">
-                                                Once your user is registered you'll be able to create an organisation to which you can invite your
-                                                coworkers etc, so that you do not need to share a login.
+                                                <?=Translate::sentence("Once your user is registered you'll be able to create an organisation to which you can invite your coworkers etc, so that you do not need to share a login.")?>
                                             </p>
 
 

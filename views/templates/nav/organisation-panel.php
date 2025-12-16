@@ -1,6 +1,7 @@
 <?php
 use classes\Methods;
 use features\Settings;
+use classes\lang\Translate;
 
 
 
@@ -28,7 +29,7 @@ $organisations = Methods::organisationMembers()->getUserOrganisations();
                             <a class=" text-center dropdown-toggle " href="javascript:void(0);" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="">
                                     <?php if(isEmpty(Settings::$organisation)): ?>
-                                        Select Organisation
+                                        <?=ucfirst(Translate::sentence("Select Organisation"))?>
                                     <?php else: ?>
                                         <?=\classes\utility\Titles::truncateStr(Settings::$organisation->organisation->name, 18)?>
                                     <?php endif; ?>
@@ -39,12 +40,12 @@ $organisations = Methods::organisationMembers()->getUserOrganisations();
                                     <div class="flex-col-start">
                                         <p class="font-weight-bold font-14">
                                             <?php if(isEmpty(Settings::$organisation)): ?>
-                                            Select Organisation
+                                            <?=ucfirst(Translate::sentence("Select Organisation"))?>
                                             <?php else: ?>
                                             <?=Settings::$organisation->organisation->name?>
                                             <?php endif; ?>
                                         </p>
-                                        <p class="font-weight-medium font-11 color-gray">Current organisation</p>
+                                        <p class="font-weight-medium font-11 color-gray"><?=ucfirst(Translate::sentence("Current organisation"))?></p>
                                     </div>
                                 </div>
 
