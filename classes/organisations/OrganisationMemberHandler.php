@@ -36,7 +36,7 @@ class OrganisationMemberHandler extends Crud {
         return OrganisationMembers::queryBuilder()
             ->where('uuid', $uuid)
             ->where('invitation_status', "!=", MemberEnum::INVITATION_PENDING)
-            ->where('status', "!=", MemberEnum::MEMBER_SUSPENDED)
+            ->where('status', MemberEnum::MEMBER_ACTIVE)
             ->exists();
     }
     public function firstValidOrganisation(string|int $uuid = 0): ?object {
@@ -44,7 +44,7 @@ class OrganisationMemberHandler extends Crud {
         return $this->withForeignValues(OrganisationMembers::queryBuilder()
             ->where('uuid', $uuid)
             ->where('invitation_status', "!=", MemberEnum::INVITATION_PENDING)
-            ->where('status', "!=", MemberEnum::MEMBER_SUSPENDED)
+            ->where('status', MemberEnum::MEMBER_ACTIVE)
             ->first());
     }
 
@@ -55,7 +55,7 @@ class OrganisationMemberHandler extends Crud {
             ->where('uuid', $uuid)
             ->where('organisation', $organisationId)
             ->where('invitation_status', "!=", MemberEnum::INVITATION_PENDING)
-            ->where('status', "!=", MemberEnum::MEMBER_SUSPENDED)
+            ->where('status', MemberEnum::MEMBER_ACTIVE)
             ->exists();
     }
 
@@ -80,6 +80,10 @@ class OrganisationMemberHandler extends Crud {
         if(isEmpty($mainObject) && empty($subObject)) return false;
         $organisation = \features\Settings::$organisation;
         if(isEmpty($organisation)) return false;
+
+        // Check if member is suspended or deleted - no permissions if so
+        if($organisation->status === MemberEnum::MEMBER_SUSPENDED || $organisation->status === MemberEnum::MEMBER_DELETED) return false;
+
         $role = $organisation->role;
         $permissions = toArray($organisation->organisation->permissions->$role);
 
@@ -114,7 +118,13 @@ class OrganisationMemberHandler extends Crud {
 
 
 
-    public function createNewMember(string|int $organisationId, string|int $uuid, string $role, string $invitationStatus = MemberEnum::INVITATION_PENDING): bool {
+    public function createNewMember(
+        string|int $organisationId,
+        string|int $uuid,
+        string $role,
+        string $invitationStatus = MemberEnum::INVITATION_PENDING,
+        ?array $scopedLocations = null
+    ): bool {
         $params = [
             "organisation" => $organisationId,
             "uuid" => $uuid,
@@ -124,6 +134,9 @@ class OrganisationMemberHandler extends Crud {
                 $this->getEventDetails($invitationStatus)
             ],
         ];
+        if($scopedLocations !== null) {
+            $params["scoped_locations"] = $scopedLocations;
+        }
         return $this->create($params);
     }
 
@@ -132,7 +145,7 @@ class OrganisationMemberHandler extends Crud {
         $params = [];
         foreach ([
              "role", "invitation_status", "status",
-             "invitation_activity", "change_activity",
+             "invitation_activity", "change_activity", "scoped_locations",
          ] as $key) if(array_key_exists($key, $args)) $params[$key] = $args[$key];
 
 

@@ -72,6 +72,45 @@ class Sidebars {
     }
 
 
+    /**
+     * Check if user has permission to see a sidebar item based on organisation permissions
+     */
+    private static function hasOrganisationPermission(string $item): bool {
+        // If not in organisation context, allow all
+        if(isEmpty(Settings::$organisation)) return true;
+
+        // Map sidebar items to permission checks
+        $permissionMap = [
+            'locations' => ['locations', 'locations'],
+            'terminals' => ['locations', 'checkout'],
+            'team' => ['team', 'members'],
+            'organisation' => null, // Special handling below
+            'orders' => ['orders', 'payments'],
+            'payments' => ['orders', 'payments'],
+            'pending-payments' => ['orders', 'payments'],
+            'past-due-payments' => ['orders', 'payments'],
+            'customers' => ['orders', 'customers'],
+            'reports' => ['organisation', 'reports'],
+        ];
+
+        // Always show these items
+        if(!array_key_exists($item, $permissionMap)) return true;
+
+        // Special handling for organisation - show if user has ANY permission
+        if($item === 'organisation') {
+            return \classes\app\OrganisationPermissions::__oRead('billing', '') ||
+                   \classes\app\OrganisationPermissions::__oRead('team', '') ||
+                   \classes\app\OrganisationPermissions::__oRead('roles', '') ||
+                   \classes\app\OrganisationPermissions::__oRead('locations', '') ||
+                   \classes\app\OrganisationPermissions::__oRead('orders', '') ||
+                   \classes\app\OrganisationPermissions::__oRead('organisation', '');
+        }
+
+        // Check specific permission
+        [$main, $sub] = $permissionMap[$item];
+        return \classes\app\OrganisationPermissions::__oRead($main, $sub);
+    }
+
     public static function sideBarLinks($barName){
         $sideBarLinks = array(
             "developer" => array(
@@ -426,7 +465,17 @@ class Sidebars {
             ),
         );
 
-        return array_key_exists($barName,$sideBarLinks) ? $sideBarLinks[$barName] : array();
+        // Get links for the requested bar
+        $links = array_key_exists($barName,$sideBarLinks) ? $sideBarLinks[$barName] : array();
+
+        // Filter based on organisation permissions (only for merchant dashboards)
+        if(in_array($barName, ['merchant', 'merchant-dashboard'])) {
+            $links = array_filter($links, function($link, $key) {
+                return self::hasOrganisationPermission($key);
+            }, ARRAY_FILTER_USE_BOTH);
+        }
+
+        return $links;
     }
 
 }

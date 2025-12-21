@@ -119,6 +119,11 @@ class OrganisationHandler extends Crud {
                     'modify' => true,
                     'delete' => true
                 ],
+                'payments' => [
+                    'read' => true,
+                    'modify' => true,
+                    'delete' => true
+                ],
                 'customers' => [
                     'read' => true,
                     'modify' => true,
@@ -148,6 +153,11 @@ class OrganisationHandler extends Crud {
             'delete' => true,
             "permissions" => [
                 'orders' => [
+                    'read' => true,
+                    'modify' => true,
+                    'delete' => true
+                ],
+                'payments' => [
                     'read' => true,
                     'modify' => true,
                     'delete' => true
@@ -214,6 +224,7 @@ class OrganisationHandler extends Crud {
 
 
     public function updateNewBasePermissions(): void {
+        $requiredRoleNames = Settings::$app->organisation_roles;
         $organisations = $this->getByX([], ['uid', 'permissions']);
         foreach ($organisations->list() as $org) {
             $rolePermissions = toArray($org->permissions);
@@ -230,7 +241,11 @@ class OrganisationHandler extends Crud {
                         }
                     }
                 }
+            }
 
+            foreach ($requiredRoleNames as $role) {
+                if(array_key_exists($role, $rolePermissions)) continue;
+                $rolePermissions[$role] = self::BASE_PERMISSIONS;
             }
             $this->update(['permissions' => $rolePermissions], ['uid' => $org->uid]);
         }

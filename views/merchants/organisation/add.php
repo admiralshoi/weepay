@@ -45,9 +45,14 @@ $countries = Methods::countries()->getByX(['enabled' => 1], ['uid', 'name', 'cod
                              data-toggle-switch-object="create" data-switch-id="organisation-join" style="border-radius: 5px 0 0 5px;">
                             Opret ny <?=(Translate::word("Organisation"))?>
                         </div>
-                        <div class="switchViewBtn text-center color-cta-inactive bg-cta-container p-2 w-50 cursor-pointer font-14 noSelect"
+                        <div class="switchViewBtn flex-row-center-center flex-nowrap cg-05 text-center color-cta-inactive bg-cta-container p-2 w-50 cursor-pointer font-14 noSelect"
                              data-toggle-switch-object="join" data-switch-id="organisation-join" style="border-radius: 0 5px 5px 0;">
-                            Tilmeld dig en eksisterende <?=(Translate::word("Organisation"))?>
+                            <span>Tilmeld dig en eksisterende <?=(Translate::word("Organisation"))?></span>
+                            <?php if($args->invitations->count() > 0): ?>
+                            <span class="design-box px-2">
+                                <?=$args->invitations->count()?>
+                            </span>
+                            <?php endif; ?>
                         </div>
                     </div>
 

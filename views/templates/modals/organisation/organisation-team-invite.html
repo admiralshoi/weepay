@@ -1,36 +1,58 @@
 <div class="modal" tabindex="-1" role="dialog" id="organisation-team-invite">
-  <div class="modal-dialog vertical-middle" role="document">
+  <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Invite a Team Member</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <h5 class="modal-title">Inviter Et Teammedlem</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Luk">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         <form method="post" class="flex-col-start " style="row-gap: 1.5rem;">
           <div class="flex-col-start " style="row-gap: .5rem">
-            <p class="font-13 font-weight-bold mb-0">Email Address</p>
+            <p class="font-13 font-weight-bold mb-0">Fuldt Navn <span class="color-red">*</span></p>
+            <input type="text" name="full_name" placeholder="John Doe" class="form-field-v2" required>
+          </div>
+          <div class="flex-col-start " style="row-gap: .5rem">
+            <p class="font-13 font-weight-bold mb-0">Email Adresse <span class="font-11 color-gray">(valgfri)</span></p>
             <input type="email" name="email" placeholder="your@employee.com" class="form-field-v2">
+            <p class="font-11 color-gray mb-0">Hvis email ikke angives, skal du dele brugernavnet med personen.</p>
           </div>
           <div class="flex-col-start" style="row-gap: .5rem">
-            <p class="font-13 font-weight-bold mb-0">Role</p>
-            <select class="form-select-v2 w-100" name="role">
+            <p class="font-13 font-weight-bold mb-0">Rolle <span class="color-red">*</span></p>
+            <select class="form-select-v2 w-100" name="role" required>
               {{#foreachKeyValue roles}}
               <option value="{{key}}">{{value}}</option>
               {{/foreachKeyValue}}
+            </select>
+          </div>
+          <div class="flex-col-start" style="row-gap: .5rem">
+            <p class="font-13 font-weight-bold mb-0">Lokationstilladelser</p>
+            <select class="form-select-v2 w-100" name="location_scope_type" id="location-scope-type">
+              <option value="all" selected>Alle lokationer</option>
+              <option value="scoped">Specifikke lokationer</option>
+            </select>
+          </div>
+          <div class="flex-col-start d-none" style="row-gap: .5rem" id="scoped-locations-container">
+            <p class="font-13 font-weight-bold mb-0">Vælg Lokationer <span class="color-red">*</span></p>
+            <select class="form-select-v2 w-100" data-search="true" name="scoped_locations" multiple id="scoped-locations-select">
+              {{#foreach locations}}
+              <option data-sort="{{value.name}}_{{value.slug}}" value="{{value.uid}}">
+                {{value.name}} ({{value.slug}})
+              </option>
+              {{/foreach}}
             </select>
           </div>
           <p class="mt-2 color-red font-12 d-none modalErrorBox"></p>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Close</button>
+        <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Luk</button>
         <button type="button" class="btn-v2 action-btn flex-row-center-center flex-nowrap g-05" data-run="invite">
-          <span>Send invitation</span>
+          <span>Inviter Medlem</span>
           <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
               <span class="spinner-border color-white square-15" role="status" style="border-width: 2px;">
-                <span class="sr-only">Loading...</span>
+                <span class="sr-only">Indlæser...</span>
               </span>
           </span>
         </button>

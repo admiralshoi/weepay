@@ -688,8 +688,15 @@ const paginationGenerator = {
 
 
 const copyToClipboard = str => {
+    console.log('str to copy:',str)
+    let copyString = str.replaceAll("&amp;","&");
+    copyString = copyString.replaceAll("&lt;","<");
+    copyString = copyString.replaceAll("&gt;",">");
+    copyString = copyString.replaceAll("&quot;",'"');
+    copyString = copyString.replaceAll("&apos;","'");
+    copyString = copyString.toString();
     const el = document.createElement('textarea');
-    el.value = str;
+    el.value = copyString;
     el.setAttribute('readonly', '');
     el.style.position = 'absolute';
     el.style.left = '-9999px';
@@ -1081,6 +1088,14 @@ $(function() {
             }
         });
 
+        Handlebars.registerHelper('inArray', function (v1, v2, options) {
+            if (typeof v2 === 'object' && Object.values(v2).includes(v1)) {
+                return options.fn(this);
+            } else {
+                return options.inverse(this);
+            }
+        });
+
         Handlebars.registerHelper('foreach', function(list, options) {
             if (!list) return '';
             if (Array.isArray(list)) {
@@ -1285,12 +1300,12 @@ function refreshSelectV2UI(select) {
     if (select.multiple) {
         const selectedOpts = Array.from(select.options).filter(o => o.selected && o.value !== "");
         selectedDisplay.textContent = selectedOpts.length > 0
-            ? `Selected (${selectedOpts.length})`
-            : "Select option(s)";
+            ? `Valgt (${selectedOpts.length})`
+            : "Vælg";
     } else {
         const selectedOpt = select.options[select.selectedIndex];
         selectedDisplay.innerHTML = (!selectedOpt || selectedOpt.value === "")
-            ? "Select an option"
+            ? "Vælg..."
             : selectedOpt.innerHTML;
     }
 

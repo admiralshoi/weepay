@@ -96,10 +96,14 @@ class Crud {
         return new Collection($arr);
     }
 
-    public function getByX(object|array $params = array(), array $fields = array()): Collection {
+    public function getByX(object|array $params = array(), array $fields = array(), array $ifNotEmpty = []): Collection {
         if(!$this->access(READ_ACTION)) return Methods::toCollection();
         if(is_callable($this->paramsLogicMethod) && !(($this->paramsLogicMethod)($params))) return new Collection();
-        $data = $this->model::whereList($params)->select($fields)->all();
+        $builder = $this->model::queryBuilder()->whereList($params)->select($fields);
+        foreach ($ifNotEmpty as $column => $value) {
+            if(!empty($value)) $builder->where($column, $value);
+        }
+        $data = $builder->all();
         $tables = [];
         if($this->includeForeignKeys) $data = $this->withForeignCollection($data, $tables, $this->model, true);
         return !is_null($this->fetchAllCleanMethod) ? call_user_func($this->fetchAllCleanMethod, $data) : $data;

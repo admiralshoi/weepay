@@ -3,6 +3,7 @@
 namespace classes\enumerations\links\api;
 
 use classes\enumerations\links\api\forms\Forms;
+use classes\enumerations\links\api\locations\Locations;
 use classes\enumerations\links\api\organisation\Organisation;
 
 class Api {

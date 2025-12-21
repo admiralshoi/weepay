@@ -391,6 +391,12 @@ class ApiController {
         if(isEmpty($location)) Response()->jsonError("Lokation ikke fundet", [], 404);
         if($location->uuid->uid !== __oUuid()) Response()->jsonError("Du har ikke tilladelse til denne handling", [], 403);
 
+        // Check if user has access to this location based on scoped permissions
+        $allowedLocationIds = Methods::locations()->userLocationPredicate();
+        if(!empty($allowedLocationIds) && !in_array($location->uid, $allowedLocationIds)) {
+            Response()->jsonError("Du har ikke adgang til denne lokation", [], 403);
+        }
+
         $name = Titles::cleanUcAll(trim($args["name"]));
         $slug = strtolower(trim($args["slug"]));
         $slug = str_replace([' ', 'ø', 'å', 'æ'], ['-', 'o', 'aa', 'ae'], $slug);
@@ -496,6 +502,12 @@ class ApiController {
         $location  = $locationHandler->get($locationId);
         if(isEmpty($location)) Response()->jsonError("Ugyldig lokationr", ['blame_field' => 'location'], 400);
 
+        // Check if user has access to this location based on scoped permissions
+        $allowedLocationIds = Methods::locations()->userLocationPredicate();
+        if(!empty($allowedLocationIds) && !in_array($location->uid, $allowedLocationIds)) {
+            Response()->jsonError("Du har ikke adgang til denne lokation", [], 403);
+        }
+
         $organisationId = $location->uuid->uid;
         if(!OrganisationPermissions::__oModify("locations", "terminals"))
             Response()->jsonError("Unauthorized action", [], 401);
@@ -529,6 +541,12 @@ class ApiController {
         // Check location permissions
         $location = $terminal->location;
         if(isEmpty($location)) Response()->jsonError("Lokation ikke fundet", [], 404);
+
+        // Check if user has access to this location based on scoped permissions
+        $allowedLocationIds = Methods::locations()->userLocationPredicate();
+        if(!empty($allowedLocationIds) && !in_array($location->uid, $allowedLocationIds)) {
+            Response()->jsonError("Du har ikke adgang til denne lokation", [], 403);
+        }
         if(!LocationPermissions::__oModify($location, 'terminals'))
             Response()->jsonError("Du har ikke tilladelse til at redigere denne terminal", [], 403);
 

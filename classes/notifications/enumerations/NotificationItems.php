@@ -79,4 +79,42 @@ class NotificationItems {
         "link" => ""
     );
 
+
+    /**
+     * TEAM INVITATION
+     *
+     */
+    const TEAM_INVITE_REQUIRED = array("uid", "organisation_name", "role");
+    const TEAM_INVITE_OPTIONAL = array("title", "message", "small_icon", "large_icon", "ref", "link", "push_type");
+    const TEAM_INVITE_VALUES = array(
+        "ref" => "",
+        "type" => "team_invitation",
+        "timestamp" => 0,
+        "push_type" => PUSHTYPE::PLATFORM,
+        "title" => "Team invitation",
+        "message" => "",
+        "small_icon" => "notification_support",
+        "large_icon" => array("type" => "default", "id" => "customer_support_profile"),
+        "link" => ""
+    );
+
+
+    /**
+     * USER CREATED FOR ORGANISATION
+     *
+     */
+    const USER_CREATED_REQUIRED = array("uid", "organisation_name", "username", "password");
+    const USER_CREATED_OPTIONAL = array("title", "message", "small_icon", "large_icon", "ref", "link", "push_type");
+    const USER_CREATED_VALUES = array(
+        "ref" => "",
+        "type" => "user_created",
+        "timestamp" => 0,
+        "push_type" => PUSHTYPE::EMAIL,
+        "title" => "Account created",
+        "message" => "",
+        "small_icon" => "notification_support",
+        "large_icon" => array("type" => "default", "id" => "customer_support_profile"),
+        "link" => ""
+    );
+
 }

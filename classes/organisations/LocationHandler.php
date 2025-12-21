@@ -27,7 +27,37 @@ class LocationHandler extends Crud {
 
     public function getMyLocations(?string $uuid = null, array $fields = []): Collection {
         if($uuid === null) $uuid = __oUuid();
-        return $this->getByX(['uuid' => $uuid, 'status' => ['DRAFT', 'ACTIVE', 'INACTIVE']], $fields);
+        $ids = $this->userLocationPredicate();
+        return $this->getByX(['uuid' => $uuid, 'status' => ['DRAFT', 'ACTIVE', 'INACTIVE']], $fields, ['uid' => $ids]);
+    }
+
+    public function userLocationPredicate(): array {
+        if(isEmpty(Settings::$organisation)) return [];
+        $scope = toArray(Settings::$organisation->scoped_locations);
+        if(isEmpty($scope)) return [];
+
+        // Get location memberships, but exclude suspended/deleted ones
+        $locMemberHandler = Methods::locationMembers();
+        $activeLocMemberIds = $locMemberHandler->queryBuilder()
+            ->where('uuid', __uuid())
+            ->where('status', MemberEnum::MEMBER_ACTIVE)
+            ->pluck("location");
+
+        // Get suspended/deleted location memberships to exclude from scope
+        $inactiveLocMemberIds = $locMemberHandler->queryBuilder()
+            ->where('uuid', __uuid())
+            ->where('status', [MemberEnum::MEMBER_SUSPENDED, MemberEnum::MEMBER_DELETED])
+            ->pluck("location");
+
+        // Start with scoped locations, remove any that are suspended/deleted
+        $allowedLocations = array_diff($scope, $inactiveLocMemberIds);
+
+        // Add active location memberships
+        if(!empty($activeLocMemberIds)) {
+            $allowedLocations = array_merge($allowedLocations, $activeLocMemberIds);
+        }
+
+        return array_values(array_unique($allowedLocations));
     }
 
 

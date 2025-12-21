@@ -173,6 +173,15 @@ Routes::group(['api','requiresApiLogin'], function() {
         Routes::post(Links::$api->organisation->team->role->rename, "merchants.OrganisationApiController::renameRole");
         Routes::delete(Links::$api->organisation->team->role->delete, "merchants.OrganisationApiController::deleteRole");
         Routes::post(Links::$api->organisation->team->role->permissions, "merchants.OrganisationApiController::updateRolePermissions");
+        Routes::post(Links::$api->organisation->team->scopedLocations->get, "merchants.OrganisationApiController::getMemberScopedLocations");
+        Routes::post(Links::$api->organisation->team->scopedLocations->update, "merchants.OrganisationApiController::updateMemberScopedLocations");
+
+        Routes::post(Links::$api->locations->team->update, "merchants.LocationApiController::updateLocationMember");
+        Routes::post(Links::$api->locations->team->invite, "merchants.LocationApiController::inviteLocationMember");
+        Routes::post(Links::$api->locations->team->role->create, "merchants.LocationApiController::createLocationRole");
+        Routes::post(Links::$api->locations->team->role->rename, "merchants.LocationApiController::renameLocationRole");
+        Routes::delete(Links::$api->locations->team->role->delete, "merchants.LocationApiController::deleteLocationRole");
+        Routes::post(Links::$api->locations->team->role->permissions, "merchants.LocationApiController::updateLocationRolePermissions");
 
         Routes::post(Links::$api->forms->createOrganisation, "merchants.ApiController::createOrganisation");
         Routes::get(Links::$merchant->organisation->switch, "merchants.ApiController::selectOrganisation");

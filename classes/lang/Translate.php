@@ -16,33 +16,32 @@ class Translate {
     }
 
     public static function word(string|int|null $q): string {
-        if (empty($q)) return "";
+        if (empty($q)) return $q;
         $class = self::getLangClass();
-        if (!$class) return "";
+        if (!$class) return $q;
         $key = strtolower((string)$q);
-        if (!defined("$class::WORD")) return "";
+        if (!defined("$class::WORD")) return $q;
         $words = $class::WORD;
-        return $words[$key] ?? "";
+        return $words[$key] ?? $q;
     }
 
     public static function context(string|int|null $q): string {
-        if (empty($q)) return "";
+        if (empty($q)) return $q;
         $class = self::getLangClass();
-        if (!$class) return "";
-        if (!defined("$class::CONTEXT")) return "";
+        if (!$class) return $q;
+        if (!defined("$class::CONTEXT")) return $q;
         $context = $class::CONTEXT;
         $key = (string)$q;
         $parts = explode(".", $key);
         $parts = array_map("strtolower", $parts);
-
-        return nestedArray($context, $parts, "");
+        return nestedArray($context, $parts, $q);
     }
 
     public static function sentence(string|null $q): string {
-        if (empty($q)) return "";
+        if (empty($q)) return $q;
 
         $class = self::getLangClass();
-        if (!$class) return "";
+        if (!$class) return $q;
         if (!defined("$class::WORD")) return $q;
         $words = $class::WORD;
 

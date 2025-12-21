@@ -3,7 +3,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Organisation detaljer</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Luk">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -32,7 +32,7 @@
                     </div>
                     <div class="flex-col-start " style="row-gap: .5rem">
                         <p class="font-13 font-weight-bold mb-0">Beskrivelse (Valgfri)</p>
-                        <textarea name="description" placeholder="Tell us about your organisation" class="mnh-100px form-field-v2" maxlength="1000">{{organisation.description}}</textarea>
+                        <textarea name="description" placeholder="Fortæl os om din organisation" class="mnh-100px form-field-v2" maxlength="1000">{{organisation.description}}</textarea>
                     </div>
                     <div class="row" style="row-gap: .5rem;">
                         <div class="col-12 col-md-6">
@@ -150,12 +150,12 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Close</button>
+                <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Luk</button>
                 <button type="button" class="btn-v2 action-btn flex-row-center-center flex-nowrap g-05" data-run="update">
-                    <span>Update Information</span>
+                    <span>Gem ændringer</span>
                     <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
                         <span class="spinner-border color-white square-15" role="status" style="border-width: 2px;">
-                          <span class="sr-only">Loading...</span>
+                          <span class="sr-only">Indlæser...</span>
                         </span>
                     </span>
                 </button>

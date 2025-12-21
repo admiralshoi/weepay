@@ -175,7 +175,43 @@ class UserHandler extends Crud {
     }
 
 
+    /**
+     * Generate a unique username for organisation team member
+     * Format: {org_short}_{initials}{numbers}
+     * Example: acme_jd42
+     */
+    public function generateUniqueUsername(string $organisationName, string $fullName): string {
+        // Clean and shorten organisation name (max 6 chars, alphanumeric only)
+        $orgShort = strtolower(preg_replace('/[^a-z0-9]/i', '', $organisationName));
+        $orgShort = substr($orgShort, 0, min(6, strlen($orgShort)));
 
+        // Extract initials from full name
+        $nameParts = explode(' ', trim($fullName));
+        $initials = '';
+        if (count($nameParts) >= 2) {
+            // First and last name
+            $initials = strtolower(substr($nameParts[0], 0, 1) . substr($nameParts[count($nameParts) - 1], 0, 1));
+        } else {
+            // Just first name, use first two chars
+            $initials = strtolower(substr($nameParts[0], 0, 2));
+        }
+
+        // Try to generate unique username with increasing numbers
+        $maxAttempts = 100;
+        for ($i = 0; $i < $maxAttempts; $i++) {
+            $randomNum = str_pad(rand(10, 9999), 2, '0', STR_PAD_LEFT);
+            $username = "{$orgShort}_{$initials}{$randomNum}";
+
+            // Check if username exists in AuthLocal
+            $exists = \Database\model\AuthLocal::where('username', $username)->exists();
+            if (!$exists) {
+                return $username;
+            }
+        }
+
+        // Fallback: use timestamp if all attempts failed
+        return "{$orgShort}_{$initials}" . substr(time(), -4);
+    }
 
 
 }

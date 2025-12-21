@@ -28,7 +28,7 @@ class ModalHandler {
         },
         organisationTeamInvite: {
             file: 'organisation-team-invite',
-            keys: ['roles']
+            keys: ['roles', 'locations']
         },
         organisationCreateRole: {
             file: 'organisation-new-role',
@@ -37,6 +37,22 @@ class ModalHandler {
         organisationRenameRole: {
             file: 'organisation-rename-role',
             keys: ['role']
+        },
+        locationRenameRole: {
+            file: 'locations.location-rename-role',
+            keys: ['role']
+        },
+        locationCreateRole: {
+            file: 'locations.location-new-role',
+            keys: []
+        },
+        organisationMemberScopedLocations: {
+            file: 'organisation.organisation-member-scoped-locations',
+            keys: ['member_name', 'member_uuid', 'locations', 'selected_locations', 'scope_type']
+        },
+        locationTeamInvite: {
+            file: 'locations.location-team-invite',
+            keys: ['roles', 'organisation_members']
         },
         paymentInfo: {
             file: 'payment-info',

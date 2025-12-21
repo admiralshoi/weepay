@@ -13,6 +13,7 @@ class MemberEnum {
     const MEMBER_ACTIVE = "ACTIVE";
     const MEMBER_SUSPENDED = "SUSPENDED";
     const MEMBER_UNSUSPENDED = "UNSUSPENDED";
+    const MEMBER_DELETED = "DELETED";
 
 
 }

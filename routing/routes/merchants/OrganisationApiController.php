@@ -46,26 +46,129 @@ class OrganisationApiController {
     }
 
     #[NoReturn] public static function inviteTeamMember(array $args): void {
-        foreach (["role", "email"] as $key)
-            if(!array_key_exists($key, $args) || empty(trim($args[$key]))) Response()->jsonError("Udfyld venligst feltet $key.");
+        // Validate required fields
+        if(!array_key_exists("role", $args) || empty(trim($args["role"])))
+            Response()->jsonError("Udfyld venligst feltet rolle.");
+        if(!array_key_exists("full_name", $args) || empty(trim($args["full_name"])))
+            Response()->jsonError("Udfyld venligst feltet fuldt navn.");
 
         $role = trim($args["role"]);
-        $email = trim($args["email"]);
-        if(!filter_var($email, FILTER_VALIDATE_EMAIL)) Response()->jsonError("Ugyldig email format.");
+        $fullName = trim($args["full_name"]);
+        $email = array_key_exists("email", $args) && !empty(trim($args["email"])) ? trim($args["email"]) : null;
 
-        if(isEmpty(Settings::$organisation)) Response()->jsonError("Du er ikke medlem af nogen aktiv " . Translate::word("organisation") . ".");
-        if(!__oModify('team', 'members')) Response()->jsonError("Du har ikke tilladelse til at udføre denne handling.");
-        if(!property_exists(Settings::$organisation->organisation->permissions, $role)) Response()->jsonError("Ugyldig rolle.");
+        // Handle scoped locations
+        $scopedLocations = null;
+        if(array_key_exists("scoped_locations", $args) && !empty($args["scoped_locations"])) {
+            $scopedLocations = json_decode($args["scoped_locations"], true);
+            if(!is_array($scopedLocations)) $scopedLocations = null;
+        }
 
-        $user = Methods::users()->getByEmail($email, ['uid', "access_level"]);
-        if(isEmpty($user)) Response()->jsonError("Der findes ingen bruger med denne email.");
-        if($user->access_level !== Methods::roles()->accessLevel('merchant'))
-            Response()->jsonError("Denne bruger er ikke registreret som en forhandler-konto. Bed brugeren om at oprette en korrekt forhandler-konto og inviter dem igen.");
-        if(Methods::organisationMembers()->userIsMember(Settings::$organisation->organisation->uid, $user->uid))
-            Response()->jsonError("Denne bruger er allerede en del af dit team.");
+        // Validate email format if provided
+        if($email !== null && !filter_var($email, FILTER_VALIDATE_EMAIL))
+            Response()->jsonError("Ugyldig email format.");
 
-        Methods::organisationMembers()->createNewMember(Settings::$organisation->organisation->uid, $user->uid, $role, MemberEnum::INVITATION_PENDING);
-        Response()->setRedirect()->jsonSuccess('Brugeren er blevet inviteret, og en email er blevet sendt.');
+        // Validate organisation and permissions
+        if(isEmpty(Settings::$organisation))
+            Response()->jsonError("Du er ikke medlem af nogen aktiv " . Translate::word("organisation") . ".");
+        if(!__oModify('team', 'members'))
+            Response()->jsonError("Du har ikke tilladelse til at udføre denne handling.");
+        if(!property_exists(Settings::$organisation->organisation->permissions, $role))
+            Response()->jsonError("Ugyldig rolle.");
+
+        $organisation = Settings::$organisation->organisation;
+        $organisationId = $organisation->uid;
+        $organisationName = $organisation->name;
+
+        // Check if user exists by email
+        $existingUser = $email ? Methods::users()->getByEmail($email, ['uid', "access_level"]) : null;
+
+        if(!isEmpty($existingUser)) {
+            // EXISTING USER PATH - Send invitation
+            if($existingUser->access_level !== Methods::roles()->accessLevel('merchant'))
+                Response()->jsonError("Denne bruger er ikke registreret som en forhandler-konto. Bed brugeren om at oprette en korrekt forhandler-konto og inviter dem igen.");
+            if(Methods::organisationMembers()->userIsMember($organisationId, $existingUser->uid))
+                Response()->jsonError("Denne bruger er allerede en del af dit team.");
+
+            // Create member with PENDING status
+            Methods::organisationMembers()->createNewMember($organisationId, $existingUser->uid, $role, MemberEnum::INVITATION_PENDING, $scopedLocations);
+
+            // Log notification
+            Methods::notificationHandler()->teamInvitation([
+                'uid' => $existingUser->uid,
+                'organisation_name' => $organisationName,
+                'role' => $role,
+                'ref' => $organisationId
+            ]);
+
+            Response()->setRedirect()->jsonSuccess('Brugeren er blevet inviteret, og en email er blevet sendt.');
+        } else {
+            // NEW USER PATH - Create user and add to team
+
+            $userHandler = Methods::users();
+            // Generate unique username
+            $username = $userHandler->generateUniqueUsername($organisationName, $fullName);
+            $password = $organisationId; // Use org UID as temp password
+
+            // Create user
+            if(!$userHandler->create([
+                'full_name' => $fullName,
+                'access_level' => Methods::roles()->accessLevel('merchant'),
+                'lang' => 'DA',
+                'created_by' => __uuid()
+            ])) Response()->jsonError("Kunne ikke oprette brugeren. Prøv igen senere.");
+            $userUid = $userHandler->recentUid;
+
+
+            // Create auth record
+            Methods::localAuthentication()->create([
+                'username' => $username,
+                'email' => null, // Don't set email to avoid conflicts
+                'password' => passwordHashing($password),
+                'user' => $userUid,
+                'enabled' => 1,
+                'force_password_change' => 1
+            ]);
+
+            // Create member with PENDING status (will change when they log in)
+            Methods::organisationMembers()->createNewMember($organisationId, $userUid, $role, MemberEnum::INVITATION_PENDING, $scopedLocations);
+
+            // Log notification
+            if($email) {
+                // If email provided, send email notification
+                Methods::notificationHandler()->userCreated([
+                    'uid' => $userUid,
+                    'organisation_name' => $organisationName,
+                    'username' => $username,
+                    'password' => $password,
+                    'ref' => $organisationId,
+                    'push_type' => 1 // Email
+                ]);
+                $emailSent = true;
+            } else {
+                // No email, just platform notification
+                Methods::notificationHandler()->userCreated([
+                    'uid' => $userUid,
+                    'organisation_name' => $organisationName,
+                    'username' => $username,
+                    'password' => $password,
+                    'ref' => $organisationId,
+                    'push_type' => 0 // Platform only
+                ]);
+                $emailSent = false;
+            }
+
+            // Return success with credentials
+            Response()->setRedirect()->jsonSuccess(
+                'Brugeren er blevet oprettet og tilføjet til dit team.',
+                [
+                    'user_created' => true,
+                    'username' => $username,
+                    'password' => $password,
+                    'email_sent' => $emailSent,
+                    'full_name' => $fullName
+                ]
+            );
+        }
     }
 
 
@@ -73,45 +176,93 @@ class OrganisationApiController {
 
 
     #[NoReturn] public static function updateTeamMember(array $args): void {
-        foreach (["action", "role", "member_uuid"] as $key)
+        foreach (["action", "member_uuid"] as $key)
             if(!array_key_exists($key, $args) || empty(trim($args[$key]))) Response()->jsonError("Der mangler påkrævede felter.");
 
-        $role = trim($args["role"]);
+        $role = array_key_exists("role", $args) ? trim($args["role"]) : null;
         $action = trim($args["action"]);
         $uuid = trim($args["member_uuid"]);
 
         if($uuid === __uuid()) Response()->jsonError("Du kan ikke lave ændringer til din egen konto.");
         if(isEmpty(Settings::$organisation)) Response()->jsonError("Du er ikke medlem af nogen aktiv " . Translate::word("organisation") . ".");
 
+        // Initialize handlers
+        $orgMemberHandler = Methods::organisationMembers();
+        $locationMemberHandler = Methods::locationMembers();
+
         $organisationId = Settings::$organisation->organisation->uid;
-        $member = Methods::organisationMembers()->getMember($organisationId, $uuid);
+        $member = $orgMemberHandler->getMember($organisationId, $uuid);
         if(isEmpty($member)) Response()->jsonError("Denne bruger er ikke medlem af denne " . Translate::word("organisation") . ".");
 
         $user = Methods::users()->get($uuid, ['uid', "access_level"]);
         if(isEmpty($user)) Response()->jsonError("Denne bruger eksisterer ikke, eller så har du ikke tilladelse til at se den.");
-        if(!property_exists(Settings::$organisation->organisation->permissions, $role)) Response()->jsonError("Ugyldig rolle.");
-
 
         switch ($action) {
             default: Response()->jsonError("Ugyldig handling.");
+
             case "unsuspend":
                 if(!OrganisationPermissions::__oModify('team', 'members')) Response()->jsonPermissionError("redigerings", 'medlemmer');
                 if($member->status !== MemberEnum::MEMBER_SUSPENDED) Response()->jsonSuccess("Ingen ændringer at foretage.");
-                Methods::organisationMembers()->updateMemberDetails($organisationId, $uuid, [
+
+                // Unsuspend org membership only (do NOT cascade to locations)
+                $orgMemberHandler->updateMemberDetails($organisationId, $uuid, [
                     "status" => MemberEnum::MEMBER_ACTIVE,
-                    "change_activity" => Methods::organisationMembers()->getEventDetails(MemberEnum::MEMBER_UNSUSPENDED)
+                    "change_activity" => $orgMemberHandler->getEventDetails(MemberEnum::MEMBER_UNSUSPENDED)
                 ]);
                 $responseMessage = "Suspenderingen fra dette medlem er blevet fjernet.";
                 break;
+
             case "suspend":
                 if(!OrganisationPermissions::__oDelete('team', 'members')) Response()->jsonPermissionError("slette", 'medlemsinvitationer');
                 if($member->status === MemberEnum::MEMBER_SUSPENDED) Response()->jsonSuccess("Ingen ændringer at foretage.");
-                Methods::organisationMembers()->updateMemberDetails($organisationId, $uuid, [
+
+                // Suspend org membership
+                $orgMemberHandler->updateMemberDetails($organisationId, $uuid, [
                     "status" => MemberEnum::MEMBER_SUSPENDED,
-                    "change_activity" => Methods::organisationMembers()->getEventDetails(MemberEnum::MEMBER_SUSPENDED)
+                    "change_activity" => $orgMemberHandler->getEventDetails(MemberEnum::MEMBER_SUSPENDED)
                 ]);
+
+                // Cascade: suspend all location memberships for this user
+                $orgLocationUids = Methods::locations()->getByX(['uuid' => $organisationId], ['uid'])->pluck('uid')->toArray();
+                if(!empty($orgLocationUids)) {
+                    $locationMemberHandler->queryBuilder()
+                        ->where('uuid', $uuid)
+                        ->where('location', $orgLocationUids)
+                        ->where('status', '!=', MemberEnum::MEMBER_DELETED)
+                        ->update([
+                            'status' => MemberEnum::MEMBER_SUSPENDED,
+                            'change_activity' => $locationMemberHandler->getEventDetails(MemberEnum::MEMBER_SUSPENDED)
+                        ]);
+                }
+
                 $responseMessage = "Medlemmet er blevet suspenderet.";
                 break;
+
+            case "remove":
+                if(!OrganisationPermissions::__oDelete('team', 'members')) Response()->jsonPermissionError("slette", 'medlemmer');
+
+                // Mark org membership as deleted (not actually removing the row)
+                $orgMemberHandler->updateMemberDetails($organisationId, $uuid, [
+                    "status" => MemberEnum::MEMBER_DELETED,
+                    "change_activity" => $orgMemberHandler->getEventDetails(MemberEnum::MEMBER_DELETED)
+                ]);
+
+                // Cascade: mark all location memberships as deleted
+                $orgLocationUids = Methods::locations()->getByX(['uuid' => $organisationId], ['uid'])->pluck('uid')->toArray();
+                if(!empty($orgLocationUids)) {
+                    $locationMemberHandler->queryBuilder()
+                        ->where('uuid', $uuid)
+                        ->where('location', $orgLocationUids)
+                        ->where('status', '!=', MemberEnum::MEMBER_DELETED)
+                        ->update([
+                            'status' => MemberEnum::MEMBER_DELETED,
+                            'change_activity' => $locationMemberHandler->getEventDetails(MemberEnum::MEMBER_DELETED)
+                        ]);
+                }
+
+                $responseMessage = "Medlemmet er blevet fjernet fra organisationen.";
+                break;
+
             case "resend-invitation":
                 if(!OrganisationPermissions::__oModify('team', 'invitations')) Response()->jsonPermissionError("redigerings", 'medlemsinvitationer');
                 if($member->invitation_status === MemberEnum::INVITATION_ACCEPTED)
@@ -119,32 +270,36 @@ class OrganisationApiController {
                 $params = [
                     "invitation_status" => MemberEnum::INVITATION_PENDING,
                     "status" => MemberEnum::MEMBER_ACTIVE,
-                    "invitation_activity" => Methods::organisationMembers()->getEventDetails(MemberEnum::INVITATION_RESEND)
+                    "invitation_activity" => $orgMemberHandler->getEventDetails(MemberEnum::INVITATION_RESEND)
                 ];
                 if($member->status !== MemberEnum::MEMBER_ACTIVE)
-                    $params['change_activity'] = Methods::organisationMembers()->getEventDetails(MemberEnum::ROLE_CHANGE, "", ["role" => $member->role]);
-                Methods::organisationMembers()->updateMemberDetails($organisationId, $uuid, $params);
+                    $params['change_activity'] = $orgMemberHandler->getEventDetails(MemberEnum::ROLE_CHANGE, "", ["role" => $member->role]);
+                $orgMemberHandler->updateMemberDetails($organisationId, $uuid, $params);
                 $responseMessage = "Invitationen er blevet gensendt og medlemmets status er blevet sat til 'aktiv'";
 
                 //Send some notification?
                 break;
+
             case "update-role":
                 if(!OrganisationPermissions::__oModify('team', 'roles')) Response()->jsonPermissionError("redigerings", 'medlemmer');
+                if(isEmpty($role)) Response()->jsonError("Rolle er påkrævet.");
+                if(!property_exists(Settings::$organisation->organisation->permissions, $role)) Response()->jsonError("Ugyldig rolle.");
                 if($member->role === $role) Response()->jsonSuccess("Medlemmet har allerede denne rolle.");
-                Methods::organisationMembers()->updateMemberDetails($organisationId, $uuid, [
+                $orgMemberHandler->updateMemberDetails($organisationId, $uuid, [
                     "role" => $role,
-                    "change_activity" => Methods::organisationMembers()->getEventDetails(MemberEnum::ROLE_CHANGE, "", ["role" => $member->role])
+                    "change_activity" => $orgMemberHandler->getEventDetails(MemberEnum::ROLE_CHANGE, "", ["role" => $member->role])
                 ]);
                 $responseMessage = "Medlemmets rolle er blevet opdateret til " . Titles::cleanUcAll($role) . ".";
 
                 break;
+
             case "retract-invitation":
                 if(!OrganisationPermissions::__oModify('team', 'invitations')) Response()->jsonPermissionError("redigerings", 'medlemsinvitationer');
                 if($member->invitation_status !== MemberEnum::INVITATION_PENDING)
                     Response()->jsonSuccess("Du kan ikke trække en invitation tilbage som ikke afventer godkendelse.", ["refresh" => false]);
-                Methods::organisationMembers()->updateMemberDetails($organisationId, $uuid, [
+                $orgMemberHandler->updateMemberDetails($organisationId, $uuid, [
                     "invitation_status" => MemberEnum::INVITATION_RETRACTED,
-                    "invitation_activity" => Methods::organisationMembers()->getEventDetails(MemberEnum::INVITATION_RETRACTED)
+                    "invitation_activity" => $orgMemberHandler->getEventDetails(MemberEnum::INVITATION_RETRACTED)
                 ]);
                 $responseMessage = "Medlemsinvitationen er blevet trukket tilbage.";
 
@@ -237,6 +392,55 @@ class OrganisationApiController {
         Methods::organisationMembers()->update(["role" => $newName], ["role" => $role]);
 
         Response()->setRedirect()->jsonSuccess('Rollen er blevet omdøbt.');
+    }
+
+    #[NoReturn] public static function getMemberScopedLocations(array $args): void {
+        if(!array_key_exists("member_uuid", $args) || empty(trim($args["member_uuid"])))
+            Response()->jsonError("Der mangler påkrævede felter.");
+
+        $uuid = trim($args["member_uuid"]);
+
+        if($uuid === __uuid()) Response()->jsonError("Du kan ikke lave ændringer til din egen konto.");
+        if(isEmpty(Settings::$organisation)) Response()->jsonError("Du er ikke medlem af nogen aktiv " . Translate::word("organisation") . ".");
+
+        $organisationId = Settings::$organisation->organisation->uid;
+        $member = Methods::organisationMembers()->getMember($organisationId, $uuid);
+        if(isEmpty($member)) Response()->jsonError("Denne bruger er ikke medlem af denne " . Translate::word("organisation") . ".");
+
+        $scopedLocations = !isEmpty($member->scoped_locations) ? toArray($member->scoped_locations) : [];
+
+        Response()->jsonSuccess("Data hentet.", ["scoped_locations" => $scopedLocations]);
+    }
+
+    #[NoReturn] public static function updateMemberScopedLocations(array $args): void {
+        if(!array_key_exists("member_uuid", $args) || empty(trim($args["member_uuid"])))
+            Response()->jsonError("Der mangler påkrævede felter.");
+
+        $uuid = trim($args["member_uuid"]);
+
+        if($uuid === __uuid()) Response()->jsonError("Du kan ikke lave ændringer til din egen konto.");
+        if(isEmpty(Settings::$organisation)) Response()->jsonError("Du er ikke medlem af nogen aktiv " . Translate::word("organisation") . ".");
+        if(!OrganisationPermissions::__oModify('team', 'members')) Response()->jsonPermissionError("redigerings", 'medlemmer');
+
+        $organisationId = Settings::$organisation->organisation->uid;
+        $member = Methods::organisationMembers()->getMember($organisationId, $uuid);
+        if(isEmpty($member)) Response()->jsonError("Denne bruger er ikke medlem af denne " . Translate::word("organisation") . ".");
+
+        // Handle scoped locations
+        $scopedLocations = null;
+        if(array_key_exists("scoped_locations", $args) && !empty($args["scoped_locations"])) {
+            $scopedLocations = json_decode($args["scoped_locations"], true);
+            if(!is_array($scopedLocations)) $scopedLocations = null;
+        }
+
+        // Empty array means "all locations" (no scoping)
+        if($scopedLocations === null) $scopedLocations = [];
+
+        Methods::organisationMembers()->updateMemberDetails($organisationId, $uuid, [
+            "scoped_locations" => $scopedLocations
+        ]);
+
+        Response()->setRedirect()->jsonSuccess("Lokationstilladelser er blevet opdateret.");
     }
 
     #[NoReturn] public static function deleteRole(array $args): void {

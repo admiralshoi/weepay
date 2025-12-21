@@ -43,6 +43,13 @@ class Collection implements Iterator, Countable {
         return (new static(array_map($callback, $this->toArray())))->dupePaginator($this->paginator);
     }
 
+    public function pluck(string $column): static {
+        if(isEmpty($this->items)) return $this;
+        return $this->map(function ($item) use ($column) {
+            return array_key_exists($column, $item) ? $item[$column] : null;
+        })->filter(function ($item) { return !isEmpty($item); })->dupePaginator($this->paginator);
+    }
+
     public function values(): array {
         return array_values($this->toArray());
     }

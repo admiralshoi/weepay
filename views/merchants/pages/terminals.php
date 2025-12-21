@@ -36,6 +36,7 @@ $pageTitle = "Kasseapparater";
 
 
 
+
     <div class="flex-row-between flex-align-center flex-wrap" style="column-gap: .75rem; row-gap: .5rem;">
         <div class="flex-col-start">
             <p class="mb-0 font-30 font-weight-bold">Kasseapparater</p>

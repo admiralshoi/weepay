@@ -9,6 +9,7 @@ class AuthLocal extends \Database\Model {
         "username" => ["type" => "string", "default" => null, "nullable" => true],
         "phone" => ["type" => "string", "default" => null, "nullable" => true],
         "password" => "text",
+        "force_password_change" => ["type" => "tinyInteger", "default" => 0],
         "2fa" => ["type" => "tinyInteger", "default" => 0],
         "2fa_method" => ["type" => "string", "default" => null, "nullable" => true],
         "enabled" => ["type" => "tinyInteger", "default" => 0],

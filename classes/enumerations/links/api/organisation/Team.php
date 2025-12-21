@@ -5,6 +5,7 @@ namespace classes\enumerations\links\api\organisation;
 class Team {
 
     public Role $role;
+    public ScopedLocations $scopedLocations;
     public string $update = "api/organisations/team/update";
     public string $invite = "api/organisations/team/invite";
     public string $respond = "api/organisations/team/respond";

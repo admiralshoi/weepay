@@ -22,6 +22,17 @@ class ApiController {
         $authHandler->login();
         $user = $authHandler->getUser();
 
+        // Check if password change is required
+        $authRecord = Methods::localAuthentication()->queryBuilder()
+            ->where('user', $user->uid)
+            ->first();
+
+        if(!isEmpty($authRecord) && $authRecord->force_password_change == 1) {
+            // Redirect to password change page
+            Response()->setRedirect(__url('settings/change-password'))->jsonSuccess("Du skal ændre dit kodeord før du kan fortsætte.");
+            return;
+        }
+
         $role = Methods::roles()->name($user?->access_level ?? 0);
         $redirectUrl = match ($role) {
             default => "",

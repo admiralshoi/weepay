@@ -531,6 +531,19 @@ class QueryBuilder {
         return isEmpty($row) ? $row : $row->$column;
     }
 
+
+    public function pluck(string $column): ?array {
+        if($this->deadDraw) {
+            debugLog("Dead draw", "Sql column, $this->table");
+            $this->deadDraw = $this->retainDeadDraw ? $this->deadDraw : false;
+            return null;
+        }
+        if (empty($column)) return null;
+        $this->select([$column]);
+        $rows = $this->all();
+        return $rows->empty() ? [] : $rows->map(function ($row) use  ($column) { return $row[$column]; })->toArray();
+    }
+
     public function limit(int $limit): static {
         $this->limit = $limit;
         return $this;

@@ -7,24 +7,42 @@ use classes\Methods;
 class LocationPermissions {
 
     private static function checkParent(string $type, ?object $location, string $mainObject = "", bool $strictRole = false): bool {
-
-        //If they didn't have access  to the thing and are actual members, we then return false since membership access supersedes the org
-        if(!isEmpty(Methods::locationMembers()->exists(['location' => $location->uid, 'uuid' => __uuid()]))) return false;
         $organisationId = is_string($location->uuid) ? $location->uuid : $location->uuid->uid;
+        $locationMemberHandler = Methods::locationMembers();
 
-        //Ensure they  are indeed members of the organisation
-        $memberRole = Methods::organisationMembers()->getMember($organisationId, __uuid(), ['scoped_locations']);
+        // Check if user is a location member
+        $locationMember = $locationMemberHandler->first(['location' => $location->uid, 'uuid' => __uuid()]);
+
+        // If they are a location member but suspended/deleted, they have no access via this location
+        if(!isEmpty($locationMember)) {
+            if($locationMember->status === \classes\organisations\MemberEnum::MEMBER_SUSPENDED ||
+               $locationMember->status === \classes\organisations\MemberEnum::MEMBER_DELETED) {
+                return false;
+            }
+            // If they are an active location member but didn't have permission via memberHasPermission,
+            // we return false since location membership access supersedes org-level access
+            return false;
+        }
+
+        // User is not a location member, check org-level access
+        $orgMemberHandler = Methods::organisationMembers();
+        $memberRole = $orgMemberHandler->getMember($organisationId, __uuid());
         if(isEmpty($memberRole)) return false;
 
+        // Check org member status - suspended/deleted means no access
+        if($memberRole->status === \classes\organisations\MemberEnum::MEMBER_SUSPENDED ||
+           $memberRole->status === \classes\organisations\MemberEnum::MEMBER_DELETED) {
+            return false;
+        }
 
-        //Check first if they even have the general permission needed on org level
-        //All location permissions are equivalent to the organisations: locations.$mainObject
+        // Check first if they even have the general permission needed on org level
+        // All location permissions are equivalent to the organisations: locations.$mainObject
         if($type === 'read' && !OrganisationPermissions::__oRead("locations", $mainObject, $strictRole)) return false;
         elseif($type === 'modify' && !OrganisationPermissions::__oModify("locations", $mainObject, $strictRole)) return false;
         elseif($type === 'delete' && !OrganisationPermissions::__oDelete("locations", $mainObject, $strictRole)) return false;
 
-        //Finally, we see if the org member are restricted to certain locations only.
-        //scoped_locations = null mean they have full access to all available locations.
+        // Finally, we see if the org member are restricted to certain locations only.
+        // scoped_locations = null means they have full access to all available locations.
         $scopedLocations = toArray($memberRole->scoped_locations);
         return isEmpty($scopedLocations) || in_array($location->uid, $scopedLocations);
     }

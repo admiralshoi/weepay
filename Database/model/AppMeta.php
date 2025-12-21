@@ -60,7 +60,7 @@ class AppMeta extends \Database\Model {
         ],
         [
             "name" => "organisation_roles",
-            "value" => '["owner","admin","team_manager","analyst"]',
+            "value" => '["owner","admin","team_manager","analyst", "location_employee"]',
             "type" => "array",
         ],
         [

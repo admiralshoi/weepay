@@ -52,7 +52,8 @@ class RouteResponse {
         return $this;
     }
 
-    #[NoReturn] public function jsonError(string $message, array $data = [], int $responseCode = 200): void {
+    #[NoReturn] public function jsonError(string $message, array|object $data = [], int $responseCode = 200): void {
+        if(is_object($data)) $data = toArray($data);
         if($this->redirect) {
             $data["redirect"] = $this->redirect;
             if(!empty($this->redirectUrl)) $data["redirect_uri"] = $this->redirectUrl;

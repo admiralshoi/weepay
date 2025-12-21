@@ -135,6 +135,11 @@ class Routes {
                         printView(ErrorController::e404());
                         return;
                     }
+                    if (array_key_exists("return_as", $result) && $result["return_as"] === 404) {
+                        printView(ErrorController::e404());
+                        return;
+                    }
+
                     printJson($result["result"], $result["response_code"]);
                 }
                 if($result === null) {

@@ -1,0 +1,70 @@
+<div class="modal" tabindex="-1" role="dialog" id="location-team-invite">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Inviter Et Lokationsmedlem</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Luk">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" class="flex-col-start" style="row-gap: 1.5rem;">
+          <div class="flex-col-start" style="row-gap: .5rem">
+            <p class="font-13 font-weight-bold mb-0">Brugertype <span class="color-red">*</span></p>
+            <select class="form-select-v2 w-100" name="user_type" id="user-type-select" required>
+              <option value="existing">Eksisterende virksomhedsmedlem</option>
+              <option value="new">Ny bruger</option>
+            </select>
+          </div>
+
+          <!-- Existing user field -->
+          <div class="flex-col-start" style="row-gap: .5rem" id="existing-user-field">
+            <p class="font-13 font-weight-bold mb-0">Vælg Medlem <span class="color-red">*</span></p>
+            <select class="form-select-v2 w-100" data-search="true" name="existing_member_uuid">
+              <option value="">Vælg et eksisterende medlem...</option>
+              {{#foreach organisation_members}}
+              <option data-sort="{{value.name}}" value="{{value.uuid.uid}}">
+                {{value.name}} ({{value.email}})
+              </option>
+              {{/foreach}}
+            </select>
+          </div>
+
+          <!-- New user fields -->
+          <div class="flex-col-start d-none" style="row-gap: 1.5rem" id="new-user-fields">
+            <div class="flex-col-start" style="row-gap: .5rem">
+              <p class="font-13 font-weight-bold mb-0">Fulde Navn <span class="color-red">*</span></p>
+              <input type="text" name="full_name" placeholder="John Doe" class="form-field-v2">
+            </div>
+            <div class="flex-col-start" style="row-gap: .5rem">
+              <p class="font-13 font-weight-bold mb-0">Email Adresse <span class="font-11 color-gray">(valgfri)</span></p>
+              <input type="email" name="email" placeholder="john@example.com" class="form-field-v2">
+              <p class="font-11 color-gray mb-0">Hvis email ikke angives, skal du dele brugernavnet med personen.</p>
+            </div>
+          </div>
+
+          <div class="flex-col-start" style="row-gap: .5rem">
+            <p class="font-13 font-weight-bold mb-0">Rolle <span class="color-red">*</span></p>
+            <select class="form-select-v2 w-100" name="role" required>
+              {{#foreachKeyValue roles}}
+              <option value="{{key}}">{{value}}</option>
+              {{/foreachKeyValue}}
+            </select>
+          </div>
+          <p class="mt-2 color-red font-12 d-none modalErrorBox"></p>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Luk</button>
+        <button type="button" class="btn-v2 action-btn flex-row-center-center flex-nowrap g-05" data-run="invite">
+          <span>Inviter Medlem</span>
+          <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
+              <span class="spinner-border color-white square-15" role="status" style="border-width: 2px;">
+                <span class="sr-only">Indlæser...</span>
+              </span>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

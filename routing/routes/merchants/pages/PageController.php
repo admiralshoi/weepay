@@ -4,8 +4,10 @@ namespace routing\routes\merchants\pages;
 
 use classes\data\Calculate;
 use classes\enumerations\Links;
+use classes\lang\Translate;
 use classes\Methods;
 use classes\organisations\MemberEnum;
+use classes\utility\Titles;
 use Database\Collection;
 use features\Settings;
 use JetBrains\PhpStorm\NoReturn;
@@ -29,6 +31,16 @@ class PageController {
     }
 
     public static function organisation(array $args): mixed  {
+        // Check if user has ANY read permission for organisation pages
+        if(!\classes\app\OrganisationPermissions::__oRead('billing', '') &&
+           !\classes\app\OrganisationPermissions::__oRead('team', '') &&
+           !\classes\app\OrganisationPermissions::__oRead('roles', '') &&
+           !\classes\app\OrganisationPermissions::__oRead('locations', '') &&
+           !\classes\app\OrganisationPermissions::__oRead('orders', '') &&
+           !\classes\app\OrganisationPermissions::__oRead('organisation', '')) {
+            return null;
+        }
+
         $memberRows = Methods::organisationMembers()->getUserOrganisations();
         $memberRows = mapItemToKeyValuePairs(array_column($memberRows->toArray(), "organisation"), 'uid', 'name');
         $worldCountries = Methods::misc()::getCountriesLib(WORLD_COUNTRIES);
@@ -56,6 +68,11 @@ class PageController {
     }
 
     public static function team(array $args): mixed {
+        // Check if user has read permission for team members
+        if(!\classes\app\OrganisationPermissions::__oRead('team', 'members')) {
+            return null;
+        }
+
         $members = Methods::organisationMembers()->getByX(['organisation' => __oid()])->map(function ($member) {
             $status = $member["status"];
             $invitationStatus = $member["invitation_status"];
@@ -65,6 +82,7 @@ class PageController {
                 $statusBoxClass = "danger-box";
                 $actionMenu = [
                     ["icon" => "fa-solid fa-power-off", 'title' => "Unsuspend", "action" => "unsuspend", 'risk' => "low"],
+                    ["icon" => "fa-solid fa-user-xmark", 'title' => "Remove", "action" => "remove", 'risk' => "high"],
                 ];
             }
             elseif($invitationStatus === MemberEnum::INVITATION_DECLINED) {
@@ -73,6 +91,7 @@ class PageController {
                 $actionMenu = [
                     ["icon" => "fa-solid fa-user-pen", 'title' => "Update Role", "action" => "update-role", 'risk' => "low"],
                     ["icon" => "fa-solid fa-envelope", 'title' => "Resend Invitation", "action" => "resend-invitation", 'risk' => "low"],
+                    ["icon" => "fa-solid fa-user-xmark", 'title' => "Remove", "action" => "remove", 'risk' => "high"],
                 ];
             }
             elseif($invitationStatus === MemberEnum::INVITATION_RETRACTED) {
@@ -81,6 +100,7 @@ class PageController {
                 $actionMenu = [
                     ["icon" => "fa-solid fa-user-pen", 'title' => "Update Role", "action" => "update-role", 'risk' => "low"],
                     ["icon" => "fa-solid fa-envelope", 'title' => "Resend Invitation", "action" => "resend-invitation", 'risk' => "low"],
+                    ["icon" => "fa-solid fa-user-xmark", 'title' => "Remove", "action" => "remove", 'risk' => "high"],
                 ];
             }
             elseif($invitationStatus === MemberEnum::INVITATION_PENDING) {
@@ -97,7 +117,9 @@ class PageController {
                 $statusBoxClass = "success-box";
                 $actionMenu = [
                     ["icon" => "fa-solid fa-user-pen", 'title' => "Update Role", "action" => "update-role", 'risk' => "low"],
-                    ["icon" => "fa-solid fa-trash", 'title' => "Suspend", "action" => "suspend", 'risk' => "high"],
+                    ["icon" => "fa-solid fa-location-dot", 'title' => "Edit Scoped Locations", "action" => "edit-scoped-locations", 'risk' => "low"],
+                    ["icon" => "fa-solid fa-ban", 'title' => "Suspend", "action" => "suspend", 'risk' => "high"],
+                    ["icon" => "fa-solid fa-user-xmark", 'title' => "Remove", "action" => "remove", 'risk' => "high"],
                 ];
             }
             $member["action_menu"] = $actionMenu;
@@ -111,11 +133,18 @@ class PageController {
         $memberRows = Methods::organisationMembers()->getUserOrganisations();
         $memberRows = mapItemToKeyValuePairs(array_column($memberRows->toArray(), "organisation"), 'uid', 'name');
 
+        // Get locations for scoped permissions
+        $locations = Methods::locations()->getMyLocations(null, ['uid', 'name', 'slug']);
 
-        return Views("MERCHANT_ORGANISATION_TEAM", compact('members', 'permissions',  'memberRows'));
+        return Views("MERCHANT_ORGANISATION_TEAM", compact('members', 'permissions',  'memberRows', 'locations'));
     }
 
     public static function orders(array $args): mixed  {
+        // Check orders.payments permission
+        if(!\classes\app\OrganisationPermissions::__oRead('orders', 'payments')) {
+            return null;
+        }
+
         $locationHandler = Methods::locations();
         $orderHandler = Methods::orders();
 
@@ -134,7 +163,13 @@ class PageController {
             $where['created_at <='] = date('Y-m-d 23:59:59', strtotime($endDate));
         }
 
-        $orders = $orderHandler->getByXOrderBy("created_at", 'DESC', $where);
+        // Use queryBuilder to conditionally add scoped location filter
+        $locationIds = Methods::locations()->userLocationPredicate();
+        $queryBuilder = $orderHandler->queryBuilder()->whereList($where);
+        if(!empty($locationIds)) {
+            $queryBuilder->where('location', $locationIds);
+        }
+        $orders = $orderHandler->queryGetAll($queryBuilder->order('created_at', 'DESC'));
         $locations = $locationHandler->getMyLocations(null, ['uid', 'name']);
         $locationOptions = mapItemToKeyValuePairs($locations->list(), 'slug', 'name');
         $customers = [];
@@ -151,18 +186,19 @@ class PageController {
     }
 
     public static function customers(array $args): mixed  {
-        // Permission check: Need organisation permission for 'orders.customers'
+        // Check orders.customers permission
         if(!\classes\app\OrganisationPermissions::__oRead('orders', 'customers')) {
-            return ["return_as" => 403];
+            return null;
         }
 
         $orderHandler = Methods::orders();
 
-        // Get all completed orders for the organisation
+        // Get all completed orders for the organisation (filtered by scoped locations)
+        $locationIds = Methods::locations()->userLocationPredicate();
         $orders = $orderHandler->getByX([
             'organisation' => __oUuid(),
             'status' => 'COMPLETED'
-        ], ['uuid', 'amount', 'created_at']);
+        ], ['uuid', 'amount', 'created_at'], ['location' => $locationIds]);
 
         // Group orders by customer and calculate stats
         $customersMap = [];
@@ -208,10 +244,8 @@ class PageController {
     }
 
     public static function payments(array $args): mixed  {
-        // Permission check: Need organisation permission for 'orders'
-        if(!\classes\app\OrganisationPermissions::__oRead('orders')) {
-            return ["return_as" => 403];
-        }
+        // Check orders.payments permission
+        if(!\classes\app\OrganisationPermissions::__oRead('orders', 'payments')) return null;
 
         $paymentsHandler = Methods::payments();
         $orderHandler = Methods::orders();
@@ -221,9 +255,14 @@ class PageController {
         $endDate = $args['end'] ?? null;
 
 
-        // Build where conditions
+        // Build where conditions with scoped locations
+        $locationIds = Methods::locations()->userLocationPredicate();
         $where = ['organisation' => __oUuid(), 'status' => 'COMPLETED'];
         $queryBuilder = $paymentsHandler->queryBuilder()->whereList($where);
+
+        if(!empty($locationIds)) {
+            $queryBuilder->where('location', $locationIds);
+        }
 
         if(!isEmpty($startDate)) {
             $queryBuilder->whereTimeAfter("paid_at", strtotime($startDate), ">=");
@@ -249,10 +288,8 @@ class PageController {
     }
 
     public static function pendingPayments(array $args): mixed  {
-        // Permission check: Need organisation permission for 'orders'
-        if(!\classes\app\OrganisationPermissions::__oRead('orders')) {
-            return ["return_as" => 403];
-        }
+        // Permission check: Need organisation permission for 'orders.payments'
+        if(!\classes\app\OrganisationPermissions::__oRead('orders', 'payments')) return null;
 
         $paymentsHandler = Methods::payments();
         $orderHandler = Methods::orders();
@@ -261,9 +298,14 @@ class PageController {
         $startDate = $args['start'] ?? null;
         $endDate = $args['end'] ?? null;
 
-        // Build where conditions
+        // Build where conditions with scoped locations
+        $locationIds = Methods::locations()->userLocationPredicate();
         $where = ['organisation' => __oUuid(), 'status' => 'SCHEDULED'];
         $queryBuilder = $paymentsHandler->queryBuilder()->whereList($where);
+
+        if(!empty($locationIds)) {
+            $queryBuilder->where('location', $locationIds);
+        }
 
         if(!isEmpty($startDate)) {
             $queryBuilder->whereTimeAfter("due_date", strtotime($startDate), ">=");
@@ -289,10 +331,8 @@ class PageController {
     }
 
     public static function pastDuePayments(array $args): mixed  {
-        // Permission check: Need organisation permission for 'orders'
-        if(!\classes\app\OrganisationPermissions::__oRead('orders')) {
-            return ["return_as" => 403];
-        }
+        // Permission check: Need organisation permission for 'orders.payments'
+        if(!\classes\app\OrganisationPermissions::__oRead('orders', 'payments')) return null;
 
         $paymentsHandler = Methods::payments();
         $orderHandler = Methods::orders();
@@ -301,9 +341,14 @@ class PageController {
         $startDate = $args['start'] ?? null;
         $endDate = $args['end'] ?? null;
 
-        // Build where conditions
+        // Build where conditions with scoped locations
+        $locationIds = Methods::locations()->userLocationPredicate();
         $where = ['organisation' => __oUuid(), 'status' => 'PAST_DUE'];
         $queryBuilder = $paymentsHandler->queryBuilder()->whereList($where);
+
+        if(!empty($locationIds)) {
+            $queryBuilder->where('location', $locationIds);
+        }
 
         if(!isEmpty($startDate)) {
             $queryBuilder->whereTimeAfter("due_date", strtotime($startDate), ">=");
@@ -357,9 +402,7 @@ class PageController {
 
         // Permission check: Need organisation permission for 'orders.customers'
         // This allows viewing customers across the organisation
-        if(!\classes\app\OrganisationPermissions::__oRead('orders', 'customers')) {
-            return ["return_as" => 403];
-        }
+        if(!\classes\app\OrganisationPermissions::__oRead('orders', 'customers')) return null;
 
         // Get all orders for this customer with the current organisation
         $orderHandler = Methods::orders();
@@ -390,6 +433,9 @@ class PageController {
     }
 
     public static function terminals(array $args): mixed  {
+        // Check locations.checkout permission
+        if(!\classes\app\OrganisationPermissions::__oRead('locations', 'checkout')) return null;
+
         $locationHandler = Methods::locations();
         $terminalHandler = Methods::terminals();
         $terminals = $terminalHandler->getMyTerminals();
@@ -404,6 +450,13 @@ class PageController {
         $locationHandler = Methods::locations();
         $location = $locationHandler->getFirst(['slug' => $slug, 'uuid' => __oUuid()]);
         if(isEmpty($location)) return null;
+
+        // Check if user has access to this location based on scoped permissions
+        $allowedLocationIds = Methods::locations()->userLocationPredicate();
+        if(!empty($allowedLocationIds) && !in_array($location->uid, $allowedLocationIds)) {
+            return null; // User doesn't have access to this location
+        }
+
         $locations = $locationHandler->getMyLocations();
         $locationOptions = mapItemToKeyValuePairs($locations->list(), 'slug', 'name');
         $worldCountries = Methods::misc()::getCountriesLib(WORLD_COUNTRIES);
@@ -435,6 +488,7 @@ class PageController {
                 $statusBoxClass = "danger-box";
                 $actionMenu = [
                     ["icon" => "fa-solid fa-power-off", 'title' => "Unsuspend", "action" => "unsuspend", 'risk' => "low"],
+                    ["icon" => "fa-solid fa-user-xmark", 'title' => "Remove", "action" => "remove", 'risk' => "high"],
                 ];
             }
             else {
@@ -442,7 +496,8 @@ class PageController {
                 $statusBoxClass = "success-box";
                 $actionMenu = [
                     ["icon" => "fa-solid fa-user-pen", 'title' => "Update Role", "action" => "update-role", 'risk' => "low"],
-                    ["icon" => "fa-solid fa-trash", 'title' => "Suspend", "action" => "suspend", 'risk' => "high"],
+                    ["icon" => "fa-solid fa-ban", 'title' => "Suspend", "action" => "suspend", 'risk' => "high"],
+                    ["icon" => "fa-solid fa-user-xmark", 'title' => "Remove", "action" => "remove", 'risk' => "high"],
                 ];
             }
             $member["action_menu"] = $actionMenu;
@@ -454,14 +509,38 @@ class PageController {
         });
         $permissions = $location->permissions;
 
+        // Get organisation members who are not already location members for invite modal
+        $existingLocationMemberUuids = $members->pluck('uuid');
+        if(!$existingLocationMemberUuids->empty() && !is_string($existingLocationMemberUuids->first()))
+            $existingLocationMemberUuids = $existingLocationMemberUuids->pluck('uid');
+        $existingLocationMemberUuids = $existingLocationMemberUuids->toArray();
+
+        $organisationMembers = Methods::organisationMembers()
+            ->getByX(['organisation' => __oUuid(), 'status' => MemberEnum::MEMBER_ACTIVE, 'invitation_status' => MemberEnum::INVITATION_ACCEPTED])
+            ->filter(function($member) use ($existingLocationMemberUuids) {
+                $uuid = is_string($member['uuid']) ? $member['uuid'] : $member['uuid']['uid'];
+                return !in_array($uuid, $existingLocationMemberUuids) && $uuid !== __uuid();
+            })
+            ->map(function($member) {
+                return [
+                    'uuid' => $member['uuid'],
+                    'name' => $member['uuid']['full_name'],
+                    'email' => $member['uuid']['email'] ?? ''
+                ];
+            });
 
 
+        // Get location roles for dropdown
+        $locationRoles = [];
+        foreach($permissions as $role => $roleData) {
+            $locationRoles[$role] = ucfirst(Translate::word(Titles::clean($role)));
+        }
 
         return Views("MERCHANT_LOCATION_MEMBERS", compact(
             'locations', 'locationOptions', 'permissions', 'members',
             'worldCountries', 'slug', 'location', 'orders', 'orderCount', 'netSales',
             'ordersTodayCount', 'orderAverage', 'ordersToday', 'newCustomersCount', 'todayOrdersCountLflMonth',
-            'netSalesLflMonth', 'newCustomersLflMonth', 'averageLflMonth'
+            'netSalesLflMonth', 'newCustomersLflMonth', 'averageLflMonth', 'organisationMembers', 'locationRoles'
         ));
     }
 
@@ -472,6 +551,13 @@ class PageController {
         $locationHandler = Methods::locations();
         $location = $locationHandler->getFirst(['slug' => $slug, 'uuid' => __oUuid()]);
         if(isEmpty($location)) return null;
+
+        // Check if user has access to this location based on scoped permissions
+        $allowedLocationIds = Methods::locations()->userLocationPredicate();
+        if(!empty($allowedLocationIds) && !in_array($location->uid, $allowedLocationIds)) {
+            return null; // User doesn't have access to this location
+        }
+
         $locations = $locationHandler->getMyLocations();
         $locationOptions = mapItemToKeyValuePairs($locations->list(), 'slug', 'name');
         $worldCountries = Methods::misc()::getCountriesLib(WORLD_COUNTRIES);
@@ -510,6 +596,12 @@ class PageController {
         $location = $locationHandler->getFirst(['slug' => $slug, 'uuid' => __oUuid()]);
         if(isEmpty($location)) return null;
 
+        // Check if user has access to this location based on scoped permissions
+        $allowedLocationIds = Methods::locations()->userLocationPredicate();
+        if(!empty($allowedLocationIds) && !in_array($location->uid, $allowedLocationIds)) {
+            return null; // User doesn't have access to this location
+        }
+
         $pagesHandler = Methods::locationPages();
         $pageDraft = $pagesHandler->get($draftId);
 
@@ -527,6 +619,12 @@ class PageController {
         $locationHandler = Methods::locations();
         $location = $locationHandler->getFirst(['slug' => $slug, 'uuid' => __oUuid()]);
         if(isEmpty($location)) return null;
+
+        // Check if user has access to this location based on scoped permissions
+        $allowedLocationIds = Methods::locations()->userLocationPredicate();
+        if(!empty($allowedLocationIds) && !in_array($location->uid, $allowedLocationIds)) {
+            return null; // User doesn't have access to this location
+        }
 
         $pagesHandler = Methods::locationPages();
         $pageDraft = $pagesHandler->get($draftId);
@@ -551,6 +649,12 @@ class PageController {
         $locationHandler = Methods::locations();
         $location = $locationHandler->getFirst(['slug' => $slug, 'uuid' => __oUuid()]);
         if(isEmpty($location)) return null;
+
+        // Check if user has access to this location based on scoped permissions
+        $allowedLocationIds = Methods::locations()->userLocationPredicate();
+        if(!empty($allowedLocationIds) && !in_array($location->uid, $allowedLocationIds)) {
+            return null; // User doesn't have access to this location
+        }
         $locations = $locationHandler->getMyLocations();
         $locationOptions = mapItemToKeyValuePairs($locations->list(), 'slug', 'name');
         $worldCountries = Methods::misc()::getCountriesLib(WORLD_COUNTRIES);
@@ -616,6 +720,9 @@ class PageController {
     }
 
     public static function locations(array $args): mixed  {
+        // Check locations.locations permission
+        if(!\classes\app\OrganisationPermissions::__oRead('locations', 'locations')) return null;
+
         $locationHandler = Methods::locations();
         $locations = $locationHandler->getMyLocations();
         $locationOptions = mapItemToKeyValuePairs($locations->list(), 'slug', 'name');
@@ -642,18 +749,27 @@ class PageController {
         $orderHandler = Methods::orders();
         $paymentsHandler = Methods::payments();
 
-        // Get completed orders for current period
+        // Get scoped location IDs
+        $locationIds = Methods::locations()->userLocationPredicate();
+
+        // Get completed orders for current period (filtered by scoped locations)
         $ordersQuery = $orderHandler->queryBuilder()
             ->whereList(['organisation' => __oUuid(), 'status' => 'COMPLETED'])
             ->whereTimeAfter('created_at', strtotime($startDate), '>=')
             ->whereTimeBefore('created_at', strtotime($endDate . ' +1 day'), '<=');
+        if(!empty($locationIds)) {
+            $ordersQuery->where('location', $locationIds);
+        }
         $orders = $orderHandler->queryGetAll($ordersQuery);
 
-        // Get completed orders for previous period
+        // Get completed orders for previous period (filtered by scoped locations)
         $previousOrdersQuery = $orderHandler->queryBuilder()
             ->whereList(['organisation' => __oUuid(), 'status' => 'COMPLETED'])
             ->whereTimeAfter('created_at', strtotime($previousStart), '>=')
             ->whereTimeBefore('created_at', strtotime($previousEnd . ' +1 day'), '<=');
+        if(!empty($locationIds)) {
+            $previousOrdersQuery->where('location', $locationIds);
+        }
         $previousOrders = $orderHandler->queryGetAll($previousOrdersQuery);
 
         // Calculate order metrics
@@ -684,23 +800,23 @@ class PageController {
         }
         $previousCustomerCount = count($previousCustomerIds);
 
-        // Get payment metrics
+        // Get payment metrics (filtered by scoped locations)
         $completedPayments = $paymentsHandler->getByX([
             'organisation' => __oUuid(),
             'status' => 'COMPLETED'
-        ], ['amount']);
+        ], ['amount'], ['location' => $locationIds]);
         $totalPaid = $completedPayments->reduce(function ($carry, $item) { return $carry + $item['amount']; }, 0);
 
         $outstandingPayments = $paymentsHandler->getByX([
             'organisation' => __oUuid(),
             'status' => ['SCHEDULED', 'PAST_DUE']
-        ], ['amount']);
+        ], ['amount'], ['location' => $locationIds]);
         $totalOutstanding = $outstandingPayments->reduce(function ($carry, $item) { return $carry + $item['amount']; }, 0);
 
         $pastDuePayments = $paymentsHandler->getByX([
             'organisation' => __oUuid(),
             'status' => 'PAST_DUE'
-        ], ['amount']);
+        ], ['amount'], ['location' => $locationIds]);
         $totalPastDue = $pastDuePayments->reduce(function ($carry, $item) { return $carry + $item['amount']; }, 0);
 
         // Calculate BNPL usage rate
@@ -742,12 +858,10 @@ class PageController {
         // Get setup requirements
         $setupRequirements = Methods::organisations()->getSetupRequirements();
 
-        // Get active terminals for quick access
-        $terminalsHandler = Methods::terminals();
-        $activeTerminals = $terminalsHandler->queryBuilder()
-            ->whereList(['uuid' => __oUuid(), 'status' => 'ACTIVE'])
-            ->order('created_at', 'DESC');
-        $terminals = $terminalsHandler->queryGetAll($activeTerminals);
+        // Get active terminals for quick access (filtered by user's accessible locations)
+        $terminals = Methods::terminals()->getMyTerminals()
+            ->filter(fn($t) => $t['status'] === 'ACTIVE')
+            ->toArray();
 
         return Views("MERCHANT_DASHBOARD", compact(
             'locationOptions', 'grossRevenue', 'netRevenue', 'totalFees', 'orders', 'orderCount',

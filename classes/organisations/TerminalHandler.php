@@ -19,9 +19,10 @@ class TerminalHandler extends Crud {
         return $this->getFirst(['uid' => $terminalId, 'location' => $locationId], $fields);
     }
 
-    public function getMyTerminals(?string $uuid = null, array $fields = []): ?object {
+    public function getMyTerminals(?string $uuid = null, array $fields = []): Collection {
         if($uuid === null) $uuid = __oUuid();
-        return $this->getByX(['uuid' => $uuid, 'status' => ['DRAFT', 'ACTIVE', 'INACTIVE']], $fields);
+        $locationIds = \classes\Methods::locations()->userLocationPredicate();
+        return $this->getByX(['uuid' => $uuid, 'status' => ['DRAFT', 'ACTIVE', 'INACTIVE']], $fields, ['location' => $locationIds]);
     }
 
 

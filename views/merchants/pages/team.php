@@ -15,8 +15,7 @@ use classes\lang\Translate;
 $location = $args->location;
 $pageTitle = $location->name . " - Medlemmer";
 
-$locationRoles = [];
-foreach ($args->permissions as $role => $items) $locationRoles[$role] = \classes\utility\Titles::cleanUcAll($role);
+$locationRoles = $args->locationRoles;
 
 $organisation = $location->uuid;
 
@@ -31,6 +30,8 @@ $organisation = $location->uuid;
     var pageTitle = <?=json_encode($pageTitle)?>;
     activePage = "locations";
     var locationRoles = <?=json_encode($locationRoles)?>;
+    var currentLocation = <?=json_encode(['uid' => $location->uid, 'slug' => $location->slug, 'name' => $location->name])?>;
+    var organisationMembers = <?=json_encode($args->organisationMembers->toArray())?>;
 </script>
 <div class="page-content home">
 
@@ -201,22 +202,22 @@ $organisation = $location->uuid;
                         <div class="flex-row-end flex-align-center flex-nowrap" style="column-gap: .5rem;">
                             <select class="form-select-v2 mnw-150px switchViewSelect" name="role_permissions" id="role_permissions">
                                 <?php foreach ($args->permissions as $role => $permissions): ?>
-                                    <option value="<?=$role?>"><?=Titles::cleanUcAll($role)?></option>
+                                    <option value="<?=$role?>"><?=Translate::word(Titles::cleanUcAll($role))?></option>
                                 <?php endforeach; ?>
                             </select>
                             <?php if(LocationPermissions::__oModify($location, 'team_roles')): ?>
-                                <button class="btn-v2 mute-btn text-nowrap" name="create_role" onclick="organisationCreateRole()">
+                                <button class="btn-v2 mute-btn text-nowrap" name="create_role" onclick="locationCreateRole()">
                                     <i class="mdi mdi-plus-circle-outline"></i>
                                     <span class="text-nowrap">Opret ny rolle</span>
                                 </button>
                             <?php endif; ?>
                             <?php if(LocationPermissions::__oModify($location, 'role_permissions')): ?>
-                                <button class="btn-v2 action-btn text-nowrap flex-row-center-center flex-nowrap g-05" name="save_role_permissions"  onclick="editRolePermissions(this)">
+                                <button class="btn-v2 action-btn text-nowrap flex-row-center-center flex-nowrap g-05" name="save_role_permissions"  onclick="locationEditRolePermissions(this)">
                                     <i class="mdi mdi-content-save-outline"></i>
                                     <span class="text-nowrap">Gem ændringer</span>
                                     <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
                                         <span class="spinner-border color-blue square-15" role="status" style="border-width: 2px;">
-                                          <span class="sr-only">Loading...</span>
+                                          <span class="sr-only">Indlæser...</span>
                                         </span>
                                     </span>
                                 </button>
@@ -237,30 +238,30 @@ $organisation = $location->uuid;
 
                                 <div class="flex-row-between flex-wrap" style="column-gap: .75rem; row-gap: .5rem;">
                                     <div class="flex-col-start">
-                                        <p class="font-16 font-weight-bold"><?=Titles::cleanUcAll($role)?> Role</p>
+                                        <p class="font-16 font-weight-bold"><?=ucfirst(Translate::word(Titles::cleanUcAll($role)))?>-rolle</p>
                                         <p class="text-sm color-gray font-weight-medium text-wrap">
-                                            Du kan kun gemme ændringerne for den rolle, der der synlig (<?=Titles::cleanUcAll($role)?>)
+                                            Du kan kun gemme ændringerne for den rolle, der er synlig (<?=Translate::word(Titles::cleanUcAll($role))?>)
                                         </p>
                                         <?php if($role === "owner"): ?>
                                             <div class="warning-box w-fit mt-1">
-                                                <span>Ejer/Owner rollen vil altid have alle tilladelser aktiveret og kan ikke ændres.</span>
+                                                <span>Ejer-rollen vil altid have alle tilladelser aktiveret og kan ikke ændres.</span>
                                             </div>
                                         <?php endif; ?>
                                     </div>
                                     <div class="flex-row-end flex-align-center" style="column-gap: .5rem;">
                                         <?php if($role !== "owner" && LocationPermissions::__oModify($location, 'team_roles')): ?>
-                                            <div class="btn-v2 mute-btn h-fit noSelect cursor-pointer" data-role="<?=$role?>" onclick="organisationRenameRole(this)">
+                                            <div class="btn-v2 mute-btn h-fit noSelect cursor-pointer" data-role="<?=$role?>" onclick="locationRenameRole(this)">
                                                 <i class="fa-solid fa-pencil"></i>
                                                 <span>Omdøb rolle</span>
                                             </div>
                                         <?php endif; ?>
                                         <?php if($role !== "owner" && LocationPermissions::__oDelete($location, 'team_roles')): ?>
-                                            <div class="btn-v2 danger-btn h-fit noSelect cursor-pointer flex-row-center-center flex-nowrap g-05" data-role="<?=$role?>" onclick="organisationDeleteRole(this)">
+                                            <div class="btn-v2 danger-btn h-fit noSelect cursor-pointer flex-row-center-center flex-nowrap g-05" data-role="<?=$role?>" onclick="locationDeleteRole(this)">
                                                 <i class="fa-solid fa-trash"></i>
                                                 <span>Slet rolle</span>
                                                 <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
                                                     <span class="spinner-border color-white square-15" role="status" style="border-width: 2px;">
-                                                      <span class="sr-only">Loading...</span>
+                                                      <span class="sr-only">Indlæser...</span>
                                                     </span>
                                                 </span>
                                             </div>
@@ -281,7 +282,9 @@ $organisation = $location->uuid;
                                                 <th colspan="3">
                                                     <div class="flex-row-start flex-align-center flex-nowrap" style="column-gap: .5rem">
                                                         <i class="color-primary-cta <?=$mainPermissions->icon?>"></i>
-                                                        <span class="font-weight-bold"><?=Titles::cleanUcAll($mainObject)?></span>
+                                                        <span class="font-weight-bold">
+                                                            <?=ucfirst(Translate::context("team.".Titles::clean($mainObject)))?>
+                                                        </span>
                                                     </div>
                                                 </th>
                                                 <th colspan="1">
@@ -318,7 +321,9 @@ $organisation = $location->uuid;
                                                     <td colspan="3">
                                                         <div class="flex-row-start flex-align-center flex-nowrap" style="column-gap: .5rem">
                                                             <i class="color-primary-cta <?=$mainPermissions->icon?>" style="visibility: hidden"></i>
-                                                            <span class=""><?=Titles::cleanUcAll($permission)?></span>
+                                                            <span class="">
+                                                                <?=ucfirst(Translate::context("team.".Titles::clean($permission)))?>
+                                                            </span>
                                                         </div>
                                                     </td>
                                                     <td class="font-14" colspan="1">
@@ -363,12 +368,12 @@ $organisation = $location->uuid;
 
                         <?php if(LocationPermissions::__oModify($location, 'role_permissions')): ?>
                             <div class="mt-4 flex-row-end flex-align-center flex-nowrap" style="column-gap: .5rem;">
-                                <button class="btn-v2 action-btn text-nowrap flex-row-center-center flex-nowrap g-05" name="save_role_permissions"  onclick="editRolePermissions(this)">
+                                <button class="btn-v2 action-btn text-nowrap flex-row-center-center flex-nowrap g-05" name="save_role_permissions"  onclick="locationEditRolePermissions(this)">
                                     <i class="mdi mdi-content-save-outline"></i>
                                     <span class="text-nowrap">Gem ændringer</span>
                                     <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
                                         <span class="spinner-border color-blue square-15" role="status" style="border-width: 2px;">
-                                          <span class="sr-only">Loading...</span>
+                                          <span class="sr-only">Indlæser...</span>
                                         </span>
                                     </span>
                                 </button>

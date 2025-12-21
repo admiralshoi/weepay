@@ -14,7 +14,7 @@ use classes\lang\Translate;
 $pageTitle = ucfirst(Translate::word("Organisationsmedlemmer"));
 
 $organisationRoles = [];
-foreach ($args->permissions as $role => $items) $organisationRoles[$role] = \classes\utility\Titles::cleanUcAll($role);
+foreach ($args->permissions as $role => $items) $organisationRoles[$role] = ucfirst(Translate::word(Titles::clean($role)));
 
 $organisation = Settings::$organisation?->organisation;
 
@@ -28,6 +28,7 @@ $organisation = Settings::$organisation?->organisation;
     var pageTitle = <?=json_encode($pageTitle)?>;
     activePage = "team";
     var organisationRoles = <?=json_encode($organisationRoles)?>;
+    var organisationLocations = <?=json_encode($args->locations->toArray())?>;
 </script>
 <div class="page-content home">
 
@@ -37,6 +38,7 @@ $organisation = Settings::$organisation?->organisation;
             <?=\features\DomMethods::organisationSelect($args->memberRows, $organisation?->uid);?>
         </div>
     </div>
+
 
     <div class="mb-4">
         <p class="font-25 font-weight-bold"><?=ucfirst(Translate::word("Organisationsmedlemmer"))?></p>
@@ -75,7 +77,7 @@ $organisation = Settings::$organisation?->organisation;
                             <thead>
                             <tr>
                                 <th>User</th>
-                                <th>Email</th>
+                                <th>Email / Brugernavn</th>
                                 <th class="sort-active" data-sortDirection="asc">Rolle</th>
                                 <th>Status</th>
                                 <th class="text-right unsortable">Handling</th>
@@ -181,7 +183,7 @@ $organisation = Settings::$organisation?->organisation;
                         <div class="flex-row-end flex-align-center flex-nowrap" style="column-gap: .5rem;">
                             <select class="form-select-v2 mnw-150px switchViewSelect" name="role_permissions" id="role_permissions">
                                 <?php foreach ($args->permissions as $role => $permissions): ?>
-                                    <option value="<?=$role?>"><?=Titles::cleanUcAll($role)?></option>
+                                    <option value="<?=$role?>"><?=Translate::word(Titles::cleanUcAll($role))?></option>
                                 <?php endforeach; ?>
                             </select>
                             <?php if(OrganisationPermissions::__oModify('roles', 'roles')): ?>
@@ -196,7 +198,7 @@ $organisation = Settings::$organisation?->organisation;
                                     <span class="text-nowrap">Gem ændringer</span>
                                     <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
                                         <span class="spinner-border color-blue square-15" role="status" style="border-width: 2px;">
-                                          <span class="sr-only">Loading...</span>
+                                          <span class="sr-only">Indlæser...</span>
                                         </span>
                                     </span>
                                 </button>
@@ -217,13 +219,13 @@ $organisation = Settings::$organisation?->organisation;
 
                                 <div class="flex-row-between flex-wrap" style="column-gap: .75rem; row-gap: .5rem;">
                                     <div class="flex-col-start">
-                                        <p class="font-16 font-weight-bold"><?=Titles::cleanUcAll($role)?> Role</p>
+                                        <p class="font-16 font-weight-bold"><?=ucfirst(Translate::word(Titles::clean($role)))?>-rolle</p>
                                         <p class="text-sm color-gray font-weight-medium text-wrap">
-                                            Du kan kun gemme ændringerne for den rolle, der der synlig (<?=Titles::cleanUcAll($role)?>)
+                                            Du kan kun gemme ændringerne for den rolle, der er synlig (<?=Translate::word(Titles::cleanUcAll($role))?>)
                                         </p>
                                         <?php if($role === "owner"): ?>
                                             <div class="warning-box w-fit mt-1">
-                                                <span>Ejer/Owner rollen vil altid have alle tilladelser aktiveret og kan ikke ændres.</span>
+                                                <span>Ejer-rollen vil altid have alle tilladelser aktiveret og kan ikke ændres.</span>
                                             </div>
                                         <?php endif; ?>
                                     </div>
@@ -240,7 +242,7 @@ $organisation = Settings::$organisation?->organisation;
                                                 <span>Slet rolle</span>
                                                 <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
                                                     <span class="spinner-border color-white square-15" role="status" style="border-width: 2px;">
-                                                      <span class="sr-only">Loading...</span>
+                                                      <span class="sr-only">Indlæser...</span>
                                                     </span>
                                                 </span>
                                             </div>
@@ -261,7 +263,7 @@ $organisation = Settings::$organisation?->organisation;
                                                 <th colspan="3">
                                                     <div class="flex-row-start flex-align-center flex-nowrap" style="column-gap: .5rem">
                                                         <i class="color-primary-cta <?=$mainPermissions->icon?>"></i>
-                                                        <span class="font-weight-bold"><?=Titles::cleanUcAll($mainObject)?></span>
+                                                        <span class="font-weight-bold"><?=ucfirst(Translate::context("team.".Titles::clean($mainObject)))?></span>
                                                     </div>
                                                 </th>
                                                 <th colspan="1">
@@ -298,7 +300,7 @@ $organisation = Settings::$organisation?->organisation;
                                                     <td colspan="3">
                                                         <div class="flex-row-start flex-align-center flex-nowrap" style="column-gap: .5rem">
                                                             <i class="color-primary-cta <?=$mainPermissions->icon?>" style="visibility: hidden"></i>
-                                                            <span class=""><?=Titles::cleanUcAll($permission)?></span>
+                                                            <span class=""><?=ucfirst(Translate::context("team.".Titles::clean($permission)))?></span>
                                                         </div>
                                                     </td>
                                                     <td class="font-14" colspan="1">
@@ -348,7 +350,7 @@ $organisation = Settings::$organisation?->organisation;
                                     <span class="text-nowrap">Gem ændringer</span>
                                     <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
                                         <span class="spinner-border color-blue square-15" role="status" style="border-width: 2px;">
-                                          <span class="sr-only">Loading...</span>
+                                          <span class="sr-only">Indlæser...</span>
                                         </span>
                                     </span>
                                 </button>

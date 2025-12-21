@@ -46,6 +46,9 @@ class LocationMemberHandler extends Crud {
         $memberRow = $this->getMember($location->uid);
         if(isEmpty($memberRow)) return false;
 
+        // Check if member is suspended or deleted - no permissions if so
+        if($memberRow->status === MemberEnum::MEMBER_SUSPENDED || $memberRow->status === MemberEnum::MEMBER_DELETED) return false;
+
         $role = $memberRow->role;
         $permissions = toArray($location->permissions->$role);
 
@@ -124,7 +127,7 @@ class LocationMemberHandler extends Crud {
 
     #[ArrayShape(["timestamp" => "int", "triggered_by" => "int|mixed|string", "event" => "string", "extra" => "array"])]
     public function getEventDetails(string $eventType, int|string $triggeredBy = "", array $extra = []): array {
-        if(empty($triggeredBy)) $triggeredBy = $this->requestingUsersId;
+        if(empty($triggeredBy)) $triggeredBy = __uuid();
         return ["timestamp" => time(), "triggered_by" => $triggeredBy, "event" => $eventType, "extra" => $extra];
     }
 

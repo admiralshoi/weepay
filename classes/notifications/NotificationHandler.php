@@ -81,6 +81,22 @@ class NotificationHandler extends NotificationsManager {
     }
 
 
+    /**  TEAM INVITATION */
+    public function teamInvitation(array $params): void {
+        $values = ITEMS::TEAM_INVITE_VALUES;
+        if(!$this->validateParams($values, $params, ITEMS::TEAM_INVITE_REQUIRED, ITEMS::TEAM_INVITE_OPTIONAL, array_keys($values))) return;
+        $this->exec($values);
+    }
+
+
+    /**  USER CREATED */
+    public function userCreated(array $params): void {
+        $values = ITEMS::USER_CREATED_VALUES;
+        if(!$this->validateParams($values, $params, ITEMS::USER_CREATED_REQUIRED, ITEMS::USER_CREATED_OPTIONAL, array_keys($values))) return;
+        $this->exec($values);
+    }
+
+
     //---------------------------- NOTIFICATION METHODS END -----------------------------------------//
 
 
