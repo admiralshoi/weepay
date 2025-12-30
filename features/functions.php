@@ -323,9 +323,10 @@ function toArray(object|array|null $item): array {
     }
     return $array;
 }
-function toObject(array|object $array, bool $force = false): object {
-    if(is_object($array) && !$force) return $array;
+function toObject(array|object|null $array, bool $force = false): object {
     $object = new stdClass();
+    if(is_null($array)) return $object;
+    if(is_object($array) && !$force) return $array;
     foreach ($array as $key => $value) {
         if (is_array($value)) {
             $object->$key = toObject($value);

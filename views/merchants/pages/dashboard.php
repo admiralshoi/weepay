@@ -377,7 +377,6 @@ $kpiCardCol = $args->terminals->count() > 0 ? 'col-md-4 col-lg-6' : 'col-lg-3';
 
 <?php scriptStart(); ?>
 <script>
-    console.log('dadmsjdhsaih')
     function applyDateFilter() {
         const startDate = document.getElementById('start-date').value;
         const endDate = document.getElementById('end-date').value;

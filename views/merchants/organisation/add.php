@@ -5,6 +5,7 @@
 
 use classes\enumerations\Links;
 use classes\Methods;
+use classes\utility\Titles;
 use features\Settings;
 use classes\lang\Translate;
 
@@ -147,8 +148,8 @@ $countries = Methods::countries()->getByX(['enabled' => 1], ['uid', 'name', 'cod
                                                 <?php foreach ($args->invitations->list() as $invitation): ?>
                                                 <tr>
                                                     <td class="font-weight-bold"><?=$invitation->name?></td>
-                                                    <td class=""><?=\classes\utility\Titles::cleanUcAll($invitation->role)?></td>
-                                                    <td class=""><?=date('F d, Y', $invitation->timestamp)?></td>
+                                                    <td class=""><?=ucfirst(Translate::word($invitation->role))?></td>
+                                                    <td class=""><?=ucfirst(Translate::sentence(date('F d, Y', $invitation->timestamp)))?></td>
                                                     <td class="text-right">
                                                         <div class="flex-row-end flex-align-center flex-nowrap" style="column-gap: .5rem">
                                                             <button class="btn-v2 danger-btn-outline flex-row-center flex-align-center flex-nowrap"

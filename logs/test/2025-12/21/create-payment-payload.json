@@ -1,0 +1,25 @@
+{
+    "sourceCode": "3135a",
+    "amount": 3300,
+    "dynamicDescriptor": "Ny Butik!",
+    "customerTrns": "Ny Butik!: k\u00f8b",
+    "merchantTrns": "Ny Butik! - k\u00f8b",
+    "allowRecurring": true,
+    "preauth": false,
+    "disableCash": true,
+    "disableWallet": true,
+    "customer": {
+        "email": null,
+        "phone": "627201309",
+        "fullName": "Frederik Admiralsh\u00f8i",
+        "countryCode": "DK"
+    },
+    "currencyCode": "208",
+    "tags": [
+        "Ny Butik!",
+        "k\u00f8b",
+        "Frederik Admiralsh\u00f8i",
+        "1996-05-12"
+    ],
+    "isvAmount": 197
+}

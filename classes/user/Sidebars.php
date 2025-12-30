@@ -82,7 +82,7 @@ class Sidebars {
         // Map sidebar items to permission checks
         $permissionMap = [
             'locations' => ['locations', 'locations'],
-            'terminals' => ['locations', 'checkout'],
+            'terminals' => ['locations', 'terminals'],
             'team' => ['team', 'members'],
             'organisation' => null, // Special handling below
             'orders' => ['orders', 'payments'],

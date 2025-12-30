@@ -1352,7 +1352,7 @@ function selectV2(select = null) {
         wrapper.classList.add("form-select-v2-wrapper");
 
         const sizeClasses = [
-            'w-100', 'w-75', 'w-50', 'w-33', 'w-25', 'w-300px', 'h-45px', 'w-60px',
+            'w-100', 'w-75', 'w-50', 'w-33', 'w-25', 'w-300px', 'w-250px', 'h-45px', 'w-60px',
             'w-200px', 'w-150px', 'w-100px', 'w-30px', 'w-40px', 'flex-1-current', 'w-100px',
             'border-radius-tl-bl-0-5px', 'border-radius-tr-br-0-5px', 'w-65px', 'w-70px',
             'border-radius-tr-br-0-5rem', 'border-radius-tl-bl-0-5rem', 'dropdown-no-arrow'

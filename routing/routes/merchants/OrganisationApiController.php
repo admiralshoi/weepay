@@ -6,6 +6,7 @@ use classes\app\OrganisationPermissions;
 use classes\lang\Translate;
 use classes\Methods;
 use classes\organisations\MemberEnum;
+use classes\organisations\OrganisationRolePermissions;
 use classes\utility\Titles;
 use features\Settings;
 use JetBrains\PhpStorm\NoReturn;
@@ -13,6 +14,140 @@ use JetBrains\PhpStorm\NoReturn;
 class OrganisationApiController {
 
 
+    #[NoReturn] public static function getOrganisationMembers(array $args): void {
+        $page = (int)($args["page"] ?? 1);
+        $perPage = (int)($args["per_page"] ?? 10);
+        $search = isset($args["search"]) ? trim($args["search"]) : null;
+        $filterRoleRaw = isset($args["filter_role"]) && !empty($args["filter_role"]) ? trim($args["filter_role"]) : null;
+        $filterStatus = isset($args["filter_status"]) && !empty($args["filter_status"]) ? trim($args["filter_status"]) : null;
+        $sortColumn = isset($args["sort_column"]) && !empty($args["sort_column"]) ? trim($args["sort_column"]) : "created_at";
+        $sortDirection = isset($args["sort_direction"]) && in_array(strtoupper($args["sort_direction"]), ["ASC", "DESC"])
+            ? strtoupper($args["sort_direction"])
+            : "DESC";
+
+        // Handle special filter_role value for hiding location employees
+        $excludeLocationEmployees = $filterRoleRaw === 'hide_location_employees';
+        $filterRole = ($filterRoleRaw === 'hide_location_employees' || $filterRoleRaw === 'all') ? null : $filterRoleRaw;
+
+        // Map frontend sort columns to database columns
+        $sortColumnMap = [
+            'name' => 'created_at',
+            'role' => 'role',
+            'status' => 'status',
+        ];
+        if(array_key_exists($sortColumn, $sortColumnMap)) {
+            $sortColumn = $sortColumnMap[$sortColumn];
+        }
+
+        // Validate organisation
+        if(isEmpty(Settings::$organisation))
+            Response()->jsonError("Du er ikke medlem af nogen aktiv " . Translate::word("organisation") . ".");
+
+        // Check permissions
+        if(!OrganisationPermissions::__oRead('team', 'members'))
+            Response()->jsonError("Du har ikke tilladelse til at se medlemmer.");
+
+        $organisation = Settings::$organisation->organisation;
+        $organisationUid = $organisation->uid;
+
+        // Get paginated members
+        $orgMemberHandler = Methods::organisationMembers();
+        $result = $orgMemberHandler->getOrganisationMembersPagination(
+            $organisationUid,
+            $page,
+            $perPage,
+            $sortColumn,
+            $sortDirection,
+            $search,
+            $filterRole,
+            $filterStatus,
+            $excludeLocationEmployees,
+        );
+
+        // Transform members for frontend
+        $members = $result["items"]->map(function ($member) {
+            $status = $member["status"];
+            $invitationStatus = $member["invitation_status"];
+            $user = $member["uuid"];
+
+            if($status === MemberEnum::MEMBER_SUSPENDED) {
+                $showStatus = "Suspended";
+                $statusBoxClass = "danger-box";
+                $actionMenu = [
+                    ["icon" => "fa-solid fa-power-off", 'title' => "Unsuspend", "action" => "unsuspend", 'risk' => "low"],
+                    ["icon" => "fa-solid fa-user-xmark", 'title' => "Remove", "action" => "remove", 'risk' => "high"],
+                ];
+            }
+            elseif($invitationStatus === MemberEnum::INVITATION_DECLINED) {
+                $showStatus = "Declined";
+                $statusBoxClass = "danger-box";
+                $actionMenu = [
+                    ["icon" => "fa-solid fa-user-pen", 'title' => "Update Role", "action" => "update-role", 'risk' => "low"],
+                    ["icon" => "fa-solid fa-envelope", 'title' => "Resend Invitation", "action" => "resend-invitation", 'risk' => "low"],
+                    ["icon" => "fa-solid fa-user-xmark", 'title' => "Remove", "action" => "remove", 'risk' => "high"],
+                ];
+            }
+            elseif($invitationStatus === MemberEnum::INVITATION_RETRACTED) {
+                $showStatus = "Retracted";
+                $statusBoxClass = "mute-box";
+                $actionMenu = [
+                    ["icon" => "fa-solid fa-user-pen", 'title' => "Update Role", "action" => "update-role", 'risk' => "low"],
+                    ["icon" => "fa-solid fa-envelope", 'title' => "Resend Invitation", "action" => "resend-invitation", 'risk' => "low"],
+                    ["icon" => "fa-solid fa-user-xmark", 'title' => "Remove", "action" => "remove", 'risk' => "high"],
+                ];
+            }
+            elseif($invitationStatus === MemberEnum::INVITATION_PENDING) {
+                $showStatus = "Pending";
+                $statusBoxClass = "warning-box";
+                $actionMenu = [
+                    ["icon" => "fa-solid fa-envelope", 'title' => "Resend Invitation", "action" => "resend-invitation", 'risk' => "low"],
+                    ["icon" => "fa-solid fa-user-pen", 'title' => "Update Role", "action" => "update-role", 'risk' => "low"],
+                    ["icon" => "fa-solid fa-xmark", 'title' => "Retract Invitation", "action" => "retract-invitation", 'risk' => "high"],
+                ];
+            }
+            else {
+                $showStatus = "Active";
+                $statusBoxClass = "success-box";
+                $actionMenu = [
+                    ["icon" => "fa-solid fa-user-pen", 'title' => "Update Role", "action" => "update-role", 'risk' => "low"],
+                    ["icon" => "fa-solid fa-location-dot", 'title' => "Edit Scoped Locations", "action" => "edit-scoped-locations", 'risk' => "low"],
+                    ["icon" => "fa-solid fa-ban", 'title' => "Suspend", "action" => "suspend", 'risk' => "high"],
+                    ["icon" => "fa-solid fa-user-xmark", 'title' => "Remove", "action" => "remove", 'risk' => "high"],
+                ];
+            }
+
+            $member["action_menu"] = $actionMenu;
+            $member["show_status"] = $showStatus;
+            $member["status_box"] = $statusBoxClass;
+            $member["name"] = is_array($user) ? ($user['full_name'] ?? '') : (is_object($user) ? ($user->full_name ?? '') : '');
+            $member["email"] = is_array($user) ? ($user['email'] ?? '') : (is_object($user) ? ($user->email ?? '') : '');
+            $member["initials"] = __initials($member["name"]);
+            $member["name_truncated"] = Titles::truncateStr(Titles::cleanUcAll($member["name"]), 16);
+            $member["member_uuid"] = is_array($user) ? ($user['uid'] ?? $member["uuid"]) : (is_object($user) ? ($user->uid ?? $member["uuid"]) : $member["uuid"]);
+            $member["role_title"] = ucfirst(Translate::word(Titles::clean($member["role"])));
+
+            return $member;
+        });
+
+        // Get organisation roles for role titles
+        $permissions = $organisation->permissions;
+        $organisationRoles = [];
+        foreach($permissions as $role => $roleData) {
+            if($role === 'location_employee') continue; // Exclude from dropdown
+            $organisationRoles[$role] = ucfirst(Translate::word(Titles::clean($role)));
+        }
+
+        Response()->jsonSuccess("", [
+            "members" => $members->toArray(),
+            "pagination" => [
+                "page" => $result["page"],
+                "perPage" => $result["perPage"],
+                "total" => $result["count"],
+                "totalPages" => $result["totalPages"],
+            ],
+            "roles" => $organisationRoles,
+        ]);
+    }
 
     #[NoReturn] public static function respondToInvitation(array $args): void {
         foreach (["organisation_id", "action"] as $key)
@@ -25,6 +160,10 @@ class OrganisationApiController {
         if($member->invitation_status !== MemberEnum::INVITATION_PENDING) Response()->jsonError("Ugyldig anmodning", [], 400);
 
 
+        // Get all location IDs belonging to this organisation
+        $organisationLocationIds = Methods::locations()->getByX(['uuid' => $organisationId], ['uid'])->pluck('uid')->toArray();
+        $locationMemberHandler = Methods::locationMembers();
+
         switch ($action) {
             default: Response()->jsonError("Ugyldig anmodning", ['reason' => "Ukendt handling"], 400);
             case "decline":
@@ -32,6 +171,21 @@ class OrganisationApiController {
                     "invitation_status" => MemberEnum::INVITATION_DECLINED,
                     "invitation_activity" => Methods::organisationMembers()->getEventDetails(MemberEnum::INVITATION_DECLINED)
                 ]);
+
+                // Also decline all pending location invitations for this user within this organisation
+                if(!empty($organisationLocationIds)) {
+                    $locationMemberHandler->queryBuilder()
+                        ->where('uuid', __uuid())
+                        ->where('location', $organisationLocationIds)
+                        ->where('invitation_status', MemberEnum::INVITATION_PENDING)
+                        ->update([
+                            'invitation_status' => MemberEnum::INVITATION_DECLINED,
+                            'invitation_activity' => json_encode([
+                                $locationMemberHandler->getEventDetails(MemberEnum::INVITATION_DECLINED)
+                            ])
+                        ]);
+                }
+
                 Response()->jsonSuccess("Invitationen er blevet afvist.");
             case "accept":
                 $accepted = Methods::organisationMembers()->updateMemberDetails($organisationId, __uuid(), [
@@ -40,6 +194,21 @@ class OrganisationApiController {
                 ]);
 
                 if(!$accepted) Response()->jsonError("Operationen mislykkedes. Prøv igen senere.");
+
+                // Also accept all pending location invitations for this user within this organisation
+                if(!empty($organisationLocationIds)) {
+                    $locationMemberHandler->queryBuilder()
+                        ->where('uuid', __uuid())
+                        ->where('location', $organisationLocationIds)
+                        ->where('invitation_status', MemberEnum::INVITATION_PENDING)
+                        ->update([
+                            'invitation_status' => MemberEnum::INVITATION_ACCEPTED,
+                            'invitation_activity' => json_encode([
+                                $locationMemberHandler->getEventDetails(MemberEnum::INVITATION_ACCEPTED)
+                            ])
+                        ]);
+                }
+
                 Methods::organisations()->setChosenOrganisation($organisationId);
                 Response()->setRedirect(__url(ORGANISATION_PANEL_PATH))->jsonSuccess("Invitationen er blevet accepteret.");
         }
@@ -355,7 +524,7 @@ class OrganisationApiController {
         $permissions = toArray($organisation->permissions);
         if(array_key_exists($name,$permissions)) Response()->jsonError("En rolle med dette navn eksisterer allerede. Prøv et andet navn.");
 
-        $permissions[$name] = Methods::organisations()::BASE_PERMISSIONS;
+        $permissions[$name] = OrganisationRolePermissions::getForRole($name);
         $status = Methods::organisations()->updateOrganisationDetails(__oid(), ["permissions" => $permissions]);
         if(!$status) Response()->jsonError("Var ikke i stand til at oprette den nye rolle. Prøv igen senere.");
         Response()->setRedirect()->jsonSuccess('Den nye rolle er blevet oprettet.');

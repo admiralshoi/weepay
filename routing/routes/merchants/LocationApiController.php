@@ -6,12 +6,124 @@ use classes\app\LocationPermissions;
 use classes\app\OrganisationPermissions;
 use classes\lang\Translate;
 use classes\Methods;
+use classes\organisations\LocationRolePermissions;
 use classes\organisations\MemberEnum;
 use classes\utility\Titles;
 use features\Settings;
 use JetBrains\PhpStorm\NoReturn;
 
 class LocationApiController {
+
+    #[NoReturn] public static function getLocationMembers(array $args): void {
+        if(!array_key_exists("location_uid", $args) || empty(trim($args["location_uid"])))
+            Response()->jsonError("Location UID is required.");
+
+        $locationUid = trim($args["location_uid"]);
+        $page = (int)($args["page"] ?? 1);
+        $perPage = (int)($args["per_page"] ?? 10);
+        $search = isset($args["search"]) ? trim($args["search"]) : null;
+        $filterRole = isset($args["filter_role"]) && !empty($args["filter_role"]) ? trim($args["filter_role"]) : null;
+        $filterStatus = isset($args["filter_status"]) && !empty($args["filter_status"]) ? trim($args["filter_status"]) : null;
+        $sortColumn = isset($args["sort_column"]) && !empty($args["sort_column"]) ? trim($args["sort_column"]) : "created_at";
+        $sortDirection = isset($args["sort_direction"]) && in_array(strtoupper($args["sort_direction"]), ["ASC", "DESC"])
+            ? strtoupper($args["sort_direction"])
+            : "DESC";
+
+        // Map frontend sort columns to database columns
+        $sortColumnMap = [
+            'name' => 'created_at',
+            'role' => 'role',
+            'status' => 'status',
+        ];
+        if(array_key_exists($sortColumn, $sortColumnMap)) {
+            $sortColumn = $sortColumnMap[$sortColumn];
+        }
+
+        // Get and validate location
+        $location = Methods::locations()->get($locationUid);
+        if(isEmpty($location)) Response()->jsonError("Lokation ikke fundet.");
+        if($location->uuid->uid !== __oUuid()) Response()->jsonError("Du har ikke tilladelse til denne handling.");
+
+        // Check location permissions
+        if(!LocationPermissions::__oRead($location, 'team_members'))
+            Response()->jsonError("Du har ikke tilladelse til at se medlemmer på denne lokation.");
+
+        // Get paginated members
+        $locationMemberHandler = Methods::locationMembers();
+        $result = $locationMemberHandler->getLocationMembersPagination(
+            $locationUid,
+            $page,
+            $perPage,
+            $sortColumn,
+            $sortDirection,
+            $search,
+            $filterRole,
+            $filterStatus,
+        );
+
+        // Transform members for frontend
+        $members = $result["items"]->map(function ($member) use ($location) {
+            $status = $member["status"];
+            $invitationStatus = $member["invitation_status"];
+            $user = !is_string($member['uuid']) ? toObject($member['uuid']) : Methods::users()->get($member['uuid'], ['email', 'full_name', 'uid']);
+
+            if($status === MemberEnum::MEMBER_SUSPENDED) {
+                $showStatus = "Suspended";
+                $statusBoxClass = "danger-box";
+                $actionMenu = [
+                    ["icon" => "fa-solid fa-power-off", 'title' => "Unsuspend", "action" => "unsuspend", 'risk' => "low"],
+                    ["icon" => "fa-solid fa-user-xmark", 'title' => "Remove", "action" => "remove", 'risk' => "high"],
+                ];
+            }
+            elseif($invitationStatus === MemberEnum::INVITATION_PENDING) {
+                $showStatus = "Pending";
+                $statusBoxClass = "warning-box";
+                $actionMenu = [
+                    ["icon" => "fa-solid fa-user-pen", 'title' => "Update Role", "action" => "update-role", 'risk' => "low"],
+                    ["icon" => "fa-solid fa-xmark", 'title' => "Cancel", "action" => "remove", 'risk' => "high"],
+                ];
+            }
+            else {
+                $showStatus = "Active";
+                $statusBoxClass = "success-box";
+                $actionMenu = [
+                    ["icon" => "fa-solid fa-user-pen", 'title' => "Update Role", "action" => "update-role", 'risk' => "low"],
+                    ["icon" => "fa-solid fa-ban", 'title' => "Suspend", "action" => "suspend", 'risk' => "high"],
+                    ["icon" => "fa-solid fa-user-xmark", 'title' => "Remove", "action" => "remove", 'risk' => "high"],
+                ];
+            }
+
+            $member["action_menu"] = $actionMenu;
+            $member["show_status"] = $showStatus;
+            $member["status_box"] = $statusBoxClass;
+            $member["name"] = $user?->full_name ?? '';
+            $member["email"] = $user?->email ?? '';
+            $member["initials"] = __initials($member["name"]);
+            $member["name_truncated"] = Titles::truncateStr(Titles::cleanUcAll($member["name"]), 16);
+            $member["member_uuid"] = $user?->uid;
+            $member["role_title"] = ucfirst(Translate::word(Titles::clean($member["role"])));
+
+            return $member;
+        });
+
+        // Get location roles for role titles
+        $permissions = $location->permissions;
+        $locationRoles = [];
+        foreach($permissions as $role => $roleData) {
+            $locationRoles[$role] = ucfirst(Translate::word(Titles::clean($role)));
+        }
+
+        Response()->jsonSuccess("", [
+            "members" => $members->toArray(),
+            "pagination" => [
+                "page" => $result["page"],
+                "perPage" => $result["perPage"],
+                "total" => $result["count"],
+                "totalPages" => $result["totalPages"],
+            ],
+            "roles" => $locationRoles,
+        ]);
+    }
 
     #[NoReturn] public static function inviteLocationMember(array $args): void {
         // Validate required fields
@@ -240,7 +352,7 @@ class LocationApiController {
                 $orgMemberHandler->createNewMember(
                     $organisationId,
                     $userUid,
-                    'LOCATION_EMPLOYEE',
+                    'location_employee',
                     MemberEnum::INVITATION_PENDING,
                     [$locationUid]
                 );
@@ -430,16 +542,8 @@ class LocationApiController {
         if(array_key_exists($roleName, $permissions))
             Response()->jsonError("En rolle med dette navn eksisterer allerede.");
 
-        // Create default permissions structure
-        $defaultPermissions = (object)[
-            'icon' => 'fa-solid fa-user',
-            'read' => false,
-            'modify' => false,
-            'delete' => false,
-            'permissions' => (object)[]
-        ];
 
-        $permissions[$roleName] = $defaultPermissions;
+        $permissions[$roleName] = LocationRolePermissions::getForRole($roleName);
         Methods::locations()->update(['permissions' => $permissions], ['uid' => $locationUid]);
 
         Response()->setRedirect()->jsonSuccess("Rollen er blevet oprettet.");

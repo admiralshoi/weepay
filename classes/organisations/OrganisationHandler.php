@@ -223,21 +223,22 @@ class OrganisationHandler extends Crud {
     }
 
 
-    public function updateNewBasePermissions(): void {
+    public function updateNewBasePermissions(bool $overwriteExisting = false): void {
         $requiredRoleNames = Settings::$app->organisation_roles;
         $organisations = $this->getByX([], ['uid', 'permissions']);
         foreach ($organisations->list() as $org) {
             $rolePermissions = toArray($org->permissions);
 
-            foreach ($rolePermissions as  &$permissions) {
-                foreach (self::BASE_PERMISSIONS as $main => $item) {
-                    if(!array_key_exists($main, $permissions)) {
-                        $permissions[$main] = $item;
+            foreach ($rolePermissions as  $role => $permissions) {
+                $basePermissions = OrganisationRolePermissions::getForRole($role);
+                foreach ($basePermissions as $main => $item) {
+                    if($overwriteExisting || !array_key_exists($main, $permissions)) {
+                        $rolePermissions[$role][$main] = $item;
                         continue;
                     }
                     foreach ($item['permissions'] as $sub => $subPermissions) {
                         if(!array_key_exists($sub, $permissions[$main]['permissions'])) {
-                            $permissions[$main]['permissions'][$sub] = $subPermissions;
+                            $rolePermissions[$role][$main]['permissions'][$sub] = $subPermissions;
                         }
                     }
                 }
@@ -245,7 +246,7 @@ class OrganisationHandler extends Crud {
 
             foreach ($requiredRoleNames as $role) {
                 if(array_key_exists($role, $rolePermissions)) continue;
-                $rolePermissions[$role] = self::BASE_PERMISSIONS;
+                $rolePermissions[$role] = OrganisationRolePermissions::getForRole($role);
             }
             $this->update(['permissions' => $rolePermissions], ['uid' => $org->uid]);
         }
@@ -299,7 +300,7 @@ class OrganisationHandler extends Crud {
             "permissions" => [],
             "status" => "ACTIVE"
         ];
-        foreach (Settings::$app->organisation_roles as $role) $params["permissions"][$role] = self::BASE_PERMISSIONS;
+        foreach (Settings::$app->organisation_roles as $role) $params["permissions"][$role] = OrganisationRolePermissions::getForRole($role);
 
         if(!$this->create($params)) return null;
         return $this->recentUid;

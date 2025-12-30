@@ -7,6 +7,7 @@ class Team {
     public Role $role;
     public string $update = "api/locations/team/update";
     public string $invite = "api/locations/team/invite";
+    public string $list = "api/locations/team/list";
 
 
 

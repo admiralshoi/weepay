@@ -10,8 +10,14 @@ $terminalSession = $args->terminalSession;
 $terminal = $terminalSession->terminal;
 $basket = $args->basket;
 $paymentPlans = $args->paymentPlans;
+$page = $args->page ?? null;
+$logoUrl = $page ? __url($page->logo) : null;
 
-
+// Calculate BNPL progress percentage
+$bnplPercentage = 0;
+if (!isEmpty($args->bnplLimit) && $args->bnplLimit->platform_max > 0) {
+    $bnplPercentage = ($args->bnplLimit->available / $args->bnplLimit->platform_max) * 100;
+}
 
 ?>
 
@@ -53,31 +59,44 @@ $paymentPlans = $args->paymentPlans;
             </div>
         </div>
 
-        <div class="flex-col-start flex-align-center mt-5" style="row-gap: .75rem;">
-
-            <div class="flex-col-start flex-align-center" style="row-gap: .25rem;">
-                <p class="mb-0 font-25 font-weight-bold">Vælg Betalingsplan</p>
-                <p class="mb-0 font-14 font-weight-medium color-gray">Vælg den løsning der passer dig bedst</p>
-            </div>
+        <div class="flex-col-start flex-align-center mt-4" style="row-gap: 1rem;">
 
             <?php if(!isEmpty($args->bnplLimit)): ?>
-            <div class="alert alert-info border-radius-10px w-100">
-                <div class="flex-col-start" style="row-gap: 0.5rem;">
-                    <div class="flex-row-start flex-align-center" style="gap: 0.5rem;">
-                        <i class="mdi mdi-information-outline font-20"></i>
-                        <p class="mb-0 font-16 font-weight-bold">Din BNPL kredit</p>
-                    </div>
-                    <p class="mb-0 font-14">
-                        Du har <strong><?=number_format($args->bnplLimit->available, 2)?> DKK</strong> tilgængelig til betal-senere muligheder.
-                        <?php if($args->bnplLimit->outstanding > 0): ?>
-                        <br>Du har <strong><?=number_format($args->bnplLimit->outstanding, 2)?> DKK</strong> udestående på tidligere køb.
-                        <?php endif; ?>
-                    </p>
+            <!-- Dark Credit Box -->
+            <div class="bnpl-credit-card w-100">
+                <p class="bnpl-credit-card__label">WEEPAY SALDO</p>
+                <p class="bnpl-credit-card__amount"><?=number_format($args->bnplLimit->available, 0, ',', '.')?> kr.</p>
+                <div class="bnpl-credit-card__progress-row">
+                    <span class="bnpl-credit-card__progress-label">Tilgængelig</span>
+                    <span class="bnpl-credit-card__progress-max">Max <?=number_format($args->bnplLimit->platform_max, 0, ',', '.')?> kr.</span>
+                </div>
+                <div class="bnpl-credit-card__progress-container">
+                    <div class="bnpl-credit-card__progress-bar" style="width: <?=$bnplPercentage?>%;"></div>
                 </div>
             </div>
             <?php endif; ?>
 
+            <!-- Store & Basket Info -->
+            <div class="checkout-store-info w-100">
+                <div class="checkout-store-info__left">
+                    <?php if($logoUrl): ?>
+                        <img src="<?=$logoUrl?>" alt="<?=$terminal->location->name?>" class="checkout-store-info__logo">
+                    <?php else: ?>
+                        <div class="checkout-store-info__logo-placeholder">
+                            <?=strtoupper(substr($terminal->location->name, 0, 2))?>
+                        </div>
+                    <?php endif; ?>
+                    <div class="checkout-store-info__text">
+                        <p class="checkout-store-info__name"><?=$terminal->location->name?></p>
+                        <p class="checkout-store-info__basket"><?=$basket->name?></p>
+                    </div>
+                </div>
+                <p class="checkout-store-info__price"><?=number_format($basket->price, 0, ',', '.')?> kr.</p>
+            </div>
+
             <div class="flex-col-start w-100" style="row-gap: 1rem;">
+
+                <p class="mb-0 font-14 font-weight-bold color-gray text-uppercase">Vælg Betaling</p>
 
                 <div class="payment-cards">
                     <?php foreach ($paymentPlans as $paymentPlan): ?>
@@ -89,14 +108,7 @@ $paymentPlans = $args->paymentPlans;
                         <div class="payment-card__content">
                             <div class="flex-col-start" style="row-gap: .5rem;">
                                 <div class="flex-row-start flex-align-start flex-nowrap" style="gap: .75rem;">
-                                    <div class="payment-card__icon">
-                                        <?php
-                                        if($paymentPlan->name === 'direct') $iconClass = "mdi mdi-credit-card-outline color-design-blue";
-                                        elseif($paymentPlan->name === 'pushed') $iconClass = "mdi mdi-calendar-outline color-design-blue";
-                                        else $iconClass = "mdi mdi-trending-up color-design-blue";
-                                        ?>
-                                        <i class="<?=$iconClass?>"></i>
-                                    </div>
+
                                     <div class="payment-card__text">
                                         <h3 class="payment-card__title mb-0"><?=$paymentPlan->title?></h3>
                                         <p class="payment-card__subtitle mb-0"><?=$paymentPlan->caption?></p>
@@ -125,20 +137,6 @@ $paymentPlans = $args->paymentPlans;
 
                     </label>
                     <?php endforeach; ?>
-                </div>
-
-
-                <div class="action-mute-info-box">
-                    <div class="flex-row-start flex-align-center flex-nowrap" style="column-gap: 5px">
-                        <div class="square-25 flex-row-center flex-align-center"><i class="font-16 mdi mdi-cart-outline"></i></div>
-                        <p class="mb-0 info-title">Total beløb</p>
-                    </div>
-                    <div class="info-content">
-                        <div class="flex-row-between flex-align-center flex-nowrap" style="gap: .5rem">
-                            <p class="mb-0 font-15"><?=$basket->name?></p>
-                            <p class="mb-0 font-15 font-weight-bold"><?=number_format($basket->price, 2) . currencySymbol($basket->currency)?></p>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="note-info-box">

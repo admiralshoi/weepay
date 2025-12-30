@@ -23,13 +23,13 @@ class Fixed extends \routing\paths\Paths {
         "vendor.mdi.css.materialdesignicons.min.css",
         "vendor.style.css",
         "vendor.maxlength.maxlength.min.js",
-        ["https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap", "css"]
+        ["https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap", "css"],
+        "js.translator.js",
     ];
     const MAIN = [
         "js.server.js",
         "js.main.js",
         "js.utility.js",
-        "js.translator.js",
         "js.features.js",
         "js.initializer.js",
         "css.main.css",

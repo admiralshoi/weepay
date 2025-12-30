@@ -396,6 +396,214 @@ ul#error-box li:not(:last-of-type)  {
 }
 
 
+/* ------------------------------------------------------------------ */
+/*  BNPL Credit Card (Dark Box)                                        */
+/* ------------------------------------------------------------------ */
+.bnpl-credit-card {
+    background: #2d3748;
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    color: #fff;
+}
+
+.bnpl-credit-card__label {
+    margin: 0 0 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+}
+
+.bnpl-credit-card__amount {
+    margin: 0 0 0.75rem;
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.1;
+}
+
+.bnpl-credit-card__progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.8rem;
+}
+
+.bnpl-credit-card__progress-label {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.bnpl-credit-card__progress-max {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.bnpl-credit-card__progress-container {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.bnpl-credit-card__progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #48bb78, #68d391);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Checkout Store Info Section                                        */
+/* ------------------------------------------------------------------ */
+.checkout-store-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+}
+
+.checkout-store-info__left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.checkout-store-info__logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    object-fit: contain;
+    background: #f0f0f0;
+    padding: 4px;
+}
+
+.checkout-store-info__logo-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #c6f6d5, #9ae6b4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #276749;
+}
+
+.checkout-store-info__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.checkout-store-info__name {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1a202c;
+}
+
+.checkout-store-info__basket {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #718096;
+}
+
+.checkout-store-info__price {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1a202c;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Mobile-specific: Hide hero and header on info page                  */
+/* ------------------------------------------------------------------ */
+@media (max-width: 768px) {
+    .checkout-hero-mobile-hide {
+        display: none !important;
+    }
+    .checkout-header-mobile-hide {
+        display: none !important;
+    }
+    #mobile-session-id {
+        display: flex !important;
+    }
+}
+
+
+/* ------------------------------------------------------------------ */
+/*  Pagination Component                                               */
+/* ------------------------------------------------------------------ */
+.pagination-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.pagination-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 0.5rem;
+    border: 1px solid var(--card-border-color, #e2e8f0);
+    border-radius: 6px;
+    background: var(--white, #fff);
+    color: var(--dark, #1a202c);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.pagination-btn:hover:not(.disabled):not(.active) {
+    background: var(--semi-white, #f7fafc);
+    border-color: var(--color-primary, #0044cc);
+    color: var(--color-primary, #0044cc);
+}
+
+.pagination-btn.active {
+    background: var(--color-primary, #0044cc);
+    border-color: var(--color-primary, #0044cc);
+    color: var(--white, #fff);
+}
+
+.pagination-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--semi-white, #f7fafc);
+}
+
+.pagination-ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    color: var(--color-gray, #718096);
+    font-size: 14px;
+}
+
+/* Mobile responsive pagination */
+@media (max-width: 576px) {
+    .pagination-nav {
+        gap: 0.15rem;
+    }
+
+    .pagination-btn {
+        min-width: 32px;
+        height: 32px;
+        font-size: 13px;
+    }
+
+    .pagination-ellipsis {
+        min-width: 24px;
+    }
+}
 
 
 

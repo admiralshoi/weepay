@@ -161,7 +161,7 @@ class LocationHandler extends Crud {
         ];
 
 
-        foreach (Settings::$app->location_roles as $role) $params["permissions"][$role] = self::BASE_PERMISSIONS;
+        foreach (Settings::$app->location_roles as $role) $params["permissions"][$role] = LocationRolePermissions::getForRole($role);
 
         if(!$this->create($params)) return null;
         return $this->recentUid;
@@ -229,6 +229,37 @@ class LocationHandler extends Crud {
 
 
 
+    public function updateNewBasePermissions(bool $overwriteExisting = false): void {
+        $requiredRoleNames = Settings::$app->location_roles;
+        $locations = $this->getByX([], ['uid', 'permissions']);
+        foreach ($locations->list() as $loc) {
+            $rolePermissions = toArray($loc->permissions);
+
+            foreach ($rolePermissions as  $role => $permissions) {
+                $basePermissions = LocationRolePermissions::getForRole($role);
+                foreach ($basePermissions as $main => $item) {
+                    if($overwriteExisting || !array_key_exists($main, $permissions)) {
+                        $rolePermissions[$role][$main] = $item;
+                        continue;
+                    }
+                    foreach ($item['permissions'] as $sub => $subPermissions) {
+                        if(!array_key_exists($sub, $permissions[$main]['permissions'])) {
+                            $rolePermissions[$role][$main]['permissions'][$sub] = $subPermissions;
+                        }
+                    }
+                }
+            }
+
+            foreach ($requiredRoleNames as $role) {
+                if(array_key_exists($role, $rolePermissions)) continue;
+                $rolePermissions[$role] = LocationRolePermissions::getForRole($role);
+            }
+
+            $this->update(['permissions' => $rolePermissions], ['uid' => $loc->uid]);
+        }
+    }
+
+
     const BASE_PERMISSIONS = [
         'general' => [
             'icon' => 'mdi mdi-view-grid-outline',
@@ -267,6 +298,11 @@ class LocationHandler extends Crud {
                     'delete' => true
                 ],
                 'orders' => [
+                    'read' => true,
+                    'modify' => true,
+                    'delete' => true
+                ],
+                'payments' => [
                     'read' => true,
                     'modify' => true,
                     'delete' => true

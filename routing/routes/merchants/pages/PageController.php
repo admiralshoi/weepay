@@ -73,62 +73,7 @@ class PageController {
             return null;
         }
 
-        $members = Methods::organisationMembers()->getByX(['organisation' => __oid()])->map(function ($member) {
-            $status = $member["status"];
-            $invitationStatus = $member["invitation_status"];
-
-            if($status === MemberEnum::MEMBER_SUSPENDED) {
-                $showStatus = "Suspended";
-                $statusBoxClass = "danger-box";
-                $actionMenu = [
-                    ["icon" => "fa-solid fa-power-off", 'title' => "Unsuspend", "action" => "unsuspend", 'risk' => "low"],
-                    ["icon" => "fa-solid fa-user-xmark", 'title' => "Remove", "action" => "remove", 'risk' => "high"],
-                ];
-            }
-            elseif($invitationStatus === MemberEnum::INVITATION_DECLINED) {
-                $showStatus = "Declined";
-                $statusBoxClass = "danger-box";
-                $actionMenu = [
-                    ["icon" => "fa-solid fa-user-pen", 'title' => "Update Role", "action" => "update-role", 'risk' => "low"],
-                    ["icon" => "fa-solid fa-envelope", 'title' => "Resend Invitation", "action" => "resend-invitation", 'risk' => "low"],
-                    ["icon" => "fa-solid fa-user-xmark", 'title' => "Remove", "action" => "remove", 'risk' => "high"],
-                ];
-            }
-            elseif($invitationStatus === MemberEnum::INVITATION_RETRACTED) {
-                $showStatus = "Retracted";
-                $statusBoxClass = "mute-box";
-                $actionMenu = [
-                    ["icon" => "fa-solid fa-user-pen", 'title' => "Update Role", "action" => "update-role", 'risk' => "low"],
-                    ["icon" => "fa-solid fa-envelope", 'title' => "Resend Invitation", "action" => "resend-invitation", 'risk' => "low"],
-                    ["icon" => "fa-solid fa-user-xmark", 'title' => "Remove", "action" => "remove", 'risk' => "high"],
-                ];
-            }
-            elseif($invitationStatus === MemberEnum::INVITATION_PENDING) {
-                $showStatus = "Pending";
-                $statusBoxClass = "warning-box";
-                $actionMenu = [
-                    ["icon" => "fa-solid fa-envelope", 'title' => "Resend Invitation", "action" => "resend-invitation", 'risk' => "low"],
-                    ["icon" => "fa-solid fa-user-pen", 'title' => "Update Role", "action" => "update-role", 'risk' => "low"],
-                    ["icon" => "fa-solid fa-xmark", 'title' => "Retract Invitation", "action" => "retract-invitation", 'risk' => "high"],
-                ];
-            }
-            else {
-                $showStatus = "Active";
-                $statusBoxClass = "success-box";
-                $actionMenu = [
-                    ["icon" => "fa-solid fa-user-pen", 'title' => "Update Role", "action" => "update-role", 'risk' => "low"],
-                    ["icon" => "fa-solid fa-location-dot", 'title' => "Edit Scoped Locations", "action" => "edit-scoped-locations", 'risk' => "low"],
-                    ["icon" => "fa-solid fa-ban", 'title' => "Suspend", "action" => "suspend", 'risk' => "high"],
-                    ["icon" => "fa-solid fa-user-xmark", 'title' => "Remove", "action" => "remove", 'risk' => "high"],
-                ];
-            }
-            $member["action_menu"] = $actionMenu;
-            $member["show_status"] = $showStatus;
-            $member["status_box"] = $statusBoxClass;
-            $member["name"] = $member["uuid"]['full_name'];
-            $member["email"] = $member["uuid"]['email'];
-            return $member;
-        });
+        // Members are now loaded via AJAX for better pagination support
         $permissions = Settings::$organisation?->organisation->permissions;
         $memberRows = Methods::organisationMembers()->getUserOrganisations();
         $memberRows = mapItemToKeyValuePairs(array_column($memberRows->toArray(), "organisation"), 'uid', 'name');
@@ -136,7 +81,7 @@ class PageController {
         // Get locations for scoped permissions
         $locations = Methods::locations()->getMyLocations(null, ['uid', 'name', 'slug']);
 
-        return Views("MERCHANT_ORGANISATION_TEAM", compact('members', 'permissions',  'memberRows', 'locations'));
+        return Views("MERCHANT_ORGANISATION_TEAM", compact('permissions', 'memberRows', 'locations'));
     }
 
     public static function orders(array $args): mixed  {
@@ -434,7 +379,7 @@ class PageController {
 
     public static function terminals(array $args): mixed  {
         // Check locations.checkout permission
-        if(!\classes\app\OrganisationPermissions::__oRead('locations', 'checkout')) return null;
+        if(!\classes\app\OrganisationPermissions::__oRead('locations', 'terminals')) return null;
 
         $locationHandler = Methods::locations();
         $terminalHandler = Methods::terminals();
@@ -478,43 +423,17 @@ class PageController {
 
         $orders = $orderHandler->getByX(['location' => $location->uid]);
 
-        $members = Methods::locationMembers()
-        ->getByX(['location' => $location->uid, "status" => [MemberEnum::MEMBER_SUSPENDED, MemberEnum::MEMBER_ACTIVE]])
-        ->map(function ($member) {
-            $status = $member["status"];
-
-            if($status === MemberEnum::MEMBER_SUSPENDED) {
-                $showStatus = "Suspended";
-                $statusBoxClass = "danger-box";
-                $actionMenu = [
-                    ["icon" => "fa-solid fa-power-off", 'title' => "Unsuspend", "action" => "unsuspend", 'risk' => "low"],
-                    ["icon" => "fa-solid fa-user-xmark", 'title' => "Remove", "action" => "remove", 'risk' => "high"],
-                ];
-            }
-            else {
-                $showStatus = "Active";
-                $statusBoxClass = "success-box";
-                $actionMenu = [
-                    ["icon" => "fa-solid fa-user-pen", 'title' => "Update Role", "action" => "update-role", 'risk' => "low"],
-                    ["icon" => "fa-solid fa-ban", 'title' => "Suspend", "action" => "suspend", 'risk' => "high"],
-                    ["icon" => "fa-solid fa-user-xmark", 'title' => "Remove", "action" => "remove", 'risk' => "high"],
-                ];
-            }
-            $member["action_menu"] = $actionMenu;
-            $member["show_status"] = $showStatus;
-            $member["status_box"] = $statusBoxClass;
-            $member["name"] = $member["uuid"]['full_name'];
-            $member["email"] = $member["uuid"]['email'];
-            return $member;
-        });
+        // Members are now loaded via AJAX for better pagination support
         $permissions = $location->permissions;
 
-        // Get organisation members who are not already location members for invite modal
-        $existingLocationMemberUuids = $members->pluck('uuid');
-        if(!$existingLocationMemberUuids->empty() && !is_string($existingLocationMemberUuids->first()))
-            $existingLocationMemberUuids = $existingLocationMemberUuids->pluck('uid');
-        $existingLocationMemberUuids = $existingLocationMemberUuids->toArray();
+        // Get existing location member UUIDs for filtering org members in invite modal
+        $existingLocationMemberUuids = Methods::locationMembers()
+            ->queryBuilder()
+            ->where('location', $location->uid)
+            ->where('status', [MemberEnum::MEMBER_SUSPENDED, MemberEnum::MEMBER_ACTIVE])
+            ->pluck('uuid');
 
+        // Get organisation members who are not already location members for invite modal
         $organisationMembers = Methods::organisationMembers()
             ->getByX(['organisation' => __oUuid(), 'status' => MemberEnum::MEMBER_ACTIVE, 'invitation_status' => MemberEnum::INVITATION_ACCEPTED])
             ->filter(function($member) use ($existingLocationMemberUuids) {
@@ -537,7 +456,7 @@ class PageController {
         }
 
         return Views("MERCHANT_LOCATION_MEMBERS", compact(
-            'locations', 'locationOptions', 'permissions', 'members',
+            'locations', 'locationOptions', 'permissions',
             'worldCountries', 'slug', 'location', 'orders', 'orderCount', 'netSales',
             'ordersTodayCount', 'orderAverage', 'ordersToday', 'newCustomersCount', 'todayOrdersCountLflMonth',
             'netSalesLflMonth', 'newCustomersLflMonth', 'averageLflMonth', 'organisationMembers', 'locationRoles'
@@ -860,8 +779,7 @@ class PageController {
 
         // Get active terminals for quick access (filtered by user's accessible locations)
         $terminals = Methods::terminals()->getMyTerminals()
-            ->filter(fn($t) => $t['status'] === 'ACTIVE')
-            ->toArray();
+            ->filter(fn($t) => $t['status'] === 'ACTIVE');
 
         return Views("MERCHANT_DASHBOARD", compact(
             'locationOptions', 'grossRevenue', 'netRevenue', 'totalFees', 'orders', 'orderCount',

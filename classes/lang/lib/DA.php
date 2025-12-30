@@ -33,7 +33,7 @@ class DA {
             "team roles" => "Roller",
             "role permissions" => "Rolletilladelser",
             "locations" => "Lokationer",
-            "checkout" => "Betaling",
+            "checkout" => "Point of sale",
             "metrics" => "Statistik",
             "orders" => "Ordrer",
             "customers" => "Kunder",
@@ -45,6 +45,11 @@ class DA {
             "reports" => "Rapporter",
             "billing" => "Fakturering",
             "wallet" => "Tegnebog",
+        ],
+        "permissions" => [
+            "std_modify" => 'Du mangler tilladelse til at redigere indholdet',
+            "std_read" => 'Du mangler tilladelse til at læse indholdet',
+            "std_delete" => 'Du mangler tilladelse til at slette indholdet',
         ]
     ];
     const WORD = [
@@ -88,6 +93,7 @@ class DA {
         "Organisationsoversigt" => "Virksomhedsoversigt",
         "store manager" => "butiksbestyrer",
         "team manager" => "teamleder",
+        "team_manager" => "teamleder",
         "cashier" => "kasseassistent",
 
         // Role names (lowercase)
@@ -95,15 +101,15 @@ class DA {
         "admin" => "administrator",
         "manager" => "leder",
         "employee" => "medarbejder",
-        "location_employee" => "lokationsmedarbejder",
+        "location_employee" => "butiksmedarbejder",
 
         // Role names (capitalized)
         "Owner" => "Ejer",
         "Admin" => "Administrator",
         "Manager" => "Leder",
         "Employee" => "Medarbejder",
-        "Location_employee" => "Lokationsmedarbejder",
-        "Location Employee" => "Lokationsmedarbejder",
+        "Location_employee" => "Butiksmedarbejder",
+        "Location Employee" => "Butiksmedarbejder",
 
         // Permission category names
         "team" => "medlemmer",

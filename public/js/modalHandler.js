@@ -36,11 +36,11 @@ class ModalHandler {
         },
         organisationRenameRole: {
             file: 'organisation-rename-role',
-            keys: ['role']
+            keys: ['role', 'role_name']
         },
         locationRenameRole: {
             file: 'locations.location-rename-role',
-            keys: ['role']
+            keys: ['role', 'role_name']
         },
         locationCreateRole: {
             file: 'locations.location-new-role',

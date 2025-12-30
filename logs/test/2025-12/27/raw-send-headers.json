@@ -1,0 +1,16 @@
+{
+    "10002": "https:\/\/api.signicat.com\/auth\/rest\/sessions?signicat-accountId=a-ppge-7yBfGYQ0OtoAt3bPaW7P",
+    "19913": true,
+    "10036": "POST",
+    "52": 1,
+    "13": 500,
+    "10023": [
+        "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6InNpZ25pbmcta2V5LTVlNDMwYTY3YzA0YzlmNDdiYWU3NjExZTIzZDgwNGQ4IiwidHlwIjoiYXQrand0In0.eyJpc3MiOiJodHRwczovL2FwaS5zaWduaWNhdC5jb20vYXV0aC9vcGVuIiwibmJmIjoxNzY2ODMzODYwLCJpYXQiOjE3NjY4MzM4NjAsImV4cCI6MTc2NjgzMzk4MCwiYXVkIjoiaHR0cHM6Ly9hcGkuc2lnbmljYXQuY29tIiwic2NvcGUiOlsic2lnbmljYXQtYXBpIl0sImNsaWVudF9pZCI6InByb2QtYW5ub3llZC1icmFpbi03MDEiLCJhY2NvdW50X2lkIjoiYS1wcGdlLTd5QmZHWVEwT3RvQXQzYlBhVzdQIiwic2FuZGJveCI6ZmFsc2UsImNsaWVudF9nZW5lcmF0aW9uIjo0LCJqdGkiOiJENEVCQUVDQjQ1NTI5OEYwRTlBOUE4MkQyRjRCODRENyJ9.c3118_fz72bf5jjBurHKOFju7o8mFHniFsWbcrVIPR0c1JMZ2TRgyZatBz3xUSzIoVLMAp9gcZq1iMRfYAg0uCYhmKC_dFH0-_6673-vE6koxgHhvrke2tK9dlDAE6fYJVpcp8rQUdDHH6lJQdAG9z_UYj976-xyskBLXj0EDeosgoZeSEJL92v5swHKKz_k405APg-jrv5gIcS3HJulg8PS4lrUQIVio6zLnU9ycIb-29i0hgzovecP0eKgQpo1PwDQI29uk1bYkaZgMrYSbrzZ2CvHas9BmT4bV6NB6JCsN0Shgzs2ElaFFIhkXhIxkdTpCDfo6HALGZZauzm1ZQ",
+        "Content-type: application\/json; charset=UTF-8"
+    ],
+    "42": true,
+    "10102": "",
+    "68": 10,
+    "84": "CURL_HTTP_VERSION_1_1",
+    "10015": "{\"flow\":\"redirect\",\"allowedProviders\":[\"mitid\"],\"requestedAttributes\":[\"name\",\"family_name\",\"given_name\",\"firstName\",\"lastName\",\"dateOfBirth\",\"nin\",\"nin_type\",\"mitidHasCpr\",\"mitidReferenceTextBody\",\"mitidCprSource\",\"mitidNameAndAddressProtection\",\"mitidIal\",\"mitidLoa\",\"mitidAal\",\"mitidFal\",\"mitidUuid\"],\"callbackUrls\":{\"success\":\"https:\\\/\\\/localhost\\\/weepay\\\/auth\\\/user\\\/verify\\\/success?ref=oidc_cbk5pe7ejemf6l1\",\"abort\":\"https:\\\/\\\/localhost\\\/weepay\\\/auth\\\/user\\\/verify\\\/abort?ref=oidc_cbk5pe7ejemf6l1\",\"error\":\"https:\\\/\\\/localhost\\\/weepay\\\/auth\\\/user\\\/verify\\\/error?ref=oidc_cbk5pe7ejemf6l1\"}}"
+}

@@ -28,7 +28,7 @@ async function get(path, params = {}) {
                     // showOfflineNotification();
                     return { error: "No internet connection", status: 0 };
                 } else if (httpStatus === 401) {
-                    modalAuthentication()
+                    if(!userSession) modalAuthentication()
                     errorData = { status: "error", error: {message: "Requires authentication", code: httpStatus }}; // Fallback
                 } else if (xhr.responseJSON && Object.keys(xhr.responseJSON).length > 0) {
                     errorData = xhr.responseJSON; // Return JSON data if available

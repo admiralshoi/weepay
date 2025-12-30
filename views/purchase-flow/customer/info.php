@@ -7,8 +7,16 @@ $customer = $args->customer;
 $terminalSession = $args->terminalSession;
 $terminal = $terminalSession->terminal;
 $basket = $args->basket;
+$page = $args->page ?? null;
+$logoUrl = $page ? __url($page->logo) : null;
 
 $pageTitle = "{$terminal->location->name} - Købsdetaljer";
+
+// Calculate BNPL progress percentage
+$bnplPercentage = 0;
+if (!isEmpty($args->bnplLimit) && $args->bnplLimit->platform_max > 0) {
+    $bnplPercentage = ($args->bnplLimit->available / $args->bnplLimit->platform_max) * 100;
+}
 
 ?>
 
@@ -48,13 +56,15 @@ $pageTitle = "{$terminal->location->name} - Købsdetaljer";
             </div>
         </div>
 
-        <div class="flex-col-start flex-align-center mt-5" style="row-gap: .75rem;">
-            <p class="design-box mb-0 px-2">
-                <i class="mdi mdi-store"></i>
-                <span class="font-weight-bold">Du Handler hos</span>
-            </p>
 
-            <div class="flex-col-start flex-align-center" style="row-gap: .25rem;">
+        <div class="flex-col-start flex-align-center mt-4" style="row-gap: 1rem;">
+
+            <!-- Mobile hidden: "Du handler hos" header -->
+            <div class="checkout-header-mobile-hide flex-col-start flex-align-center" style="row-gap: .25rem;">
+                <p class="design-box mb-0 px-2">
+                    <i class="mdi mdi-store"></i>
+                    <span class="font-weight-bold">Du Handler hos</span>
+                </p>
                 <p class="mb-0 font-25 font-weight-bold"><?=$terminal?->location->name?></p>
                 <p class="mb-0 font-14 font-weight-medium color-gray"><?=$args->page->caption?></p>
             </div>
@@ -67,24 +77,50 @@ $pageTitle = "{$terminal->location->name} - Købsdetaljer";
             <?php endif; ?>
 
             <?php if(!isEmpty($args->bnplLimit)): ?>
-            <div class="alert alert-info border-radius-10px w-100" style="margin-bottom: 1rem;">
-                <div class="flex-col-start" style="row-gap: 0.5rem;">
-                    <div class="flex-row-start flex-align-center" style="gap: 0.5rem;">
-                        <i class="mdi mdi-information-outline font-20"></i>
-                        <p class="mb-0 font-16 font-weight-bold">Din BNPL kredit</p>
-                    </div>
-                    <p class="mb-0 font-14">
-                        Du har <strong><?=number_format($args->bnplLimit->available, 2)?> DKK</strong> tilgængelig til betal-senere muligheder.
-                        <?php if($args->bnplLimit->outstanding > 0): ?>
-                        <br>Du har <strong><?=number_format($args->bnplLimit->outstanding, 2)?> DKK</strong> udestående på tidligere køb.
-                        <?php endif; ?>
-                    </p>
+            <!-- Dark Credit Box -->
+            <div class="bnpl-credit-card w-100">
+                <p class="bnpl-credit-card__label">WEEPAY SALDO</p>
+                <p class="bnpl-credit-card__amount"><?=number_format($args->bnplLimit->available, 0, ',', '.')?> kr.</p>
+                <div class="bnpl-credit-card__progress-row">
+                    <span class="bnpl-credit-card__progress-label">Tilgængelig</span>
+                    <span class="bnpl-credit-card__progress-max">Max <?=number_format($args->bnplLimit->platform_max, 0, ',', '.')?> kr.</span>
+                </div>
+                <div class="bnpl-credit-card__progress-container">
+                    <div class="bnpl-credit-card__progress-bar" style="width: <?=$bnplPercentage?>%;"></div>
                 </div>
             </div>
             <?php endif; ?>
 
+            <!-- Store & Basket Info -->
+            <div class="checkout-store-info w-100" id="store-basket-info" style="<?=isEmpty($basket) ? 'display: none;' : ''?>">
+                <div class="checkout-store-info__left">
+                    <?php if($logoUrl): ?>
+                        <img src="<?=$logoUrl?>" alt="<?=$terminal->location->name?>" class="checkout-store-info__logo">
+                    <?php else: ?>
+                        <div class="checkout-store-info__logo-placeholder">
+                            <?=strtoupper(substr($terminal->location->name, 0, 2))?>
+                        </div>
+                    <?php endif; ?>
+                    <div class="checkout-store-info__text">
+                        <p class="checkout-store-info__name"><?=$terminal->location->name?></p>
+                        <p class="checkout-store-info__basket" data-show="basket_name"><?=$basket->name ?? ''?></p>
+                    </div>
+                </div>
+                <p class="checkout-store-info__price">
+                    <span data-show="basket_price"><?=isset($basket->price) ? number_format($basket->price, 0, ',', '.') : ''?></span> kr.
+                </p>
+            </div>
+
+            <!-- Session ID badge (visible on mobile when hero is hidden) -->
+            <div class="w-100 flex-row-end d-none d-md-none" id="mobile-session-id">
+                <p class="design-box mb-0 font-14 font-weight-bold px-2 py-1">
+                    ID: <?=$terminalSession->session?>
+                </p>
+            </div>
+
             <div class="card border-radius-10px w-100">
-                <div class="w-100 h-200px overflow-hidden">
+                <!-- Hero section - hidden on mobile -->
+                <div class="w-100 h-200px overflow-hidden checkout-hero-mobile-hide">
                     <div
                         class="w-100 h-100 overflow-hidden bg-cover"
                         style="
@@ -101,7 +137,8 @@ $pageTitle = "{$terminal->location->name} - Købsdetaljer";
                 </div>
 
                 <div class="py-3 px-4 w-100 flex-col-start" style="row-gap: .5rem;">
-                    <div class="flex-col-start border-bottom-card pb-3" style="row-gap: .5rem;">
+                    <!-- Contact email - keep this -->
+                    <div class="flex-col-start border-bottom-card pb-3 checkout-hero-mobile-hide" style="row-gap: .5rem;">
                         <?php if(!empty($terminal?->location->contact_email)): ?>
                             <div class="flex-row-start flex-align-center flex-nowrap" style="gap: .5rem">
                                 <i class="mdi mdi-email-outline color-design-blue font-16"></i>
@@ -109,25 +146,6 @@ $pageTitle = "{$terminal->location->name} - Købsdetaljer";
                             </div>
                         <?php endif; ?>
                     </div>
-
-                    <div id="line_items" class="flex-col-start border-bottom-card pb-3" style="row-gap: .5rem; <?=isEmpty($basket) ? 'display: none;' : ''?>">
-                        <p class="mb-2 font-16 font-weight-bold">Ordredetaljer</p>
-                        <div class="flex-row-between flex-align-center flex-nowrap" style="gap: .5rem">
-                            <p class="mb-0 font-15" data-show="basket_name"></p>
-                            <p class="mb-0 font-15 font-weight-bold">
-                                <span data-show="basket_price"></span>
-                                <span data-show="basket_currency"></span>
-                            </p>
-                        </div>
-                    </div>
-                    <div id="total_price_container" class="flex-row-between flex-align-center flex-nowrap" style="gap: .5rem; <?=isEmpty($basket) ? 'display: none;' : ''?>">
-                        <p class="mb-0 font-16 font-weight-bold">I alt</p>
-                        <p class="mb-0 font-22 color-design-blue font-weight-bold">
-                            <span data-show="basket_price"></span>
-                            <span data-show="basket_currency"></span>
-                        </p>
-                    </div>
-
 
                     <div class="flex-col-start pt-3" style="row-gap: 1.5rem;">
                         <div class="vision-card px-4 py-3 border-radius-10px w-100 overflow-hidden" style="gap: .5rem;">
@@ -139,15 +157,16 @@ $pageTitle = "{$terminal->location->name} - Købsdetaljer";
                                     <div class="flex-row-start flex-align-center flex-wrap" style="gap: .5rem">
                                         <p class="mb-0 font-14">Navn</p>
                                         <p class="mb-0 font-14 font-weight-bold"><?=$customer->user->full_name?></p>
+<!--                                        <p class="mb-0 font-14 font-weight-bold">--><?php //=$customer->user->full_name?><!--</p>-->
                                     </div>
                                     <div class="flex-row-start flex-align-center flex-nowrap" style="gap: .5rem">
                                         <p class="mb-0 font-14">Fødselsdag</p>
                                         <p class="mb-0 font-14 font-weight-bold"><?=$customer->user->birthdate?></p>
                                     </div>
-                                    <div class="flex-row-start flex-align-center flex-nowrap" style="gap: .5rem">
-                                        <p class="mb-0 font-14 ">CPR</p>
-                                        <p class="mb-0 font-14 font-weight-bold"><?=$customer->nin?></p>
-                                    </div>
+<!--                                    <div class="flex-row-start flex-align-center flex-nowrap" style="gap: .5rem">-->
+<!--                                        <p class="mb-0 font-14 ">CPR</p>-->
+<!--                                        <p class="mb-0 font-14 font-weight-bold">--><?php //=$customer->nin?><!--</p>-->
+<!--                                    </div>-->
                                     <div class="flex-row-start flex-align-center flex-nowrap" style="gap: .5rem">
                                         <p class="mb-0 font-14">Nationalitet</p>
                                         <p class="mb-0 font-14 font-weight-bold"><?=\classes\Methods::countries()->name($customer->nin_country)?></p>

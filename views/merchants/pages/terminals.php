@@ -87,11 +87,13 @@ $pageTitle = "Kasseapparater";
                                     <td class="desktopOnlyTableCell"><?=$terminal->location->name?></td>
                                     <td class="hideOnMobileTableCell">
                                         <?php if($terminal->status === 'ACTIVE'): ?>
+                                            <?php \classes\app\LocationPermissions::__oReadProtectedContent($terminal->location, 'checkout'); ?>
                                             <button class="btn-v2 green-btn flex-row-center-center flex-nowrap g-05"
                                                 onclick="LocationActions.qrAction('<?=$terminal->uid?>');">
                                                 <i class="mdi mdi-qrcode"></i>
                                                 <span class="">Vis QR</span>
                                             </button>
+                                            <?php \classes\app\LocationPermissions::__oEndContent(); ?>
                                         <?php elseif($terminal->status === 'DRAFT'): ?>
                                             <div class="flex-row-start flex-align-center flex-nowrap cursor-pointer"
                                                  onclick="LocationActions.qrAction('<?=$terminal->uid?>');" style="gap: .25rem;">
@@ -108,11 +110,20 @@ $pageTitle = "Kasseapparater";
                                     </td>
                                     <td class="hideOnDesktopTableCell">
                                         <div class="flex-row-start flex-align-center flex-wrap w-100 mxw-200px" style="gap: .25rem;">
+                                            <?php \classes\app\LocationPermissions::__oModifyProtectedContent($terminal->location, 'checkout'); ?>
                                             <a href="<?=__url(Links::$merchant->terminals->posStart($terminal->location->slug,$terminal->uid))?>"
                                                 target="_blank" class="btn-v2 action-btn flex-row-center flex-align-center flex-nowrap" style="gap: .5rem;">
                                                 <i class="mdi mdi-play-outline font-18"></i>
                                                 <span class="font-14">Start POS</span>
                                             </a>
+                                            <?php \classes\app\LocationPermissions::__oEndContent(); ?>
+                                            <?php if(isset($_GET['kundeflow'])): ?>
+                                                <a href="<?=__url(Links::$merchant->terminals->checkoutStart($terminal->location->slug,$terminal->uid))?>"
+                                                   target="_blank" class="btn-v2 danger-btn flex-row-center flex-align-center flex-nowrap" style="gap: .5rem;">
+                                                    <i class="mdi mdi-play-outline font-18"></i>
+                                                    <span class="font-14">Kundeflow</span>
+                                                </a>
+                                            <?php endif; ?>
 
                                             <?php \classes\app\LocationPermissions::__oModifyProtectedContent($terminal->location, 'terminals'); ?>
                                             <button class="btn-v2 mute-btn flex-row-center flex-align-center flex-nowrap" style="gap: .5rem;"
@@ -124,11 +135,20 @@ $pageTitle = "Kasseapparater";
                                         </div>
                                     </td>
                                     <td class="desktopOnlyTableCell">
+                                        <?php \classes\app\LocationPermissions::__oModifyProtectedContent($terminal->location, 'checkout'); ?>
                                         <a href="<?=__url(Links::$merchant->terminals->posStart($terminal->location->slug,$terminal->uid))?>"
                                             target="_blank" class="btn-v2 action-btn flex-row-center flex-align-center flex-nowrap" style="gap: .5rem;">
                                             <i class="mdi mdi-play-outline font-18"></i>
                                             <span class="font-14">Start POS</span>
                                         </a>
+                                        <?php \classes\app\LocationPermissions::__oEndContent(); ?>
+                                        <?php if(isset($_GET['kundeflow'])): ?>
+                                            <a href="<?=__url(Links::$merchant->terminals->checkoutStart($terminal->location->slug,$terminal->uid))?>"
+                                               target="_blank" class="btn-v2 danger-btn flex-row-center flex-align-center flex-nowrap" style="gap: .5rem;">
+                                                <i class="mdi mdi-play-outline font-18"></i>
+                                                <span class="font-14">Kundeflow</span>
+                                            </a>
+                                        <?php endif; ?>
                                     </td>
                                     <td class="desktopOnlyTableCell">
                                         <?php \classes\app\LocationPermissions::__oModifyProtectedContent($terminal->location, 'terminals'); ?>

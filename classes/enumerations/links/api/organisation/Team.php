@@ -9,6 +9,7 @@ class Team {
     public string $update = "api/organisations/team/update";
     public string $invite = "api/organisations/team/invite";
     public string $respond = "api/organisations/team/respond";
+    public string $list = "api/organisations/team/list";
 
 
 

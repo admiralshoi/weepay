@@ -29,6 +29,7 @@ $organisation = Settings::$organisation?->organisation;
     activePage = "team";
     var organisationRoles = <?=json_encode($organisationRoles)?>;
     var organisationLocations = <?=json_encode($args->locations->toArray())?>;
+    var organisationMembersApiUrl = <?=json_encode(Links::$api->organisation->team->list)?>;
 </script>
 <div class="page-content home">
 
@@ -73,85 +74,97 @@ $organisation = Settings::$organisation?->organisation;
                     <div class="mt-3">
 
                         <?php OrganisationPermissions::__oReadProtectedContent('team', 'members'); ?>
-                        <table class="table-v2 custom-sorting-table" id="team-members">
+
+                        <!-- Filters and Search -->
+                        <div class="flex-row-between flex-align-center flex-wrap mb-3" style="gap: .75rem;">
+                            <div class="flex-row-start flex-align-center flex-wrap" style="gap: .5rem;">
+                                <div class="form-group mb-0">
+                                    <input type="text" class="form-control-v2 form-field-v2" id="org-team-search"
+                                           placeholder="Søg efter navn eller email..." style="min-width: 200px;">
+                                </div>
+                                <div class="form-group mb-0">
+                                    <select class="form-select-v2 w-250px" id="org-team-filter-role" data-selected="hide_location_employees">
+                                        <option value="all">Alle roller</option>
+                                        <option value="hide_location_employees" selected>Skjul butikssmedarbejdere</option>
+                                        <?php foreach ($organisationRoles as $role => $title):
+                                            if($role === 'location_employee') continue; ?>
+                                            <option value="<?=$role?>"><?=$title?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <select class="form-select-v2" id="org-team-filter-status" data-selected="Active_Pending" style="min-width: 120px;">
+                                        <option value="all">Alle status</option>
+                                        <option value="Active_Pending" selected>Aktiv og Afventer</option>
+                                        <option value="Active">Aktiv</option>
+                                        <option value="Pending">Afventer</option>
+                                        <option value="Suspended">Suspenderet</option>
+                                        <option value="Declined">Afvist</option>
+                                        <option value="Retracted">Tilbagetrukket</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex-row-end flex-align-center flex-wrap" style="gap: .5rem;">
+                                <div class="form-group mb-0">
+                                    <select class="form-select-v2" id="org-team-sort" data-selected="created_at-DESC" style="min-width: 150px;">
+                                        <option value="created_at-DESC" selected>Nyeste først</option>
+                                        <option value="created_at-ASC">Ældste først</option>
+                                        <option value="name-ASC">Navn A-Z</option>
+                                        <option value="name-DESC">Navn Z-A</option>
+                                        <option value="role-ASC">Rolle A-Z</option>
+                                        <option value="role-DESC">Rolle Z-A</option>
+                                    </select>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <select class="form-select-v2" id="org-team-per-page" data-selected="10" style="min-width: 80px;">
+                                        <option value="10" selected>10</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <table class="table-v2" id="org-team-members">
                             <thead>
                             <tr>
-                                <th>User</th>
+                                <th>Bruger</th>
                                 <th>Email / Brugernavn</th>
-                                <th class="sort-active" data-sortDirection="asc">Rolle</th>
+                                <th>Rolle</th>
                                 <th>Status</th>
-                                <th class="text-right unsortable">Handling</th>
+                                <th class="text-right">Handling</th>
                             </tr>
                             </thead>
-                            <tbody>
-                            <?php foreach ($args->members->list() as $member): ?>
-                                <tr>
-                                    <td class="font-weight-bold" data-sort="<?=$member->name?>">
-                                        <div class="flex-row-start flex-align-center flex-nowrap" style="column-gap: .5rem;">
-                                            <div class="flex-row-center flex-align-center square-30 bg-primary-cta  border-radius-50 ">
-                                                <span class="text-sm text-uppercase color-white">
-                                                    <?=__initials($member->name)?>
-                                                </span>
-                                            </div>
-                                            <p class="font-weight-medium mb-0 text-sm"><?=Titles::truncateStr(Titles::cleanUcAll($member->name), 16)?></p>
-                                        </div>
-                                    </td>
-                                    <td class="text-sm color-gray"><?=$member->email?></td>
-                                    <td class="" data-sort="<?=$member->role?>">
-                                        <select class="form-select-v2 w-100" name="role">
-                                            <?php foreach ($organisationRoles as $role => $title): ?>
-                                                <option value="<?=$role?>" <?=$member->role === $role ? 'selected' : ''?>><?=$title?></option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </td>
-                                    <td class="" data-sort="<?=$member->show_status?>"><span class="<?=$member->status_box?>-lg"><?=$member->show_status?></span></td>
-                                    <td class="text-right">
-
-                                        <div class="flex-row-end">
-
-                                            <div class="dropdown nav-item-v2 p-0 pr-2">
-                                                <a class="color-primary-dark dropdown-no-arrow dropdown-toggle nav-button font-20 font-weight-bold noSelect"
-                                                   href="javascript:void(0);" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    <i class="fa-solid fa-ellipsis font-20 font-weight-bold noSelect"></i>
-                                                </a>
-                                                <div class="dropdown-menu section-dropdown" id="">
-
-
-                                                    <div class="account-body">
-                                                        <p  class="list-title">
-                                                            <span>Handlinger</span>
-                                                        </p>
-                                                        <?php foreach ($member->action_menu as $menuItem):
-                                                            if($menuItem->risk !== "low") continue; ?>
-                                                            <a href="javascript:void(0);" class="list-item" onclick="teamMemberAction(this)"
-                                                               data-uuid="<?=$member->uuid->uid?>" data-team-action="<?=$menuItem->action?>">
-                                                                <i class="<?=$menuItem->icon?>"></i>
-                                                                <span><?=$menuItem->title?></span>
-                                                            </a>
-                                                        <?php endforeach; ?>
-                                                    </div>
-
-                                                    <div class="account-footer">
-                                                        <?php foreach ($member->action_menu as $menuItem):
-                                                            if($menuItem->risk !== "high") continue; ?>
-                                                            <a href="javascript:void(0);" class="list-item color-red" onclick="teamMemberAction(this)"
-                                                               data-uuid="<?=$member->uuid->uid?>" data-team-action="<?=$menuItem->action?>">
-                                                                <i class="<?=$menuItem->icon?>"></i>
-                                                                <span><?=$menuItem->title?></span>
-                                                            </a>
-                                                        <?php endforeach; ?>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-
-
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
+                            <tbody id="org-team-members-tbody">
+                            <!-- Loading state - will be replaced by JS -->
+                            <tr id="org-team-loading-row">
+                                <td colspan="5" class="text-center py-4">
+                                    <div class="flex-col-center flex-align-center">
+                                        <span class="spinner-border color-primary-cta square-30" role="status" style="border-width: 3px;">
+                                            <span class="sr-only">Indlæser...</span>
+                                        </span>
+                                        <p class="color-gray mt-2 mb-0">Indlæser medlemmer...</p>
+                                    </div>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
+
+                        <!-- No results message -->
+                        <div id="org-team-no-results" class="d-none text-center py-4">
+                            <i class="mdi mdi-account-search font-40 color-gray"></i>
+                            <p class="color-gray mt-2 mb-0">Ingen medlemmer fundet</p>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div id="org-team-pagination-container" class="flex-row-between flex-align-center flex-wrap mt-3" style="gap: .75rem;">
+                            <div class="text-sm color-gray">
+                                Viser <span id="org-team-showing">0</span> af <span id="org-team-total">0</span> medlemmer
+                                (Side <span id="org-team-current-page">1</span> af <span id="org-team-total-pages">1</span>)
+                            </div>
+                            <div class="pagination-nav" id="org-team-pagination"></div>
+                        </div>
+
                         <?php OrganisationPermissions::__oEndContent(); ?>
                     </div>
                 </div>
@@ -183,7 +196,7 @@ $organisation = Settings::$organisation?->organisation;
                         <div class="flex-row-end flex-align-center flex-nowrap" style="column-gap: .5rem;">
                             <select class="form-select-v2 mnw-150px switchViewSelect" name="role_permissions" id="role_permissions">
                                 <?php foreach ($args->permissions as $role => $permissions): ?>
-                                    <option value="<?=$role?>"><?=Translate::word(Titles::cleanUcAll($role))?></option>
+                                    <option value="<?=$role?>"><?=Titles::cleanUcAll(Translate::word($role))?></option>
                                 <?php endforeach; ?>
                             </select>
                             <?php if(OrganisationPermissions::__oModify('roles', 'roles')): ?>

@@ -338,3 +338,8 @@ $(document).on("change", ".switchViewSelect", function (){
         .then(() => { isSwitching = false; })
         .catch(() => { isSwitching = false; })
 })
+
+
+
+
+

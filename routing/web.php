@@ -169,6 +169,7 @@ Routes::group(['api','requiresApiLogin'], function() {
         Routes::post(Links::$api->organisation->team->update, "merchants.OrganisationApiController::updateTeamMember");
         Routes::post(Links::$api->organisation->team->invite, "merchants.OrganisationApiController::inviteTeamMember");
         Routes::post(Links::$api->organisation->team->respond, "merchants.OrganisationApiController::respondToInvitation");
+        Routes::post(Links::$api->organisation->team->list, "merchants.OrganisationApiController::getOrganisationMembers");
         Routes::post(Links::$api->organisation->team->role->create, "merchants.OrganisationApiController::createNewRole");
         Routes::post(Links::$api->organisation->team->role->rename, "merchants.OrganisationApiController::renameRole");
         Routes::delete(Links::$api->organisation->team->role->delete, "merchants.OrganisationApiController::deleteRole");
@@ -178,6 +179,7 @@ Routes::group(['api','requiresApiLogin'], function() {
 
         Routes::post(Links::$api->locations->team->update, "merchants.LocationApiController::updateLocationMember");
         Routes::post(Links::$api->locations->team->invite, "merchants.LocationApiController::inviteLocationMember");
+        Routes::post(Links::$api->locations->team->list, "merchants.LocationApiController::getLocationMembers");
         Routes::post(Links::$api->locations->team->role->create, "merchants.LocationApiController::createLocationRole");
         Routes::post(Links::$api->locations->team->role->rename, "merchants.LocationApiController::renameLocationRole");
         Routes::delete(Links::$api->locations->team->role->delete, "merchants.LocationApiController::deleteLocationRole");

@@ -57,7 +57,7 @@ class OrganisationPermissions {
 
 
         if ($status) echo $content;
-        else echo '<p class="mt-2 color-red font-12">You lack the permissions necessary to ' . $type . ' the content</p>';
+        else echo '<p class="mt-2 text-wrap color-red font-12">You lack the permissions necessary to ' . $type . ' the content</p>';
     }
 
 }

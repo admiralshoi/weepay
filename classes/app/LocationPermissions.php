@@ -2,6 +2,7 @@
 
 namespace classes\app;
 
+use classes\lang\Translate;
 use classes\Methods;
 
 class LocationPermissions {
@@ -117,7 +118,7 @@ class LocationPermissions {
 
 
         if ($status) echo $content;
-        else echo '<p class="mt-2 color-red font-12">You lack the permissions necessary to ' . $type . ' the content</p>';
+        else echo '<p class="mt-2 text-wrap color-red font-12">'.Translate::context("permissions.std_$type").'</p>';
     }
 
 }

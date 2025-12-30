@@ -82,6 +82,9 @@ class Merchants extends \routing\paths\Paths {
             "base" => null,
             "vendor" => [
                 "js.includes.handleBars.js",
+                "vendor.sweetalert.sweetalert2.min.css",
+                "vendor.sweetalert.sweetalert2.min.js",
+                "js.includes.SweetPrompt.js",
             ],
             "custom" => [],
         ],
@@ -453,6 +456,9 @@ class Merchants extends \routing\paths\Paths {
             "base" => null,
             "vendor" => [
                 "js.includes.handleBars.js",
+                "vendor.sweetalert.sweetalert2.min.css",
+                "vendor.sweetalert.sweetalert2.min.js",
+                "js.includes.SweetPrompt.js",
             ],
             "custom" => [],
         ],

@@ -49,13 +49,13 @@ class Translator {
      * @returns {string}
      */
     word(query) {
-        if (empty(query)) return "";
+        if (empty(query)) return query;
 
         const key = String(query).toLowerCase();
 
-        if (!this.translations.WORD) return "";
+        if (!this.translations.WORD) return query;
 
-        return this.translations.WORD[key] || "";
+        return this.translations.WORD[key] || query;
     }
 
     /**
@@ -64,9 +64,9 @@ class Translator {
      * @returns {string}
      */
     context(query) {
-        if (empty(query)) return "";
+        if (empty(query)) return query;
 
-        if (!this.translations.CONTEXT) return "";
+        if (!this.translations.CONTEXT) return query;
 
         const key = String(query);
         const parts = key.split('.').map(p => p.toLowerCase());
@@ -76,11 +76,11 @@ class Translator {
             if (result && typeof result === 'object' && part in result) {
                 result = result[part];
             } else {
-                return "";
+                return query;
             }
         }
 
-        return typeof result === 'string' ? result : "";
+        return typeof result === 'string' ? result : query;
     }
 
     /**
@@ -90,7 +90,7 @@ class Translator {
      * @returns {string}
      */
     sentence(query) {
-        if (empty(query)) return "";
+        if (empty(query)) return query;
 
         if (!this.translations.WORD) return query;
 
@@ -113,7 +113,7 @@ class Translator {
             return token;
         });
 
-        return translated.join('');
+        return empty(translated) ? query : translated.join('');
     }
 }
 

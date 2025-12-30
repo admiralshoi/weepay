@@ -23,8 +23,6 @@ class LocationMemberHandler extends Crud {
 
 
 
-
-
     public function getUserLocations(string|int $uuid = 0): Collection {
         if(empty($uuid)) $uuid = __uuid();
         return $this->getByX(["uuid" => $uuid]);
@@ -81,8 +79,6 @@ class LocationMemberHandler extends Crud {
 
 
 
-
-
     public function createNewMember(string|int $organisationId, string|int $uuid, string $role, string $invitationStatus = MemberEnum::INVITATION_PENDING): bool {
         $params = [
             "organisation" => $organisationId,
@@ -132,7 +128,111 @@ class LocationMemberHandler extends Crud {
     }
 
 
+    /**
+     * Get paginated location members with search, filter, and sort
+     *
+     * @param string $locationUid Location UID
+     * @param int $page Current page (1-indexed)
+     * @param int $perPage Items per page
+     * @param string $sortColumn Column to sort by
+     * @param string $sortDirection Sort direction (ASC/DESC)
+     * @param string|null $search Search term for name/email
+     * @param string|null $filterRole Role filter
+     * @param string|null $filterStatus Status filter
+     * @return array{items: Collection, count: int, page: int, perPage: int, totalPages: int}
+     */
+    #[ArrayShape(["items" => "Collection", "count" => "int", "page" => "int", "perPage" => "int", "totalPages" => "int"])]
+    public function getLocationMembersPagination(
+        string $locationUid,
+        int $page = 1,
+        int $perPage = 10,
+        string $sortColumn = "created_at",
+        string $sortDirection = "DESC",
+        ?string $search = null,
+        ?string $filterRole = null,
+        ?string $filterStatus = null,
+    ): array {
+        $response = [
+            "items" => new Collection(),
+            "count" => 0,
+            "page" => $page,
+            "perPage" => $perPage,
+            "totalPages" => 0,
+        ];
 
+        // Build base query
+        $query = $this->queryBuilder()
+            ->select(['id', 'uid', 'uuid', 'location', 'role', 'status', 'invitation_status', 'created_at'])
+            ->where('location', $locationUid)
+            ->where('status', [MemberEnum::MEMBER_SUSPENDED, MemberEnum::MEMBER_ACTIVE]);
+
+        // Apply role filter
+        if(!empty($filterRole)) {
+            $query->where('role', $filterRole);
+        }
+
+        // Apply status filter (mapped from display status to actual status/invitation_status)
+        if(!empty($filterStatus)) {
+            switch ($filterStatus) {
+                case 'Active':
+                    $query->where('status', MemberEnum::MEMBER_ACTIVE)
+                          ->where('invitation_status', MemberEnum::INVITATION_ACCEPTED);
+                    break;
+                case 'Suspended':
+                    $query->where('status', MemberEnum::MEMBER_SUSPENDED);
+                    break;
+                case 'Pending':
+                    $query->where('invitation_status', MemberEnum::INVITATION_PENDING);
+                    break;
+                case 'Active_Pending':
+                    // Filter for Active OR Pending members
+                    $query->where('status', MemberEnum::MEMBER_ACTIVE)
+                          ->where('invitation_status', [MemberEnum::INVITATION_ACCEPTED, MemberEnum::INVITATION_PENDING]);
+                    break;
+            }
+        }
+
+        // Apply search filter - search in related user table
+        if(!empty($search)) {
+            $userHandler = Methods::users();
+            $matchingUserUids = $userHandler->queryBuilder()
+                ->startGroup("OR")
+                ->whereLike('full_name', $search)
+                ->whereLike('email', $search)
+                ->endGroup()
+                ->pluck('uid');
+
+            if(empty($matchingUserUids)) {
+                return $response;
+            }
+            $query->where('uuid', $matchingUserUids);
+        }
+
+        // Get total count before pagination
+        $totalCount = $query->count();
+        if($totalCount === 0) {
+            return $response;
+        }
+
+        // Calculate pagination
+        $totalPages = max(1, (int)ceil($totalCount / $perPage));
+        $page = min($page, $totalPages);
+        $offset = ($page - 1) * $perPage;
+
+        // Apply sorting and pagination
+        $items = $query->order($sortColumn, $sortDirection)
+                       ->limit($perPage)
+                       ->offset($offset)
+                       ->all();
+
+        return [
+            "items" => $items,
+            "count" => $totalCount,
+            "page" => $page,
+            "perPage" => $perPage,
+            "totalPages" => $totalPages,
+        ];
+    }
 
 
 }
