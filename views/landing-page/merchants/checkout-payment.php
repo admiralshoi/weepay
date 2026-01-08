@@ -3,7 +3,12 @@
  * @var object $args
  */
 
+$pageTitle = "Bekræft og betal";
 ?>
+
+<script>
+    var pageTitle = <?=json_encode($pageTitle)?>;
+</script>
 
 
 

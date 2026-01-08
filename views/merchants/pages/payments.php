@@ -14,6 +14,7 @@ $pageTitle = "Betalinger";
 <script>
     var pageTitle = <?=json_encode($pageTitle)?>;
     activePage = "payments";
+    var paymentsApiUrl = <?=json_encode(Links::$api->orders->payments->list)?>;
 </script>
 
 
@@ -22,25 +23,7 @@ $pageTitle = "Betalinger";
     <div class="flex-row-between flex-align-center flex-wrap" style="column-gap: .75rem; row-gap: .5rem;">
         <div class="flex-col-start">
             <p class="mb-0 font-30 font-weight-bold">Betalinger</p>
-            <p class="mb-0 font-16 font-weight-medium color-gray">Oversigt over alle gennemførte betalinger</p>
-        </div>
-
-        <!-- Date Filter -->
-        <div class="flex-row-start flex-align-center flex-wrap" style="column-gap: .5rem; row-gap: .5rem;">
-            <input type="date" id="start-date" class="form-control" style="max-width: 160px;"
-                   value="<?=$args->startDate ?? ''?>" placeholder="Start dato">
-            <input type="date" id="end-date" class="form-control" style="max-width: 160px;"
-                   value="<?=$args->endDate ?? ''?>" placeholder="Slut dato">
-            <button onclick="applyDateFilter()" class="btn-v2 action-btn flex-row-center flex-align-center" style="gap: .5rem;">
-                <i class="mdi mdi-filter"></i>
-                <span>Filtrer</span>
-            </button>
-            <?php if(!isEmpty($args->startDate) || !isEmpty($args->endDate)): ?>
-                <button onclick="clearDateFilter()" class="btn-v2 mute-btn flex-row-center flex-align-center" style="gap: .5rem;">
-                    <i class="mdi mdi-close"></i>
-                    <span>Ryd</span>
-                </button>
-            <?php endif; ?>
+            <p class="mb-0 font-16 font-weight-medium color-gray">Oversigt over alle betalinger</p>
         </div>
     </div>
 
@@ -48,72 +31,110 @@ $pageTitle = "Betalinger";
         <div class="col-12">
             <div class="card border-radius-10px">
                 <div class="card-body">
-                    <div class="flex-row-start flex-align-center flex-nowrap mb-3" style="column-gap: .5rem;">
-                        <i class="mdi mdi-cash-check font-18 color-blue"></i>
-                        <p class="mb-0 font-22 font-weight-bold">Gennemførte Betalinger</p>
+                    <!-- Type Toggle - Completed vs Upcoming vs Past Due -->
+                    <div class="flex-row-start flex-align-center mb-3" style="gap: .5rem;">
+                        <button class="btn-v2 action-btn payment-type-btn active" data-type="completed">
+                            <i class="mdi mdi-cash-check mr-1"></i>
+                            Gennemførte
+                        </button>
+                        <button class="btn-v2 mute-btn payment-type-btn" data-type="upcoming">
+                            <i class="mdi mdi-calendar-clock mr-1"></i>
+                            Kommende
+                        </button>
+                        <button class="btn-v2 mute-btn payment-type-btn" data-type="past_due">
+                            <i class="mdi mdi-alert-circle-outline mr-1"></i>
+                            Forfaldne
+                        </button>
                     </div>
 
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="color-gray">
-                                <th>Betaling ID</th>
-                                <th>Ordre ID</th>
-                                <th>Kunde</th>
-                                <th>Beløb</th>
-                                <th>Rate</th>
-                                <th>Betalt Dato</th>
-                                <th>Forfald Dato</th>
-                                <th>Handlinger</th>
-                            </thead>
-                            <tbody>
-                            <?php if($args->payments->count() > 0): ?>
-                                <?php foreach ($args->payments->list() as $payment): ?>
-                                    <?php $order = $payment->order; ?>
-                                    <?php $customer = $order->uuid ?? null; ?>
-                                    <tr>
-                                        <td>
-                                            <p class="mb-0 font-12 font-monospace"><?=$payment->uid?></p>
-                                        </td>
-                                        <td>
-                                            <p class="mb-0 font-12 font-monospace"><?=$order->uid ?? 'N/A'?></p>
-                                        </td>
-                                        <td>
-                                            <?php if(!isEmpty($customer)): ?>
-                                            <a href="<?=__url(Links::$merchant->customerDetail($customer->uid))?>"
-                                               class="color-blue hover-underline font-12"><?=$customer->full_name?></a>
-                                            <?php else: ?>
-                                            <p class="mb-0 font-12">N/A</p>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td>
-                                            <p class="mb-0 font-12 font-weight-bold color-success-text"><?=number_format($payment->amount, 2)?> <?=currencySymbol($payment->currency)?></p>
-                                        </td>
-                                        <td>
-                                            <p class="mb-0 font-12"><?=$payment->installment_number?></p>
-                                        </td>
-                                        <td>
-                                            <p class="mb-0 font-12"><?=!isEmpty($payment->paid_at) ? date("d/m-Y H:i", strtotime($payment->paid_at)) : 'N/A'?></p>
-                                        </td>
-                                        <td>
-                                            <p class="mb-0 font-12"><?=date("d/m-Y", strtotime($payment->due_date))?></p>
-                                        </td>
-                                        <td>
-                                            <a href="<?=__url(Links::$merchant->orderDetail($order->uid))?>" class="btn-v2 trans-btn flex-row-start flex-align-center flex-nowrap" style="gap: .5rem;">
-                                                <i class="mdi mdi-eye-outline font-16"></i>
-                                                <span class="font-14">Se ordre</span>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
+                    <div class="mt-3">
+                        <!-- Filters and Search -->
+                        <div class="flex-row-between flex-align-center flex-wrap mb-3" style="gap: .75rem;">
+                            <div class="flex-row-start flex-align-center flex-wrap" style="gap: .5rem;">
+                                <div class="form-group mb-0">
+                                    <input type="text" class="form-control-v2 form-field-v2" id="payments-search"
+                                           placeholder="Søg betaling, ordre eller kunde..." style="min-width: 220px;">
+                                </div>
+                                <div class="form-group mb-0" id="payments-status-filter-container">
+                                    <select class="form-select-v2" id="payments-filter-status" data-selected="all" style="min-width: 140px;">
+                                        <option value="all" selected>Alle statusser</option>
+                                        <option value="PENDING">Afventer</option>
+                                        <option value="SCHEDULED">Planlagt</option>
+                                    </select>
+                                </div>
+                                <div class="form-group mb-0 position-relative">
+                                    <input type="text" class="form-control-v2 form-field-v2" id="payments-daterange"
+                                           placeholder="Vælg datointerval" style="min-width: 220px; padding-right: 30px;" readonly>
+                                    <i class="mdi mdi-close-circle font-16 color-red position-absolute cursor-pointer d-none"
+                                       id="payments-daterange-clear"
+                                       style="right: 8px; top: 50%; transform: translateY(-50%);"
+                                       title="Ryd datofilter"></i>
+                                </div>
+                            </div>
+                            <div class="flex-row-end flex-align-center flex-wrap" style="gap: .5rem;">
+                                <div class="form-group mb-0">
+                                    <select class="form-select-v2" id="payments-sort" data-selected="date-DESC" style="min-width: 150px;">
+                                        <option value="date-DESC" selected>Nyeste først</option>
+                                        <option value="date-ASC">Ældste først</option>
+                                        <option value="amount-DESC">Beløb (høj-lav)</option>
+                                        <option value="amount-ASC">Beløb (lav-høj)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <select class="form-select-v2" id="payments-per-page" data-selected="10" style="min-width: 80px;">
+                                        <option value="10" selected>10</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="overflow-x: auto;">
+                            <table class="table-v2" id="payments-table">
+                                <thead>
                                 <tr>
-                                    <td colspan="8" class="text-center">
-                                        <p class="mb-0 color-gray font-14 py-3">Ingen gennemførte betalinger fundet</p>
+                                    <th>Betaling ID</th>
+                                    <th>Ordre ID</th>
+                                    <th>Kunde</th>
+                                    <th>Beløb</th>
+                                    <th>Rate</th>
+                                    <th id="payments-date-header">Betalt</th>
+                                    <th>Forfald</th>
+                                    <th id="payments-status-header" class="d-none">Status</th>
+                                    <th class="text-right">Handlinger</th>
+                                </tr>
+                                </thead>
+                                <tbody id="payments-tbody">
+                                <!-- Loading state - will be replaced by JS -->
+                                <tr id="payments-loading-row">
+                                    <td colspan="9" class="text-center py-4">
+                                        <div class="flex-col-center flex-align-center">
+                                            <span class="spinner-border color-primary-cta square-30" role="status" style="border-width: 3px;">
+                                                <span class="sr-only">Indlæser...</span>
+                                            </span>
+                                            <p class="color-gray mt-2 mb-0">Indlæser betalinger...</p>
+                                        </div>
                                     </td>
                                 </tr>
-                            <?php endif; ?>
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- No results message -->
+                        <div id="payments-no-results" class="d-none text-center py-4">
+                            <i class="mdi mdi-credit-card-off-outline font-40 color-gray"></i>
+                            <p class="color-gray mt-2 mb-0">Ingen betalinger fundet</p>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div id="payments-pagination-container" class="flex-row-between flex-align-center flex-wrap mt-3" style="gap: .75rem;">
+                            <div class="text-sm color-gray">
+                                Viser <span id="payments-showing">0</span> af <span id="payments-total">0</span> betalinger
+                                (Side <span id="payments-current-page">1</span> af <span id="payments-total-pages">1</span>)
+                            </div>
+                            <div class="pagination-nav" id="payments-pagination"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -122,37 +143,3 @@ $pageTitle = "Betalinger";
 
 
 </div>
-
-
-<?php scriptStart(); ?>
-<script>
-    function applyDateFilter() {
-        const startDate = document.getElementById('start-date').value;
-        const endDate = document.getElementById('end-date').value;
-
-        const url = new URL(window.location.href);
-
-        if (startDate) {
-            url.searchParams.set('start', startDate);
-        } else {
-            url.searchParams.delete('start');
-        }
-
-        if (endDate) {
-            url.searchParams.set('end', endDate);
-        } else {
-            url.searchParams.delete('end');
-        }
-
-        window.location.href = url.toString();
-    }
-
-    function clearDateFilter() {
-        const url = new URL(window.location.href);
-        url.searchParams.delete('start');
-        url.searchParams.delete('end');
-        window.location.href = url.toString();
-    }
-</script>
-<?php scriptEnd(); ?>
-

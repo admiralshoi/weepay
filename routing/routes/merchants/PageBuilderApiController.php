@@ -48,6 +48,10 @@ class PageBuilderApiController {
                 'about_us' => $draft->about_us,
                 'credit_widget_enabled' => $draft->credit_widget_enabled,
                 'sections' => $draft->sections,
+                'offer_enabled' => $draft->offer_enabled,
+                'offer_title' => $draft->offer_title,
+                'offer_text' => $draft->offer_text,
+                'offer_image' => $draft->offer_image,
             ];
 
             $newDraftUid = Methods::locationPages()->insertDraft($locationId, $newDraftData, __uuid());
@@ -62,23 +66,33 @@ class PageBuilderApiController {
 
         // Upload media based on type
         $mediaStream = Methods::mediaStream();
-        $result = $type === 'logo'
-            ? $mediaStream->uploadOrganisationLogo($_FILES, $location->uuid->uid)
-            : $mediaStream->uploadOrganisationHeroImage($_FILES, $location->uuid->uid);
+        $result = match($type) {
+            'logo' => $mediaStream->uploadOrganisationLogo($_FILES, $location->uuid->uid),
+            'offer' => $mediaStream->uploadOrganisationOfferImage($_FILES, $location->uuid->uid),
+            default => $mediaStream->uploadOrganisationHeroImage($_FILES, $location->uuid->uid),
+        };
 
         if(!$result["success"]) {
             Response()->jsonError($result["error"], [], 400);
         }
 
         // Update draft field
-        $field = $type === 'logo' ? 'logo' : 'hero_image';
+        $field = match($type) {
+            'logo' => 'logo',
+            'offer' => 'offer_image',
+            default => 'hero_image',
+        };
         $updated = Methods::locationPages()->updateDraft($draft->uid, [$field => $result["path"]]);
 
         if(!$updated) {
             Response()->jsonError("Kunne ikke opdatere draft med nyt billede", [], 500);
         }
 
-        $label = $type === 'logo' ? 'Logo' : 'Hero-billede';
+        $label = match($type) {
+            'logo' => 'Logo',
+            'offer' => 'Tilbudsbillede',
+            default => 'Hero-billede',
+        };
         Response()->jsonSuccess("{$label} uploadet", [
             "path" => $result["path"],
             "url" => __url($result["path"]),
@@ -130,6 +144,10 @@ class PageBuilderApiController {
                 'about_us' => $draft->about_us,
                 'credit_widget_enabled' => $draft->credit_widget_enabled,
                 'sections' => $draft->sections,
+                'offer_enabled' => $draft->offer_enabled,
+                'offer_title' => $draft->offer_title,
+                'offer_text' => $draft->offer_text,
+                'offer_image' => $draft->offer_image,
             ];
 
             $newDraftUid = Methods::locationPages()->insertDraft($locationId, $newDraftData, __uuid());
@@ -138,8 +156,16 @@ class PageBuilderApiController {
             $draft = Methods::locationPages()->excludeForeignKeys()->get($newDraftUid);
         }
 
-        $field = $type === 'logo' ? 'logo' : 'hero_image';
-        $defaultConstant = $type === 'logo' ? DEFAULT_LOCATION_LOGO : DEFAULT_LOCATION_HERO;
+        $field = match($type) {
+            'logo' => 'logo',
+            'offer' => 'offer_image',
+            default => 'hero_image',
+        };
+        $defaultConstant = match($type) {
+            'logo' => DEFAULT_LOCATION_LOGO,
+            'offer' => null, // No default for offer image
+            default => DEFAULT_LOCATION_HERO,
+        };
         $currentMedia = $draft->$field;
 
         // Check if we should delete the file
@@ -166,16 +192,20 @@ class PageBuilderApiController {
             }
         }
 
-        // Set back to default in draft
+        // Set back to default in draft (null for offer image)
         $updated = Methods::locationPages()->updateDraft($draft->uid, [$field => $defaultConstant]);
 
         if(!$updated) {
             Response()->jsonError("Kunne ikke opdatere draft", [], 500);
         }
 
-        $label = $type === 'logo' ? 'Logo' : 'Hero-billede';
+        $label = match($type) {
+            'logo' => 'Logo',
+            'offer' => 'Tilbudsbillede',
+            default => 'Hero-billede',
+        };
         Response()->jsonSuccess("{$label} fjernet", [
-            "default_url" => __url($defaultConstant),
+            "default_url" => $defaultConstant ? __url($defaultConstant) : null,
             "draft_uid" => $draft->uid,
             "created_new_draft" => $draft->uid !== $originalDraftUid
         ]);
@@ -195,6 +225,14 @@ class PageBuilderApiController {
 
     #[NoReturn] public static function removeLocationLogo(array $args): void {
         self::removeLocationMedia($args, 'logo');
+    }
+
+    #[NoReturn] public static function uploadLocationOfferImage(array $args): void {
+        self::uploadLocationMedia($args, 'offer');
+    }
+
+    #[NoReturn] public static function removeLocationOfferImage(array $args): void {
+        self::removeLocationMedia($args, 'offer');
     }
 
     /**
@@ -238,6 +276,10 @@ class PageBuilderApiController {
                 'about_us' => $draft->about_us,
                 'credit_widget_enabled' => $draft->credit_widget_enabled,
                 'sections' => $draft->sections,
+                'offer_enabled' => $draft->offer_enabled,
+                'offer_title' => $draft->offer_title,
+                'offer_text' => $draft->offer_text,
+                'offer_image' => $draft->offer_image,
             ];
 
             $newDraftUid = Methods::locationPages()->insertDraft($locationId, $newDraftData, __uuid());
@@ -256,6 +298,12 @@ class PageBuilderApiController {
         if(array_key_exists('about_us', $args)) $updateData['about_us'] = trim($args['about_us']);
         if(array_key_exists('credit_widget_enabled', $args))
             $updateData['credit_widget_enabled'] = !empty($args['credit_widget_enabled']) ? 1 : 0;
+
+        // Update offer fields
+        if(array_key_exists('offer_enabled', $args))
+            $updateData['offer_enabled'] = !empty($args['offer_enabled']) ? 1 : 0;
+        if(array_key_exists('offer_title', $args)) $updateData['offer_title'] = trim($args['offer_title']);
+        if(array_key_exists('offer_text', $args)) $updateData['offer_text'] = trim($args['offer_text']);
 
         // Process sections - find all section fields regardless of index
         $sections = [];

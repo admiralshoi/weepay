@@ -1,0 +1,27 @@
+[2026-01-06 20:21:46] - SELECT * FROM `PROD_FKF_appmeta`
+[2026-01-06 20:21:46] - []
+[2026-01-06 20:21:46] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2026-01-06 20:21:46] - [1]
+[2026-01-06 20:21:46] -  request-path  
+[2026-01-06 20:21:46] - SELECT * FROM `PROD_FKF_countries` WHERE `enabled` = ?
+[2026-01-06 20:21:46] - [1]
+[2026-01-06 20:21:46] - SELECT * FROM `PROD_FKF_appmeta`
+[2026-01-06 20:21:46] - []
+[2026-01-06 20:21:46] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2026-01-06 20:21:46] - [1]
+[2026-01-06 20:21:46] -  request-path  api/track
+[2026-01-06 20:23:42] - SELECT * FROM `PROD_FKF_appmeta`
+[2026-01-06 20:23:42] - []
+[2026-01-06 20:23:42] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2026-01-06 20:23:42] - [1]
+[2026-01-06 20:23:42] -  request-path  qr
+[2026-01-06 20:24:02] - SELECT * FROM `PROD_FKF_appmeta`
+[2026-01-06 20:24:02] - []
+[2026-01-06 20:24:02] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2026-01-06 20:24:02] - [1]
+[2026-01-06 20:24:02] -  request-path  qr
+[2026-01-06 20:26:15] - SELECT * FROM `PROD_FKF_appmeta`
+[2026-01-06 20:26:15] - []
+[2026-01-06 20:26:15] - SELECT * FROM `PROD_FKF_userroles` WHERE `defined` = ? ORDER BY `access_level` DESC
+[2026-01-06 20:26:15] - [1]
+[2026-01-06 20:26:15] -  request-path  qr

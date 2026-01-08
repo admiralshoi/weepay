@@ -3,7 +3,13 @@
 use classes\Methods;
 use classes\lang\Translate;
 
+$pageTitle = "Opret konto";
 ?>
+
+<script>
+    var pageTitle = <?=json_encode($pageTitle)?>;
+</script>
+
 <div id="main-wrapper" class="">
     <div class="row">
         <div class="col-12">

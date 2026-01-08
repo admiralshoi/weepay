@@ -4,6 +4,10 @@ namespace classes\enumerations\links\api\organisation;
 
 class Organisation {
     public string $vivaConnectedAccount = "api/organisation/connected-account";
+    public string $updateWhitelistEnabled = "api/organisation/whitelist/enabled";
+    public string $addWhitelistIp = "api/organisation/whitelist/add";
+    public string $removeWhitelistIp = "api/organisation/whitelist/remove";
+    public string $updateSettings = "api/organisation/settings";
 
     public Team $team;
 

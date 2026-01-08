@@ -12,12 +12,6 @@ $logoUrl = $page ? __url($page->logo) : null;
 
 $pageTitle = "{$terminal->location->name} - Købsdetaljer";
 
-// Calculate BNPL progress percentage
-$bnplPercentage = 0;
-if (!isEmpty($args->bnplLimit) && $args->bnplLimit->platform_max > 0) {
-    $bnplPercentage = ($args->bnplLimit->available / $args->bnplLimit->platform_max) * 100;
-}
-
 ?>
 
 <script>
@@ -78,17 +72,7 @@ if (!isEmpty($args->bnplLimit) && $args->bnplLimit->platform_max > 0) {
 
             <?php if(!isEmpty($args->bnplLimit)): ?>
             <!-- Dark Credit Box -->
-            <div class="bnpl-credit-card w-100">
-                <p class="bnpl-credit-card__label">WEEPAY SALDO</p>
-                <p class="bnpl-credit-card__amount"><?=number_format($args->bnplLimit->available, 0, ',', '.')?> kr.</p>
-                <div class="bnpl-credit-card__progress-row">
-                    <span class="bnpl-credit-card__progress-label">Tilgængelig</span>
-                    <span class="bnpl-credit-card__progress-max">Max <?=number_format($args->bnplLimit->platform_max, 0, ',', '.')?> kr.</span>
-                </div>
-                <div class="bnpl-credit-card__progress-container">
-                    <div class="bnpl-credit-card__progress-bar" style="width: <?=$bnplPercentage?>%;"></div>
-                </div>
-            </div>
+            <?=\features\DomMethods::bnplCreditCard($args->bnplLimit, $args->hasPastDue ?? false, null, 'w-100')?>
             <?php endif; ?>
 
             <!-- Store & Basket Info -->
@@ -111,96 +95,62 @@ if (!isEmpty($args->bnplLimit) && $args->bnplLimit->platform_max > 0) {
                 </p>
             </div>
 
-            <!-- Session ID badge (visible on mobile when hero is hidden) -->
-            <div class="w-100 flex-row-end d-none d-md-none" id="mobile-session-id">
-                <p class="design-box mb-0 font-14 font-weight-bold px-2 py-1">
-                    ID: <?=$terminalSession->session?>
-                </p>
-            </div>
-
-            <div class="card border-radius-10px w-100">
-                <!-- Hero section - hidden on mobile -->
-                <div class="w-100 h-200px overflow-hidden checkout-hero-mobile-hide">
-                    <div
-                        class="w-100 h-100 overflow-hidden bg-cover"
-                        style="
-                            border-radius: 10px 10px 0 0;
-                            aspect-ratio: 16/9;
-                            background-image: url('<?=resolveImportUrl($args->page->hero_image)?>');
-                        "
-                    ></div>
-                    <div style="position: absolute; top: 5px; right: 8px;">
-                        <p class="design-box mb-0 font-18 font-weight-bold px-3  py-2">
-                            ID: <?=$terminalSession->session?>
-                        </p>
-                    </div>
+            <!-- Customer Details Card -->
+            <div class="card border-radius-10px w-100 p-4 position-relative">
+                <!-- Session ID badge - flows on mobile, absolute on desktop -->
+                <div class="d-md-none w-100 flex-row-end mb-3">
+                    <p class="design-box mb-0 font-13 font-weight-bold px-2 py-1">
+                        ID: <?=$terminalSession->session?>
+                    </p>
+                </div>
+                <div class="d-none d-md-block position-absolute" style="top: 10px; right: 10px;">
+                    <p class="design-box mb-0 font-13 font-weight-bold px-2 py-1">
+                        ID: <?=$terminalSession->session?>
+                    </p>
                 </div>
 
-                <div class="py-3 px-4 w-100 flex-col-start" style="row-gap: .5rem;">
-                    <!-- Contact email - keep this -->
-                    <div class="flex-col-start border-bottom-card pb-3 checkout-hero-mobile-hide" style="row-gap: .5rem;">
-                        <?php if(!empty($terminal?->location->contact_email)): ?>
-                            <div class="flex-row-start flex-align-center flex-nowrap" style="gap: .5rem">
-                                <i class="mdi mdi-email-outline color-design-blue font-16"></i>
-                                <p class="mb-0 font-14"><?=$terminal?->location->contact_email?></p>
-                            </div>
-                        <?php endif; ?>
+                <div class="flex-row-start flex-align-center flex-wrap cg-15 rg-1 row-centered-xs">
+                    <div class="mx-auto-xs flex-row-center flex-align-center square-75 bg-wrapper-hover border-radius-50">
+                        <i class="font-40 color-design-blue mdi mdi-account"></i>
                     </div>
-
-                    <div class="flex-col-start pt-3" style="row-gap: 1.5rem;">
-                        <div class="vision-card px-4 py-3 border-radius-10px w-100 overflow-hidden" style="gap: .5rem;">
-                            <div class="flex-row-start flex-align-center flex-wrap cg-15 rg-1 row-centered-xs" >
-                                <div class="mx-auto-xs flex-row-center flex-align-center square-75 bg-wrapper-hover border-radius-50 " >
-                                    <i class="font-40 color-design-blue mdi mdi-account"></i>
-                                </div>
-                                <div class="flex-col-start mt-2" style="row-gap: .25rem;">
-                                    <div class="flex-row-start flex-align-center flex-wrap" style="gap: .5rem">
-                                        <p class="mb-0 font-14">Navn</p>
-                                        <p class="mb-0 font-14 font-weight-bold"><?=$customer->user->full_name?></p>
-<!--                                        <p class="mb-0 font-14 font-weight-bold">--><?php //=$customer->user->full_name?><!--</p>-->
-                                    </div>
-                                    <div class="flex-row-start flex-align-center flex-nowrap" style="gap: .5rem">
-                                        <p class="mb-0 font-14">Fødselsdag</p>
-                                        <p class="mb-0 font-14 font-weight-bold"><?=$customer->user->birthdate?></p>
-                                    </div>
-<!--                                    <div class="flex-row-start flex-align-center flex-nowrap" style="gap: .5rem">-->
-<!--                                        <p class="mb-0 font-14 ">CPR</p>-->
-<!--                                        <p class="mb-0 font-14 font-weight-bold">--><?php //=$customer->nin?><!--</p>-->
-<!--                                    </div>-->
-                                    <div class="flex-row-start flex-align-center flex-nowrap" style="gap: .5rem">
-                                        <p class="mb-0 font-14">Nationalitet</p>
-                                        <p class="mb-0 font-14 font-weight-bold"><?=\classes\Methods::countries()->name($customer->nin_country)?></p>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <a href="<?=$args->nextStepLink?>" id="next-step" style="gap: .55rem; <?=isEmpty($basket) ? 'display: none;' : ''?>"
-                               class="mt-3  btn-v2 design-action-btn-lg flex-row-center flex-align-center flex-nowrap" >
-                                <i class="mdi mdi-contactless-payment font-18"></i>
-                                <span class="font-18">Vælg Betalingsplan</span>
-                            </a>
-
-                            <div class="flex-row-center flex-align-center flex-wrap mt-3 cg-1 rg-05" id="loader-container" style=" <?=!isEmpty($basket) ? 'display: none;' : ''?>">
-                                <div class="ml-3 flex-align-center flex-row-start"  id="paymentButtonLoader">
-                                    <span class="spinner-border color-dark square-30" role="status" style="border-width: 3px;">
-                                      <span class="sr-only">Loading...</span>
-                                    </span>
-                                </div>
-
-                                <p class="mb-0 font-18 font-weight-medium text-center">Afventer butikshandling...</p>
-                            </div>
+                    <div class="flex-col-start mt-2" style="row-gap: .25rem;">
+                        <div class="flex-row-start flex-align-center flex-wrap" style="gap: .5rem">
+                            <p class="mb-0 font-14">Navn</p>
+                            <p class="mb-0 font-14 font-weight-bold"><?=$customer->user->full_name?></p>
                         </div>
-
-                        <button id="cancel-checkout" style="gap: .55rem; "
-                                class="mt-3 btn-v2 danger-btn-outline-lg flex-row-center flex-align-center flex-nowrap" >
-                            <i class="mdi mdi-close font-18"></i>
-                            <span class="font-18">Afbryd køb</span>
-                        </button>
+                        <div class="flex-row-start flex-align-center flex-nowrap" style="gap: .5rem">
+                            <p class="mb-0 font-14">Fødselsdag</p>
+                            <p class="mb-0 font-14 font-weight-bold"><?=$customer->user->birthdate?></p>
+                        </div>
+                        <div class="flex-row-start flex-align-center flex-nowrap" style="gap: .5rem">
+                            <p class="mb-0 font-14">Nationalitet</p>
+                            <p class="mb-0 font-14 font-weight-bold"><?=\classes\Methods::countries()->name($customer->nin_country)?></p>
+                        </div>
                     </div>
                 </div>
 
+                <a href="<?=$args->nextStepLink?>" id="next-step" style="gap: .55rem; <?=isEmpty($basket) ? 'display: none;' : ''?>"
+                   class="mt-4 btn-v2 design-action-btn-lg flex-row-center flex-align-center flex-nowrap">
+                    <i class="mdi mdi-contactless-payment font-18"></i>
+                    <span class="font-18">Vælg Betalingsplan</span>
+                </a>
+
+                <div class="flex-row-center flex-align-center flex-wrap mt-4 cg-1 rg-05" id="loader-container" style="<?=!isEmpty($basket) ? 'display: none;' : ''?>">
+                    <div class="ml-3 flex-align-center flex-row-start" id="paymentButtonLoader">
+                        <span class="spinner-border color-dark square-30" role="status" style="border-width: 3px;">
+                          <span class="sr-only">Loading...</span>
+                        </span>
+                    </div>
+                    <p class="mb-0 font-18 font-weight-medium text-center">Afventer butikshandling...</p>
+                </div>
             </div>
+
+            <!-- Cancel Button (outside card) -->
+            <button id="cancel-checkout" style="gap: .55rem;"
+                    class="mt-2 btn-v2 danger-btn-outline-lg flex-row-center flex-align-center flex-nowrap w-100">
+                <i class="mdi mdi-close font-18"></i>
+                <span class="font-18">Afbryd køb</span>
+            </button>
 
 
 

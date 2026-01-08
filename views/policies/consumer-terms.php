@@ -2,7 +2,13 @@
 /**
  * @var object $args
  */
+
+$pageTitle = "Handelsbetingelser";
 ?>
+
+<script>
+    var pageTitle = <?=json_encode($pageTitle)?>;
+</script>
 
 <style>
     .policy-container {

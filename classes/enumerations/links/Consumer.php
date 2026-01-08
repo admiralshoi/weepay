@@ -8,12 +8,24 @@ class Consumer {
     public string $dashboard = "dashboard";
     public string $orders = "orders";
     public string $orderDetail = "order";
+    public string $payments = "payments";
     public string $receipts = "receipts";
     public string $upcomingPayments = "upcoming-payments";
     public string $outstandingPayments = "outstanding-payments";
     public string $settings = "settings";
     public string $support = "support";
 
+    public function orderDetail(string $orderId): string {
+        return "order/{$orderId}";
+    }
+
+    public function paymentDetail(string $paymentId): string {
+        return "payments/{$paymentId}";
+    }
+
+    public function locationDetail(string $locationId): string {
+        return "location/{$locationId}";
+    }
 
     function __construct() {
         $ref = new \ReflectionClass(self::class);

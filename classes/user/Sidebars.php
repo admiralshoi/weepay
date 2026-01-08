@@ -131,25 +131,11 @@ class Sidebars {
                     "icon-class" => "mdi mdi-cart-outline",
                     "access_level" => []
                 ),
-                "receipts" => array(
-                    "link" => Links::$consumer->receipts,
-                    "title" => "Kvitteringer",
-                    "data-value" => "receipts",
-                    "icon-class" => "mdi mdi-receipt",
-                    "access_level" => []
-                ),
-                "upcoming-payments" => array(
-                    "link" => Links::$consumer->upcomingPayments,
-                    "title" => "Kommende betalinger",
-                    "data-value" => "upcoming-payments",
-                    "icon-class" => "mdi mdi-calendar-clock",
-                    "access_level" => []
-                ),
-                "outstanding-payments" => array(
-                    "link" => Links::$consumer->outstandingPayments,
-                    "title" => "Udestående betalinger",
-                    "data-value" => "outstanding-payments",
-                    "icon-class" => "mdi mdi-credit-card-clock-outline",
+                "payments" => array(
+                    "link" => Links::$consumer->payments,
+                    "title" => "Betalinger",
+                    "data-value" => "payments",
+                    "icon-class" => "mdi mdi-cash",
                     "access_level" => []
                 ),
                 "settings" => array(
@@ -187,20 +173,6 @@ class Sidebars {
                     "title" => "Betalinger",
                     "data-value" => "payments",
                     "icon-class" => "mdi mdi-cash",
-                    "access_level" => []
-                ),
-                "pending-payments" => array(
-                    "link" => Links::$merchant->pendingPayments,
-                    "title" => "Udestående",
-                    "data-value" => "pending-payments",
-                    "icon-class" => "mdi mdi-credit-card-clock-outline",
-                    "access_level" => []
-                ),
-                "past-due-payments" => array(
-                    "link" => Links::$merchant->pastDuePayments,
-                    "title" => "Forsinkede",
-                    "data-value" => "past-due-payments",
-                    "icon-class" => "mdi mdi-alert-circle-outline",
                     "access_level" => []
                 ),
                 "locations" => array(
@@ -390,20 +362,6 @@ class Sidebars {
                     "title" => "Betalinger",
                     "data-value" => "payments",
                     "icon-class" => "mdi mdi-cash",
-                    "access_level" => []
-                ),
-                "pending-payments" => array(
-                    "link" => Links::$merchant->pendingPayments,
-                    "title" => "Udestående",
-                    "data-value" => "pending-payments",
-                    "icon-class" => "mdi mdi-credit-card-clock-outline",
-                    "access_level" => []
-                ),
-                "past-due-payments" => array(
-                    "link" => Links::$merchant->pastDuePayments,
-                    "title" => "Forsinkede",
-                    "data-value" => "past-due-payments",
-                    "icon-class" => "mdi mdi-alert-circle-outline",
                     "access_level" => []
                 ),
                 "locations" => array(

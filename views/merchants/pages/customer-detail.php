@@ -61,7 +61,7 @@ $pageTitle = "Kunde Detaljer - {$customer->full_name}";
 
                         <div class="col-6 col-md-4 mb-3">
                             <p class="mb-1 font-13 color-gray font-weight-medium">Telefon</p>
-                            <p class="mb-0 font-14"><?=!isEmpty($customer->phone) ? '+' . $customer->phone : 'N/A'?></p>
+                            <p class="mb-0 font-14"><?=formatPhone($customer->phone, $customer->phone_country_code)?></p>
                         </div>
 
                         <div class="col-6 col-md-4 mb-3">
@@ -112,75 +112,8 @@ $pageTitle = "Kunde Detaljer - {$customer->full_name}";
                     <?php endif; ?>
                 </div>
             </div>
-
-            <!-- Order History -->
-            <div class="card border-radius-10px mb-4">
-                <div class="card-body">
-                    <div class="flex-row-start flex-align-center flex-nowrap mb-3" style="column-gap: .5rem;">
-                        <i class="mdi mdi-history font-18 color-blue"></i>
-                        <p class="mb-0 font-20 font-weight-bold">Ordre Historik</p>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="color-gray">
-                                <th>Ordre ID</th>
-                                <th>Dato</th>
-                                <th>Lokation</th>
-                                <th>Beløb</th>
-                                <th>Status</th>
-                                <th>Handlinger</th>
-                            </thead>
-                            <tbody>
-                            <?php if($orders->count() > 0): ?>
-                                <?php foreach ($orders->list() as $order): ?>
-                                    <tr>
-                                        <td>
-                                            <p class="mb-0 font-12 font-monospace"><?=$order->uid?></p>
-                                        </td>
-                                        <td>
-                                            <p class="mb-0 font-12"><?=date("d/m-Y H:i", strtotime($order->created_at))?></p>
-                                        </td>
-                                        <td>
-                                            <p class="mb-0 font-12"><?=$order->location->name ?? 'N/A'?></p>
-                                        </td>
-                                        <td>
-                                            <p class="mb-0 font-12 font-weight-medium"><?=number_format($order->amount, 2) . ' ' . currencySymbol($order->currency)?></p>
-                                        </td>
-                                        <td>
-                                            <?php if($order->status === 'COMPLETED'): ?>
-                                                <span class="success-box font-12">Gennemført</span>
-                                            <?php elseif($order->status === 'DRAFT'): ?>
-                                                <span class="mute-box font-12">Draft</span>
-                                            <?php elseif($order->status === 'PENDING'): ?>
-                                                <span class="action-box font-12">Afvikles</span>
-                                            <?php elseif($order->status === 'CANCELLED'): ?>
-                                                <span class="danger-box font-12">Annulleret</span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td>
-                                            <a href="<?=__url(Links::$merchant->orderDetail($order->uid))?>" class="btn-v2 trans-btn flex-row-start flex-align-center flex-nowrap" style="gap: .35rem; padding: .25rem .5rem;">
-                                                <i class="mdi mdi-eye-outline font-14"></i>
-                                                <span class="font-12">Se</span>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="6" class="text-center">
-                                        <p class="mb-0 color-gray font-14 py-3">Ingen ordrer fundet</p>
-                                    </td>
-                                </tr>
-                            <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
         </div>
 
-        <!-- Stats Sidebar -->
         <div class="col-12 col-lg-4">
             <div class="card border-radius-10px sticky-top mb-4" style="top: 1rem;">
                 <div class="card-body">
@@ -217,6 +150,79 @@ $pageTitle = "Kunde Detaljer - {$customer->full_name}";
                 </div>
             </div>
         </div>
+
+        <!-- Stats Sidebar -->
+        <div class="col-12">
+            <!-- Order History -->
+            <div class="card border-radius-10px mb-4">
+                <div class="card-body">
+                    <div class="flex-row-start flex-align-center flex-nowrap mb-3" style="column-gap: .5rem;">
+                        <i class="mdi mdi-history font-18 color-blue"></i>
+                        <p class="mb-0 font-20 font-weight-bold">Ordre Historik</p>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table class="table plainDataTable table-hover" id="orderHistoryTable">
+                            <thead class="color-gray">
+                            <tr>
+                                <th>Ordre ID</th>
+                                <th>Dato</th>
+                                <th>Lokation</th>
+                                <th>Beløb</th>
+                                <th>Status</th>
+                                <th>Handlinger</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <?php if($orders->count() > 0): ?>
+                                <?php foreach ($orders->list() as $order): ?>
+                                    <tr>
+                                        <td>
+                                            <p class="mb-0 font-12 font-monospace"><?=$order->uid?></p>
+                                        </td>
+                                        <td data-order="<?=strtotime($order->created_at)?>">
+                                            <p class="mb-0 font-12"><?=date("d/m-Y H:i", strtotime($order->created_at))?></p>
+                                        </td>
+                                        <td>
+                                            <p class="mb-0 font-12"><?=$order->location->name ?? 'N/A'?></p>
+                                        </td>
+                                        <td data-order="<?=$order->amount?>">
+                                            <p class="mb-0 font-12 font-weight-medium"><?=number_format($order->amount, 2) . ' ' . currencySymbol($order->currency)?></p>
+                                        </td>
+                                        <td>
+                                            <?php if($order->status === 'COMPLETED'): ?>
+                                                <span class="success-box font-12">Gennemført</span>
+                                            <?php elseif($order->status === 'DRAFT'): ?>
+                                                <span class="mute-box font-12">Draft</span>
+                                            <?php elseif($order->status === 'PENDING'): ?>
+                                                <span class="action-box font-12">Afvikles</span>
+                                            <?php elseif($order->status === 'CANCELLED'): ?>
+                                                <span class="danger-box font-12">Annulleret</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="text-right">
+                                            <a href="<?=__url(Links::$merchant->orderDetail($order->uid))?>" class="btn-v2 trans-btn flex-row-start flex-align-center flex-nowrap" style="gap: .5rem; ">
+                                                <i class="mdi mdi-eye-outline font-16"></i>
+                                                <span class="text-sm">Se detaljer</span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="6" class="text-center">
+                                        <p class="mb-0 color-gray font-14 py-3">Ingen ordrer fundet</p>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
     </div>
 
 </div>

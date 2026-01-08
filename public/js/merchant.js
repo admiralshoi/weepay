@@ -119,12 +119,16 @@ const LocationActions = {
         manageTeam: null,
         pageBuilder: null,
     },
+    elements: {
+      name: null
+    },
 
     init() {
         if(this.isInit) return;
         this.isInit = true;
         this.sidebar = document.getElementById('locationAction');
         this.closeRightSidebarBtn = this.sidebar.querySelector('.closeRightSidebarBtn');
+        this.elements.name = this.sidebar.querySelector(`[data-preview=location-name]`);
         this.buttons.pageBuilder = document.getElementById('page-builder-link');
         this.buttons.manageTeam = document.getElementById('manage-team');
 
@@ -155,6 +159,7 @@ const LocationActions = {
         let slug = this.location.slug;
         this.buttons.pageBuilder.href = platformLinks.merchant.locations.locationPageBuilder.replace("{slug}", slug);
         this.buttons.manageTeam.href = platformLinks.merchant.locations.locationMembers.replace("{slug}", slug);
+        this.elements.name.innerText = this.location.name;
     },
     setLocation () {
         this.location = locations.find(l => l.uid === this.locationId)
@@ -433,6 +438,13 @@ const LocationActions = {
         const windowName = 'TerminalQrWindow';
         const windowFeatures = 'width=600,height=750,scrollbars=yes';
         const popupWindow = window.open(link, windowName, windowFeatures);
+    },
+
+    locationQrAction(slug) {
+        let link = HOST + platformLinks.merchant.locations.locationQr.replace("{slug}", slug);
+        const windowName = 'LocationQrWindow';
+        const windowFeatures = 'width=600,height=750,scrollbars=yes';
+        window.open(link, windowName, windowFeatures);
     }
 };
 

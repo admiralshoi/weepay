@@ -13,8 +13,10 @@ class LocalAuthentication extends Crud {
     private bool $guest = false;
     private ?array $error = null;
     private ?object $user = null;
+    private ?object $authRecord = null;
     private ?string $authId = null;
     private ?string $authKey = null;
+    private ?string $phoneCountryCode = null;
     private bool $userisEnabled = true;
 
 
@@ -38,6 +40,7 @@ class LocalAuthentication extends Crud {
         setSessions($user,$keys);
     }
     public function getUser(): ?object { return $this->user; }
+    public function getAuthRecord(): ?object { return $this->authRecord; }
     public function getError(): ?array { return $this->error; }
     public function validate(array $params): bool {
         $this->set($params);
@@ -74,6 +77,9 @@ class LocalAuthentication extends Crud {
         if(array_key_exists(self::KEY_COLUMN, $params) && !empty($params[self::KEY_COLUMN])) {
             $this->authKey = $params[self::KEY_COLUMN];
         }
+        if(array_key_exists('phone_country_code', $params) && !empty($params['phone_country_code'])) {
+            $this->phoneCountryCode = $params['phone_country_code'];
+        }
         if(is_null($this->authId)) $this->error = Response()->arrayError("Venligst angiv et brugernavn, email eller telefonnummer.");
         elseif(is_null($this->authKey)) $this->error = Response()->arrayError("Venligst angiv et kodeord.");
     }
@@ -84,14 +90,23 @@ class LocalAuthentication extends Crud {
             $query = $this->queryBuilder();
             $query->startGroup("OR");
                 foreach (self::ID_COLUMNS as $column) {
-                    $query->where($column, $this->authId);
+                    if($column === 'phone' && !is_null($this->phoneCountryCode)) {
+                        // For phone with country code, match both phone and phone_country_code
+                        $query->startGroup("AND");
+                            $query->where($column, $this->authId);
+                            $query->where('phone_country_code', $this->phoneCountryCode);
+                        $query->endGroup();
+                    } else {
+                        $query->where($column, $this->authId);
+                    }
                 }
             $query->endGroup();
             $query->where(self::KEY_COLUMN, $password);
-            $query->where("enabled", (int)($i === 1));
+            $query->where("enabled", (int)($i === 0));
             $auth = $this->queryGetFirst($query);
             if(!isEmpty($auth) && !isEmpty($auth?->user)) {
                 $this->user = $auth->user;
+                $this->authRecord = $auth;
                 $this->userisEnabled = $auth->enabled === 1;
                 return true;
             }

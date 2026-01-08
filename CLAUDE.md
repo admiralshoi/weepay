@@ -100,9 +100,99 @@ Users::where("uid", "123")->delete();
 - **Encrypted Columns**: Encrypted storage (defined in `$encryptedColumns`)
 - **Required Rows**: Seed data in `$requiredRows` array
 
+### Foreign Keys - CRITICAL
+**IMPORTANT**: Before fetching data from any Model, ALWAYS check the Model file for `foreignkeys()` method. Foreign key columns are **automatically resolved as full objects**, not raw string values.
+
+**Example - AuthLocal Model**:
+```php
+// In Database/model/AuthLocal.php
+public static function foreignkeys(): array {
+    return [
+        "user" => [Users::tableColumn("uid"), Users::newStatic()]
+    ];
+}
+```
+
+This means when you fetch an AuthLocal record, `$authLocal->user` is a **Users object**, NOT a string UID!
+
+**Common Mistake**:
+```php
+// WRONG - $existingAuth->user is an object, not a string!
+$existingAuth = Methods::localAuthentication()->getFirst(['username' => $username]);
+if($existingAuth && $existingAuth->user !== __uuid()) {  // BROKEN - comparing object to string
+    // This will never match correctly
+}
+
+// CORRECT Option 1 - Access the resolved object's UID
+if($existingAuth && $existingAuth->user->uid !== __uuid()) {
+    // Works correctly
+}
+
+// CORRECT Option 2 - Exclude foreign keys to get raw values (more efficient)
+$existingAuth = Methods::localAuthentication()->excludeForeignKeys()->getFirst(['username' => $username]);
+if($existingAuth && $existingAuth->user !== __uuid()) {  // Now $existingAuth->user is a string
+    // Works correctly
+}
+```
+
+**Best Practices**:
+1. Always check the Model's `foreignkeys()` method before accessing properties
+2. Use `->excludeForeignKeys()` on the handler when you only need raw IDs (avoids unnecessary JOINs)
+3. When you need the related object's data, let it resolve and access via `->foreignKeyColumn->property`
+4. WHERE clauses work with raw values - `getFirst(['user' => __uuid()])` is fine
+
 ### Database Migrations
 - Schema changes are managed through `Database/Schema.php` and `Database/SchemaManager.php`
 - Migration routes available at `/migration/init`, `/migration/db` (admin only)
+
+### Handler Classes and Crud Pattern
+**IMPORTANT**: Always use Handler classes over Model classes directly in controllers and business logic.
+
+Each Model typically has a corresponding Handler class in `classes/` that extends `Crud`:
+- Access handlers via `Methods::handlerName()` (e.g., `Methods::users()`, `Methods::orders()`, `Methods::twoFactorAuth()`)
+- Handlers provide business logic, access control, and consistent data operations
+
+**Crud Class Methods** (`classes/utility/Crud.php`):
+Use Crud methods instead of QueryBuilder where possible:
+```php
+// PREFERRED - Using Crud methods
+$handler->get($uid);                           // Get by UID
+$handler->getFirst(['column' => 'value']);     // Get first matching record
+$handler->getByX(['column' => 'value']);       // Get all matching records
+$handler->exists(['column' => 'value']);       // Check if exists
+$handler->create(['column' => 'value']);       // Insert new record
+$handler->update($data, $identifier);          // Update records
+$handler->delete(['column' => 'value']);       // Delete records
+$handler->count(['column' => 'value']);        // Count records
+
+// For complex queries with ordering
+$handler->getByXOrderBy('column', 'DESC', ['filter' => 'value']);
+$handler->getFirstOrderBy('column', 'DESC', ['filter' => 'value']);
+
+// When QueryBuilder is needed (complex conditions like !=, >, <, OR groups)
+$query = $handler->queryBuilder()
+    ->where('column', '!=', 'value')
+    ->where('other', '>', 5);
+$result = $handler->queryGetFirst($query);  // Use queryGetFirst for single result
+$results = $handler->queryGetAll($query);   // Use queryGetAll for collections
+```
+
+**When to use QueryBuilder directly**:
+- Complex conditions (`!=`, `>`, `<`, `LIKE`, etc.)
+- OR groups with `startGroup('OR')` / `endGroup()`
+- Joins or subqueries
+- Always use `queryGetFirst()` or `queryGetAll()` for fetching to include foreign key resolution
+
+**Example - Correct Pattern**:
+```php
+// In a controller - use handler via Methods
+$user = Methods::users()->get($userId);
+$orders = Methods::orders()->getByX(['user' => $userId, 'status' => 'COMPLETED']);
+Methods::twoFactorAuth()->delete(['user' => $userId, 'purpose' => 'phone_verification']);
+
+// DON'T do this in controllers:
+$user = \Database\model\Users::where('uid', $userId)->first();  // Wrong - use handler
+```
 
 ## Routing System
 

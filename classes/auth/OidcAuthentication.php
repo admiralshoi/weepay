@@ -14,7 +14,7 @@ class OidcAuthentication extends Crud {
     }
 
     public function getByUserId(string|int|null $uid = null, array $fields = []): ?object {
-        if(empty($uid) && !isOidcAuthenticated()) return null;
+        if(empty($uid) && !isOidcVerified()) return null;
         if(empty($uid)) $uid = __uuid();
         return $this->getFirst(['user' => $uid], $fields);
     }

@@ -91,43 +91,10 @@ class PageController {
         }
 
         $locationHandler = Methods::locations();
-        $orderHandler = Methods::orders();
-
-        // Get date filters from query params
-        $startDate = $args['start'] ?? null;
-        $endDate = $args['end'] ?? null;
-
-        // Build where conditions
-        $where = ['organisation' => __oUuid(), 'status' => ['DRAFT', 'PENDING', 'COMPLETED']];
-
-        // Add date filters if provided
-        if(!isEmpty($startDate)) {
-            $where['created_at >='] = date('Y-m-d 00:00:00', strtotime($startDate));
-        }
-        if(!isEmpty($endDate)) {
-            $where['created_at <='] = date('Y-m-d 23:59:59', strtotime($endDate));
-        }
-
-        // Use queryBuilder to conditionally add scoped location filter
-        $locationIds = Methods::locations()->userLocationPredicate();
-        $queryBuilder = $orderHandler->queryBuilder()->whereList($where);
-        if(!empty($locationIds)) {
-            $queryBuilder->where('location', $locationIds);
-        }
-        $orders = $orderHandler->queryGetAll($queryBuilder->order('created_at', 'DESC'));
         $locations = $locationHandler->getMyLocations(null, ['uid', 'name']);
         $locationOptions = mapItemToKeyValuePairs($locations->list(), 'slug', 'name');
-        $customers = [];
-        foreach ($orders->list() as $n => $order) {
-            $customer = $order->uuid;
-            if(is_string($customer) && array_key_exists($customer, $customers)) {
-                $order->uuid = $customers[$customer];
-                $orders->updateItem($n, $order);
-            }
-            else if(!is_string($customer)) $customers[$customer->uid] = $customer;
-        }
 
-        return Views("MERCHANT_ORDERS", compact('orders', 'locationOptions', 'startDate', 'endDate'));
+        return Views("MERCHANT_ORDERS", compact('locationOptions'));
     }
 
     public static function customers(array $args): mixed  {
@@ -136,100 +103,14 @@ class PageController {
             return null;
         }
 
-        $orderHandler = Methods::orders();
-
-        // Get all completed orders for the organisation (filtered by scoped locations)
-        $locationIds = Methods::locations()->userLocationPredicate();
-        $orders = $orderHandler->getByX([
-            'organisation' => __oUuid(),
-            'status' => 'COMPLETED'
-        ], ['uuid', 'amount', 'created_at'], ['location' => $locationIds]);
-
-        // Group orders by customer and calculate stats
-        $customersMap = [];
-        foreach ($orders->list() as $order) {
-            $customerId = is_object($order->uuid) ? $order->uuid->uid : $order->uuid;
-
-            if(!isset($customersMap[$customerId])) {
-                $customersMap[$customerId] = [
-                    'customer' => is_object($order->uuid) ? $order->uuid : null,
-                    'total_spent' => 0,
-                    'order_count' => 0,
-                    'last_order_date' => $order->created_at,
-                    'first_order_date' => $order->created_at,
-                ];
-            }
-
-            $customersMap[$customerId]['total_spent'] += $order->amount;
-            $customersMap[$customerId]['order_count']++;
-
-            // Update last order date if this order is more recent
-            if(strtotime($order->created_at) > strtotime($customersMap[$customerId]['last_order_date'])) {
-                $customersMap[$customerId]['last_order_date'] = $order->created_at;
-            }
-
-            // Update first order date if this order is older
-            if(strtotime($order->created_at) < strtotime($customersMap[$customerId]['first_order_date'])) {
-                $customersMap[$customerId]['first_order_date'] = $order->created_at;
-            }
-
-            // Keep customer object reference
-            if(is_object($order->uuid)) {
-                $customersMap[$customerId]['customer'] = $order->uuid;
-            }
-        }
-
-        // Convert to array and sort by last order date (most recent first)
-        $customers = array_values($customersMap);
-        usort($customers, function($a, $b) {
-            return strtotime($b['last_order_date']) - strtotime($a['last_order_date']);
-        });
-
-        return Views("MERCHANT_CUSTOMERS", compact('customers'));
+        return Views("MERCHANT_CUSTOMERS");
     }
 
     public static function payments(array $args): mixed  {
         // Check orders.payments permission
         if(!\classes\app\OrganisationPermissions::__oRead('orders', 'payments')) return null;
 
-        $paymentsHandler = Methods::payments();
-        $orderHandler = Methods::orders();
-
-        // Get date filters from query params
-        $startDate = $args['start'] ?? null;
-        $endDate = $args['end'] ?? null;
-
-
-        // Build where conditions with scoped locations
-        $locationIds = Methods::locations()->userLocationPredicate();
-        $where = ['organisation' => __oUuid(), 'status' => 'COMPLETED'];
-        $queryBuilder = $paymentsHandler->queryBuilder()->whereList($where);
-
-        if(!empty($locationIds)) {
-            $queryBuilder->where('location', $locationIds);
-        }
-
-        if(!isEmpty($startDate)) {
-            $queryBuilder->whereTimeAfter("paid_at", strtotime($startDate), ">=");
-        }
-        if(!isEmpty($endDate)) {
-            $queryBuilder->whereTimeBefore("paid_at", strtotime($endDate . " +1 day"), "<=");
-        }
-
-        $queryBuilder->order("paid_at", 'DESC');
-        $payments = $paymentsHandler->queryGetAll($queryBuilder);
-
-        // Enrich payments with order and customer data
-        foreach ($payments->list() as $n => $payment) {
-            $order = $payment->order;
-            if(!is_object($order)) {
-                $order = $orderHandler->get($order);
-                $payment->order = $order;
-                $payments->updateItem($n, $payment);
-            }
-        }
-
-        return Views("MERCHANT_PAYMENTS", compact('payments', 'startDate', 'endDate'));
+        return Views("MERCHANT_PAYMENTS");
     }
 
     public static function pendingPayments(array $args): mixed  {
@@ -333,7 +214,11 @@ class PageController {
             return null;
         }
 
-        return Views("MERCHANT_ORDER_DETAIL", compact('order'));
+        // Fetch payments for this order
+        $paymentHandler = Methods::payments();
+        $payments = $paymentHandler->getByXOrderBy('installment_number', 'ASC', ['order' => $orderId]);
+
+        return Views("MERCHANT_ORDER_DETAIL", compact('order', 'payments'));
     }
 
     public static function customerDetail(array $args): mixed  {
@@ -375,6 +260,38 @@ class PageController {
         return Views("MERCHANT_CUSTOMER_DETAIL", compact(
             'customer', 'orders', 'totalSpent', 'orderCount', 'firstOrderDate'
         ));
+    }
+
+    public static function paymentDetail(array $args): mixed  {
+        $paymentId = $args['id'];
+        $paymentHandler = Methods::payments();
+        $payment = $paymentHandler->get($paymentId);
+
+        if(isEmpty($payment)) {
+            return null;
+        }
+
+        // Verify the payment belongs to the current organisation
+        if($payment->organisation !== __oUuid()) {
+            return null;
+        }
+
+        // Check permissions
+        if(!\classes\app\OrganisationPermissions::__oRead('orders', 'payments')) return null;
+
+        // Get the order associated with this payment
+        $order = $payment->order;
+
+        // Get the customer (ensure it's a valid user object, not just a string uid)
+        $customer = !isEmpty($payment->uuid) && is_object($payment->uuid) ? $payment->uuid : null;
+
+        // Get all payments for the same order (for installment context)
+        $orderPayments = null;
+        if(!isEmpty($order)) {
+            $orderPayments = $paymentHandler->getByXOrderBy('installment_number', 'ASC', ['order' => $order->uid]);
+        }
+
+        return Views("MERCHANT_PAYMENT_DETAIL", compact('payment', 'order', 'customer', 'orderPayments'));
     }
 
     public static function terminals(array $args): mixed  {
@@ -495,13 +412,9 @@ class PageController {
         $todayOrdersCountLflMonth = min(100, $ordersTodayCount * 100);
         $averageLflMonth = 100;
 
-
-        $orders = $orderHandler->getByX(['location' => $location->uid]);
-
-
         return Views("MERCHANT_SINGLE_LOCATION", compact(
             'locations', 'locationOptions',
-            'worldCountries', 'slug', 'location', 'orders', 'orderCount', 'netSales',
+            'worldCountries', 'slug', 'location', 'orderCount', 'netSales',
             'ordersTodayCount', 'orderAverage', 'ordersToday', 'newCustomersCount', 'todayOrdersCountLflMonth',
             'netSalesLflMonth', 'newCustomersLflMonth', 'averageLflMonth'
         ));
@@ -792,7 +705,12 @@ class PageController {
     public static function settings(array $args): mixed {
         $user = Methods::users()->get(__uuid());
         $authLocal = Methods::localAuthentication()->getFirst(['user' => __uuid()]);
-        return Views("MERCHANT_SETTINGS", compact('user', 'authLocal'));
+        $worldCountries = Methods::misc()::getCountriesLib(WORLD_COUNTRIES);
+        return Views("MERCHANT_SETTINGS", compact('user', 'authLocal', 'worldCountries'));
+    }
+
+    public static function accessDenied(array $args): mixed {
+        return Views("MERCHANT_ACCESS_DENIED");
     }
 
     #[NoReturn] public static function getTerminalQrBytes(array $args): void {
@@ -803,8 +721,19 @@ class PageController {
         if($terminal->location->status !== 'ACTIVE') Response()->jsonError("The location is not active", [], 403);
 
         $link = __url(Links::$merchant->terminals->checkoutStart($terminal->location->slug, $terminal->uid));
-        $qrGenerator = Methods::qr()->build($link)->get();
+        $qrWithLogo = Methods::qr()->buildWithLogo($link);
 
+        Response()->mimeType($qrWithLogo['image'], $qrWithLogo['mimeType']);
+    }
+
+    #[NoReturn] public static function getLocationQrBytes(array $args): void {
+        $slug = $args["slug"];
+        $location = Methods::locations()->getFirst(['slug' => $slug, 'uuid' => __oUuid()]);
+        if(isEmpty($location)) Response()->jsonError("Invalid location", [], 404);
+        if($location->status !== 'ACTIVE') Response()->jsonError("The location is not active", [], 403);
+
+        $link = __url(Links::$merchant->public->getLocationPage($slug));
+        $qrGenerator = Methods::qr()->build($link)->get();
 
         Response()->mimeType($qrGenerator->getString(), $qrGenerator->getMimeType());
     }

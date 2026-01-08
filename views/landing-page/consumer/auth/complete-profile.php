@@ -11,7 +11,12 @@ use features\Settings;
 $user = $args->user;
 $worldCountries = $args->worldCountries;
 
+$pageTitle = "Udfyld profil";
 ?>
+
+<script>
+    var pageTitle = <?=json_encode($pageTitle)?>;
+</script>
 
 
 

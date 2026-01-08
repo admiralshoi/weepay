@@ -10,6 +10,10 @@ use classes\Methods;
 $location = $args->location;
 $page = $args->publishedPage;
 $slug = $args->slug;
+$isConsumerLoggedIn = $args->isConsumerLoggedIn ?? false;
+$bnplLimit = $args->bnplLimit ?? null;
+$hasPastDue = $args->hasPastDue ?? false;
+$loginUrl = $args->loginUrl ?? __url(\classes\enumerations\Links::$app->auth->consumerLogin);
 
 // Prepare URLs
 $heroImageUrl = __url($page->hero_image);
@@ -20,7 +24,13 @@ $address = Methods::locations()->locationAddress($location);
 // Format address string using helper method (no country, comma-separated)
 $addressString = Methods::misc()::extractCompanyAddressString($address, false, false);
 $hasAddress = !isEmpty($addressString);
+
+$pageTitle = $location->name;
 ?>
+
+<script>
+    var pageTitle = <?=json_encode($pageTitle)?>;
+</script>
 
 <!-- Hero Section -->
 <div class="position-relative" style="min-height: 300px; background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('<?=$heroImageUrl?>'); background-size: cover; background-position: center;">
@@ -51,6 +61,36 @@ $hasAddress = !isEmpty($addressString);
         </div>
     </div>
 </div>
+
+<?php
+// Offer section visibility: enabled + title + (text OR image)
+$offerVisible = !isEmpty($page->offer_enabled) && !isEmpty($page->offer_title) && (!isEmpty($page->offer_text) || !isEmpty($page->offer_image));
+?>
+<!-- Offer Section (shown below hero when enabled) -->
+<?php if($offerVisible): ?>
+<div class="offer-section-banner" style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(255, 152, 0, 0.1));">
+    <div class="container py-4">
+        <div class="flex-row-start flex-align-start flex-wrap" style="gap: 1.5rem;">
+            <div class="flex-1-current" style="min-width: 250px;">
+                <div class="flex-row-start-center mb-2" style="gap: 0.5rem;">
+                    <i class="mdi mdi-tag-outline font-20 color-warning"></i>
+                    <p class="font-20 font-weight-bold mb-0"><?=htmlspecialchars($page->offer_title)?></p>
+                </div>
+                <?php if(!empty($page->offer_text)): ?>
+                <p class="mb-0 font-15 line-height-relaxed">
+                    <?=nl2br(htmlspecialchars($page->offer_text))?>
+                </p>
+                <?php endif; ?>
+            </div>
+            <?php if(!empty($page->offer_image)): ?>
+            <div class="offer-image-container">
+                <img src="<?=__url($page->offer_image)?>" alt="<?=htmlspecialchars($page->offer_title)?>" style="max-width: 200px; max-height: 200px; border-radius: 10px; object-fit: cover;">
+            </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
 <!-- Main Content Area -->
 <div class="container my-5">
@@ -104,22 +144,34 @@ $hasAddress = !isEmpty($addressString);
             <?php if(!isEmpty($page->credit_widget_enabled)): ?>
                 <div class="card border-radius-10px mb-4">
                     <div class="card-body">
-
-                        <div class="flex-row-start-center mb-3" style="gap: 0.5rem;">
-                            <i class="mdi mdi-shield-outline font-18 color-design-blue"></i>
-                            <p class="font-weight-bold font-18">Sikker betaling</p>
-                        </div>
-                        <p class="mb-3 font-14 color-gray">
-                            Se hvor meget du kan handle for hos <?=$location->name?>
-                        </p>
-                        <button class="btn-v2 green-btn w-100" onclick="alert('Credit check functionality coming soon')">
-                            Tjek min kredit nu
-                        </button>
-
-                        <!-- Trust Badges -->
-                        <div class="flex-row-start-center mt-3 pt-3 border-top" style="gap: 1rem;">
-                            <p class="font-14">Se hvor meget du kan bruge for hos <?=$location->name?></p>
-                        </div>
+                        <?php if($isConsumerLoggedIn && !isEmpty($bnplLimit)): ?>
+                            <!-- Logged in - show actual credit -->
+                            <?=\features\DomMethods::bnplCreditCard($bnplLimit, $hasPastDue)?>
+                            <div class="mt-3 pt-3 border-top">
+                                <p class="font-13 color-gray mb-0">
+                                    <i class="mdi mdi-information-outline"></i>
+                                    Butikken forbeholder sig retten til at afvise køb nu betal senere i øjeblikket.
+                                </p>
+                            </div>
+                        <?php else: ?>
+                            <!-- Not logged in - show login button -->
+                            <div class="flex-row-start-center mb-3" style="gap: 0.5rem;">
+                                <i class="mdi mdi-shield-outline font-18 color-design-blue"></i>
+                                <p class="font-weight-bold font-18">Sikker betaling</p>
+                            </div>
+                            <p class="mb-3 font-14 color-gray">
+                                Se hvor meget du kan handle for hos <?=$location->name?>
+                            </p>
+                            <a href="<?=$loginUrl?>" class="btn-v2 green-btn w-100">
+                                Tjek min kredit nu
+                            </a>
+                            <div class="mt-3 pt-3 border-top">
+                                <p class="font-13 color-gray mb-0">
+                                    <i class="mdi mdi-information-outline"></i>
+                                    Butikken forbeholder sig retten til at afvise køb nu betal senere i øjeblikket.
+                                </p>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             <?php endif; ?>

@@ -1,0 +1,17 @@
+{
+    "id": 142,
+    "created_at": "2026-01-03 10:18:33",
+    "updated_at": "2026-01-03 10:18:36",
+    "uid": "oidc_nqnun74edabaey8",
+    "provider": "mitid",
+    "prid": "7e7b4623-5b68-4f57-bdf4-afdbd7453247",
+    "uuid": null,
+    "info": {
+        "tsid": "tses_b8cjfty9ftwomn6",
+        "next": "cpf"
+    },
+    "reason": "authenticate",
+    "status": "PENDING",
+    "expires_at": 1767432213,
+    "token": "1662311143"
+}

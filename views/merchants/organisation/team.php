@@ -85,7 +85,7 @@ $organisation = Settings::$organisation?->organisation;
                                 <div class="form-group mb-0">
                                     <select class="form-select-v2 w-250px" id="org-team-filter-role" data-selected="hide_location_employees">
                                         <option value="all">Alle roller</option>
-                                        <option value="hide_location_employees" selected>Skjul butikssmedarbejdere</option>
+                                        <option value="hide_location_employees" selected>Skjul butiksmedarbejdere</option>
                                         <?php foreach ($organisationRoles as $role => $title):
                                             if($role === 'location_employee') continue; ?>
                                             <option value="<?=$role?>"><?=$title?></option>

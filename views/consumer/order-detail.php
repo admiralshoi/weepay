@@ -195,8 +195,44 @@ $pageTitle = "Ordre Detaljer - " . substr($order->uid, 0, 8);
             <?php endif; ?>
         </div>
 
-        <!-- Payment Summary Sidebar -->
+        <!-- Sidebar -->
         <div class="col-12 col-lg-4">
+            <?php
+            // Check if there are any unpaid payments
+            $hasUnpaidPayments = false;
+            foreach($payments->list() as $p) {
+                if(in_array($p->status, ['PAST_DUE', 'SCHEDULED', 'PENDING'])) {
+                    $hasUnpaidPayments = true;
+                    break;
+                }
+            }
+            ?>
+
+            <!-- Quick Actions -->
+            <div class="card border-radius-10px mb-4">
+                <div class="card-body">
+                    <div class="flex-row-start flex-align-center flex-nowrap mb-3" style="column-gap: .5rem;">
+                        <i class="mdi mdi-lightning-bolt font-18 color-blue"></i>
+                        <p class="mb-0 font-20 font-weight-bold">Handlinger</p>
+                    </div>
+
+                    <div class="flex-col-start" style="row-gap: .75rem;">
+                        <?php if($hasUnpaidPayments): ?>
+                        <button type="button" class="btn-v2 action-btn w-100 flex-row-center flex-align-center" style="gap: .5rem;" id="update-payment-method-btn">
+                            <i class="mdi mdi-credit-card-refresh-outline font-16"></i>
+                            <span class="font-14">Opdater betalingsmetode</span>
+                        </button>
+                        <?php endif; ?>
+
+                        <a href="<?=__url(Links::$consumer->orders)?>" class="btn-v2 <?=$hasUnpaidPayments ? 'mute-btn' : 'action-btn'?> w-100 flex-row-center flex-align-center" style="gap: .5rem;">
+                            <i class="mdi mdi-arrow-left font-16"></i>
+                            <span class="font-14">Tilbage til ordrer</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Summary -->
             <div class="card border-radius-10px mb-4">
                 <div class="card-body">
                     <div class="flex-row-start flex-align-center flex-nowrap mb-3" style="column-gap: .5rem;">
@@ -209,27 +245,26 @@ $pageTitle = "Ordre Detaljer - " . substr($order->uid, 0, 8);
                     <?php else: ?>
                         <div class="flex-col-start" style="row-gap: 1rem;">
                             <?php foreach($payments->list() as $payment): ?>
-                                <div class="flex-col-start border-bottom-card pb-3" style="row-gap: .5rem;">
+                            <a href="<?=__url(Links::$consumer->paymentDetail($payment->uid))?>" class="flex-row-between flex-align-center border-bottom-card pb-3 hover-bg-light" style="text-decoration: none; color: inherit; margin: -0.5rem; padding: 0.5rem; border-radius: 8px; gap: .5rem;">
+                                <div class="flex-col-start flex-grow-1" style="row-gap: .5rem;">
                                     <div class="flex-row-between flex-align-center">
                                         <p class="mb-0 font-13 color-gray">Betaling</p>
                                         <p class="mb-0 font-14 font-weight-bold"><?=number_format($payment->amount, 2)?> <?=currencySymbol($order->currency)?></p>
                                     </div>
-
                                     <div class="flex-row-between flex-align-center">
                                         <p class="mb-0 font-13 color-gray">Status</p>
                                         <?php if($payment->status === 'COMPLETED'): ?>
-                                            <span class="success-box">Gennemført</span>
+                                        <span class="success-box">Gennemført</span>
                                         <?php elseif($payment->status === 'SCHEDULED'): ?>
-                                            <span class="action-box">Planlagt</span>
+                                        <span class="action-box">Planlagt</span>
                                         <?php elseif($payment->status === 'PAST_DUE'): ?>
-                                            <span class="danger-box">Forsinket</span>
+                                        <span class="danger-box">Forsinket</span>
                                         <?php elseif($payment->status === 'PENDING'): ?>
-                                            <span class="action-box">Afventer</span>
+                                        <span class="action-box">Afventer</span>
                                         <?php else: ?>
-                                            <span class="mute-box"><?=$payment->status?></span>
+                                        <span class="mute-box"><?=$payment->status?></span>
                                         <?php endif; ?>
                                     </div>
-
                                     <?php if($payment->status === 'COMPLETED' && !isEmpty($payment->paid_at)): ?>
                                     <div class="flex-row-between flex-align-center">
                                         <p class="mb-0 font-13 color-gray">Betalt dato</p>
@@ -244,6 +279,8 @@ $pageTitle = "Ordre Detaljer - " . substr($order->uid, 0, 8);
                                     </div>
                                     <?php endif; ?>
                                 </div>
+                                <i class="mdi mdi-chevron-right font-20 color-gray"></i>
+                            </a>
                             <?php endforeach; ?>
 
                             <div class="flex-col-start pt-2" style="row-gap: .5rem;">

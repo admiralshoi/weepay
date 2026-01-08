@@ -16,6 +16,7 @@ const CustomerCheckoutInfo = {
         loader: null,
         lineItems: null,
         total: null,
+        storeBasketInfo: null,
     },
     init(tsId) {
         this.tsId = tsId;
@@ -25,6 +26,7 @@ const CustomerCheckoutInfo = {
         this.elements.nextStepButton = document.getElementById('next-step');
         this.elements.cancelCheckoutButton = document.getElementById('cancel-checkout');
         this.elements.loader = document.getElementById('loader-container');
+        this.elements.storeBasketInfo = document.getElementById('store-basket-info');
         this.elements.showNames = document.querySelectorAll('[data-show=basket_name]');
         this.elements.showCurrencies = document.querySelectorAll('[data-show=basket_currency]');
         this.elements.showPrices = document.querySelectorAll('[data-show=basket_price]');
@@ -89,20 +91,22 @@ const CustomerCheckoutInfo = {
         this.elements.showNames.forEach(el => el.innerText = name)
         this.elements.showCurrencies.forEach(el => el.innerText = currencySymbol)
         this.elements.showPrices.forEach(el => el.innerText = phpNumberFormat(price))
-        this.elements.loader.style.display = 'none';
-        this.elements.nextStepButton.style.display = 'flex';
-        this.elements.lineItems.style.display = 'flex';
-        this.elements.total.style.display = 'flex';
+        if(this.elements.loader) this.elements.loader.style.display = 'none';
+        if(this.elements.nextStepButton) this.elements.nextStepButton.style.display = 'flex';
+        if(this.elements.lineItems) this.elements.lineItems.style.display = 'flex';
+        if(this.elements.total) this.elements.total.style.display = 'flex';
+        if(this.elements.storeBasketInfo) this.elements.storeBasketInfo.style.display = 'flex';
     },
     hideBasketInfo() {
         this.basket = null;
         this.elements.showNames.forEach(el => el.innerText = '')
         this.elements.showCurrencies.forEach(el => el.innerText = '')
         this.elements.showPrices.forEach(el => el.innerText = '')
-        this.elements.loader.style.display = 'flex';
-        this.elements.nextStepButton.style.display = 'none';
-        this.elements.lineItems.style.display = 'none';
-        this.elements.total.style.display = 'none';
+        if(this.elements.loader) this.elements.loader.style.display = 'flex';
+        if(this.elements.nextStepButton) this.elements.nextStepButton.style.display = 'none';
+        if(this.elements.lineItems) this.elements.lineItems.style.display = 'none';
+        if(this.elements.total) this.elements.total.style.display = 'none';
+        if(this.elements.storeBasketInfo) this.elements.storeBasketInfo.style.display = 'none';
     },
 }
 

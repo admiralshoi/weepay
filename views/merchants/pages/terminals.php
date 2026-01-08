@@ -88,11 +88,16 @@ $pageTitle = "Kasseapparater";
                                     <td class="hideOnMobileTableCell">
                                         <?php if($terminal->status === 'ACTIVE'): ?>
                                             <?php \classes\app\LocationPermissions::__oReadProtectedContent($terminal->location, 'checkout'); ?>
-                                            <button class="btn-v2 green-btn flex-row-center-center flex-nowrap g-05"
-                                                onclick="LocationActions.qrAction('<?=$terminal->uid?>');">
-                                                <i class="mdi mdi-qrcode"></i>
-                                                <span class="">Vis QR</span>
-                                            </button>
+                                            <div class="flex-row-start flex-align-center flex-nowrap" style="gap: .5rem;">
+                                                <button class="btn-v2 green-btn flex-row-center-center flex-nowrap g-05"
+                                                    onclick="LocationActions.qrAction('<?=$terminal->uid?>');">
+                                                    <i class="mdi mdi-qrcode"></i>
+                                                    <span class="">Vis QR</span>
+                                                </button>
+                                                <button class="btn-v2 mute-btn" style="padding: 0; width: 38px; height: 38px;" onclick="copyToClipboard('<?=__url('merchant/' . $terminal->location->slug . '/checkout?tid=' . $terminal->uid)?>')" title="Kopier link">
+                                                    <i class="mdi mdi-content-copy font-16"></i>
+                                                </button>
+                                            </div>
                                             <?php \classes\app\LocationPermissions::__oEndContent(); ?>
                                         <?php elseif($terminal->status === 'DRAFT'): ?>
                                             <div class="flex-row-start flex-align-center flex-nowrap cursor-pointer"

@@ -21,6 +21,7 @@ $pageTitle = $location->name . " - Lokation";
     activePage = "locations";
     var worldCountries = <?=json_encode(toArray($args->worldCountries))?>;
     var locations = <?=json_encode([$location])?>;
+    var locationOrdersApiUrl = <?=json_encode(__url(Links::$api->orders->locationOrders($args->slug)))?>;
 </script>
 
 
@@ -49,9 +50,18 @@ $pageTitle = $location->name . " - Lokation";
             <?php LocationPermissions::__oReadProtectedContent($location,  'team_members'); ?>
             <a href="<?=__url(Links::$merchant->locations->members($args->slug))?>" class="btn-v2 mute-btn text-nowrap" >
                 <i class="mdi mdi-account-multiple-outline"></i>
-                <span class="text-nowrap">Medlemmer</span>
+                <span class="text-nowrap">Medarbejdere</span>
             </a>
             <?php LocationPermissions::__oEndContent(); ?>
+            <?php if($location->status === 'ACTIVE'): ?>
+            <button class="btn-v2 green-btn text-nowrap" onclick="LocationActions.locationQrAction('<?=$args->slug?>')">
+                <i class="mdi mdi-qrcode"></i>
+                <span class="text-nowrap">Vis QR</span>
+            </button>
+            <button class="btn-v2 mute-btn" style="padding: 0; width: 38px; height: 38px;" onclick="copyToClipboard('<?=__url('merchant/' . $args->slug)?>')" title="Kopier link">
+                <i class="mdi mdi-content-copy font-16"></i>
+            </button>
+            <?php endif; ?>
             <?php LocationPermissions::__oReadProtectedContent($location,  'pages'); ?>
             <a href="<?=__url(Links::$merchant->locations->pageBuilder($args->slug))?>" class="btn-v2 action-btn text-nowrap" >
                 <i class="fa-regular fa-pen-to-square"></i>
@@ -178,64 +188,97 @@ $pageTitle = $location->name . " - Lokation";
                         <p class="mb-0 font-22 font-weight-bold">Alle ordrer</p>
                     </div>
 
-                    <div class="mt-2">
-                        <table class="table table-hover">
-                            <thead class="color-gray">
-                            <th>Ordre ID</th>
-                            <th>Dato & Tid</th>
-                            <th>Kunde</th>
-                            <th>Total</th>
-                            <th>Net Total</th>
-                            <th>Udestående</th>
-                            <th>Risikoscore</th>
-                            <th>Status</th>
-                            <th>Handlinger</th>
-                            </thead>
-                            <tbody>
-                            <?php foreach ($args->orders->list() as $order): ?>
+                    <div class="mt-3">
+                        <!-- Filters and Search -->
+                        <div class="flex-row-between flex-align-center flex-wrap mb-3" style="gap: .75rem;">
+                            <div class="flex-row-start flex-align-center flex-wrap" style="gap: .5rem;">
+                                <div class="form-group mb-0">
+                                    <input type="text" class="form-control-v2 form-field-v2" id="location-orders-search"
+                                           placeholder="Søg ordre ID eller kunde..." style="min-width: 200px;">
+                                </div>
+                                <div class="form-group mb-0">
+                                    <select class="form-select-v2" id="location-orders-filter-status" data-selected="all" style="min-width: 140px;">
+                                        <option value="all" selected>Alle statusser</option>
+                                        <option value="COMPLETED">Gennemført</option>
+                                        <option value="PENDING">Afventer</option>
+                                        <option value="DRAFT">Kladde</option>
+                                        <option value="CANCELLED">Annulleret</option>
+                                    </select>
+                                </div>
+                                <div class="form-group mb-0 position-relative">
+                                    <input type="text" class="form-control-v2 form-field-v2" id="location-orders-daterange"
+                                           placeholder="Vælg datointerval" style="min-width: 220px; padding-right: 30px;" readonly>
+                                    <i class="mdi mdi-close-circle font-16 color-red position-absolute cursor-pointer d-none"
+                                       id="location-orders-daterange-clear"
+                                       style="right: 8px; top: 50%; transform: translateY(-50%);"
+                                       title="Ryd datofilter"></i>
+                                </div>
+                            </div>
+                            <div class="flex-row-end flex-align-center flex-wrap" style="gap: .5rem;">
+                                <div class="form-group mb-0">
+                                    <select class="form-select-v2" id="location-orders-sort" data-selected="date-DESC" style="min-width: 150px;">
+                                        <option value="date-DESC" selected>Nyeste først</option>
+                                        <option value="date-ASC">Ældste først</option>
+                                        <option value="amount-DESC">Beløb (høj-lav)</option>
+                                        <option value="amount-ASC">Beløb (lav-høj)</option>
+                                        <option value="status-ASC">Status A-Z</option>
+                                        <option value="status-DESC">Status Z-A</option>
+                                    </select>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <select class="form-select-v2" id="location-orders-per-page" data-selected="10" style="min-width: 80px;">
+                                        <option value="10" selected>10</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="overflow-x: auto;">
+                            <table class="table-v2" id="location-orders-table">
+                                <thead>
                                 <tr>
-                                    <td><?=$order->uid?></td>
-                                    <td>
-                                        <p class="mb-0 font-12 text-wrap"><?=date("d/m-Y H:i", strtotime($order->created_at))?></p>
-                                    </td>
-                                    <td>
-                                        <p class="mb-0 font-12 text-wrap">Customer Name...</p>
-                                    </td>
-                                    <td>
-                                        <p class="mb-0 font-12 text-wrap"><?=number_format($order->amount) . currencySymbol($order->currency)?></p>
-                                    </td>
-                                    <td>
-                                        <p class="mb-0 font-12 text-wrap"><?=number_format($order->amount - $order->fee_amount) . currencySymbol($order->currency)?></p>
-                                    </td>
-                                    <td>
-                                        <p class="mb-0 font-12 text-wrap"><?=number_format(0) . currencySymbol($order->currency)?></p>
-                                    </td>
-                                    <td>
-                                        <p class="mb-0 font-12 text-wrap">NaN</p>
-                                    </td>
-                                    <td>
-                                        <p class="mb-0 font-12 text-wrap">
-                                            <?php if($order->status === 'COMPLETED'): ?>
-                                                <span class="success-box">Gennemført</span>
-                                            <?php elseif($order->status === 'DRAFT'): ?>
-                                                <span class="mute-box">Draft</span>
-                                            <?php elseif($order->status === 'PENDING'): ?>
-                                                <span class="action-box">Afvikles</span>
-                                            <?php elseif($order->status === 'CANCELLED'): ?>
-                                                <span class="action-box">Cancelled</span>
-                                            <?php endif; ?>
-                                        </p>
-                                    </td>
-                                    <td>
-                                        <a href="<?=__url()?>" target="_blank" class="btn-v2 trans-btn flex-row-start flex-align-center flex-nowrap" style="gap: .5rem;">
-                                            <i class="mdi mdi-eye-outline font-16"></i>
-                                            <span class="font-14">Detaljer</span>
-                                        </a>
+                                    <th>Ordre ID</th>
+                                    <th>Dato & Tid</th>
+                                    <th>Kunde</th>
+                                    <th>Beløb</th>
+                                    <th>Betalt</th>
+                                    <th>Udestående</th>
+                                    <th>Status</th>
+                                    <th class="text-right">Handlinger</th>
+                                </tr>
+                                </thead>
+                                <tbody id="location-orders-tbody">
+                                <!-- Loading state - will be replaced by JS -->
+                                <tr id="location-orders-loading-row">
+                                    <td colspan="8" class="text-center py-4">
+                                        <div class="flex-col-center flex-align-center">
+                                            <span class="spinner-border color-primary-cta square-30" role="status" style="border-width: 3px;">
+                                                <span class="sr-only">Indlæser...</span>
+                                            </span>
+                                            <p class="color-gray mt-2 mb-0">Indlæser ordrer...</p>
+                                        </div>
                                     </td>
                                 </tr>
-                            <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- No results message -->
+                        <div id="location-orders-no-results" class="d-none text-center py-4">
+                            <i class="mdi mdi-cart-off font-40 color-gray"></i>
+                            <p class="color-gray mt-2 mb-0">Ingen ordrer fundet</p>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div id="location-orders-pagination-container" class="flex-row-between flex-align-center flex-wrap mt-3" style="gap: .75rem;">
+                            <div class="text-sm color-gray">
+                                Viser <span id="location-orders-showing">0</span> af <span id="location-orders-total">0</span> ordrer
+                                (Side <span id="location-orders-current-page">1</span> af <span id="location-orders-total-pages">1</span>)
+                            </div>
+                            <div class="pagination-nav" id="location-orders-pagination"></div>
+                        </div>
                     </div>
                 </div>
             </div>

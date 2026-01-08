@@ -3644,19 +3644,19 @@ table.blue-purple-table-head thead th, table.blue-purple-table-head tbody td {
         color: transparent;
     }
     50% {
-        color: var(--primary-cta);
+        color: var(--design-blue);
     }
 }
 
 
 
 .pagination .page-link{
-    color: var(--primary-cta) !important;
+    color: var(--design-blue) !important;
 }
 
 .pagination .page-item.active .page-link{
-    background: linear-gradient(to right, var(--primary-gradient-1), var(--primary-gradient-2)) !important;
-    border-color: var(--primary-cta) !important;
+    background: var(--design-blue) !important;
+    border-color: var(--design-blue) !important;
     color: var(--white) !important;
 }
 

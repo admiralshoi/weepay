@@ -1,0 +1,16 @@
+{
+    "id": 153,
+    "created_at": "2026-01-07 12:56:50",
+    "updated_at": "2026-01-07 12:59:39",
+    "uid": "oidc_9o4m00wkqxg1fja",
+    "provider": "mitid",
+    "prid": "103413b2-85c8-48d8-841c-b411f2d95b01",
+    "uuid": null,
+    "info": {
+        "next": "consumer_login"
+    },
+    "reason": "authenticate",
+    "status": "PENDING",
+    "expires_at": 1767787310,
+    "token": "31550623"
+}

@@ -24,10 +24,9 @@ class ApiController {
         if($terminal->location->status !== 'ACTIVE') Response()->jsonError("The location is not active", [], 403);
 
         $link = __url(Links::$merchant->terminals->checkoutStart($terminal->location->slug, $terminal->uid));
-        $qrGenerator = Methods::qr()->build($link)->get();
+        $qrWithLogo = Methods::qr()->buildWithLogo($link);
 
-
-        Response()->mimeType($qrGenerator->getString(), $qrGenerator->getMimeType());
+        Response()->mimeType($qrWithLogo['image'], $qrWithLogo['mimeType']);
     }
 
 
@@ -522,6 +521,96 @@ class ApiController {
         Response()->setRedirect()->jsonSuccess('Terminalen er blevet oprettet');
     }
 
+
+    #[NoReturn] public static function updateWhitelistEnabled(array $args): void {
+        if(!OrganisationPermissions::__oModify("organisation", "settings"))
+            Response()->jsonPermissionError("modify", 'organisationsindstillinger');
+
+        $enabled = (int)($args['enabled'] ?? 0);
+        $organisation = Settings::$organisation->organisation;
+
+        $generalSettings = toArray($organisation->general_settings ?? []);
+        $generalSettings['whitelist_enabled'] = $enabled === 1;
+
+        Methods::organisations()->update(['general_settings' => $generalSettings], ['uid' => $organisation->uid]);
+        Response()->jsonSuccess($enabled ? 'IP whitelist aktiveret' : 'IP whitelist deaktiveret');
+    }
+
+    #[NoReturn] public static function addWhitelistIp(array $args): void {
+        if(!OrganisationPermissions::__oModify("organisation", "settings"))
+            Response()->jsonPermissionError("modify", 'organisationsindstillinger');
+
+        $ip = trim($args['ip'] ?? '');
+        if(empty($ip)) Response()->jsonError("Indtast en IP-adresse", [], 400);
+
+        // Validate IP address (IPv4 or IPv6)
+        if(!filter_var($ip, FILTER_VALIDATE_IP)) {
+            Response()->jsonError("Ugyldig IP-adresse format", [], 400);
+        }
+
+        $organisation = Settings::$organisation->organisation;
+        $generalSettings = toArray($organisation->general_settings ?? []);
+        $whitelistIps = $generalSettings['whitelist_ips'] ?? [];
+
+        // Check if IP already exists
+        if(in_array($ip, $whitelistIps)) {
+            Response()->jsonError("IP-adressen er allerede tilføjet", [], 400);
+        }
+
+        $whitelistIps[] = $ip;
+        $generalSettings['whitelist_ips'] = $whitelistIps;
+
+        Methods::organisations()->update(['general_settings' => $generalSettings], ['uid' => $organisation->uid]);
+        Response()->jsonSuccess('IP-adresse tilføjet til whitelist');
+    }
+
+    #[NoReturn] public static function removeWhitelistIp(array $args): void {
+        if(!OrganisationPermissions::__oModify("organisation", "settings"))
+            Response()->jsonPermissionError("modify", 'organisationsindstillinger');
+
+        $ip = trim($args['ip'] ?? '');
+        if(empty($ip)) Response()->jsonError("Ugyldig IP-adresse", [], 400);
+
+        $organisation = Settings::$organisation->organisation;
+        $generalSettings = toArray($organisation->general_settings ?? []);
+        $whitelistIps = $generalSettings['whitelist_ips'] ?? [];
+
+        // Remove IP from array
+        $whitelistIps = array_values(array_filter($whitelistIps, fn($item) => $item !== $ip));
+        $generalSettings['whitelist_ips'] = $whitelistIps;
+
+        Methods::organisations()->update(['general_settings' => $generalSettings], ['uid' => $organisation->uid]);
+        Response()->jsonSuccess('IP-adresse fjernet fra whitelist');
+    }
+
+    #[NoReturn] public static function updateOrgSettings(array $args): void {
+        if(!OrganisationPermissions::__oModify("organisation", "settings"))
+            Response()->jsonPermissionError("modify", 'organisationsindstillinger');
+
+        $organisation = Settings::$organisation->organisation;
+        $generalSettings = toArray($organisation->general_settings ?? []);
+
+        // Handle max BNPL amount
+        $maxBnpl = $args['max_bnpl_amount'] ?? null;
+        if(!isEmpty($maxBnpl)) {
+            $maxBnpl = (float)$maxBnpl;
+            $platformMax = Settings::$app->platform_max_bnpl_amount ?? 50000;
+
+            if($maxBnpl < 0) {
+                Response()->jsonError("Beløbet kan ikke være negativt", [], 400);
+            }
+            if($maxBnpl > $platformMax) {
+                Response()->jsonError("Beløbet kan ikke overstige platform maximum: " . number_format($platformMax, 2, ',', '.') . " DKK", [], 400);
+            }
+            $generalSettings['max_bnpl_amount'] = $maxBnpl;
+        } else {
+            // Remove the setting to use platform default
+            unset($generalSettings['max_bnpl_amount']);
+        }
+
+        Methods::organisations()->update(['general_settings' => $generalSettings], ['uid' => $organisation->uid]);
+        Response()->jsonSuccess('Indstillinger gemt');
+    }
 
     #[NoReturn] public static function updateTerminalDetails(array $args): void {
         $requiredKeys = ["name", "status"];

@@ -14,13 +14,15 @@
     let isPublished = false;
     const mediaState = {
         hero: { isDefault: false, input: null },
-        logo: { isDefault: false, input: null }
+        logo: { isDefault: false, input: null },
+        offer: { hasImage: false, input: null }
     };
 
     // Cache for image URLs to prevent unnecessary reloads
     let imageCache = {
         hero: '',
-        logo: ''
+        logo: '',
+        offer: ''
     };
 
     /**
@@ -74,6 +76,23 @@
             apiEndpoint: platformLinks.api.locations.merchantLogo
         });
 
+        // Setup offer image upload
+        mediaState.offer.hasImage = typeof hasOfferImage !== 'undefined' ? hasOfferImage : false;
+        setupMediaUpload('offer', {
+            minWidth: 300,
+            minHeight: 200,
+            recommendedRatio: 16 / 9,
+            minRatio: 4 / 5,
+            maxRatio: 16 / 9,
+            ratioDescription: 'et billedformat mellem 4:5 og 16:9 (f.eks. 800×450px eller 400×500px)',
+            maxFileSize: 5 * 1024 * 1024,
+            label: 'Tilbudsbillede',
+            apiEndpoint: platformLinks.api.locations.merchantOfferImage
+        });
+
+        // Setup offer toggle
+        setupOfferToggle();
+
         // Setup save button
         setupSaveButton();
 
@@ -106,6 +125,42 @@
         const logoPreview = document.getElementById('logo-preview-image');
         if (logoPreview && logoPreview.src) {
             imageCache.logo = logoPreview.src;
+        }
+
+        // Cache offer image
+        const offerPreview = document.getElementById('offer-preview-image');
+        if (offerPreview && offerPreview.src) {
+            imageCache.offer = offerPreview.src;
+        }
+    }
+
+    /**
+     * Setup offer section toggle
+     */
+    function setupOfferToggle() {
+        const offerEnabledCheckbox = document.getElementById('offer_enabled');
+        const offerSectionContent = document.getElementById('offer-section-content');
+
+        if (!offerEnabledCheckbox || !offerSectionContent) return;
+
+        offerEnabledCheckbox.addEventListener('change', function() {
+            offerSectionContent.style.display = this.checked ? 'flex' : 'none';
+            broadcastPreviewUpdate();
+            checkForChanges();
+        });
+
+        // Also listen to offer title and text changes
+        const offerTitle = document.getElementById('offer_title');
+        const offerText = document.getElementById('offer_text');
+
+        if (offerTitle) {
+            offerTitle.addEventListener('input', broadcastPreviewUpdate);
+            offerTitle.addEventListener('change', checkForChanges);
+        }
+
+        if (offerText) {
+            offerText.addEventListener('input', broadcastPreviewUpdate);
+            offerText.addEventListener('change', checkForChanges);
         }
     }
 
@@ -290,11 +345,9 @@
                     // Broadcast update to preview (cache will be updated in updateInlinePreview)
                     broadcastPreviewUpdate();
 
-                    // If new draft was created, redirect
+                    // Update page ID if new draft was created
                     if (response.data.created_new_draft && response.data.draft_uid) {
-                        setTimeout(() => {
-                            window.location.href = window.location.pathname + '?ref=' + response.data.draft_uid;
-                        }, 1000);
+                        currentPageId = response.data.draft_uid;
                     }
                 } else {
                     showErrorNotification('Upload fejlede', response.message || 'Kunne ikke uploade billede');
@@ -313,12 +366,17 @@
     function updateMediaPreview(type, imageUrl) {
         const previewImage = document.getElementById(`${type}-preview-image`);
         const previewContainer = document.getElementById(`${type}-preview-container`);
+        const uploadArea = document.getElementById(`${type}-upload-area`);
 
         if (previewImage) {
             if(previewImage.tagName === 'IMG') previewImage.src = imageUrl;
             else previewImage.style.backgroundImage = `url('${imageUrl}')`;
             if (previewContainer) {
                 previewContainer.classList.remove('d-none');
+            }
+            // Hide upload area for offer images
+            if (uploadArea && type === 'offer') {
+                uploadArea.classList.add('d-none');
             }
         }
     }
@@ -330,11 +388,25 @@
         const uploadArea = document.getElementById(`${type}-upload-area`);
         if (uploadArea) {
             uploadArea.classList.remove('uploading');
-            const sizeText = type === 'hero' ? '10MB (1920×600px anbefalet)' : '5MB (500×500px anbefalet)';
+            let sizeText, labelText;
+            switch(type) {
+                case 'hero':
+                    sizeText = '10MB (1920×600px anbefalet)';
+                    labelText = 'hero-billede';
+                    break;
+                case 'offer':
+                    sizeText = '5MB';
+                    labelText = 'tilbudsbillede';
+                    break;
+                default:
+                    sizeText = '5MB (500×500px anbefalet)';
+                    labelText = 'logo';
+            }
+            const iconSize = type === 'offer' ? 'font-36' : 'font-48';
             uploadArea.innerHTML = `
-                <i class="mdi mdi-upload font-48 color-gray mb-2"></i>
-                <p class="mb-0 font-14 font-weight-medium">Upload ${type === 'hero' ? 'hero-billede' : 'logo'}</p>
-                <p class="mb-0 font-12 color-gray">PNG, JPG op til ${sizeText}</p>
+                <i class="mdi mdi-upload ${iconSize} color-gray mb-2"></i>
+                <p class="mb-0 font-${type === 'offer' ? '13' : '14'} font-weight-medium">Upload ${labelText}</p>
+                <p class="mb-0 font-${type === 'offer' ? '11' : '12'} color-gray">PNG, JPG op til ${sizeText}</p>
             `;
         }
     }
@@ -343,11 +415,19 @@
      * Remove media
      */
     function removeMedia(type, config) {
-        if (mediaState[type].isDefault) return;
+        // For offer, check hasImage instead of isDefault
+        if (type === 'offer') {
+            if (!mediaState.offer.hasImage) return;
+        } else if (mediaState[type].isDefault) {
+            return;
+        }
+
+        const typeLabels = { hero: 'hero-billede', logo: 'logo', offer: 'tilbudsbillede' };
+        const typeLabelsFull = { hero: 'hero-billedet', logo: 'logoet', offer: 'tilbudsbilledet' };
 
         SweetPrompt.confirm(
-            `Fjern ${type === 'hero' ? 'hero-billede' : 'logo'}?`,
-            `Er du sikker på, at du vil fjerne ${type === 'hero' ? 'hero-billedet' : 'logoet'}?`,
+            `Fjern ${typeLabels[type]}?`,
+            `Er du sikker på, at du vil fjerne ${typeLabelsFull[type]}?`,
             {
                 confirmButtonText: 'Ja, fjern',
                 onConfirm: async () => {
@@ -364,8 +444,16 @@
                             // Update preview to show default image
                             const previewImage = document.getElementById(`${type}-preview-image`);
                             const previewContainer = document.getElementById(`${type}-preview-container`);
+                            const uploadArea = document.getElementById(`${type}-upload-area`);
 
-                            if (previewImage && response.data.default_url) {
+                            if (type === 'offer') {
+                                // For offer, hide preview and show upload area
+                                if (previewImage) previewImage.src = '';
+                                if (previewContainer) previewContainer.classList.add('d-none');
+                                if (uploadArea) uploadArea.classList.remove('d-none');
+                                mediaState.offer.hasImage = false;
+                                imageCache.offer = '';
+                            } else if (previewImage && response.data.default_url) {
                                 if(previewImage.tagName === 'IMG') previewImage.src = response.data.default_url;
                                 else previewImage.style.backgroundImage = `url('${response.data.default_url}')`;
                                 if (previewContainer) {
@@ -379,22 +467,21 @@
                             }
 
                             // Update state and hide remove button
-                            mediaState[type].isDefault = true;
+                            if (type !== 'offer') mediaState[type].isDefault = true;
                             const removeButton = document.getElementById(`${type}-remove-button`);
                             if (removeButton) {
                                 removeButton.style.display = 'none';
                             }
 
-                            showSuccessNotification("Billede fjernet", `${config.label} er blevet nulstillet til standard billede.`);
+                            const successMsg = type === 'offer' ? `${config.label} er blevet fjernet.` : `${config.label} er blevet nulstillet til standard billede.`;
+                            showSuccessNotification("Billede fjernet", successMsg);
 
                             // Broadcast update to preview (cache will be updated in updateInlinePreview)
                             broadcastPreviewUpdate();
 
-                            // If new draft was created, redirect
+                            // Update page ID if new draft was created
                             if (response.data.created_new_draft && response.data.draft_uid) {
-                                setTimeout(() => {
-                                    window.location.href = window.location.pathname + '?ref=' + response.data.draft_uid;
-                                }, 1000);
+                                currentPageId = response.data.draft_uid;
                             }
                         } else {
                             showErrorNotification("Der opstod en fejl", response.error.message);
@@ -436,6 +523,15 @@
         if (captionTextarea) formData.caption = captionTextarea.value;
         if (aboutUsTextarea) formData.about_us = aboutUsTextarea.value;
         if (creditWidgetCheckbox) formData.credit_widget_enabled = creditWidgetCheckbox.checked ? 1 : 0;
+
+        // Collect offer fields
+        const offerEnabledCheckbox = document.getElementById('offer_enabled');
+        const offerTitleInput = document.getElementById('offer_title');
+        const offerTextTextarea = document.getElementById('offer_text');
+
+        if (offerEnabledCheckbox) formData.offer_enabled = offerEnabledCheckbox.checked ? 1 : 0;
+        if (offerTitleInput) formData.offer_title = offerTitleInput.value;
+        if (offerTextTextarea) formData.offer_text = offerTextTextarea.value;
 
         // Collect dynamic sections (only from form, not preview)
         const sectionElements = document.querySelectorAll('.section-item[data-section-index]');
@@ -731,6 +827,10 @@
                 caption: formData.caption || '',
                 about_us: formData.about_us || '',
                 credit_widget_enabled: formData.credit_widget_enabled ? true : false,
+                offer_enabled: formData.offer_enabled ? true : false,
+                offer_title: formData.offer_title || '',
+                offer_text: formData.offer_text || '',
+                offer_image: '',
                 sections: [],
                 hero_image: '',
                 logo: ''
@@ -762,6 +862,12 @@
             const logoPreview = document.getElementById('logo-preview-image');
             if (logoPreview && logoPreview.src) {
                 previewData.logo = logoPreview.src;
+            }
+
+            // Get current offer image URL
+            const offerPreview = document.getElementById('offer-preview-image');
+            if (offerPreview && offerPreview.src) {
+                previewData.offer_image = offerPreview.src;
             }
 
             // Store in localStorage for external preview window to pick up
@@ -821,6 +927,61 @@
             const creditWidget = document.getElementById('inline-preview-credit-widget');
             if (creditWidget) {
                 creditWidget.style.display = data.credit_widget_enabled ? 'block' : 'none';
+            }
+        }
+
+        // Update offer section
+        const offerSection = document.getElementById('inline-preview-offer-section');
+        if (offerSection) {
+            const offerVisible = data.offer_enabled && data.offer_title && (data.offer_text || data.offer_image);
+            offerSection.style.display = offerVisible ? 'block' : 'none';
+
+            if (offerVisible) {
+                const offerTitleEl = document.getElementById('inline-preview-offer-title');
+                const offerContentDiv = offerSection.querySelector('.flex-1-current');
+
+                if (offerTitleEl) offerTitleEl.textContent = data.offer_title || '';
+
+                // Handle offer text - create element if needed
+                let offerTextEl = document.getElementById('inline-preview-offer-text');
+                if (data.offer_text) {
+                    if (!offerTextEl && offerContentDiv) {
+                        offerTextEl = document.createElement('p');
+                        offerTextEl.id = 'inline-preview-offer-text';
+                        offerTextEl.className = 'mb-0 font-12 line-height-relaxed';
+                        offerContentDiv.appendChild(offerTextEl);
+                    }
+                    if (offerTextEl) {
+                        offerTextEl.innerHTML = escapeHtml(data.offer_text).replace(/\n/g, '<br>');
+                        offerTextEl.style.display = 'block';
+                    }
+                } else if (offerTextEl) {
+                    offerTextEl.style.display = 'none';
+                }
+
+                // Handle offer image - create container and image if needed
+                let offerImageContainer = document.getElementById('inline-preview-offer-image-container');
+                let offerImageEl = document.getElementById('inline-preview-offer-image');
+                const flexContainer = offerSection.querySelector('.flex-row-start');
+
+                if (data.offer_image) {
+                    if (!offerImageContainer && flexContainer) {
+                        offerImageContainer = document.createElement('div');
+                        offerImageContainer.id = 'inline-preview-offer-image-container';
+                        offerImageEl = document.createElement('img');
+                        offerImageEl.id = 'inline-preview-offer-image';
+                        offerImageEl.style.cssText = 'max-width: 80px; max-height: 80px; border-radius: 6px; object-fit: cover;';
+                        offerImageContainer.appendChild(offerImageEl);
+                        flexContainer.appendChild(offerImageContainer);
+                    }
+                    if (offerImageEl && imageCache.offer !== data.offer_image) {
+                        offerImageEl.src = data.offer_image;
+                        imageCache.offer = data.offer_image;
+                    }
+                    if (offerImageContainer) offerImageContainer.style.display = 'block';
+                } else if (offerImageContainer) {
+                    offerImageContainer.style.display = 'none';
+                }
             }
         }
 
@@ -953,7 +1114,7 @@
             notice.innerHTML = `
                 <i class="mdi mdi-information-outline color-info font-20"></i>
                 <p class="mb-0 font-13 color-info">
-                    Du redigerer den udgivne side. Når du gemmer ændringer, oprettes en ny draft automatisk.
+                    Du redigerer den udgivne side. Når du gemmer ændringer, oprettes en ny kladde automatisk.
                 </p>
             `;
             parent.parentElement.insertBefore(notice, parent.parentElement.firstChild);

@@ -21,6 +21,34 @@ class DA {
         "order" => [
             "installments" => "betalingsrater"
         ],
+        // Location-specific terminology (employees instead of members)
+        "location" => [
+            "team" => "Medarbejdere",
+            "members" => "Medarbejdere",
+            "member" => "Medarbejder",
+            "team_members" => "Medarbejdere",
+            "team_invitations" => "Invitationer",
+            "invite_member" => "Inviter Medarbejder",
+            "add_member" => "Tilføj Medarbejder",
+            "no_members" => "Ingen medarbejdere",
+            "loading_members" => "Indlæser medarbejdere...",
+            "adding_member" => "Tilføjer medarbejder...",
+            "updating_member" => "Opdaterer medarbejder...",
+            "member_added" => "Medarbejderen er blevet tilføjet til lokationen.",
+            "member_reactivated" => "Medarbejderen er blevet genaktiveret på lokationen.",
+            "member_suspended" => "Medarbejderen er blevet suspenderet fra lokationen.",
+            "member_removed" => "Medarbejderen er blevet fjernet fra lokationen.",
+            "member_role_updated" => "Medarbejderens rolle er blevet opdateret.",
+            "member_already_added" => "Denne medarbejder er allerede tilføjet til lokationen.",
+            "member_not_found" => "Medarbejderen blev ikke fundet.",
+            "select_member" => "Vælg venligst en medarbejder.",
+            "no_permission_view" => "Du har ikke tilladelse til at se medarbejdere på denne lokation.",
+            "no_permission_invite" => "Du har ikke tilladelse til at invitere medarbejdere til denne lokation.",
+            "role_has_members" => "Rollen kan ikke slettes, da der er medarbejdere med denne rolle. Tildel dem en ny rolle først.",
+            "manage_members" => "Administrer lokationsmedarbejdere og deres tilladelser",
+            "configure_roles" => "Konfigurer tilladelser for medarbejderroller hos lokationen",
+        ],
+        // Organisation team terminology (members)
         "team" => [
             "general" => "Generel",
             "team" => "Medlemmer",

@@ -13,15 +13,11 @@ $paymentPlans = $args->paymentPlans;
 $page = $args->page ?? null;
 $logoUrl = $page ? __url($page->logo) : null;
 
-// Calculate BNPL progress percentage
-$bnplPercentage = 0;
-if (!isEmpty($args->bnplLimit) && $args->bnplLimit->platform_max > 0) {
-    $bnplPercentage = ($args->bnplLimit->available / $args->bnplLimit->platform_max) * 100;
-}
-
+$pageTitle = "Vælg betalingsplan";
 ?>
 
 <script>
+    var pageTitle = <?=json_encode($pageTitle)?>;
     var paymentPlans = <?=json_encode(toArray($paymentPlans))?>;
     var basketHash = '<?=$args->basketHash?>';
 </script>
@@ -63,17 +59,7 @@ if (!isEmpty($args->bnplLimit) && $args->bnplLimit->platform_max > 0) {
 
             <?php if(!isEmpty($args->bnplLimit)): ?>
             <!-- Dark Credit Box -->
-            <div class="bnpl-credit-card w-100">
-                <p class="bnpl-credit-card__label">WEEPAY SALDO</p>
-                <p class="bnpl-credit-card__amount"><?=number_format($args->bnplLimit->available, 0, ',', '.')?> kr.</p>
-                <div class="bnpl-credit-card__progress-row">
-                    <span class="bnpl-credit-card__progress-label">Tilgængelig</span>
-                    <span class="bnpl-credit-card__progress-max">Max <?=number_format($args->bnplLimit->platform_max, 0, ',', '.')?> kr.</span>
-                </div>
-                <div class="bnpl-credit-card__progress-container">
-                    <div class="bnpl-credit-card__progress-bar" style="width: <?=$bnplPercentage?>%;"></div>
-                </div>
-            </div>
+            <?=\features\DomMethods::bnplCreditCard($args->bnplLimit, $args->hasPastDue ?? false, null, 'w-100')?>
             <?php endif; ?>
 
             <!-- Store & Basket Info -->

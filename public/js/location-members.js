@@ -50,7 +50,7 @@ async function teamInviteModal() {
             }
 
             start();
-            screenLoader.show("Tilføjer medlem...")
+            screenLoader.show("Tilføjer medarbejder...")
 
             let formData = new FormData(form.get(0))
             formData.append('location_uid', currentLocation.uid)
@@ -214,7 +214,7 @@ async function teamMemberAction(btn) {
     let memberUuid = btn.attr('data-uuid')
     if(empty(role, action, memberUuid)) return;
 
-    screenLoader.show("Opdaterer medlem...")
+    screenLoader.show("Opdaterer medarbejder...")
     let result = await post(platformLinks.api.locations.team.update, {action, role, member_uuid: memberUuid, location_uid: currentLocation.uid});
 
     if(result.status === "error") {
@@ -564,7 +564,7 @@ const TeamMembersPagination = (function() {
                         <span class="spinner-border color-primary-cta square-30" role="status" style="border-width: 3px;">
                             <span class="sr-only">Indlæser...</span>
                         </span>
-                        <p class="color-gray mt-2 mb-0">Indlæser medlemmer...</p>
+                        <p class="color-gray mt-2 mb-0">Indlæser medarbejdere...</p>
                     </div>
                 </td>
             </tr>

@@ -5,6 +5,7 @@ namespace classes\payments;
 use classes\Methods;
 use classes\utility\Crud;
 use Database\Collection;
+use Database\model\Organisations;
 use Database\model\Payments;
 use features\Settings;
 
@@ -77,7 +78,7 @@ class PaymentsHandler extends Crud {
         foreach ($payments as $paymentInfo) {
             $paymentInfo = toObject($paymentInfo);
             $customerAmount = $paymentInfo->price;
-            $isvAmount = ceil($customerAmount * $resellerFeePercent / 100);
+            $isvAmount = round($customerAmount * $resellerFeePercent / 100, 2);
 
             $dueDate = date('Y-m-d H:i:s', $paymentInfo->timestamp);
             $isFirstPayment = $paymentInfo->installment === 1;
@@ -287,12 +288,28 @@ class PaymentsHandler extends Crud {
      * Calculate available BNPL limit for a customer
      *
      * @param ?string $customerId Customer UID
-     * @return array ['outstanding' => float, 'available' => float, 'platform_max' => float]
+     * @return array ['outstanding' => float, 'available' => float, 'max_amount' => float, 'is_org_specific' => bool]
      */
-    public function getBnplLimit(?string $customerId): array {
+    public function getBnplLimit(?string $customerId, ?string $organisationId = null): array {
         $platformMaxAmount = Settings::$app->platform_max_bnpl_amount;
+        $maxAmount = $platformMaxAmount;
+        $isOrgSpecific = false;
+
+        // If organisation is specified, check for org-specific max
+        if(!empty($organisationId)) {
+            $organisation = Organisations::where('uid', $organisationId)->first();
+            if($organisation) {
+                $generalSettings = $organisation->general_settings ?? (object)[];
+                $orgMaxAmount = $generalSettings->max_bnpl_amount ?? null;
+                if(!isEmpty($orgMaxAmount) && $orgMaxAmount > 0) {
+                    $maxAmount = min($platformMaxAmount, (float)$orgMaxAmount);
+                    $isOrgSpecific = true;
+                }
+            }
+        }
+
         $outstanding = empty($customerId) ? 0 : $this->getOutstandingBnplAmount($customerId);
-        $available = empty($customerId) ? 0 : max(0, $platformMaxAmount - $outstanding);
+        $available = empty($customerId) ? 0 : max(0, $maxAmount - $outstanding);
 
         // If customer has any PAST_DUE payments, set available to 0
         if(!empty($customerId)) {
@@ -309,7 +326,9 @@ class PaymentsHandler extends Crud {
         return [
             'outstanding' => $outstanding,
             'available' => $available,
+            'max_amount' => $maxAmount,
             'platform_max' => $platformMaxAmount,
+            'is_org_specific' => $isOrgSpecific,
         ];
     }
 

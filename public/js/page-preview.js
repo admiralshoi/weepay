@@ -12,6 +12,10 @@
         caption: '',
         about_us: '',
         credit_widget_enabled: false,
+        offer_enabled: false,
+        offer_title: '',
+        offer_text: '',
+        offer_image: '',
         sections: [],
         hero_image: '',
         logo: ''
@@ -20,7 +24,8 @@
     // Cache for image URLs to prevent unnecessary reloads
     let imageCache = {
         hero: '',
-        logo: ''
+        logo: '',
+        offer: ''
     };
 
     /**
@@ -58,6 +63,12 @@
         const logoEl = document.getElementById('preview-logo');
         if (logoEl && logoEl.src) {
             imageCache.logo = logoEl.src;
+        }
+
+        // Cache offer image
+        const offerImageEl = document.getElementById('preview-offer-image');
+        if (offerImageEl && offerImageEl.src) {
+            imageCache.offer = offerImageEl.src;
         }
     }
 
@@ -148,6 +159,62 @@
             const creditWidget = document.getElementById('preview-credit-widget');
             if (creditWidget) {
                 creditWidget.style.display = data.credit_widget_enabled ? 'block' : 'none';
+            }
+        }
+
+        // Update offer section
+        const offerSection = document.getElementById('preview-offer-section');
+        if (offerSection) {
+            const offerVisible = data.offer_enabled && data.offer_title && (data.offer_text || data.offer_image);
+            offerSection.style.display = offerVisible ? 'block' : 'none';
+
+            if (offerVisible) {
+                const offerTitleEl = document.getElementById('preview-offer-title');
+                const offerContentDiv = offerSection.querySelector('.flex-1-current');
+
+                if (offerTitleEl) offerTitleEl.textContent = data.offer_title || '';
+
+                // Handle offer text - create element if needed
+                let offerTextEl = document.getElementById('preview-offer-text');
+                if (data.offer_text) {
+                    if (!offerTextEl && offerContentDiv) {
+                        offerTextEl = document.createElement('p');
+                        offerTextEl.id = 'preview-offer-text';
+                        offerTextEl.className = 'mb-0 font-15 line-height-relaxed';
+                        offerContentDiv.appendChild(offerTextEl);
+                    }
+                    if (offerTextEl) {
+                        offerTextEl.innerHTML = escapeHtml(data.offer_text).replace(/\n/g, '<br>');
+                        offerTextEl.style.display = 'block';
+                    }
+                } else if (offerTextEl) {
+                    offerTextEl.style.display = 'none';
+                }
+
+                // Handle offer image - create container and image if needed
+                let offerImageContainer = document.getElementById('preview-offer-image-container');
+                let offerImageEl = document.getElementById('preview-offer-image');
+                const flexContainer = offerSection.querySelector('.flex-row-start');
+
+                if (data.offer_image) {
+                    if (!offerImageContainer && flexContainer) {
+                        offerImageContainer = document.createElement('div');
+                        offerImageContainer.id = 'preview-offer-image-container';
+                        offerImageContainer.className = 'offer-image-container';
+                        offerImageEl = document.createElement('img');
+                        offerImageEl.id = 'preview-offer-image';
+                        offerImageEl.style.cssText = 'max-width: 200px; max-height: 200px; border-radius: 10px; object-fit: cover;';
+                        offerImageContainer.appendChild(offerImageEl);
+                        flexContainer.appendChild(offerImageContainer);
+                    }
+                    if (offerImageEl && imageCache.offer !== data.offer_image) {
+                        offerImageEl.src = data.offer_image;
+                        imageCache.offer = data.offer_image;
+                    }
+                    if (offerImageContainer) offerImageContainer.style.display = 'block';
+                } else if (offerImageContainer) {
+                    offerImageContainer.style.display = 'none';
+                }
             }
         }
 

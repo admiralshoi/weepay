@@ -5,10 +5,12 @@
 
 use classes\enumerations\Links;
 
-
-
-
+$pageTitle = "Hjem";
 ?>
+
+<script>
+    var pageTitle = <?=json_encode($pageTitle)?>;
+</script>
 
 
 

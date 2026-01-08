@@ -9,6 +9,7 @@ class Locations {
 
     public string $merchantHeroImage = "api/merchant/location/{location_id}/hero-image";
     public string $merchantLogo = "api/merchant/location/{location_id}/logo";
+    public string $merchantOfferImage = "api/merchant/location/{location_id}/offer-image";
     public string $savePageDraft = "api/merchant/location/{location_id}/page-draft";
     public string $publishPageDraft = "api/merchant/location/{location_id}/page-draft/publish";
 

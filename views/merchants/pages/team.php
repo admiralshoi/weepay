@@ -13,7 +13,7 @@ use features\Settings;
 use classes\lang\Translate;
 
 $location = $args->location;
-$pageTitle = $location->name . " - Medlemmer";
+$pageTitle = $location->name . " - " . Translate::context("location.members");
 
 $locationRoles = $args->locationRoles;
 
@@ -48,8 +48,8 @@ $organisation = $location->uuid;
 
     <div class="flex-row-between flex-align-center flex-wrap" style="column-gap: .75rem; row-gap: .5rem;">
         <div class="flex-col-start">
-            <p class="mb-0 font-30 font-weight-bold">Medlemmer</p>
-            <p class="font-14 color-gray font-weight-medium">Administrer lokationsmedlemmer og deres tilladelser</p>
+            <p class="mb-0 font-30 font-weight-bold"><?=Translate::context("location.members")?></p>
+            <p class="font-14 color-gray font-weight-medium"><?=Translate::context("location.manage_members")?></p>
         </div>
         <div class="flex-row-end-center cg-075 flex-nowrap">
             <a href="<?=__url(Links::$merchant->locations->setSingleLocation($args->slug))?>" class="btn-v2 mute-btn text-nowrap" >
@@ -74,7 +74,7 @@ $organisation = $location->uuid;
                         <div class="flex-col-start">
                             <p class="font-22 font-weight-bold">Tilføj eller administrer</p>
                             <p class="font-14 color-gray font-weight-medium text-wrap">
-                                Ved at tilføje medlemmer behøver I ikke dele den samme konto
+                                Ved at tilføje medarbejdere behøver I ikke dele den samme konto
                             </p>
                             <p class="font-14 color-gray font-weight-medium text-wrap">
                                 Når du inviterer en ny person, sender vi dem en email, hvor de kan registrere og tilknytte sig din <?=Translate::word("organisation")?>.
@@ -84,7 +84,7 @@ $organisation = $location->uuid;
                             <?php LocationPermissions::__oModifyProtectedContent($location, 'team_invitations'); ?>
                             <button class="btn-v2 action-btn text-nowrap" name="invite_team_member" onclick="teamInviteModal()">
                                 <i class="fa-solid fa-user-plus"></i>
-                                <span class="text-nowrap">Inviter Medlem</span>
+                                <span class="text-nowrap"><?=Translate::context("location.invite_member")?></span>
                             </button>
                             <?php LocationPermissions::__oEndContent(); ?>
                         </div>
@@ -144,7 +144,7 @@ $organisation = $location->uuid;
 
                         <!-- Results info -->
                         <div class="flex-row-between flex-align-center mb-2">
-                            <p class="mb-0 text-sm color-gray" id="team-results-info">Viser <span id="team-showing">0</span> af <span id="team-total">0</span> medlemmer</p>
+                            <p class="mb-0 text-sm color-gray" id="team-results-info">Viser <span id="team-showing">0</span> af <span id="team-total">0</span> medarbejdere</p>
                         </div>
 
                         <table class="table-v2" id="team-members">
@@ -165,7 +165,7 @@ $organisation = $location->uuid;
                                         <span class="spinner-border color-primary-cta square-30" role="status" style="border-width: 3px;">
                                             <span class="sr-only">Indlæser...</span>
                                         </span>
-                                        <p class="color-gray mt-2 mb-0">Indlæser medlemmer...</p>
+                                        <p class="color-gray mt-2 mb-0"><?=Translate::context("location.loading_members")?></p>
                                     </div>
                                 </td>
                             </tr>
@@ -175,7 +175,7 @@ $organisation = $location->uuid;
                         <!-- No results message -->
                         <div id="team-no-results" class="text-center py-4 d-none">
                             <i class="mdi mdi-account-search font-40 color-gray"></i>
-                            <p class="color-gray mt-2 mb-0">Ingen medlemmer matcher dine søgekriterier</p>
+                            <p class="color-gray mt-2 mb-0">Ingen medarbejdere matcher dine søgekriterier</p>
                         </div>
 
                         <!-- Pagination -->
@@ -197,7 +197,7 @@ $organisation = $location->uuid;
 
     <div class="mb-4">
         <p class="font-25 font-weight-bold">Rolle administrering</p>
-        <p class="font-14 color-gray font-weight-medium">Konfigurer tilladelser for medlemsroller hos lokationen</p>
+        <p class="font-14 color-gray font-weight-medium"><?=Translate::context("location.configure_roles")?></p>
     </div>
 
     <div class="row">
@@ -211,7 +211,7 @@ $organisation = $location->uuid;
                                 <p class="font-weight-medium">Administrer rolle</p>
                             </div>
                             <p class="font-14 color-gray font-weight-medium text-wrap">
-                                Konfigurer tilladelser for medlemsrollerne hos lokationen
+                                Konfigurer tilladelser for medarbejderrollerne hos lokationen
                             </p>
                         </div>
                         <div class="flex-row-end flex-align-center flex-nowrap" style="column-gap: .5rem;">

@@ -10,7 +10,7 @@ class AuthOidc extends \Database\Model {
         "nin" => "string",
         "nin_country" => ["type" => "string", "default" => null, "nullable" => true],
         "nin_user_type" => ["type" => "string", "default" => null, "nullable" => true],
-        "enabled" => ["type" => "tinyInteger", "default" => 0],
+        "enabled" => ["type" => "tinyInteger", "default" => 1],
         "restricted_logon_types" => ["type" => "text", "default" => null, "nullable" => true],
         "user" => "string",
     ];

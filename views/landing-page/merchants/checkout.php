@@ -3,7 +3,12 @@
  * @var object $args
  */
 
+$pageTitle = "Betaling";
 ?>
+
+<script>
+    var pageTitle = <?=json_encode($pageTitle)?>;
+</script>
 
 
 

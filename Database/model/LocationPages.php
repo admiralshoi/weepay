@@ -16,6 +16,10 @@ class LocationPages extends \Database\Model {
         "about_us" => ['type' => "text", 'default' => null, 'nullable' => true],
         "credit_widget_enabled" => ['type' => "tinyInteger", 'default' => 1],
         "sections" => ['type' => "text", 'default' => null, 'nullable' => true],
+        "offer_enabled" => ['type' => "tinyInteger", 'default' => 0],
+        "offer_title" => ['type' => "string", 'default' => null, 'nullable' => true],
+        "offer_text" => ['type' => "text", 'default' => null, 'nullable' => true],
+        "offer_image" => ['type' => "text", 'default' => null, 'nullable' => true],
         "created_by" => ['type' => "string", 'default' => null, 'nullable' => true],
     ];
 

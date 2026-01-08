@@ -13,6 +13,10 @@ function isLoggedIn(): bool {
 function isOidcAuthenticated(): bool {
     return isset($_SESSION["oidcAuth"]) && $_SESSION["oidcAuth"];
 }
+function isOidcVerified(): bool {
+    return isOidcAuthenticated() ||
+        isLoggedIn() && \classes\Methods::oidcAuthentication()->exists(['user' => __uuid(), 'enabled' => 1]);
+}
 function isLocalAuthenticated(): bool {
     return isset($_SESSION["localAuth"]) && $_SESSION["localAuth"];
 }
@@ -737,6 +741,12 @@ function currencySymbol(?string $currency): string {
     return nestedArray($list, [$currency, "symbol_native"], "");
 }
 
+function formatPhone(?string $phone, ?string $countryCode = null, ?array $dialerLib = null): string {
+    if(isEmpty($phone)) return 'N/A';
+    $dialerCode = !isEmpty($countryCode) ? \classes\utility\Misc::callerCode($countryCode, true, $dialerLib) : null;
+    return !isEmpty($dialerCode) ? "+{$dialerCode} {$phone}" : "+{$phone}";
+}
+
 function creditCardSvg(?string $brand): string {
     $cardSvgs = [
         "visa" =>  "https://img.icons8.com/color/48/visa.png",
@@ -841,6 +851,65 @@ function requiresProfileCompletion(): bool {
         (isEmpty(\features\Settings::$user?->phone) ||
         isEmpty(\features\Settings::$user?->full_name)) &&
         !in_array(realUrlPath(), $exceptionPaths);
+}
+
+function requiresWhitelistedIp(): bool {
+    // Skip for non-logged-in users (landing pages, public pages)
+    if(!isLoggedIn()) return false;
+
+    $headers = apache_request_headers();
+    // Skip for API requests
+    if(array_key_exists("Request-Type", $headers) && $headers["Request-Type"] === "api") return false;
+
+    // Only applies to merchants
+    if(!\classes\Methods::isMerchant()) return false;
+
+    // Must have an organisation selected
+    if(isEmpty(\features\Settings::$organisation?->organisation)) return false;
+
+    $organisation = \features\Settings::$organisation->organisation;
+    $generalSettings = $organisation->general_settings ?? (object)[];
+
+    // Check if whitelist is enabled
+    $whitelistEnabled = $generalSettings->whitelist_enabled ?? false;
+    if(!$whitelistEnabled) return false;
+
+    // Owner is exempt from whitelist check
+    $memberRole = \features\Settings::$organisation->role ?? null;
+    if($memberRole === 'owner') return false;
+
+    // Exception paths that should always be accessible
+    $exceptionPaths = [
+        Links::$merchant->organisation->switch,
+        Links::$merchant->organisation->add,
+        Links::$app->logout,
+        Links::$merchant->accessDenied
+    ];
+    if(in_array(realUrlPath(), $exceptionPaths)) return false;
+
+    // Get user's IP
+    $userIp = getUserIp();
+
+    // Get whitelisted IPs
+    $whitelistIps = $generalSettings->whitelist_ips ?? [];
+
+    // Check if user's IP is in the whitelist
+    return !in_array($userIp, $whitelistIps);
+}
+
+function getUserIp(): string {
+    // Check for forwarded IP (from proxy/load balancer)
+    if(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+        return trim($ips[0]);
+    }
+    if(!empty($_SERVER['HTTP_X_REAL_IP'])) {
+        return $_SERVER['HTTP_X_REAL_IP'];
+    }
+    if(!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        return $_SERVER['HTTP_CLIENT_IP'];
+    }
+    return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 }
 
 function scriptStart(): void {

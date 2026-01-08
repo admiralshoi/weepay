@@ -275,6 +275,23 @@ class MediaStream {
         ]);
     }
 
+    /**
+     * Upload offer image for organisation location
+     * Accepts ratio between 4:5 (portrait) and 16:9 (landscape)
+     */
+    public function uploadOrganisationOfferImage($FILES, string $organisationId): array {
+        return $this->uploadOrganisationMedia($FILES, $organisationId, [
+            'type' => 'offer',
+            'minWidth' => 300,
+            'minHeight' => 200,
+            'recommendedRatio' => 16 / 9,
+            'minRatio' => 4 / 5,      // 0.8 - portrait
+            'maxRatio' => 16 / 9,     // 1.78 - landscape
+            'ratioDescription' => 'et billedformat mellem 4:5 og 16:9 (f.eks. 800×450px eller 400×500px)',
+            'maxFileSize' => 5000000
+        ]);
+    }
+
 
     public function mediaTypeDetails(string $type): array {
         $details = array(

@@ -13,7 +13,6 @@ $location = $args->location;
 $pageTitle = $location->name . " - Pagebuilder";
 $pageDraft = $args->pageDraft;
 
-
 ?>
 
 
@@ -25,6 +24,7 @@ $pageDraft = $args->pageDraft;
     var worldCountries = <?=json_encode(toArray($args->worldCountries))?>;
     var isDefaultHeroImage = <?=json_encode(isEmpty($pageDraft->hero_image) || $pageDraft->hero_image === DEFAULT_LOCATION_HERO)?>;
     var isDefaultLocationLogo = <?=json_encode(isEmpty($pageDraft->logo) || $pageDraft->logo === DEFAULT_LOCATION_LOGO)?>;
+    var hasOfferImage = <?=json_encode(!isEmpty($pageDraft->offer_image))?>;
     var currentPageId = <?=json_encode($pageDraft->uid)?>;
     var currentPageState = <?=json_encode($pageDraft->state)?>;
 </script>
@@ -178,6 +178,75 @@ $pageDraft = $args->pageDraft;
                     </div>
                 </div>
 
+                <!-- Offer/Discount Section -->
+                <div class="card border-radius-10px">
+                    <div class="card-body">
+                        <div class="flex-col-start" style="row-gap: 1rem;">
+                            <div class="flex-row-between flex-align-center">
+                                <div class="flex-col-start" style="row-gap: .25rem;">
+                                    <h5 class="mb-0 font-18 font-weight-bold">Tilbud / Kampagne</h5>
+                                    <p class="mb-0 font-12 color-gray">Vis et fremhævet tilbud på din side (f.eks. dagstilbud)</p>
+                                </div>
+                                <label class="form-switch">
+                                    <input type="checkbox" name="offer_enabled" id="offer_enabled" <?=$pageDraft->offer_enabled ? 'checked' : ''?>>
+                                    <i></i>
+                                </label>
+                            </div>
+
+                            <div id="offer-section-content" class="flex-col-start" style="row-gap: 1rem; <?=!$pageDraft->offer_enabled ? 'display: none;' : ''?>">
+                                <div class="flex-col-start" style="row-gap: .5rem;">
+                                    <label class="font-13 font-weight-bold mb-0">Tilbuds overskrift <span class="color-red">*</span></label>
+                                    <input type="text" class="form-field-v2" name="offer_title" id="offer_title" placeholder="F.eks. Dagens tilbud, Weekend rabat..." value="<?=htmlspecialchars($pageDraft->offer_title ?? '')?>">
+                                </div>
+
+                                <div class="flex-col-start" style="row-gap: .5rem;">
+                                    <label class="font-13 font-weight-bold mb-0">Tilbuds beskrivelse</label>
+                                    <textarea class="form-field-v2 mnh-80px" name="offer_text" id="offer_text" placeholder="Beskriv dit tilbud..."><?=htmlspecialchars($pageDraft->offer_text ?? '')?></textarea>
+                                </div>
+
+                                <!-- Offer Image Upload -->
+                                <div class="flex-col-start" style="row-gap: .5rem;">
+                                    <label class="font-13 font-weight-bold mb-0">Tilbudsbillede (valgfrit)</label>
+                                    <p class="mb-0 font-12 color-gray">Format: 4:5 til 16:9 (f.eks. 800×450px eller 400×500px)</p>
+
+                                    <?php LocationPermissions::__oModifyProtectedContent($location, 'pages'); ?>
+                                    <!-- Upload Area -->
+                                    <div id="offer-upload-area" class="border-dashed border-color-card flex-col-start flex-align-center flex-justify-center border-dashed-gray border-radius-05rem p-4 cursor-pointer hover-bg-light transition-all <?=!isEmpty($pageDraft->offer_image) ? 'd-none' : ''?>" style="min-height: 120px;">
+                                        <i class="mdi mdi-upload font-36 color-gray mb-2"></i>
+                                        <p class="mb-0 font-13 font-weight-medium">Upload tilbudsbillede</p>
+                                        <p class="mb-0 font-11 color-gray">PNG, JPG op til 5MB</p>
+                                    </div>
+
+                                    <!-- Hidden File Input -->
+                                    <input type="file" id="offer-image-input" accept="image/jpeg,image/jpg,image/png,image/gif" style="display: none;">
+                                    <?php LocationPermissions::__oEndContent(); ?>
+
+                                    <!-- Preview Container -->
+                                    <div id="offer-preview-container" class="bg-light border-radius-10px w-100 flex-col-start flex-align-center flex-justify-center p-2 <?=isEmpty($pageDraft->offer_image) ? 'd-none' : ''?>"
+                                         style="max-width: 100%;">
+                                        <div class="w-100 position-relative">
+                                            <img src="<?=!isEmpty($pageDraft->offer_image) ? resolveImportUrl($pageDraft->offer_image) : ''?>" id="offer-preview-image"
+                                                 class="w-100 border-radius-10px" style="max-height: 300px; object-fit: contain;" />
+                                            <?php LocationPermissions::__oModifyProtectedContent($location, 'pages'); ?>
+                                            <button id="offer-remove-button" type="button" class="btn-v2 danger-btn position-absolute" style="top: 10px; right: 10px;">
+                                                <i class="mdi mdi-close-circle-outline"></i>
+                                            </button>
+                                            <?php LocationPermissions::__oEndContent(); ?>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="p-3 border-radius-8px" style="background: rgba(255, 193, 7, 0.1);">
+                                    <div class="flex-row-start flex-align-center" style="gap: .5rem;">
+                                        <i class="mdi mdi-information-outline color-warning font-16"></i>
+                                        <p class="mb-0 font-12 color-warning">Tilbuddet vises kun hvis titel er udfyldt og enten tekst eller billede er tilføjet.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Content Section -->
                 <div  class="card border-radius-10px">
                     <div class="card-body">
@@ -307,6 +376,31 @@ $pageDraft = $args->pageDraft;
                                                 <i class="mdi mdi-qrcode font-14"></i>
                                                 <span class="font-12">Køb nu</span>
                                             </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Offer Section (shown below hero when enabled) -->
+                                    <?php
+                                    $offerVisible = $pageDraft->offer_enabled && !isEmpty($pageDraft->offer_title) && (!isEmpty($pageDraft->offer_text) || !isEmpty($pageDraft->offer_image));
+                                    ?>
+                                    <div id="inline-preview-offer-section" class="p-3" style="<?=!$offerVisible ? 'display: none;' : ''?> background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(255, 152, 0, 0.1));">
+                                        <div class="flex-row-start flex-align-start" style="gap: 0.75rem;">
+                                            <div class="flex-1-current">
+                                                <div class="flex-row-start-center mb-1" style="gap: 0.35rem;">
+                                                    <i class="mdi mdi-tag-outline font-14 color-warning"></i>
+                                                    <p id="inline-preview-offer-title" class="font-13 font-weight-bold mb-0"><?=htmlspecialchars($pageDraft->offer_title ?? '')?></p>
+                                                </div>
+                                                <?php if(!empty($pageDraft->offer_text)): ?>
+                                                <p id="inline-preview-offer-text" class="mb-0 font-12 line-height-relaxed">
+                                                    <?=nl2br(htmlspecialchars($pageDraft->offer_text))?>
+                                                </p>
+                                                <?php endif; ?>
+                                            </div>
+                                            <?php if(!empty($pageDraft->offer_image)): ?>
+                                            <div id="inline-preview-offer-image-container">
+                                                <img id="inline-preview-offer-image" src="<?=resolveImportUrl($pageDraft->offer_image)?>" style="max-width: 80px; max-height: 80px; border-radius: 6px; object-fit: cover;">
+                                            </div>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
 

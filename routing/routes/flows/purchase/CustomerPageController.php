@@ -34,10 +34,37 @@ class CustomerPageController {
             ];
         }
 
-        return Views("CUSTOMER_LOCATION_HOME", compact('location', 'publishedPage', 'slug'));
+        // Check if consumer is logged in and get their BNPL info
+        $isConsumerLoggedIn = isLoggedIn() && Methods::isConsumer();
+        $bnplLimit = null;
+        $hasPastDue = false;
+
+        if($isConsumerLoggedIn) {
+            $organisationId = is_object($location->uuid) ? $location->uuid->uid : $location->uuid;
+            $bnplLimit = Methods::payments()->getBnplLimit(__uuid(), $organisationId);
+            $hasPastDue = Methods::payments()->exists(['uuid' => __uuid(), 'status' => 'PAST_DUE']);
+        }
+
+        // Build login URL with redirect back to this page
+        $currentPageUrl = "merchant/{$slug}";
+        $loginUrl = __url(\classes\enumerations\Links::$app->auth->consumerLogin . '?' . http_build_query(['redirect' => $currentPageUrl]));
+
+        return Views("CUSTOMER_LOCATION_HOME", compact('location', 'publishedPage', 'slug', 'isConsumerLoggedIn', 'bnplLimit', 'hasPastDue', 'loginUrl'));
     }
 
     public static function start(array $args): mixed  {
+        // Detect browser prefetch requests - don't create sessions for these
+        $isPrefetch = (
+            (isset($_SERVER['HTTP_SEC_PURPOSE']) && $_SERVER['HTTP_SEC_PURPOSE'] === 'prefetch') ||
+            (isset($_SERVER['HTTP_PURPOSE']) && $_SERVER['HTTP_PURPOSE'] === 'prefetch') ||
+            (isset($_SERVER['HTTP_X_MOZ']) && $_SERVER['HTTP_X_MOZ'] === 'prefetch') ||
+            (isset($_SERVER['HTTP_X_PURPOSE']) && $_SERVER['HTTP_X_PURPOSE'] === 'preview')
+        );
+        if($isPrefetch) {
+            header('Cache-Control: no-store, no-cache, must-revalidate');
+            return null;
+        }
+
         $slug = $args["slug"];
         if(!array_key_exists('tid', $args)) return null;
         $terminalId = $args["tid"];
@@ -57,7 +84,7 @@ class CustomerPageController {
         $session = Methods::terminalSessions()->getSession($terminalId);
         if(isEmpty($session)) return null;
 
-        if(isOidcAuthenticated()) Response()->redirect(
+        if(isOidcVerified()) Response()->redirect(
             __url("merchant/{$terminal->location->slug}/checkout/info?tsid={$session->uid}")
         );
 
@@ -86,7 +113,14 @@ class CustomerPageController {
         // Get auth error from query params if redirected back from failed OIDC
         $authError = $args['auth_error'] ?? null;
 
-        return Views("CUSTOMER_PURCHASE_FLOW_START", compact('slug', 'terminal', 'session', 'oidcSessionId', 'page', 'authError'));
+        // Get world countries for phone country code dropdown (for local auth login)
+        $worldCountries = Methods::misc()::getCountriesLib(WORLD_COUNTRIES);
+
+        // Check login state for showing appropriate auth options
+        $isUserLoggedIn = isLoggedIn();
+        $isUserOidcVerified = isOidcVerified();
+
+        return Views("CUSTOMER_PURCHASE_FLOW_START", compact('slug', 'terminal', 'session', 'oidcSessionId', 'page', 'authError', 'worldCountries', 'isUserLoggedIn', 'isUserOidcVerified'));
     }
 
     public static function info(array $args): mixed  {
@@ -111,7 +145,7 @@ class CustomerPageController {
         if($terminalSession->terminal->location->status !== 'ACTIVE') Response()->redirect($redirectUrl);
         $authHandler = Methods::oidcAuthentication();
 
-        if(!isOidcAuthenticated()) {
+        if(!isOidcVerified()) {
             if(empty($sessionId)) Response()->redirect($redirectUrl);
             $session =  Methods::oidcSession()->get($sessionId);
             if($session->status !== 'SUCCESS') Response()->redirect($redirectUrl);
@@ -158,15 +192,20 @@ class CustomerPageController {
 
         // Get BNPL limit info
         $customerId = $customer->user?->uid ?? null;
-        $bnplLimit = !isEmpty($customerId) ? Methods::payments()->getBnplLimit($customerId) : null;
+        $location = $terminalSession->terminal->location;
+        $organisationId = is_object($location->uuid) ? $location->uuid->uid : $location->uuid;
+        $bnplLimit = !isEmpty($customerId) ? Methods::payments()->getBnplLimit($customerId, $organisationId) : null;
+
+        // Check for past due payments
+        $hasPastDue = !isEmpty($customerId) && Methods::payments()->exists(['uuid' => $customerId, 'status' => 'PAST_DUE']);
 
         // Get payment error from query params if redirected back from failed payment
         $paymentError = $args['payment_error'] ?? null;
 
-        $page = Methods::locationPages()->getFirst(['location' => $terminalSession->terminal->location->uid, 'state' => 'PUBLISHED']);
+        $page = Methods::locationPages()->getFirst(['location' => $location->uid, 'state' => 'PUBLISHED']);
         return Views("CUSTOMER_PURCHASE_FLOW_INFO", compact(
             'slug', 'terminalSession', 'customer', 'basket', 'nextStepLink',
-            'page', 'bnplLimit', 'paymentError'
+            'page', 'bnplLimit', 'paymentError', 'hasPastDue'
         ));
     }
 
@@ -213,11 +252,18 @@ class CustomerPageController {
         $birthdate = $customer->user?->birthdate ?? null;
         $customerId = $customer->user?->uid ?? null;
 
+        // Get organisation ID for BNPL limit check
+        $location = $terminalSession->terminal->location;
+        $organisationId = is_object($location->uuid) ? $location->uuid->uid : $location->uuid;
+
         // Get BNPL limit info
-        $bnplLimit = !isEmpty($customerId) ? Methods::payments()->getBnplLimit($customerId) : null;
+        $bnplLimit = !isEmpty($customerId) ? Methods::payments()->getBnplLimit($customerId, $organisationId) : null;
+
+        // Check for past due payments
+        $hasPastDue = !isEmpty($customerId) && Methods::payments()->exists(['uuid' => $customerId, 'status' => 'PAST_DUE']);
 
         foreach (Settings::$app->paymentPlans as $name => $plan){
-            $plan = $basketHandler->createCheckoutInfo($basket, $name, 90, $birthdate, $customerId);
+            $plan = $basketHandler->createCheckoutInfo($basket, $name, 90, $birthdate, $customerId, $organisationId);
             if(isEmpty($plan)) continue;
 
             $paymentPlans[] = $plan;
@@ -229,10 +275,11 @@ class CustomerPageController {
 
         $previousStepLink = __url("merchant/{$slug}/checkout/info?tsid={$terminalSessionId}");
         $basketHash = hash("sha256", json_encode($basket) . "_" . json_encode($paymentPlans));
+        $page = Methods::locationPages()->getFirst(['location' => $terminalSession->terminal->location->uid, 'state' => 'PUBLISHED']);
 
         return Views("CUSTOMER_PURCHASE_FLOW_PLAN", compact(
             'slug', 'terminalSession', 'customer', 'basket', 'paymentPlans',
-            'previousStepLink', 'defaultToPayNow', 'defaultPlanId', 'basketHash', 'bnplLimit'
+            'previousStepLink', 'defaultToPayNow', 'defaultPlanId', 'basketHash', 'bnplLimit', 'page', 'hasPastDue'
         ));
     }
 

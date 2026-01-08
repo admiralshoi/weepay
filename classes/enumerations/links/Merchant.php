@@ -19,6 +19,7 @@ class Merchant {
     public string $settings = "settings";
     public string $reports = "reports";
     public string $support = "support";
+    public string $accessDenied = "access-denied";
 
     public function orderDetail(string $orderId): string {
         return "orders/{$orderId}";
@@ -26,6 +27,10 @@ class Merchant {
 
     public function customerDetail(string $customerId): string {
         return "customers/{$customerId}";
+    }
+
+    public function paymentDetail(string $paymentId): string {
+        return "payments/{$paymentId}";
     }
 
     function __construct() {

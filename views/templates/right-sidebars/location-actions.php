@@ -15,7 +15,7 @@ use classes\Methods;
     <div class="flex-col-start" style="row-gap: 1rem;">
         <div class="flex-col-start mb-4">
             <div class="flex-row-between flex-align-center flex-nowrap" style="column-gap: .75rem;">
-                <p class="mb-0 font-18 font-weight-bold">Lokationshandlinger</p>
+                <p class="mb-0 font-18 font-weight-bold">Butikshandlinger</p>
                 <button class="closeRightSidebarBtn">&times;</button>
             </div>
             <p class="color-gray font-14">
@@ -25,7 +25,7 @@ use classes\Methods;
 
         <div class="flex-col-start " style="row-gap: 1.5rem;">
             <div class="flex-col-start " style="row-gap: .5rem;">
-                <button class="btn-v2 action-btn-lg" onclick="LocationActions.editLocationDetails()">Rediger lokationsdetaljer</button>
+                <button class="btn-v2 action-btn-lg" onclick="LocationActions.editLocationDetails()">Rediger butiksdetaljer</button>
                 <a href="" class="btn-v2 trans-btn-lg" id="page-builder-link">Rediger side</a>
                 <a href="" class="btn-v2 trans-btn-lg" id="manage-team">Administrer medarbejdere</a>
 

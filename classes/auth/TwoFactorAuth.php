@@ -231,4 +231,36 @@ class TwoFactorAuth extends Crud {
             ['verified' => 0, 'expires_at' => ['<', time()]]
         );
     }
+
+    /**
+     * Clear phone verification records for a specific user
+     * @param string $userId User UID
+     * @param string $purpose Purpose of verification (default: phone_verification)
+     * @return bool
+     */
+    public function clearUserPhoneVerification(string $userId, string $purpose = 'phone_verification'): bool {
+        return $this->delete([
+            'user' => $userId,
+            'purpose' => $purpose
+        ]);
+    }
+
+    /**
+     * Clear phone verification records for other users with a specific phone number
+     * Used when a user claims a phone number that was previously used by another user
+     * @param string $identifier Phone number
+     * @param string $phoneCountryCode Country code
+     * @param string $excludeUserId User UID to exclude (the one claiming the number)
+     * @param string $purpose Purpose of verification (default: phone_verification)
+     * @return bool
+     */
+    public function clearOtherUsersPhoneVerification(string $identifier, string $phoneCountryCode, string $excludeUserId, string $purpose = 'phone_verification'): bool {
+        // Using queryBuilder here because Crud::delete() doesn't support != conditions
+        return $this->queryBuilder()
+            ->where('identifier', $identifier)
+            ->where('phone_country_code', $phoneCountryCode)
+            ->where('purpose', $purpose)
+            ->where('user', '!=', $excludeUserId)
+            ->delete();
+    }
 }

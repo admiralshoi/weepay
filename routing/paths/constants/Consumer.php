@@ -23,7 +23,9 @@ class Consumer extends \routing\paths\Paths {
                 "css.responsiveness.css",
             ],
             "base" => null,
-            "vendor" => [],
+            "vendor" => [
+                "vendor.apexcharts.apexcharts.min.js",
+            ],
             "custom" => [],
         ],
     ];
@@ -41,13 +43,47 @@ class Consumer extends \routing\paths\Paths {
                 "js.utility.js",
                 "js.features.js",
                 "js.initializer.js",
+                "js.includes.daterangepicker.js",
+                "js.consumer-orders.js",
                 "css.main.css",
                 "css.styles2.css",
                 "css.styles3.css",
                 "css.responsiveness.css",
+                "css.includes.daterangepicker.css",
             ],
             "base" => null,
-            "vendor" => [],
+            "vendor" => [
+                "moment/moment.min.js",
+            ],
+            "custom" => [],
+        ],
+    ];
+
+    const CONSUMER_PAYMENTS = [
+        "template" => "CONSUMER_INNER_HTML",
+        "view" => "consumer.payments",
+        "custom_scripts" => "templates.scripts",
+        "title" => null,
+        "head" => "templates.head",
+        "assets" => [
+            "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.features.js",
+                "js.initializer.js",
+                "js.includes.daterangepicker.js",
+                "js.consumer-payments.js",
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+                "css.includes.daterangepicker.css",
+            ],
+            "base" => null,
+            "vendor" => [
+                "moment/moment.min.js",
+            ],
             "custom" => [],
         ],
     ];
@@ -148,6 +184,30 @@ class Consumer extends \routing\paths\Paths {
         ],
     ];
 
+    const CONSUMER_PAYMENT_DETAIL = [
+        "template" => "CONSUMER_INNER_HTML",
+        "view" => "consumer.payment-detail",
+        "custom_scripts" => "templates.scripts",
+        "title" => null,
+        "head" => "templates.head",
+        "assets" => [
+            "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.features.js",
+                "js.initializer.js",
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+            ],
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
+
     const CONSUMER_SETTINGS = [
         "template" => "CONSUMER_INNER_HTML",
         "view" => "consumer.settings",
@@ -160,6 +220,30 @@ class Consumer extends \routing\paths\Paths {
                 "js.main.js",
                 "js.utility.js",
                 "js.modalHandler.js",
+                "js.features.js",
+                "js.initializer.js",
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+            ],
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
+
+    const CONSUMER_LOCATION_DETAIL = [
+        "template" => "CONSUMER_INNER_HTML",
+        "view" => "consumer.location-detail",
+        "custom_scripts" => "templates.scripts",
+        "title" => null,
+        "head" => "templates.head",
+        "assets" => [
+            "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
                 "js.features.js",
                 "js.initializer.js",
                 "css.main.css",

@@ -33,6 +33,11 @@ class UserApiController {
         // Phone validation
         $phone = null;
         $phoneCountryCode = null;
+        $phoneRemoved = false;
+        $phoneChanged = false;
+
+        // Get current user to check if phone is being changed/removed
+        $currentUser = Methods::users()->get(__uuid());
 
         if(!isEmpty($args['phone'])) {
             // Clean phone number
@@ -47,10 +52,30 @@ class UserApiController {
             if($existingUser && $existingUser->uid !== __uuid()) {
                 Response()->jsonError("Dette telefonnummer er allerede i brug", [], 400);
             }
-        }
 
-        if(!isEmpty($args['phone_country_code'])) {
-            $phoneCountryCode = strtoupper(trim($args['phone_country_code']));
+            // Only set country code if phone is provided
+            if(!isEmpty($args['phone_country_code'])) {
+                $phoneCountryCode = strtoupper(trim($args['phone_country_code']));
+            }
+
+            // Check if phone has changed (either number or country code)
+            $currentPhoneClean = preg_replace('/[^0-9+]/', '', $currentUser->phone ?? '');
+            $currentCountryCode = $currentUser->phone_country_code ?? '';
+            if($phone !== $currentPhoneClean || $phoneCountryCode !== $currentCountryCode) {
+                $phoneChanged = true;
+
+                // Verify that the new phone has been verified via 2FA
+                if(!Methods::twoFactorAuth()->isVerified(__uuid(), $phone, $phoneCountryCode, 'phone_verification')) {
+                    Response()->jsonError("Du skal bekræfte dit nye telefonnummer før du kan gemme", [], 400);
+                }
+            }
+        } else {
+            // Phone is being removed - check if user had a phone before
+            if(!isEmpty($currentUser->phone)) {
+                $phoneRemoved = true;
+            }
+            // Ensure country code is also cleared when phone is removed
+            $phoneCountryCode = null;
         }
 
         // Update user
@@ -74,6 +99,17 @@ class UserApiController {
                 ], ['uid' => $authLocal->uid]);
             }
 
+            // If phone was removed, also delete 2FA verification records for this user's phone
+            if($phoneRemoved) {
+                Methods::twoFactorAuth()->clearUserPhoneVerification(__uuid());
+            }
+
+            // If phone was changed, clear the used verification record
+            if($phoneChanged) {
+                // Clear old verification records since phone is now confirmed
+                Methods::twoFactorAuth()->clearUserPhoneVerification(__uuid());
+            }
+
             Response()->jsonSuccess('Profil opdateret');
         }
 
@@ -81,13 +117,31 @@ class UserApiController {
     }
 
     #[NoReturn] public static function updateAddress(array $args): void {
+        $addressCountry = $args['address_country'] ?? null;
+
+        // Validate country code if provided
+        if(!isEmpty($addressCountry)) {
+            $worldCountries = Methods::misc()::getCountriesLib(WORLD_COUNTRIES);
+            $validCountry = false;
+            foreach($worldCountries as $country) {
+                $code = is_object($country) ? $country->countryCode : $country['countryCode'];
+                if(strtoupper($code) === strtoupper($addressCountry)) {
+                    $validCountry = true;
+                    break;
+                }
+            }
+            if(!$validCountry) {
+                Response()->jsonError("Ugyldigt land valgt", [], 400);
+            }
+        }
+
         // Update address fields
         $updateData = [
             'address_street' => $args['address_street'] ?? null,
             'address_city' => $args['address_city'] ?? null,
             'address_zip' => $args['address_zip'] ?? null,
             'address_region' => $args['address_region'] ?? null,
-            'address_country' => $args['address_country'] ?? null,
+            'address_country' => $addressCountry,
         ];
 
         $updated = Methods::users()->update($updateData, ['uid' => __uuid()]);
@@ -159,5 +213,89 @@ class UserApiController {
         // 4. Marking phone as verified in database
 
         Response()->jsonError('Telefon verifikation er ikke implementeret endnu', [], 501);
+    }
+
+    #[NoReturn] public static function updateUsername(array $args): void {
+        $username = isset($args['username']) ? trim($args['username']) : null;
+
+        // Username can be null/empty (remove username)
+        if(!isEmpty($username)) {
+            // Validate username format: alphanumeric, underscore, 3-30 chars
+            if(!preg_match('/^[a-zA-Z0-9_]{3,30}$/', $username)) {
+                Response()->jsonError("Brugernavn skal være 3-30 tegn og kun indeholde bogstaver, tal og understreg", [], 400);
+            }
+
+            // Check if username is already taken by another user
+            $existingAuth = Methods::localAuthentication()->excludeForeignKeys()->getFirst(['username' => $username]);
+            if($existingAuth && $existingAuth->user !== __uuid()) {
+                Response()->jsonError("Dette brugernavn er allerede i brug", [], 400);
+            }
+        } else {
+            $username = null;
+        }
+
+        // Get user's auth local record
+        $authLocal = Methods::localAuthentication()->getFirst(['user' => __uuid()]);
+
+        if(!$authLocal) {
+            Response()->jsonError("Du skal først oprette en adgangskode før du kan sætte et brugernavn", [], 400);
+        }
+
+        $updated = Methods::localAuthentication()->update([
+            'username' => $username
+        ], ['uid' => $authLocal->uid]);
+
+        if($updated) {
+            Response()->jsonSuccess($username ? 'Brugernavn opdateret' : 'Brugernavn fjernet');
+        }
+
+        Response()->jsonError('Kunne ikke opdatere brugernavn', [], 500);
+    }
+
+    #[NoReturn] public static function updateTwoFactor(array $args): void {
+        $twoFactorEnabled = (int)($args['two_factor_enabled'] ?? 0);
+        $twoFactorMethod = $args['two_factor_method'] ?? 'SMS';
+
+        // Validate 2FA method
+        $allowedMethods = ['SMS', 'EMAIL'];
+        if(!in_array($twoFactorMethod, $allowedMethods)) {
+            Response()->jsonError("Ugyldig 2FA metode", [], 400);
+        }
+
+        // Get user to check access level
+        $user = Methods::users()->get(__uuid());
+        if(!$user) {
+            Response()->jsonError("Bruger ikke fundet", [], 404);
+        }
+
+        // Consumers (access_level = 1) cannot disable 2FA
+        if($user->access_level == 1 && $twoFactorEnabled == 0) {
+            Response()->jsonError("Forbrugere kan ikke deaktivere to-faktor godkendelse", [], 400);
+        }
+
+        // Get user's auth local record
+        $authLocal = Methods::localAuthentication()->getFirst(['user' => __uuid()]);
+
+        if(!$authLocal) {
+            Response()->jsonError("Du skal først oprette en adgangskode før du kan ændre 2FA indstillinger", [], 400);
+        }
+
+        // If enabling 2FA with SMS, verify user has a phone number
+        if($twoFactorEnabled == 1 && $twoFactorMethod === 'SMS') {
+            if(isEmpty($user->phone)) {
+                Response()->jsonError("Du skal have et telefonnummer for at bruge SMS 2FA", [], 400);
+            }
+        }
+
+        $updated = Methods::localAuthentication()->update([
+            '2fa' => $twoFactorEnabled,
+            '2fa_method' => $twoFactorEnabled ? $twoFactorMethod : null
+        ], ['uid' => $authLocal->uid]);
+
+        if($updated) {
+            Response()->jsonSuccess($twoFactorEnabled ? 'To-faktor godkendelse aktiveret' : 'To-faktor godkendelse deaktiveret');
+        }
+
+        Response()->jsonError('Kunne ikke opdatere 2FA indstillinger', [], 500);
     }
 }

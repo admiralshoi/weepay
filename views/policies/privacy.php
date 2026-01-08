@@ -1,3 +1,11 @@
+<?php
+$pageTitle = "Privacy Policy";
+?>
+
+<script>
+    var pageTitle = <?=json_encode($pageTitle)?>;
+</script>
+
 <div class="row">
     <div class="col-12 mt-5">
 

@@ -9,7 +9,13 @@ use classes\enumerations\Links;
 
 $oidcSessionId = $args->oidcSessionId;
 $authError = $args->authError ?? null;
+
+$pageTitle = "Opret konto";
 ?>
+
+<script>
+    var pageTitle = <?=json_encode($pageTitle)?>;
+</script>
 
 
 

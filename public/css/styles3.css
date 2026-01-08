@@ -1,4 +1,14 @@
 
+/* Daterangepicker cancel button styling */
+.daterangepicker .cancelBtn {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: #fff !important;
+}
+.daterangepicker .cancelBtn:hover {
+    background-color: #c82333 !important;
+    border-color: #bd2130 !important;
+}
 
 .stepper-progress {
     display: flex;
@@ -454,6 +464,27 @@ ul#error-box li:not(:last-of-type)  {
     transition: width 0.3s ease;
 }
 
+/* Danger variant for past due */
+.bnpl-credit-card--danger .bnpl-credit-card__progress-bar {
+    background: linear-gradient(90deg, #e53e3e, #fc8181);
+}
+
+.bnpl-credit-card__warning {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(229, 62, 62, 0.2);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #fc8181;
+}
+
+.bnpl-credit-card__warning i {
+    font-size: 1.1rem;
+}
+
 /* ------------------------------------------------------------------ */
 /*  Checkout Store Info Section                                        */
 /* ------------------------------------------------------------------ */
@@ -471,23 +502,23 @@ ul#error-box li:not(:last-of-type)  {
 }
 
 .checkout-store-info__logo {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
     object-fit: contain;
     background: #f0f0f0;
     padding: 4px;
 }
 
 .checkout-store-info__logo-placeholder {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
     background: linear-gradient(135deg, #c6f6d5, #9ae6b4);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: #276749;
 }
@@ -500,20 +531,20 @@ ul#error-box li:not(:last-of-type)  {
 
 .checkout-store-info__name {
     margin: 0;
-    font-size: 1rem;
+    font-size: 1.25rem;
     font-weight: 600;
     color: #1a202c;
 }
 
 .checkout-store-info__basket {
     margin: 0;
-    font-size: 0.875rem;
+    font-size: 1rem;
     color: #718096;
 }
 
 .checkout-store-info__price {
     margin: 0;
-    font-size: 1.125rem;
+    font-size: 1.35rem;
     font-weight: 700;
     color: #1a202c;
 }

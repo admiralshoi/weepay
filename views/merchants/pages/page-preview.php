@@ -30,7 +30,13 @@ if($location->inherit_details ?? false) {
 // Format address string using helper method (no country, comma-separated)
 $addressString = Methods::misc()::extractCompanyAddressString($address, false, false);
 $hasAddress = !isEmpty($addressString);
+
+$pageTitle = "Forhåndsvisning - " . $location->name;
 ?>
+
+<script>
+    var pageTitle = <?=json_encode($pageTitle)?>;
+</script>
 
 <!-- Preview Header -->
 <div class="bg-warning text-center py-2 sticky-top" style="z-index: 1000;">
@@ -66,6 +72,34 @@ $hasAddress = !isEmpty($addressString);
                 <i class="mdi mdi-qrcode"></i>
                 Scan QR-koden &bullet; Køb nu &bullet; Betal senere
             </button>
+        </div>
+    </div>
+</div>
+
+<?php
+// Offer section visibility: enabled + title + (text OR image)
+$offerVisible = !isEmpty($page->offer_enabled) && !isEmpty($page->offer_title) && (!isEmpty($page->offer_text) || !isEmpty($page->offer_image));
+?>
+<!-- Offer Section (shown below hero when enabled) -->
+<div id="preview-offer-section" class="offer-section-banner" style="<?=!$offerVisible ? 'display: none;' : ''?> background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(255, 152, 0, 0.1));">
+    <div class="container py-4">
+        <div class="flex-row-start flex-align-start flex-wrap" style="gap: 1.5rem;">
+            <div class="flex-1-current" style="min-width: 250px;">
+                <div class="flex-row-start-center mb-2" style="gap: 0.5rem;">
+                    <i class="mdi mdi-tag-outline font-20 color-warning"></i>
+                    <p id="preview-offer-title" class="font-20 font-weight-bold mb-0"><?=htmlspecialchars($page->offer_title ?? '')?></p>
+                </div>
+                <?php if(!empty($page->offer_text)): ?>
+                <p id="preview-offer-text" class="mb-0 font-15 line-height-relaxed" style="<?=isEmpty($page->offer_text) ? 'display: none;' : ''?>">
+                    <?=nl2br(htmlspecialchars($page->offer_text))?>
+                </p>
+                <?php endif; ?>
+            </div>
+            <?php if(!empty($page->offer_image)): ?>
+            <div id="preview-offer-image-container" class="offer-image-container" style="<?=isEmpty($page->offer_image) ? 'display: none;' : ''?>">
+                <img id="preview-offer-image" src="<?=__url($page->offer_image)?>" alt="<?=htmlspecialchars($page->offer_title ?? '')?>" style="max-width: 200px; max-height: 200px; border-radius: 10px; object-fit: cover;">
+            </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>

@@ -10,11 +10,13 @@ class Locations {
     public string $locationPageBuilder = "locations/{slug}/page-builder";
     public string $locationPreviewPage = "locations/{slug}/page-builder/preview/{id}/page"; //draft id
     public string $locationPreviewCheckout = "locations/{slug}/page-builder/preview/{id}/checkout"; //draft id
+    public string $locationQr = "merchant/locations/{slug}/qr";
     public function previewPage(string $slug, string $id): string { return str_replace(["{slug}", "{id}"] , [$slug, $id], $this->locationPreviewPage); }
     public function previewCheckout(string $slug, string $id): string { return str_replace(["{slug}", "{id}"] , [$slug, $id], $this->locationPreviewCheckout); }
     public function members(string $slug): string { return str_replace("{slug}" , $slug, $this->locationMembers); }
     public function pageBuilder(string $slug): string { return str_replace("{slug}" , $slug, $this->locationPageBuilder); }
     public function setSingleLocation(string $slug): string { return str_replace("{slug}" , $slug, $this->singleLocation); }
+    public function qr(string $slug): string { return str_replace("{slug}" , $slug, $this->locationQr); }
     public function mangeTeamDynamic(?string $slug = null): string {
         if(empty($slug)) $slug = '{slug}';
         return "locations/$slug/team";

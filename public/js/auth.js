@@ -144,33 +144,220 @@ signupHandler();
 
 const loginHandler = () => {
     let isLoading = false;
+    let twoFaTimer = null;
+    let twoFaCooldownEnd = 0;
 
+    // Handle showing/hiding country code select based on input
+    const handleUsernameInput = (input) => {
+        let value = input.val().trim();
+        let countryCodeContainer = input.closest('form').find('.login-country-code-container');
 
+        // Check if input is numeric and more than 3 characters
+        let isPhoneNumber = value.length > 3 && /^\d+$/.test(value);
+
+        if(isPhoneNumber) {
+            countryCodeContainer.removeClass('d-none');
+            input.css('width', 'calc(100% - 75px - 2px)');
+        } else {
+            countryCodeContainer.addClass('d-none');
+            input.css('width', '100%');
+        }
+    }
+
+    // Attach input event listeners to login username fields
+    $(".login-username-field").on("input keyup", function() {
+        handleUsernameInput($(this));
+    });
+
+    const startTwoFaTimer = (seconds = 60) => {
+        twoFaCooldownEnd = Date.now() + (seconds * 1000);
+
+        // Hide resend link and show timer
+        $("#login-2fa-resend-link").addClass("d-none");
+        $("#login-2fa-timer-display").removeClass("d-none");
+
+        const updateTimer = () => {
+            let remaining = Math.ceil((twoFaCooldownEnd - Date.now()) / 1000);
+            if (remaining <= 0) {
+                clearInterval(twoFaTimer);
+                twoFaTimer = null;
+                twoFaCooldownEnd = 0;
+
+                // Hide timer and show resend link
+                $("#login-2fa-timer-display").addClass("d-none");
+                $("#login-2fa-resend-link").removeClass("d-none");
+            } else {
+                $("#login-2fa-timer-countdown").text(remaining);
+            }
+        };
+
+        updateTimer();
+        twoFaTimer = setInterval(updateTimer, 1000);
+    }
+
+    const show2faSection = (phoneHint) => {
+        // Update phone hint
+        $("#login-2fa-phone-hint").text(phoneHint);
+
+        // Clear any existing code
+        $("#login_2fa_code").val('');
+
+        // Hide credentials section elements, show 2FA section elements
+        $(".login-credentials-section").addClass("d-none");
+        $(".login-2fa-section").removeClass("d-none");
+
+        // Focus on code input
+        $("#login_2fa_code").focus();
+
+        // Start timer
+        startTwoFaTimer(60);
+    }
+
+    const hide2faSection = () => {
+        // Clear timer
+        if(twoFaTimer) {
+            clearInterval(twoFaTimer);
+            twoFaTimer = null;
+        }
+
+        // Hide 2FA section elements, show credentials section elements
+        $(".login-2fa-section").addClass("d-none");
+        $(".login-credentials-section").removeClass("d-none");
+
+        // Clear code input
+        $("#login_2fa_code").val('');
+
+        // Re-enable login button
+        $("button[name=login-button]").get(0).disabled = false;
+    }
 
     const loginUser = async (btn) => {
         if(isLoading) return;
         btn.get(0).disabled = true
+        isLoading = true;
         let form = btn.parents('form').first();
         let formData = new FormData(form.get(0))
         let dest = form.attr("action")
 
+        // Check if country code container is visible and add phone_country_code
+        let countryCodeContainer = form.find('.login-country-code-container');
+        if(!countryCodeContainer.hasClass('d-none')) {
+            formData.set('phone_country_code', form.find('#login_phone_country_code').val());
+        }
+
         let result = await post(dest, formData);
         console.log(result)
 
+        isLoading = false;
+
         if(result.status === 'error') {
             btn.get(0).disabled = false
-            isLoading = false;
             showErrorNotification("Unable to login", result.error.message)
             return false;
         }
 
+        // Check if 2FA is required
+        if(result.data && result.data.requires_2fa) {
+            showSuccessNotification("Verifikationskode sendt", result.message);
+            show2faSection(result.data.phone_hint);
+            return;
+        }
+
         queueNotificationOnLoad("Log ind succesfuldt", result.message, 'success', 2000)
+
+        // Check if form requests page reload instead of redirect (e.g., in checkout flow)
+        if(form.data('reload-on-success') === true) {
+            window.location.reload();
+            return;
+        }
+
         handleStandardApiRedirect(result, 1)
+    }
+
+    const verify2fa = async (btn) => {
+        if(isLoading) return;
+
+        let code = $("#login_2fa_code").val();
+        if(!code || code.trim() === '' || code.length !== 6) {
+            showErrorNotification("Fejl", "Indtast 6-cifret kode");
+            return false;
+        }
+
+        let form = btn.parents('form').first();
+        btn.get(0).disabled = true;
+        isLoading = true;
+
+        let result = await post(platformLinks.api.auth.verify2faLogin, { code: code });
+        console.log(result);
+
+        isLoading = false;
+
+        if(result.status === 'error') {
+            btn.get(0).disabled = false;
+            showErrorNotification("Verificering fejlede", result.error.message);
+            return false;
+        }
+
+        queueNotificationOnLoad("Log ind succesfuldt", result.message, 'success', 2000)
+
+        // Check if form requests page reload instead of redirect (e.g., in checkout flow)
+        if(form.data('reload-on-success') === true) {
+            window.location.reload();
+            return;
+        }
+
+        handleStandardApiRedirect(result, 1)
+    }
+
+    const resend2faCode = async (e) => {
+        e.preventDefault();
+        if(isLoading) return;
+
+        isLoading = true;
+
+        let result = await post(platformLinks.api.auth.resend2faLoginCode, {});
+        console.log(result);
+
+        isLoading = false;
+
+        if(result.status === 'error') {
+            showErrorNotification("Kunne ikke sende kode", result.error.message);
+            // If session expired, go back to login
+            if(result.code === 401) {
+                hide2faSection();
+            }
+            return false;
+        }
+
+        showSuccessNotification("Kode sendt", result.message);
+        // Update phone hint in case it changed
+        if(result.data && result.data.phone_hint) {
+            $("#login-2fa-phone-hint").text(result.data.phone_hint);
+        }
+        startTwoFaTimer(60);
+    }
+
+    const backToLogin = (e) => {
+        e.preventDefault();
+        hide2faSection();
     }
 
     $("button[name=login-button]").on("click", function (e) {
         e.preventDefault();
         loginUser($(this));
+    })
+
+    $("button[name=verify-2fa-button]").on("click", function (e) {
+        e.preventDefault();
+        verify2fa($(this));
+    })
+
+    $("#login-2fa-resend-link").on("click", resend2faCode);
+    $("#login-2fa-back-link").on("click", backToLogin);
+
+    // Cleanup timer on page unload
+    $(window).on('beforeunload', function() {
+        if (twoFaTimer) clearInterval(twoFaTimer);
     })
 }
 loginHandler();

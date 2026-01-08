@@ -294,6 +294,136 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
 
 
 
+        <?php if(\classes\app\OrganisationPermissions::__oRead("organisation", "settings")): ?>
+        <?php
+            $generalSettings = $organisation->general_settings ?? (object)[];
+            $whitelistEnabled = $generalSettings->whitelist_enabled ?? false;
+            $whitelistIps = $generalSettings->whitelist_ips ?? [];
+            $maxBnplAmount = $generalSettings->max_bnpl_amount ?? null;
+            $platformMaxBnpl = Settings::$app->platform_max_bnpl_amount ?? 50000;
+        ?>
+        <!-- Organisation Settings Row -->
+        <div class="row flex-align-stretch rg-15 mt-4">
+            <!-- IP Whitelist Card -->
+            <div class="col-12 col-lg-6 d-flex">
+                <div class="card border-radius-10px w-100">
+                    <div class="card-body">
+                        <div class="flex-row-between-center g-1 mb-3">
+                            <div class="flex-row-start-center flex-nowrap g-075">
+                                <i class="mdi mdi-shield-lock-outline font-18 color-blue"></i>
+                                <p class="font-20 font-weight-bold">IP Whitelist</p>
+                            </div>
+                            <?php if(\classes\app\OrganisationPermissions::__oModify("organisation", "settings")): ?>
+                            <div class="flex-row-end-center g-075">
+                                <span class="font-12 color-gray"><?=$whitelistEnabled ? 'Aktiveret' : 'Deaktiveret'?></span>
+                                <label class="form-switch">
+                                    <input type="checkbox" id="whitelistEnabledToggle" <?=$whitelistEnabled ? 'checked' : ''?>>
+                                    <i></i>
+                                </label>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+
+                        <p class="font-13 color-gray mb-3">Begræns adgang til din organisation til kun godkendte IP-adresser. Ejere er undtaget.</p>
+
+                        <div class="alert alert-info mb-3" style="border-radius: 8px; padding: .5rem .75rem;">
+                            <div class="flex-row-start flex-align-center" style="gap: .5rem;">
+                                <i class="mdi mdi-ip-network font-16"></i>
+                                <span class="font-13">Din nuværende IP: <strong class="font-monospace"><?=getUserIp()?></strong></span>
+                            </div>
+                        </div>
+
+                        <?php if(\classes\app\OrganisationPermissions::__oModify("organisation", "settings")): ?>
+                        <div class="flex-row-start flex-align-end flex-nowrap w-100 mb-3" style="gap: .5rem;">
+                            <div class="flex-col-start" style="flex: 1;">
+                                <label class="form-label font-13 font-weight-medium">Tilføj IP-adresse</label>
+                                <input type="text" class="form-field-v2 w-100 h-40px" id="newWhitelistIp" placeholder="192.168.1.1">
+                            </div>
+                            <button class="btn-v2 action-btn h-40px" id="addWhitelistIpBtn" style="white-space: nowrap;">
+                                <i class="mdi mdi-plus"></i>
+                                <span>Tilføj</span>
+                            </button>
+                        </div>
+                        <?php endif; ?>
+
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0 plainDataTable" data-pagination-limit="10" data-sorting-col="0" data-sorting-order="asc">
+                                <thead class="color-gray">
+                                    <tr>
+                                        <th class="font-12">IP-adresse</th>
+                                        <?php if(\classes\app\OrganisationPermissions::__oModify("organisation", "settings")): ?>
+                                        <th class="font-12 text-right">Handling</th>
+                                        <?php endif; ?>
+                                    </tr>
+                                </thead>
+                                <tbody id="whitelistIpsTable">
+                                    <?php if(empty($whitelistIps)): ?>
+                                    <tr class="no-ips-row">
+                                        <td colspan="2" class="text-center color-gray font-13 py-3">
+                                            <i class="mdi mdi-information-outline"></i> Ingen IP-adresser tilføjet
+                                        </td>
+                                    </tr>
+                                    <?php else: ?>
+                                    <?php foreach($whitelistIps as $ip): ?>
+                                    <tr data-ip="<?=htmlspecialchars($ip)?>">
+                                        <td class="font-13 font-monospace"><?=htmlspecialchars($ip)?></td>
+                                        <?php if(\classes\app\OrganisationPermissions::__oModify("organisation", "settings")): ?>
+                                        <td class="text-right">
+                                            <button class="btn-v2 danger-btn remove-whitelist-ip" data-ip="<?=htmlspecialchars($ip)?>">
+                                                <i class="mdi mdi-delete-outline"></i>
+                                            </button>
+                                        </td>
+                                        <?php endif; ?>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Small Settings Card -->
+            <div class="col-12 col-lg-6 d-flex">
+                <div class="card border-radius-10px w-100">
+                    <div class="card-body">
+                        <div class="flex-row-start-center flex-nowrap g-075 mb-3">
+                            <i class="mdi mdi-cog-outline font-18 color-blue"></i>
+                            <p class="font-20 font-weight-bold">Indstillinger</p>
+                        </div>
+
+                        <form id="orgSettingsForm">
+                            <div class="flex-col-start mb-3">
+                                <label class="form-label font-14 font-weight-medium">Maks BNPL beløb</label>
+                                <div class="flex-row-start flex-align-center flex-nowrap" style="gap: .5rem;">
+                                    <input type="number" class="form-field-v2 h-40px" name="max_bnpl_amount" id="maxBnplAmount"
+                                           value="<?=htmlspecialchars($maxBnplAmount ?? '')?>"
+                                           placeholder="<?=number_format($platformMaxBnpl, 2, ',', '.')?>"
+                                           step="0.01" min="0" max="<?=$platformMaxBnpl?>"
+                                           style="width: 150px;"
+                                           <?=!\classes\app\OrganisationPermissions::__oModify("organisation", "settings") ? 'disabled' : ''?>>
+                                    <span class="font-14 color-gray">DKK</span>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Platform standard: <?=number_format($platformMaxBnpl, 2, ',', '.')?> DKK.
+                                    Lad feltet være tomt for at bruge standard.
+                                </small>
+                            </div>
+
+                            <?php if(\classes\app\OrganisationPermissions::__oModify("organisation", "settings")): ?>
+                            <button type="submit" class="btn-v2 action-btn" id="saveOrgSettingsBtn">
+                                <i class="mdi mdi-content-save"></i>
+                                <span>Gem Indstillinger</span>
+                            </button>
+                            <?php endif; ?>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+
         <div class="row mt-4">
             <div class="col-12">
                 <div class="card border-radius-10px">
@@ -369,6 +499,104 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
 <script>
     $(document).ready(function () {
         VivaWallet.init('<?=$connectedAccount?->state?>');
+
+        // Whitelist toggle handler
+        $('#whitelistEnabledToggle').on('change', async function() {
+            const enabled = $(this).is(':checked');
+            const result = await post('<?=__url(Links::$api->organisation->updateWhitelistEnabled)?>', { enabled: enabled ? 1 : 0 });
+            if(result.status === 'success') {
+                showSuccessNotification('Udført', result.message);
+                $(this).closest('.flex-row-end-center').find('span').text(enabled ? 'Aktiveret' : 'Deaktiveret');
+            } else {
+                showErrorNotification('Fejl', result.error?.message || 'Kunne ikke opdatere');
+                $(this).prop('checked', !enabled);
+            }
+        });
+
+        // Add IP to whitelist
+        $('#addWhitelistIpBtn').on('click', async function() {
+            const ip = $('#newWhitelistIp').val().trim();
+            if(!ip) {
+                showErrorNotification('Fejl', 'Indtast en IP-adresse');
+                return;
+            }
+
+            const btn = $(this);
+            btn.prop('disabled', true);
+
+            const result = await post('<?=__url(Links::$api->organisation->addWhitelistIp)?>', { ip: ip });
+
+            btn.prop('disabled', false);
+
+            if(result.status === 'success') {
+                showSuccessNotification('Udført', result.message);
+                $('#newWhitelistIp').val('');
+
+                // Add row to table
+                $('.no-ips-row').remove();
+                $('#whitelistIpsTable').append(`
+                    <tr data-ip="${ip}">
+                        <td class="font-13 font-monospace">${ip}</td>
+                        <td class="text-right">
+                            <button class="btn-v2 danger-btn remove-whitelist-ip" data-ip="${ip}">
+                                <i class="mdi mdi-delete-outline"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `);
+            } else {
+                showErrorNotification('Fejl', result.error?.message || 'Kunne ikke tilføje IP');
+            }
+        });
+
+        // Remove IP from whitelist
+        $(document).on('click', '.remove-whitelist-ip', async function() {
+            const ip = $(this).data('ip');
+            const row = $(this).closest('tr');
+
+            const result = await post('<?=__url(Links::$api->organisation->removeWhitelistIp)?>', { ip: ip });
+
+            if(result.status === 'success') {
+                showSuccessNotification('Udført', result.message);
+                row.remove();
+
+                // Show empty message if no IPs left
+                if($('#whitelistIpsTable tr').length === 0) {
+                    $('#whitelistIpsTable').append(`
+                        <tr class="no-ips-row">
+                            <td colspan="2" class="text-center color-gray font-13 py-3">
+                                <i class="mdi mdi-information-outline"></i> Ingen IP-adresser tilføjet
+                            </td>
+                        </tr>
+                    `);
+                }
+            } else {
+                showErrorNotification('Fejl', result.error?.message || 'Kunne ikke fjerne IP');
+            }
+        });
+
+        // Organisation settings form
+        $('#orgSettingsForm').on('submit', async function(e) {
+            e.preventDefault();
+            const btn = $('#saveOrgSettingsBtn');
+            const originalText = btn.html();
+
+            btn.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin"></i> Gemmer...');
+
+            const maxBnpl = $('#maxBnplAmount').val();
+
+            const result = await post('<?=__url(Links::$api->organisation->updateSettings)?>', {
+                max_bnpl_amount: maxBnpl || null
+            });
+
+            btn.prop('disabled', false).html(originalText);
+
+            if(result.status === 'success') {
+                showSuccessNotification('Udført', result.message);
+            } else {
+                showErrorNotification('Fejl', result.error?.message || 'Kunne ikke gemme indstillinger');
+            }
+        });
     })
 </script>
 <?php scriptEnd(); ?>

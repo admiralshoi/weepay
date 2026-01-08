@@ -1,0 +1,17 @@
+{
+    "id": 198,
+    "created_at": "2026-01-08 14:36:37",
+    "updated_at": "2026-01-08 14:36:42",
+    "uid": "oidc_lqa6z9fmu5oenom",
+    "provider": "mitid",
+    "prid": "93ca3568-edda-492d-8449-f5a0938c1aff",
+    "uuid": null,
+    "info": {
+        "tsid": "tses_o9buq0tu1eq9yxo",
+        "next": "cpf"
+    },
+    "reason": "authenticate",
+    "status": "PENDING",
+    "expires_at": 1767879697,
+    "token": "467308303"
+}

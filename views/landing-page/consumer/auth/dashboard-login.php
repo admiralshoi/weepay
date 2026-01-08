@@ -10,8 +10,12 @@ use classes\enumerations\Links;
 $oidcSessionId = $args->oidcSessionId;
 $authError = $args->authError ?? null;
 
-
+$pageTitle = "Log ind";
 ?>
+
+<script>
+    var pageTitle = <?=json_encode($pageTitle)?>;
+</script>
 
 
 
@@ -63,10 +67,27 @@ $authError = $args->authError ?? null;
                         </div>
 
 
-                        <div class="flex-col-start w-100" style="row-gap: .75rem;">
+                        <!-- Login credentials section -->
+                        <div class="flex-col-start w-100 login-credentials-section" style="row-gap: .75rem;">
                             <div class="flex-col-start w-100" style="row-gap: .25rem;">
                                 <p class="mb-0 font-14 font-weight-bold">Brugernavn, email eller telefonnummer</p>
-                                <input type="text" class="w-100 form-field-v2" name="username" id="username" placeholder="kontakt@dinbutik.dk">
+                                <div class="flex-row-start flex-align-start flex-nowrap w-100" style="gap: 2px;">
+                                    <div class="login-country-code-container d-none">
+                                        <select class="form-select-v2 h-45px w-70px dropdown-no-arrow border-radius-tr-br-0-5rem"
+                                                data-search="true" name="phone_country_code" id="login_phone_country_code">
+                                            <?php foreach ($args->worldCountries as $country): ?>
+                                                <option data-sort="<?=$country->countryNameEn?>_<?=$country->countryCode?>_<?=$country->countryNameLocal?>_<?=$country->countryCallingCode?>"
+                                                        value="<?=$country->countryCode?>" <?=$country->countryCode === \features\Settings::$app->default_country ? 'selected' : ''?>>
+                                                    <div class="flex-row-center flex-align-center flex-nowrap" style="gap: .25rem;">
+                                                        <span class=""><?=$country->flag?></span>
+                                                        <span class="">+<?=$country->countryCallingCode?></span>
+                                                    </div>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                    <input type="text" class="w-100 form-field-v2 login-username-field" name="username" id="username" placeholder="kontakt@dinbutik.dk">
+                                </div>
                             </div>
                             <div class="flex-col-start w-100" style="row-gap: .25rem;">
                                 <p class="mb-0 font-14 font-weight-bold">Adgangskode</p>
@@ -77,12 +98,38 @@ $authError = $args->authError ?? null;
                             </div>
                         </div>
 
+                        <!-- 2FA verification section - hidden by default -->
+                        <div class="flex-col-start w-100 d-none login-2fa-section" style="row-gap: .75rem;">
+                            <div class="flex-row-start flex-align-start w-100" style="gap: .5rem; padding: .75rem; background: #e3f2fd; border-radius: 8px; border-left: 3px solid #2196f3;">
+                                <i class="mdi mdi-shield-check-outline color-blue font-18" style="margin-top: 2px;"></i>
+                                <div class="flex-col-start" style="row-gap: .25rem;">
+                                    <p class="mb-0 font-13 font-weight-bold color-blue">To-faktor godkendelse</p>
+                                    <p class="mb-0 font-12 color-gray">
+                                        Vi har sendt en verifikationskode til dit telefonnummer <span id="login-2fa-phone-hint" class="font-weight-bold"></span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="flex-col-start w-100" style="row-gap: .25rem;">
+                                <p class="mb-0 font-14 font-weight-bold">Verifikationskode</p>
+                                <input type="text" class="w-100 form-field-v2" name="2fa_code" id="login_2fa_code" placeholder="123456" maxlength="6">
+                                <p class="mb-0 font-12 color-gray">Indtast den 6-cifrede kode sendt til dit telefonnummer</p>
+                            </div>
+
+                            <div class="flex-row-start flex-align-center" style="gap: .5rem;" id="login-2fa-timer-display">
+                                <i class="mdi mdi-timer-sand color-gray font-16"></i>
+                                <p class="mb-0 font-12 color-gray">Du kan anmode om en ny kode om <span id="login-2fa-timer-countdown" class="font-weight-bold">60</span> sekunder</p>
+                            </div>
+
+                            <a href="#" class="font-12 color-blue text-decoration-underline d-none" id="login-2fa-resend-link" style="cursor: pointer;">Send ny kode</a>
+                            <a href="#" class="font-12 color-gray text-decoration-underline" id="login-2fa-back-link" style="cursor: pointer;">Tilbage til login</a>
+                        </div>
 
                         <div class="flex-col-start w-100" style="row-gap: .75rem;">
-                            <div class="flex-row-end">
+                            <div class="flex-row-end login-credentials-section">
                                 <a href="<?=__url(Links::$consumer->public->recovery)?>" class="color-blue hover-underline font-13">Glemt adgangskode?</a>
                             </div>
-                            <button class="btn-v2 green-btn flex-row-center flex-align-center flex-nowrap" style="gap: .5rem;" name="login-button" id="login-button">
+                            <button class="btn-v2 green-btn flex-row-center flex-align-center flex-nowrap login-credentials-section" style="gap: .5rem;" name="login-button" id="login-button">
                                 <span>Log ind</span>
 
                                 <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
@@ -91,7 +138,16 @@ $authError = $args->authError ?? null;
                                     </span>
                                 </span>
                             </button>
-                            <div class="flex-row-center flex-align-center flex-nowrap font-weight-medium" style="gap: .25rem;">
+                            <button class="btn-v2 green-btn flex-row-center flex-align-center flex-nowrap d-none login-2fa-section" style="gap: .5rem;" name="verify-2fa-button" id="verify-2fa-button">
+                                <span>Verificer</span>
+
+                                <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
+                                    <span class="spinner-border color-white square-15" role="status" style="border-width: 2px;">
+                                      <span class="sr-only">Loading...</span>
+                                    </span>
+                                </span>
+                            </button>
+                            <div class="flex-row-center flex-align-center flex-nowrap font-weight-medium login-credentials-section" style="gap: .25rem;">
                                 <span class="color-gray font-13">Har du ikke en konto?</span>
                                 <a href="<?=__url(Links::$consumer->public->signup)?>" class="color-blue font-13 hover-underline">Opret konto her</a>
                             </div>

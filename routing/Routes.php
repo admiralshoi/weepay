@@ -69,6 +69,11 @@ class Routes {
             exit;
         }
 
+        if(requiresWhitelistedIp()) {
+            header("location: " . __url(Links::$merchant->accessDenied));
+            exit;
+        }
+
         $matches = [];
         foreach (self::$routes as $index => $route) {
             $params = [];

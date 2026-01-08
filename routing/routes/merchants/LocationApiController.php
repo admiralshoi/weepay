@@ -46,7 +46,7 @@ class LocationApiController {
 
         // Check location permissions
         if(!LocationPermissions::__oRead($location, 'team_members'))
-            Response()->jsonError("Du har ikke tilladelse til at se medlemmer på denne lokation.");
+            Response()->jsonError(Translate::context("location.no_permission_view"));
 
         // Get paginated members
         $locationMemberHandler = Methods::locationMembers();
@@ -149,14 +149,14 @@ class LocationApiController {
 
         // Check location permissions
         if(!LocationPermissions::__oModify($location, 'team_invitations'))
-            Response()->jsonError("Du har ikke tilladelse til at invitere medlemmer til denne lokation.");
+            Response()->jsonError(Translate::context("location.no_permission_invite"));
 
         $organisationId = __oUuid();
 
         if($userType === 'existing') {
             // EXISTING ORGANISATION MEMBER PATH
             if(!array_key_exists("existing_member_uuid", $args) || empty(trim($args["existing_member_uuid"])))
-                Response()->jsonError("Vælg venligst et medlem.");
+                Response()->jsonError(Translate::context("location.select_member"));
 
             $userUuid = trim($args["existing_member_uuid"]);
 
@@ -187,9 +187,9 @@ class LocationApiController {
                         ]);
                     }
 
-                    Response()->setRedirect()->jsonSuccess("Medlemmet er blevet genaktiveret på lokationen.");
+                    Response()->setRedirect()->jsonSuccess(Translate::context("location.member_reactivated"));
                 }
-                Response()->jsonError("Dette medlem er allerede tilføjet til lokationen.");
+                Response()->jsonError(Translate::context("location.member_already_added"));
             }
 
             // If member has scoped locations (not null/empty), add this location to their scope
@@ -213,7 +213,7 @@ class LocationApiController {
                 ],
             ]);
 
-            Response()->setRedirect()->jsonSuccess("Medlemmet er blevet tilføjet til lokationen.");
+            Response()->setRedirect()->jsonSuccess(Translate::context("location.member_added"));
         }
         else {
             // NEW USER PATH
@@ -317,7 +317,7 @@ class LocationApiController {
                 }
 
                 $message = $isActiveOrgMember
-                    ? "Medlemmet er blevet tilføjet til lokationen."
+                    ? Translate::context("location.member_added")
                     : "En invitation er blevet sendt til brugeren.";
                 Response()->setRedirect()->jsonSuccess($message);
             }
@@ -436,21 +436,21 @@ class LocationApiController {
 
         // Get location member
         $member = $locationMemberHandler->first(['uuid' => $memberUuid, 'location' => $locationUid]);
-        if(isEmpty($member)) Response()->jsonError("Medlemmet blev ikke fundet.");
+        if(isEmpty($member)) Response()->jsonError(Translate::context("location.member_not_found"));
 
         switch($action) {
             case 'update-role':
                 if(!LocationPermissions::__oModify($location, 'team_members'))
-                    Response()->jsonPermissionError("redigerings", 'medlemmer');
+                    Response()->jsonPermissionError("redigerings", 'medarbejdere');
                 if(isEmpty($role)) Response()->jsonError("Rolle er påkrævet.");
 
                 $locationMemberHandler->update(['role' => $role], ['uuid' => $memberUuid, 'location' => $locationUid]);
-                Response()->setRedirect()->jsonSuccess("Medlemmets rolle er blevet opdateret.");
+                Response()->setRedirect()->jsonSuccess(Translate::context("location.member_role_updated"));
                 break;
 
             case 'suspend':
                 if(!LocationPermissions::__oModify($location, 'team_members'))
-                    Response()->jsonPermissionError("redigerings", 'medlemmer');
+                    Response()->jsonPermissionError("redigerings", 'medarbejdere');
 
                 // Suspend location membership only - location member status is the authority for location access
                 $locationMemberHandler->update([
@@ -460,12 +460,12 @@ class LocationApiController {
                     ]
                 ], ['uuid' => $memberUuid, 'location' => $locationUid]);
 
-                Response()->setRedirect()->jsonSuccess("Medlemmet er blevet suspenderet fra lokationen.");
+                Response()->setRedirect()->jsonSuccess(Translate::context("location.member_suspended"));
                 break;
 
             case 'unsuspend':
                 if(!LocationPermissions::__oModify($location, 'team_members'))
-                    Response()->jsonPermissionError("redigerings", 'medlemmer');
+                    Response()->jsonPermissionError("redigerings", 'medarbejdere');
 
                 // Unsuspend location membership only
                 $locationMemberHandler->update([
@@ -475,12 +475,12 @@ class LocationApiController {
                     ]
                 ], ['uuid' => $memberUuid, 'location' => $locationUid]);
 
-                Response()->setRedirect()->jsonSuccess("Medlemmet er blevet genaktiveret på lokationen.");
+                Response()->setRedirect()->jsonSuccess(Translate::context("location.member_reactivated"));
                 break;
 
             case 'remove':
                 if(!LocationPermissions::__oDelete($location, 'team_members'))
-                    Response()->jsonPermissionError("slette", 'medlemmer');
+                    Response()->jsonPermissionError("slette", 'medarbejdere');
 
                 // Mark location membership as deleted
                 $locationMemberHandler->update([
@@ -513,7 +513,7 @@ class LocationApiController {
                     }
                 }
 
-                Response()->setRedirect()->jsonSuccess("Medlemmet er blevet fjernet fra lokationen.");
+                Response()->setRedirect()->jsonSuccess(Translate::context("location.member_removed"));
                 break;
 
             default:
@@ -619,7 +619,7 @@ class LocationApiController {
             ->count();
 
         if($membersWithRole > 0)
-            Response()->jsonError("Rollen kan ikke slettes, da der er medlemmer med denne rolle. Tildel dem en ny rolle først.");
+            Response()->jsonError(Translate::context("location.role_has_members"));
 
         unset($permissions[$role]);
         Methods::locations()->update(['permissions' => $permissions], ['uid' => $locationUid]);

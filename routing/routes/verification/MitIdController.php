@@ -119,17 +119,15 @@ class MitIdController {
                     );
                 }
 
-                // Get user to check if profile completion is needed
-                $user = Methods::users()->get(__uuid());
-                if(isEmpty($user)) {
-                    $redirectUrl = $next === 'consumer_login'
-                        ? Links::$app->auth->consumerLogin
-                        : Links::$app->auth->consumerSignup;
-                    Response()->redirect(
-                        __url($redirectUrl . '?' . http_build_query(['auth_error' => 'Brugeren kunne ikke findes. Prøv venligst igen.']))
-                    );
+                // For popup flow: redirect to dashboard (original page handles actual redirect via polling)
+                // For fallback flow: use stored redirect if available
+                // Note: Don't clear session here - OidcController polling will clear it for popup flow
+                if(!empty($_SESSION['redirect_after_profile_completion'])) {
+                    $redirectUrl = __url($_SESSION['redirect_after_profile_completion']);
+                    Response()->redirect($redirectUrl);
+                } else {
+                    Response()->redirect(__url(Links::$consumer->dashboard));
                 }
-                Response()->redirect(__url(Links::$consumer->dashboard));
         }
     }
 

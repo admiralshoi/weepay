@@ -1,0 +1,14 @@
+{
+    "10002": "https:\/\/demo.vivapayments.com\/api\/orders\/9348477008551320",
+    "19913": true,
+    "10036": "GET",
+    "52": 1,
+    "13": 500,
+    "10023": [
+        "Authorization: Basic N2U0MTZkZmMtYWE4OS00MzM1LTliZTUtNGIzY2UyZGMzNTliOmVlNmQxOWIyLThiOWUtNDFlZC04NzRlLTA0NDY4MGJlZWFlNzpNM0dNWjcxSnlwNEcxS2EySjZrNGhNZEg2OTlaVVg="
+    ],
+    "42": true,
+    "10102": "",
+    "68": 10,
+    "84": "CURL_HTTP_VERSION_1_1"
+}

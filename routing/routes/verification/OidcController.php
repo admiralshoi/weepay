@@ -38,10 +38,14 @@ class OidcController {
 
             if(in_array($next, ['consumer_login', 'consumer_signup'])) {
                 if(!isOidcAuthenticated()) Response()->jsonError('Kunne ikke verificere dig. Prøv igen', [], 500);
-                $user = Methods::users()->get(__uuid());
-                if(isEmpty($user)) Response()->jsonError('User not found.', [], 500);
 
-                $redirectUrl = __url(Links::$consumer->dashboard);
+                // Check for stored redirect, otherwise go to dashboard
+                if(!empty($_SESSION['redirect_after_profile_completion'])) {
+                    $redirectUrl = __url($_SESSION['redirect_after_profile_completion']);
+                    unset($_SESSION['redirect_after_profile_completion']);
+                } else {
+                    $redirectUrl = __url(Links::$consumer->dashboard);
+                }
                 Response()->setRedirect($redirectUrl)->jsonSuccess("", toArray($session));
             }
         }

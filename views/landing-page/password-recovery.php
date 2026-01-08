@@ -1,7 +1,13 @@
 <?php
 use classes\Methods;
 $resetPwd = isset($_GET["token"]) && Methods::passwordHandler()->resetAvailable($_GET["token"]);
+
+$pageTitle = "Nulstil adgangskode";
 ?>
+
+<script>
+    var pageTitle = <?=json_encode($pageTitle)?>;
+</script>
 
 <div id="main-wrapper" class="">
     <div class="row">

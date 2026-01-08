@@ -23,15 +23,43 @@ class TerminalSessionHandler extends Crud {
         return $this->getByX(['terminal' => $terminalId, 'state' => ['ACTIVE', 'PENDING']], $fields);
     }
 
+    /**
+     * Clear the PHP session cache for a terminal.
+     * Call this when a terminal session state changes to non-active.
+     */
+    public function clearSessionCache(string $terminalId): void {
+        $phpSessionKey = "terminal_session_{$terminalId}";
+        if(isset($_SESSION[$phpSessionKey])) {
+            unset($_SESSION[$phpSessionKey]);
+        }
+    }
 
     public function setPending(string $id): bool {
         return $this->update(['state' => 'PENDING'], ['uid' => $id]);
     }
-    public function setCompleted(string $id): bool {
-        return $this->update(['state' => 'COMPLETED'], ['uid' => $id]);
+    public function setCompleted(string $id, ?string $terminalId = null): bool {
+        $result = $this->update(['state' => 'COMPLETED'], ['uid' => $id]);
+        if($result) {
+            // Clear PHP session cache
+            if(isEmpty($terminalId)) {
+                $session = $this->get($id, ['terminal']);
+                $terminalId = $session?->terminal?->uid ?? $session?->terminal;
+            }
+            if(!isEmpty($terminalId)) $this->clearSessionCache($terminalId);
+        }
+        return $result;
     }
-    public function setVoid(string $id): bool {
-        return $this->update(['state' => 'VOID'], ['uid' => $id]);
+    public function setVoid(string $id, ?string $terminalId = null): bool {
+        $result = $this->update(['state' => 'VOID'], ['uid' => $id]);
+        if($result) {
+            // Clear PHP session cache
+            if(isEmpty($terminalId)) {
+                $session = $this->get($id, ['terminal']);
+                $terminalId = $session?->terminal?->uid ?? $session?->terminal;
+            }
+            if(!isEmpty($terminalId)) $this->clearSessionCache($terminalId);
+        }
+        return $result;
     }
     public function setActive(string $id): bool {
         return $this->update(['state' => 'ACTIVE'], ['uid' => $id]);
@@ -44,16 +72,43 @@ class TerminalSessionHandler extends Crud {
         if(isEmpty($customerId)) return;
         $sessions = $this->getByX(['customer' => $customerId, 'state' => ['ACTIVE', 'PENDING']]);
         foreach ($sessions->list() as $session) {
-            $this->setVoid($session->uid);
+            $terminalId = $session->terminal->uid ?? $session->terminal;
+            $this->setVoid($session->uid, $terminalId);
             if($session->terminal->session === $session->session) {
                 Methods::terminals()->setIdle($session->terminal->uid);
             }
         }
     }
 
+    private const SESSION_CACHE_TTL = 600; // 10 minutes
+
     public function getSession(string $terminalId): ?object {
+        // Check PHP session first to prevent duplicate sessions from race conditions
+        $phpSessionKey = "terminal_session_{$terminalId}";
+        if(isset($_SESSION[$phpSessionKey])) {
+            $cached = $_SESSION[$phpSessionKey];
+            $cachedSessionId = is_array($cached) ? ($cached['id'] ?? null) : $cached;
+            $cachedAt = is_array($cached) ? ($cached['cached_at'] ?? 0) : 0;
+
+            // Check if cache is expired
+            if($cachedAt > 0 && (time() - $cachedAt) > self::SESSION_CACHE_TTL) {
+                unset($_SESSION[$phpSessionKey]);
+            } elseif(!isEmpty($cachedSessionId)) {
+                $cachedSession = $this->get($cachedSessionId);
+                if(!isEmpty($cachedSession) && in_array($cachedSession->state, ['ACTIVE', 'PENDING'])) {
+                    // Update database timestamp if stale
+                    if(strtotime($cachedSession->updated_at) < time() - 600) {
+                        $this->update(['updated_at' => time()], ['uid' => $cachedSession->uid]);
+                    }
+                    return $cachedSession;
+                }
+                // Cached session is no longer valid, clear it
+                unset($_SESSION[$phpSessionKey]);
+            }
+        }
+
         $params = ['terminal' => $terminalId];
-        if(isOidcAuthenticated()) {
+        if(isOidcVerified()) {
             $customer = Methods::oidcAuthentication()->getByUserId()?->user;
             $params['customer'] = $customer?->uid;
         }
@@ -68,10 +123,15 @@ class TerminalSessionHandler extends Crud {
             if(strtotime($session->updated_at) < time() - 600) {
                 $this->update(['updated_at' => time()], ['uid' => $session->uid]);
             }
+            // Store in PHP session with timestamp for expiry
+            $_SESSION[$phpSessionKey] = ['id' => $session->uid, 'cached_at' => time()];
             return $session;
         }
         $this->update(['state' => 'VOID'], array_merge($params, ['state' => ['ACTIVE', 'PENDING']]));
         if(!$this->setNew($terminalId)) return null;
+
+        // Store newly created session in PHP session with timestamp
+        $_SESSION[$phpSessionKey] = ['id' => $this->recentUid, 'cached_at' => time()];
         return $this->get($this->recentUid);
     }
     public function setNew(string $terminalId): bool {
@@ -82,7 +142,7 @@ class TerminalSessionHandler extends Crud {
         }
 
         $customer = null;
-        if(isOidcAuthenticated()) {
+        if(isOidcVerified()) {
             $customer = Methods::oidcAuthentication()->getByUserId()?->user;
         }
 

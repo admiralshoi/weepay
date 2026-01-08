@@ -1,0 +1,62 @@
+{
+    "id": "16a51149-35d2-4005-ab37-03889b61005c",
+    "accountId": "a-spge-j25bjJdoKxJQ9mQSF6ex",
+    "authenticationUrl": "https:\/\/in-via-aps.sandbox.signicat.com\/broker\/sp\/external-service\/login?messageId=606ae20f-5d64-5543-86ad-bbe1a27f0bbe&transactionId=30de9c5b-b368-bb45-bd8e-c5237db07598",
+    "status": "SUCCESS",
+    "provider": "mitid",
+    "subject": {
+        "id": "b7eyL-XFcSlwPRxf9tFPHqVItoDrBPhp8sPqiiOb44Q=",
+        "name": "Alvin Christensen",
+        "firstName": "Alvin",
+        "lastName": "Christensen",
+        "dateOfBirth": "1996-05-12",
+        "nin": {
+            "value": "1205960907",
+            "issuingCountry": "DK",
+            "type": "PERSON"
+        },
+        "mitidFal": "HIGH",
+        "mitidHasCpr": "true",
+        "mitidAal": "SUBSTANTIAL",
+        "mitidUuid": "e339be33-2dae-4bdc-b24f-52c519c90353",
+        "mitidIal": "SUBSTANTIAL",
+        "mitidReferenceTextBody": " ",
+        "mitidLoa": "SUBSTANTIAL",
+        "mitidCprSource": "database"
+    },
+    "callbackUrls": {
+        "success": "https:\/\/localhost:443\/weepay\/auth\/user\/verify\/success?ref=oidc_fsp0gad6cb9z1u7&sessionId=16a51149-35d2-4005-ab37-03889b61005c",
+        "abort": "https:\/\/localhost:443\/weepay\/auth\/user\/verify\/abort?ref=oidc_fsp0gad6cb9z1u7&sessionId=16a51149-35d2-4005-ab37-03889b61005c",
+        "error": "https:\/\/localhost:443\/weepay\/auth\/user\/verify\/error?ref=oidc_fsp0gad6cb9z1u7&sessionId=16a51149-35d2-4005-ab37-03889b61005c"
+    },
+    "environment": {
+        "ipAddress": "213.229.171.138",
+        "userAgent": "Mozilla\/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/143.0.0.0 Safari\/537.36"
+    },
+    "loa": "substantial",
+    "allowedProviders": {
+        "0": "mitid"
+    },
+    "flow": "redirect",
+    "requestedAttributes": {
+        "0": "dateOfBirth",
+        "1": "family_name",
+        "2": "firstName",
+        "3": "given_name",
+        "4": "lastName",
+        "5": "mitidAal",
+        "6": "mitidCprSource",
+        "7": "mitidFal",
+        "8": "mitidHasCpr",
+        "9": "mitidIal",
+        "10": "mitidLoa",
+        "11": "mitidNameAndAddressProtection",
+        "12": "mitidReferenceTextBody",
+        "13": "mitidUuid",
+        "14": "name",
+        "15": "nin",
+        "16": "nin_type"
+    },
+    "sessionLifetime": 1200,
+    "expiresAt": "2026-01-08T09:42:45.2027217+00:00"
+}

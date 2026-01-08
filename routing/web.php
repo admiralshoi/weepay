@@ -23,6 +23,7 @@ Routes::get(Links::$app->auth->consumerLogin, "auth.PageController::consumerDash
 Routes::get(Links::$app->auth->consumerSignup, "auth.PageController::consumerDashboardSignup");
 Routes::get(Links::$app->auth->merchantLogin, "auth.PageController::merchantDashboardLogin");
 Routes::get(Links::$app->auth->merchantSignup, "auth.PageController::merchantDashboardSignup");
+Routes::get("qr", "GeneralController::generateQr");
 /**
  *  =========================================
  *  ============= OPEN PAGES END ============
@@ -40,10 +41,14 @@ Routes::group(['requiresLogin', 'consumer'], function() {
     Routes::get(Links::$consumer->dashboard, "consumer.PageController::dashboard", ['consumerProfileComplete']);
     Routes::get(Links::$consumer->orders, "consumer.PageController::orders", ['consumerProfileComplete']);
     Routes::get(Links::$consumer->orderDetail . '/{id}', "consumer.PageController::orderDetail", ['consumerProfileComplete']);
-    Routes::get(Links::$consumer->receipts, "consumer.PageController::receipts", ['consumerProfileComplete']);
-    Routes::get(Links::$consumer->upcomingPayments, "consumer.PageController::upcomingPayments", ['consumerProfileComplete']);
-    Routes::get(Links::$consumer->outstandingPayments, "consumer.PageController::outstandingPayments", ['consumerProfileComplete']);
+    Routes::get(Links::$consumer->payments, "consumer.PageController::payments", ['consumerProfileComplete']);
+    Routes::get("payments/{id}", "consumer.PageController::paymentDetail", ['consumerProfileComplete']);
+    Routes::get("location/{id}", "consumer.PageController::locationDetail", ['consumerProfileComplete']);
     Routes::get(Links::$consumer->settings, "consumer.PageController::settings", ['consumerProfileComplete']);
+
+    // Consumer API routes
+    Routes::post(Links::$api->consumer->orders, "consumer.ApiController::getOrders", ['consumerProfileComplete']);
+    Routes::post(Links::$api->consumer->payments, "consumer.ApiController::getPayments", ['consumerProfileComplete']);
 });
 /**
  *  =========================================
@@ -127,6 +132,8 @@ Routes::group(['api', "requiresApiLogout"], function() {
     Routes::post(Links::$api->auth->merchantLogin, "auth.ApiController::loginUser");
     Routes::post(Links::$api->auth->merchantSignup, "auth.ApiController::signupUser");
     Routes::post(Links::$api->auth->consumerLogin, "auth.ApiController::loginUser");
+    Routes::post(Links::$api->auth->verify2faLogin, "auth.ApiController::verify2faLogin");
+    Routes::post(Links::$api->auth->resend2faLoginCode, "auth.ApiController::resend2faLoginCode");
     /**
      *  =========================================
      *  ============= AUTH API END ==============
@@ -153,6 +160,8 @@ Routes::group(['api','requiresApiLogin'], function() {
         Routes::post(Links::$api->user->updateProfile, "UserApiController::updateProfile");
         Routes::post(Links::$api->user->updateAddress, "UserApiController::updateAddress");
         Routes::post(Links::$api->user->updatePassword, "UserApiController::updatePassword");
+        Routes::post(Links::$api->user->updateUsername, "UserApiController::updateUsername");
+        Routes::post(Links::$api->user->updateTwoFactor, "UserApiController::updateTwoFactor");
         Routes::post(Links::$api->user->verifyPhone, "UserApiController::verifyPhone");
     });
 
@@ -166,6 +175,10 @@ Routes::group(['api','requiresApiLogin'], function() {
     Routes::group(['merchant'], function() {
         Routes::get(Links::$api->organisation->vivaConnectedAccount, "merchants.ApiController::vivaWalletStatus");
         Routes::post(Links::$api->organisation->vivaConnectedAccount, "merchants.ApiController::createVivaConnectedAccount");
+        Routes::post(Links::$api->organisation->updateWhitelistEnabled, "merchants.ApiController::updateWhitelistEnabled");
+        Routes::post(Links::$api->organisation->addWhitelistIp, "merchants.ApiController::addWhitelistIp");
+        Routes::post(Links::$api->organisation->removeWhitelistIp, "merchants.ApiController::removeWhitelistIp");
+        Routes::post(Links::$api->organisation->updateSettings, "merchants.ApiController::updateOrgSettings");
         Routes::post(Links::$api->organisation->team->update, "merchants.OrganisationApiController::updateTeamMember");
         Routes::post(Links::$api->organisation->team->invite, "merchants.OrganisationApiController::inviteTeamMember");
         Routes::post(Links::$api->organisation->team->respond, "merchants.OrganisationApiController::respondToInvitation");
@@ -185,6 +198,12 @@ Routes::group(['api','requiresApiLogin'], function() {
         Routes::delete(Links::$api->locations->team->role->delete, "merchants.LocationApiController::deleteLocationRole");
         Routes::post(Links::$api->locations->team->role->permissions, "merchants.LocationApiController::updateLocationRolePermissions");
 
+        Routes::post(Links::$api->orders->list, "merchants.OrdersApiController::getOrders");
+        Routes::post(Links::$api->orders->locationList, "merchants.OrdersApiController::getLocationOrders");
+        Routes::post(Links::$api->orders->payments->list, "merchants.PaymentsApiController::getPayments");
+        Routes::get("api/payments/{id}/receipt", "merchants.PaymentsApiController::downloadReceipt");
+        Routes::post(Links::$api->orders->customers->list, "merchants.CustomersApiController::getCustomers");
+
         Routes::post(Links::$api->forms->createOrganisation, "merchants.ApiController::createOrganisation");
         Routes::get(Links::$merchant->organisation->switch, "merchants.ApiController::selectOrganisation");
         Routes::post(Links::$api->forms->merchant->editOrganisationDetails, "merchants.ApiController::updateBasicDetails");
@@ -195,6 +214,8 @@ Routes::group(['api','requiresApiLogin'], function() {
         Routes::delete(Links::$api->locations->merchantHeroImage, "merchants.PageBuilderApiController::removeLocationHeroImage");
         Routes::post(Links::$api->locations->merchantLogo, "merchants.PageBuilderApiController::uploadLocationLogo");
         Routes::delete(Links::$api->locations->merchantLogo, "merchants.PageBuilderApiController::removeLocationLogo");
+        Routes::post(Links::$api->locations->merchantOfferImage, "merchants.PageBuilderApiController::uploadLocationOfferImage");
+        Routes::delete(Links::$api->locations->merchantOfferImage, "merchants.PageBuilderApiController::removeLocationOfferImage");
         Routes::post(Links::$api->locations->savePageDraft, "merchants.PageBuilderApiController::saveLocationPageDraft");
         Routes::post(Links::$api->locations->publishPageDraft, "merchants.PageBuilderApiController::publishPageDraft");
         Routes::post(Links::$api->forms->merchant->addNewTerminal, "merchants.ApiController::createTerminal");
@@ -264,9 +285,11 @@ Routes::group(["requiresLogin"], function () {
         Routes::get(Links::$merchant->organisation->add, "merchants.pages.PageController::add");
         Routes::get(Links::$merchant->dashboard, "merchants.pages.PageController::dashboard");
         Routes::get(Links::$merchant->settings, "merchants.pages.PageController::settings");
+        Routes::get(Links::$merchant->accessDenied, "merchants.pages.PageController::accessDenied");
         Routes::get(Links::$merchant->orders, "merchants.pages.PageController::orders");
         Routes::get("orders/{id}", "merchants.pages.PageController::orderDetail");
         Routes::get(Links::$merchant->payments, "merchants.pages.PageController::payments");
+        Routes::get("payments/{id}", "merchants.pages.PageController::paymentDetail");
         Routes::get(Links::$merchant->pendingPayments, "merchants.pages.PageController::pendingPayments");
         Routes::get(Links::$merchant->pastDuePayments, "merchants.pages.PageController::pastDuePayments");
         Routes::get(Links::$merchant->customers, "merchants.pages.PageController::customers");
@@ -279,6 +302,7 @@ Routes::group(["requiresLogin"], function () {
         Routes::get(Links::$merchant->locations->locationPreviewPage, "merchants.pages.PageController::locationPageBuilderPreview");
         Routes::get(Links::$merchant->locations->locationPreviewCheckout, "merchants.pages.PageController::locationPageBuilderPreviewCheckout");
         Routes::get(Links::$merchant->terminals->terminalQr, "merchants.pages.PageController::getTerminalQrBytes");
+        Routes::get(Links::$merchant->locations->locationQr, "merchants.pages.PageController::getLocationQrBytes");
 
         Routes::get(Links::$merchant->terminals->terminalPosStart, "flows.purchase.MerchantPageController::posStart");
         Routes::get(Links::$merchant->terminals->terminalPosDetails, "flows.purchase.MerchantPageController::posDetails");

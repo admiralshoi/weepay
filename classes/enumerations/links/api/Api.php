@@ -4,6 +4,7 @@ namespace classes\enumerations\links\api;
 
 use classes\enumerations\links\api\forms\Forms;
 use classes\enumerations\links\api\locations\Locations;
+use classes\enumerations\links\api\orders\Orders;
 use classes\enumerations\links\api\organisation\Organisation;
 
 class Api {
@@ -12,6 +13,7 @@ class Api {
     public Forms $forms;
     public Organisation $organisation;
     public Locations $locations;
+    public Orders $orders;
     public Oidc $oidc;
     public Checkout $checkout;
     public Consumer $consumer;

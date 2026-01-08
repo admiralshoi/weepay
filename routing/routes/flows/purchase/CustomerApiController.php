@@ -35,18 +35,27 @@ class CustomerApiController {
         // Get customer birthdate and ID for age restriction and BNPL limit
         $birthdate = $customer->user?->birthdate ?? null;
         $customerId = $customer->user?->uid ?? null;
-        $plan = $basketHandler->createCheckoutInfo($basket, $planName, 90, $birthdate, $customerId);
+
+        // Get organisation ID for BNPL limit check
+        $org = $terminalSession->terminal->location->uuid;
+        $organisationId = is_object($org) ? $org->uid : $org;
+
+        $plan = $basketHandler->createCheckoutInfo($basket, $planName, 90, $birthdate, $customerId, $organisationId);
         if(isEmpty($plan)) Response()->jsonError("Ugyldigetalingsplan.", [], 404);
 
         $slug = $location->slug;
 
         testLog($plan,'checkoutsessionplan');
 
-//        $merchantId = "ee6d19b2-8b9e-41ed-874e-044680beeae7";
-        $merchantId = $terminalSession->terminal->uuid->merchant_prid;
-        if(isEmpty($merchantId)) Response()->jsonError("Forhandlers ID er ikke gyldigt. Prøv ige senere", [$location], 404);
-        $organisationId = $terminalSession->terminal->location->uuid;
-        if(!is_string($organisationId)) $organisationId = $organisationId->uid;
+        // Get merchant ID from organisation (handle both resolved and unresolved FK)
+        $terminalOrg = $terminalSession->terminal->uuid;
+        $merchantId = is_object($terminalOrg) ? $terminalOrg->merchant_prid : null;
+        if(isEmpty($merchantId)) {
+            // Fallback: fetch organisation directly if FK not resolved
+            $organisation = \Database\model\Organisations::where('uid', is_object($terminalOrg) ? $terminalOrg->uid : $terminalOrg)->first();
+            $merchantId = $organisation?->merchant_prid;
+        }
+        if(isEmpty($merchantId)) Response()->jsonError("Forhandlers ID er ikke gyldigt. Prøv igen senere", [$location], 404);
         $resellerFee = Methods::organisationFees()->resellerFee($organisationId);
 
         $paymentSession = Methods::viva()->createPayment(
@@ -84,7 +93,7 @@ class CustomerApiController {
             $basket->currency,
             $basket->price,
 //            $order['RequestAmount'],
-            ceil($basket->price * $resellerFee / 100),
+            round($basket->price * $resellerFee / 100, 2),
             $resellerFee,
             $location->source_prid,
             $order['MerchantTrns'],

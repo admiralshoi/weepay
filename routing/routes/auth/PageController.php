@@ -7,13 +7,28 @@ use classes\Methods;
 class PageController {
 
     public static function merchantDashboardLogin(array $args): mixed  {
-        return Views("MERCHANT_AUTH_DASHBOARD_LOGIN", $args);
+        $worldCountries = Methods::misc()::getCountriesLib(WORLD_COUNTRIES);
+        return Views("MERCHANT_AUTH_DASHBOARD_LOGIN", compact('worldCountries'));
     }
     public static function merchantDashboardSignup(array $args): mixed  {
         return Views("MERCHANT_AUTH_DASHBOARD_SIGNUP", $args);
     }
     public static function consumerDashboardLogin(array $args): mixed  {
+        // Store redirect URL if provided, otherwise clear any existing redirect
+        if(!empty($args['redirect'])) {
+            $_SESSION['redirect_after_profile_completion'] = $args['redirect'];
+        } else {
+            unset($_SESSION['redirect_after_profile_completion']);
+        }
+
         if(isLoggedIn())  {
+            // If logged in, check for redirect URL first
+            if(!empty($_SESSION['redirect_after_profile_completion'])) {
+                $redirectUrl = __url($_SESSION['redirect_after_profile_completion']);
+                unset($_SESSION['redirect_after_profile_completion']);
+                Response()->redirect($redirectUrl);
+            }
+
             if(Methods::isAdmin()) $url = Links::$admin->dashboard;
             elseif(Methods::isConsumer()) $url = Links::$consumer->dashboard;
             elseif(Methods::isMerchant()) $url = Links::$merchant->dashboard;
@@ -35,10 +50,19 @@ class PageController {
         // Get auth error from query params if redirected back from failed OIDC
         $authError = $args['auth_error'] ?? null;
 
-        return Views("CONSUMER_AUTH_DASHBOARD_LOGIN", compact('oidcSessionId', 'authError'));
+        $worldCountries = Methods::misc()::getCountriesLib(WORLD_COUNTRIES);
+
+        return Views("CONSUMER_AUTH_DASHBOARD_LOGIN", compact('oidcSessionId', 'authError', 'worldCountries'));
     }
 
     public static function consumerDashboardSignup(array $args): mixed  {
+        // Store redirect URL if provided, otherwise clear any existing redirect
+        if(!empty($args['redirect'])) {
+            $_SESSION['redirect_after_profile_completion'] = $args['redirect'];
+        } else {
+            unset($_SESSION['redirect_after_profile_completion']);
+        }
+
         if(isLoggedIn())  {
             if(Methods::isAdmin()) $url = Links::$admin->dashboard;
             elseif(Methods::isConsumer()) $url = Links::$consumer->dashboard;

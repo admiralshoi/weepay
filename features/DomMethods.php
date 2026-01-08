@@ -11,6 +11,59 @@ use stdClass;
 
 class DomMethods {
 
+    /**
+     * Renders the BNPL credit card widget
+     *
+     * @param array|object $bnplLimit - Object with 'available', 'max_amount', 'platform_max', 'is_org_specific' properties
+     * @param bool $hasPastDue - Whether user has past due payments
+     * @param string|null $pastDueMessage - Custom warning message (optional)
+     * @param string $class - Additional CSS classes (optional)
+     * @return string
+     */
+    public static function bnplCreditCard(array|object $bnplLimit, bool $hasPastDue = false, ?string $pastDueMessage = null, string $class = ''): string {
+        $bnplLimit = (object)$bnplLimit;
+        $maxAmount = $bnplLimit->max_amount ?? $bnplLimit->platform_max ?? 0;
+        $available = $bnplLimit->available ?? 0;
+        $isOrgSpecific = $bnplLimit->is_org_specific ?? false;
+        $percentage = $maxAmount > 0 ? ($available / $maxAmount) * 100 : 0;
+
+        if ($hasPastDue && empty($pastDueMessage)) {
+            $pastDueMessage = 'Du har udestående betalinger der skal betales først';
+        }
+
+        $dangerClass = $hasPastDue ? 'bnpl-credit-card--danger' : '';
+
+        $element = '<div class="bnpl-credit-card ' . $dangerClass . ' ' . $class . '">';
+        $element .= '<p class="bnpl-credit-card__label">WEEPAY SALDO</p>';
+        $element .= '<p class="bnpl-credit-card__amount">' . number_format($available, 0, ',', '.') . ' kr.</p>';
+
+        if ($hasPastDue && $pastDueMessage) {
+            $element .= '<div class="bnpl-credit-card__warning">';
+            $element .= '<i class="mdi mdi-alert-circle"></i>';
+            $element .= '<span>' . htmlspecialchars($pastDueMessage) . '</span>';
+            $element .= '</div>';
+        }
+
+        $element .= '<div class="bnpl-credit-card__progress-row">';
+        $element .= '<span class="bnpl-credit-card__progress-label">Tilgængelig</span>';
+        $element .= '<span class="bnpl-credit-card__progress-max">Max ' . number_format($maxAmount, 0, ',', '.') . ' kr.</span>';
+        $element .= '</div>';
+        $element .= '<div class="bnpl-credit-card__progress-container">';
+        $element .= '<div class="bnpl-credit-card__progress-bar" style="width: ' . $percentage . '%;"></div>';
+        $element .= '</div>';
+
+        // Add context message based on whether it's org-specific
+        if ($isOrgSpecific) {
+            $element .= '<p class="bnpl-credit-card__context font-12 color-gray mt-2 mb-0"><i class="mdi mdi-store-outline"></i> Kredit tilgængelig hos denne butik</p>';
+        } else {
+            $element .= '<p class="bnpl-credit-card__context font-12 color-gray mt-2 mb-0"><i class="mdi mdi-information-outline"></i> Hver butik kan have forskellige maksimumbeløb</p>';
+        }
+
+        $element .= '</div>';
+
+        return $element;
+    }
+
     public static function organisationSelect(array|object $options = [],null|string|int $selectedValue = null): string {
         $element = '
             <div>

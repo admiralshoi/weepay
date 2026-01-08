@@ -41,7 +41,7 @@ class CheckoutBasketHandler extends Crud {
 
 
 
-    public function createCheckoutInfo(object $basket, string $planName, int $paymentTimeframe = 90, ?string $birthdate = null, ?string $customerId = null): ?object {
+    public function createCheckoutInfo(object $basket, string $planName, int $paymentTimeframe = 90, ?string $birthdate = null, ?string $customerId = null, ?string $organisationId = null): ?object {
         $plan = Settings::$app->paymentPlans->$planName;
         if(!$plan->enabled) return null;
 
@@ -52,9 +52,9 @@ class CheckoutBasketHandler extends Crud {
                 return null; // User must be 18+ for BNPL
             }
 
-            // Check BNPL limit
+            // Check BNPL limit (org-specific if organisationId provided)
             if(!isEmpty($customerId)) {
-                $bnplLimit = Methods::payments()->getBnplLimit($customerId);
+                $bnplLimit = Methods::payments()->getBnplLimit($customerId, $organisationId);
 
                 // If basket amount exceeds available BNPL limit, don't show this plan
                 if($basket->price > $bnplLimit['available']) {

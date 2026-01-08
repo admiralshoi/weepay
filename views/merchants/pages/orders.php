@@ -16,6 +16,7 @@ $pageTitle = "Ordrer";
 <script>
     var pageTitle = <?=json_encode($pageTitle)?>;
     activePage = "orders";
+    var ordersApiUrl = <?=json_encode(Links::$api->orders->list)?>;
 </script>
 
 
@@ -29,32 +30,10 @@ $pageTitle = "Ordrer";
     </div>
 
 
-
-    <?php  //prettyPrint(\classes\Methods::viva()->getPayment('ee6d19b2-8b9e-41ed-874e-044680beeae7', 'f3781870-0105-4122-ae21-551560022e27')); ?>
-
-
     <div class="flex-row-between flex-align-center flex-wrap" style="column-gap: .75rem; row-gap: .5rem;">
         <div class="flex-col-start">
             <p class="mb-0 font-30 font-weight-bold">Ordrer</p>
             <p class="mb-0 font-16 font-weight-medium color-gray">Oversigt over alle ordrer</p>
-        </div>
-
-        <!-- Date Filter -->
-        <div class="flex-row-start flex-align-center flex-wrap" style="column-gap: .5rem; row-gap: .5rem;">
-            <input type="date" id="start-date" class="form-control" style="max-width: 160px;"
-                   value="<?=$args->startDate ?? ''?>" placeholder="Start dato">
-            <input type="date" id="end-date" class="form-control" style="max-width: 160px;"
-                   value="<?=$args->endDate ?? ''?>" placeholder="Slut dato">
-            <button onclick="applyDateFilter()" class="btn-v2 action-btn flex-row-center flex-align-center" style="gap: .5rem;">
-                <i class="mdi mdi-filter"></i>
-                <span>Filtrer</span>
-            </button>
-            <?php if(!isEmpty($args->startDate) || !isEmpty($args->endDate)): ?>
-                <button onclick="clearDateFilter()" class="btn-v2 mute-btn flex-row-center flex-align-center" style="gap: .5rem;">
-                    <i class="mdi mdi-close"></i>
-                    <span>Ryd</span>
-                </button>
-            <?php endif; ?>
         </div>
     </div>
 
@@ -67,71 +46,97 @@ $pageTitle = "Ordrer";
                         <p class="mb-0 font-22 font-weight-bold">Alle ordrer</p>
                     </div>
 
-                    <div class="mt-2">
-                        <table class="table table-hover">
-                            <thead class="color-gray">
-                            <th>Ordre ID</th>
-                            <th>Dato & Tid</th>
-                            <th>Kunde</th>
-                            <th>Total</th>
-                            <th>Net Total</th>
-                            <th>Udestående</th>
-                            <th>Risikoscore</th>
-                            <th>Status</th>
-                            <th>Handlinger</th>
-                            </thead>
-                            <tbody>
-                            <?php foreach ($args->orders->list() as $order):
-                                $cus = is_string($order->uuid) ? \classes\Methods::users()->get($order->uuid) : $order->uuid;
-                                ?>
+                    <div class="mt-3">
+                        <!-- Filters and Search -->
+                        <div class="flex-row-between flex-align-center flex-wrap mb-3" style="gap: .75rem;">
+                            <div class="flex-row-start flex-align-center flex-wrap" style="gap: .5rem;">
+                                <div class="form-group mb-0">
+                                    <input type="text" class="form-control-v2 form-field-v2" id="orders-search"
+                                           placeholder="Søg ordre ID eller kunde..." style="min-width: 200px;">
+                                </div>
+                                <div class="form-group mb-0">
+                                    <select class="form-select-v2" id="orders-filter-status" data-selected="all" style="min-width: 140px;">
+                                        <option value="all" selected>Alle statusser</option>
+                                        <option value="COMPLETED">Gennemført</option>
+                                        <option value="PENDING">Afventer</option>
+                                        <option value="DRAFT">Kladde</option>
+                                        <option value="CANCELLED">Annulleret</option>
+                                    </select>
+                                </div>
+                                <div class="form-group mb-0 position-relative">
+                                    <input type="text" class="form-control-v2 form-field-v2" id="orders-daterange"
+                                           placeholder="Vælg datointerval" style="min-width: 220px; padding-right: 30px;" readonly>
+                                    <i class="mdi mdi-close-circle font-16 color-red position-absolute cursor-pointer d-none"
+                                       id="orders-daterange-clear"
+                                       style="right: 8px; top: 50%; transform: translateY(-50%);"
+                                       title="Ryd datofilter"></i>
+                                </div>
+                            </div>
+                            <div class="flex-row-end flex-align-center flex-wrap" style="gap: .5rem;">
+                                <div class="form-group mb-0">
+                                    <select class="form-select-v2" id="orders-sort" data-selected="date-DESC" style="min-width: 150px;">
+                                        <option value="date-DESC" selected>Nyeste først</option>
+                                        <option value="date-ASC">Ældste først</option>
+                                        <option value="amount-DESC">Beløb (høj-lav)</option>
+                                        <option value="amount-ASC">Beløb (lav-høj)</option>
+                                        <option value="status-ASC">Status A-Z</option>
+                                        <option value="status-DESC">Status Z-A</option>
+                                    </select>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <select class="form-select-v2" id="orders-per-page" data-selected="10" style="min-width: 80px;">
+                                        <option value="10" selected>10</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="overflow-x: auto;">
+                            <table class="table-v2" id="orders-table">
+                                <thead>
                                 <tr>
-                                    <td><?=$order->uid?></td>
-                                    <td>
-                                        <p class="mb-0 font-12 text-wrap"><?=date("d/m-Y H:i", strtotime($order->created_at))?></p>
-                                    </td>
-                                    <td>
-                                            <?php if(!isEmpty($order->uuid)): ?>
-                                            <a href="<?=__url(Links::$merchant->customerDetail($cus->uid))?>"
-                                               class="color-blue hover-underline"><?=$cus->full_name?></a>
-                                            <?php else: ?>
-                                            <p class="mb-0 font-12 text-wrap">Ukendt</p>
-                                            <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <p class="mb-0 font-12 text-wrap"><?=number_format($order->amount) . currencySymbol($order->currency)?></p>
-                                    </td>
-                                    <td>
-                                        <p class="mb-0 font-12 text-wrap"><?=number_format($order->amount - $order->fee_amount) . currencySymbol($order->currency)?></p>
-                                    </td>
-                                    <td>
-                                        <p class="mb-0 font-12 text-wrap"><?=number_format(0) . currencySymbol($order->currency)?></p>
-                                    </td>
-                                    <td>
-                                        <p class="mb-0 font-12 text-wrap">NaN</p>
-                                    </td>
-                                    <td>
-                                        <p class="mb-0 font-12 text-wrap">
-                                            <?php if($order->status === 'COMPLETED'): ?>
-                                                <span class="success-box">Gennemført</span>
-                                            <?php elseif($order->status === 'DRAFT'): ?>
-                                                <span class="mute-box">Draft</span>
-                                            <?php elseif($order->status === 'PENDING'): ?>
-                                                <span class="action-box">Afvikles</span>
-                                            <?php elseif($order->status === 'CANCELLED'): ?>
-                                                <span class="action-box">Cancelled</span>
-                                            <?php endif; ?>
-                                        </p>
-                                    </td>
-                                    <td>
-                                        <a href="<?=__url(Links::$merchant->orderDetail($order->uid))?>" class="btn-v2 trans-btn flex-row-start flex-align-center flex-nowrap" style="gap: .5rem;">
-                                            <i class="mdi mdi-eye-outline font-16"></i>
-                                            <span class="font-14">Detaljer</span>
-                                        </a>
+                                    <th>Ordre ID</th>
+                                    <th>Dato & Tid</th>
+                                    <th>Kunde</th>
+                                    <th>Beløb</th>
+                                    <th>Betalt</th>
+                                    <th>Udestående</th>
+                                    <th>Status</th>
+                                    <th class="text-right">Handlinger</th>
+                                </tr>
+                                </thead>
+                                <tbody id="orders-tbody">
+                                <!-- Loading state - will be replaced by JS -->
+                                <tr id="orders-loading-row">
+                                    <td colspan="8" class="text-center py-4">
+                                        <div class="flex-col-center flex-align-center">
+                                            <span class="spinner-border color-primary-cta square-30" role="status" style="border-width: 3px;">
+                                                <span class="sr-only">Indlæser...</span>
+                                            </span>
+                                            <p class="color-gray mt-2 mb-0">Indlæser ordrer...</p>
+                                        </div>
                                     </td>
                                 </tr>
-                            <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- No results message -->
+                        <div id="orders-no-results" class="d-none text-center py-4">
+                            <i class="mdi mdi-cart-off font-40 color-gray"></i>
+                            <p class="color-gray mt-2 mb-0">Ingen ordrer fundet</p>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div id="orders-pagination-container" class="flex-row-between flex-align-center flex-wrap mt-3" style="gap: .75rem;">
+                            <div class="text-sm color-gray">
+                                Viser <span id="orders-showing">0</span> af <span id="orders-total">0</span> ordrer
+                                (Side <span id="orders-current-page">1</span> af <span id="orders-total-pages">1</span>)
+                            </div>
+                            <div class="pagination-nav" id="orders-pagination"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -140,38 +145,3 @@ $pageTitle = "Ordrer";
 
 
 </div>
-
-
-<?php scriptStart(); ?>
-<script>
-    function applyDateFilter() {
-        const startDate = document.getElementById('start-date').value;
-        const endDate = document.getElementById('end-date').value;
-
-        const url = new URL(window.location.href);
-
-        if (startDate) {
-            url.searchParams.set('start', startDate);
-        } else {
-            url.searchParams.delete('start');
-        }
-
-        if (endDate) {
-            url.searchParams.set('end', endDate);
-        } else {
-            url.searchParams.delete('end');
-        }
-
-        window.location.href = url.toString();
-    }
-
-    function clearDateFilter() {
-        const url = new URL(window.location.href);
-        url.searchParams.delete('start');
-        url.searchParams.delete('end');
-        window.location.href = url.toString();
-    }
-</script>
-<?php scriptEnd(); ?>
-
-

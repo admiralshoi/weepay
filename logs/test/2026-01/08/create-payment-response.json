@@ -1,0 +1,22 @@
+{
+    "url": "https:\/\/demo-api.vivapayments.com\/checkout\/v2\/isv\/orders?merchantId=ee6d19b2-8b9e-41ed-874e-044680beeae7",
+    "token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjBEOEZCOEQ2RURFQ0Y1Qzk3RUY1MjdDMDYxNkJCMjMzM0FCNjVGOUZSUzI1NiIsIng1dCI6IkRZLTQxdTNzOWNsLTlTZkFZV3V5TXpxMlg1OCIsInR5cCI6ImF0K2p3dCJ9.eyJpc3MiOiJodHRwczovL2RlbW8tYWNjb3VudHMudml2YXBheW1lbnRzLmNvbSIsIm5iZiI6MTc2Nzg4MDc2OSwiaWF0IjoxNzY3ODgwNzY5LCJleHAiOjE3Njc4ODQzNjksImF1ZCI6WyJiaXNlcnZpY2VzX2FwaSIsImNvcmVfYXBpIiwiZWNyX2FwaSIsImh0dHBzOi8vZGVtby1hY2NvdW50cy52aXZhcGF5bWVudHMuY29tL3Jlc291cmNlcyJdLCJzY29wZSI6WyJ1cm46dml2YTpwYXltZW50czpiaXNlcnZpY2VzOm1lcmNoYW50YXBpIiwidXJuOnZpdmE6cGF5bWVudHM6Y29yZTphcGk6YWNxdWlyaW5nIiwidXJuOnZpdmE6cGF5bWVudHM6Y29yZTphcGk6YWNxdWlyaW5nOnRyYW5zYWN0aW9ucyIsInVybjp2aXZhOnBheW1lbnRzOmNvcmU6YXBpOmlzdiIsInVybjp2aXZhOnBheW1lbnRzOmNvcmU6YXBpOm5hdGl2ZWNoZWNrb3V0djIiLCJ1cm46dml2YTpwYXltZW50czpjb3JlOmFwaTpyZWRpcmVjdGNoZWNrb3V0IiwidXJuOnZpdmE6cGF5bWVudHM6ZWNyOmFwaSJdLCJjbGllbnRfaWQiOiIwNjdqZzJ6c2IwZzUxbTkyM2V6ODdpYzAzbjhpc3JxdWdodHFwamxkbjVidTYuYXBwcy52aXZhcGF5bWVudHMuY29tIiwidXJuOnZpdmE6cGF5bWVudHM6Y2xpZW50X3BlcnNvbl9pZCI6IjdFNDE2REZDLUFBODktNDMzNS05QkU1LTRCM0NFMkRDMzU5QiJ9.BQ4WMZTTi77BYuO9V7mQaOu4QMu5KTlf5iIMTQrj6xoeGiJsEq1AyXQlzv6Za8RYxK9rGI_oVu20uDSa7ZWhyZTlZfD9U7QoGnpXJdJSnzq3tQyvR8ZJ3Pk_DJJG0iXT2CDwLGyMe_CqCaJa37I_5lG7XbhY6BH127INcN_ZA4Ss_Gc-oDJY9WY8A4jQVMM1IILImN3kroTUP6vsujXy2IVRLP5nfhnuRskGpLXUxI_enu0JdX4bdAjlzOiXqMBg1m3WZgBFocbB8pGvIqexjJ4Vb56Z77oszFdMPp_ufI-jXAb9mZ1Jb4Q8cVDgyZFNbynJ1AdSAhmBzFScNmgcyw",
+    "headers": {
+        "authorization": "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjBEOEZCOEQ2RURFQ0Y1Qzk3RUY1MjdDMDYxNkJCMjMzM0FCNjVGOUZSUzI1NiIsIng1dCI6IkRZLTQxdTNzOWNsLTlTZkFZV3V5TXpxMlg1OCIsInR5cCI6ImF0K2p3dCJ9.eyJpc3MiOiJodHRwczovL2RlbW8tYWNjb3VudHMudml2YXBheW1lbnRzLmNvbSIsIm5iZiI6MTc2Nzg4MDc2OSwiaWF0IjoxNzY3ODgwNzY5LCJleHAiOjE3Njc4ODQzNjksImF1ZCI6WyJiaXNlcnZpY2VzX2FwaSIsImNvcmVfYXBpIiwiZWNyX2FwaSIsImh0dHBzOi8vZGVtby1hY2NvdW50cy52aXZhcGF5bWVudHMuY29tL3Jlc291cmNlcyJdLCJzY29wZSI6WyJ1cm46dml2YTpwYXltZW50czpiaXNlcnZpY2VzOm1lcmNoYW50YXBpIiwidXJuOnZpdmE6cGF5bWVudHM6Y29yZTphcGk6YWNxdWlyaW5nIiwidXJuOnZpdmE6cGF5bWVudHM6Y29yZTphcGk6YWNxdWlyaW5nOnRyYW5zYWN0aW9ucyIsInVybjp2aXZhOnBheW1lbnRzOmNvcmU6YXBpOmlzdiIsInVybjp2aXZhOnBheW1lbnRzOmNvcmU6YXBpOm5hdGl2ZWNoZWNrb3V0djIiLCJ1cm46dml2YTpwYXltZW50czpjb3JlOmFwaTpyZWRpcmVjdGNoZWNrb3V0IiwidXJuOnZpdmE6cGF5bWVudHM6ZWNyOmFwaSJdLCJjbGllbnRfaWQiOiIwNjdqZzJ6c2IwZzUxbTkyM2V6ODdpYzAzbjhpc3JxdWdodHFwamxkbjVidTYuYXBwcy52aXZhcGF5bWVudHMuY29tIiwidXJuOnZpdmE6cGF5bWVudHM6Y2xpZW50X3BlcnNvbl9pZCI6IjdFNDE2REZDLUFBODktNDMzNS05QkU1LTRCM0NFMkRDMzU5QiJ9.BQ4WMZTTi77BYuO9V7mQaOu4QMu5KTlf5iIMTQrj6xoeGiJsEq1AyXQlzv6Za8RYxK9rGI_oVu20uDSa7ZWhyZTlZfD9U7QoGnpXJdJSnzq3tQyvR8ZJ3Pk_DJJG0iXT2CDwLGyMe_CqCaJa37I_5lG7XbhY6BH127INcN_ZA4Ss_Gc-oDJY9WY8A4jQVMM1IILImN3kroTUP6vsujXy2IVRLP5nfhnuRskGpLXUxI_enu0JdX4bdAjlzOiXqMBg1m3WZgBFocbB8pGvIqexjJ4Vb56Z77oszFdMPp_ufI-jXAb9mZ1Jb4Q8cVDgyZFNbynJ1AdSAhmBzFScNmgcyw",
+        "content_type": "Content-type: application\/json; charset=UTF-8"
+    },
+    "response_headers": {
+        "http_code": "HTTP\/2 200 ",
+        "content-type": "application\/json; charset=utf-8",
+        "content-length": "30",
+        "x-viva-correlationid": "26-008-B8338BA2",
+        "x-viva-eventid": "0",
+        "rp": "04",
+        "date": "Thu, 08 Jan 2026 13:59:30 GMT",
+        "strict-transport-security": "max-age=31536000 ; includeSubDomains",
+        "set-cookie": "ak_bmsc=76B6EA88AC640439D394460788FD0823~000000000000000000000000000000~YAAQw7MSAulnckWbAQAAa8LnnR6BSth\/N4X5EyjGYuN9ms7bbfv1gmwl9V43sska24XbY\/exGYUw7ig0ZNrE8dNzKDeW4hYNH2BpAfG207SW46gwNvjA1cu45faYxhzYOYmWZhOeBGkKE3B7AJhfijB5lgfQ\/Ik0qcbp4PPtkJREhNlVEhWKrQCPbv9JK1D4mnKxPKSoPLQ2MxFY0lzoY9owyWeGBGy9t1q1b7RZ+5x89Vbc5SkNf6AyL8xkkM5v4cVMOuZKtlAjVkp5tUJQhJPa7H0tAZUzcHPe\/xQZU94V059Oo7bINhjOUaC7kkFhpauuhj\/zqTiI4VBAHdENxdaL0nVtujH1fv628PHkkIUqH6IqIqQj3GXHe4Mdx6FRjl84V+zT8Tog1sNdmglP; Domain=.vivapayments.com; Path=\/; Expires=Thu, 08 Jan 2026 15:59:29 GMT; Max-Age=7199; SameSite=None; Secure; HttpOnly"
+    },
+    "response_body": {
+        "orderCode": 9348477008551320
+    }
+}
