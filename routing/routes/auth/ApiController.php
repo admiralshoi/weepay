@@ -13,6 +13,17 @@ class ApiController {
         foreach (['username', 'password'] as $key) if(!array_key_exists($key, $args))
             Response()->jsonError("Mangler et påkrævet felt: $key");
 
+        // Determine expected user type from the route path (api/merchant/login, api/consumer/login, api/admin/login)
+        $path = realUrlPath();
+        $expectedType = null;
+        if (str_contains($path, '/merchant/')) {
+            $expectedType = 'merchant';
+        } elseif (str_contains($path, '/consumer/')) {
+            $expectedType = 'consumer';
+        } elseif (str_contains($path, '/admin/')) {
+            $expectedType = 'admin';
+        }
+
         $authHandler = Methods::localAuthentication();
         if(!$authHandler->validate($args)) {
             $error = $authHandler->getError();
@@ -20,6 +31,27 @@ class ApiController {
         }
 
         $user = $authHandler->getUser();
+
+        // Validate user type matches expected type for this login page
+        if ($expectedType !== null) {
+            $userRole = Methods::roles()->name($user->access_level ?? 0);
+            $isAllowed = match ($expectedType) {
+                'merchant' => $userRole === 'merchant',
+                'consumer' => $userRole === 'consumer',
+                'admin' => in_array($userRole, ['admin', 'system_admin']),
+                default => true
+            };
+
+            if (!$isAllowed) {
+                $loginPageName = match ($expectedType) {
+                    'merchant' => 'erhverv',
+                    'consumer' => 'forbruger',
+                    'admin' => 'administrator',
+                    default => 'denne'
+                };
+                Response()->jsonError("Denne konto kan ikke logge ind på {$loginPageName} login-siden. Brug venligst den korrekte login-side.", [], 403);
+            }
+        }
         $authRecord = $authHandler->getAuthRecord();
 
         // Check if 2FA is enabled for this user
@@ -85,7 +117,10 @@ class ApiController {
         }
 
         // Check for stored redirect first, otherwise use role-based redirect
-        if(!empty($_SESSION['redirect_after_profile_completion'])) {
+        if(!empty($_SESSION['redirect_after_login'])) {
+            $redirectUrl = __url($_SESSION['redirect_after_login']);
+            unset($_SESSION['redirect_after_login']);
+        } elseif(!empty($_SESSION['redirect_after_profile_completion'])) {
             $redirectUrl = __url($_SESSION['redirect_after_profile_completion']);
             unset($_SESSION['redirect_after_profile_completion']);
         } else {
@@ -94,6 +129,7 @@ class ApiController {
                 default => "",
                 "consumer"=> __url(Links::$consumer->dashboard),
                 "merchant" => __url(Links::$merchant->dashboard),
+                "admin", "system_admin" => __url(Links::$admin->dashboard),
             };
         }
 
@@ -158,7 +194,10 @@ class ApiController {
         }
 
         // Check for stored redirect first, otherwise use role-based redirect
-        if(!empty($_SESSION['redirect_after_profile_completion'])) {
+        if(!empty($_SESSION['redirect_after_login'])) {
+            $redirectUrl = __url($_SESSION['redirect_after_login']);
+            unset($_SESSION['redirect_after_login']);
+        } elseif(!empty($_SESSION['redirect_after_profile_completion'])) {
             $redirectUrl = __url($_SESSION['redirect_after_profile_completion']);
             unset($_SESSION['redirect_after_profile_completion']);
         } else {
@@ -167,6 +206,7 @@ class ApiController {
                 default => "",
                 "consumer"=> __url(Links::$consumer->dashboard),
                 "merchant" => __url(Links::$merchant->dashboard),
+                "admin", "system_admin" => __url(Links::$admin->dashboard),
             };
         }
 

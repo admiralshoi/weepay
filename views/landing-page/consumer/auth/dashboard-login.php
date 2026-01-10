@@ -34,6 +34,18 @@ $pageTitle = "Log ind";
                             <span>Tilbage til <?=BRAND_NAME?></span>
                         </a>
 
+                        <!-- User type toggle -->
+                        <div class="w-100" style="display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--card-border-color); border-radius: 8px; overflow: hidden;">
+                            <div class="flex-row-center-center py-2 bg-blue color-white font-weight-bold font-14" style="gap: .4rem;">
+                                <i class="mdi mdi-account-outline"></i>
+                                <span>Forbruger</span>
+                            </div>
+                            <a href="<?=__url(Links::$app->auth->merchantLogin)?>" class="flex-row-center-center py-2 color-dark font-weight-medium font-14 transition-all" style="gap: .4rem; text-decoration: none; background: var(--card-bg-hover);">
+                                <i class="mdi mdi-store-outline"></i>
+                                <span>Forhandler</span>
+                            </a>
+                        </div>
+
                         <div class="flex-col-start flex-align-center" style="row-gap: .25rem;">
                             <div class="flex-row-center flex-align-center square-60 bg-wrapper-hover border-radius-50 " >
                                 <i class="font-35 color-design-blue mdi mdi-lock-outline"></i>

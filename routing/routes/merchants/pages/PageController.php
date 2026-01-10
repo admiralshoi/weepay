@@ -713,6 +713,136 @@ class PageController {
         return Views("MERCHANT_ACCESS_DENIED");
     }
 
+    public static function materials(array $args): mixed {
+        return Views("MERCHANT_MATERIALS");
+    }
+
+    public static function reports(array $args): mixed {
+        // Check permission
+        if(!\classes\app\OrganisationPermissions::__oRead('organisation', 'reports')) {
+            return null;
+        }
+
+        $locationHandler = Methods::locations();
+        $locations = $locationHandler->getMyLocations(null, ['uid', 'name', 'slug']);
+        $locationOptions = mapItemToKeyValuePairs($locations->list(), 'slug', 'name');
+
+        // Get date filters from query params, default to last 30 days
+        $startDate = $args['start'] ?? date('Y-m-d', strtotime('-30 days'));
+        $endDate = $args['end'] ?? date('Y-m-d');
+
+        $orderHandler = Methods::orders();
+        $paymentsHandler = Methods::payments();
+
+        // Get scoped location IDs
+        $locationIds = Methods::locations()->userLocationPredicate();
+
+        // Get all completed orders for period
+        $ordersQuery = $orderHandler->queryBuilder()
+            ->whereList(['organisation' => __oUuid(), 'status' => 'COMPLETED'])
+            ->whereTimeAfter('created_at', strtotime($startDate), '>=')
+            ->whereTimeBefore('created_at', strtotime($endDate . ' +1 day'), '<=');
+        if(!empty($locationIds)) {
+            $ordersQuery->where('location', $locationIds);
+        }
+        $orders = $orderHandler->queryGetAll($ordersQuery);
+
+        // Calculate KPIs
+        $orderCount = $orders->count();
+        $grossRevenue = $orders->reduce(fn($c, $i) => $c + $i['amount'], 0);
+        $totalFees = $orders->reduce(fn($c, $i) => $c + $i['fee_amount'], 0);
+        $netRevenue = $grossRevenue - $totalFees;
+        $orderAverage = $orderCount > 0 ? $grossRevenue / $orderCount : 0;
+
+        // Unique customers
+        $customerIds = [];
+        foreach ($orders->list() as $order) {
+            $customerId = is_object($order->uuid) ? $order->uuid->uid : $order->uuid;
+            $customerIds[$customerId] = true;
+        }
+        $customerCount = count($customerIds);
+
+        // BNPL vs Full payment breakdown
+        $bnplOrders = $orders->filter(fn($o) => !empty($o['payment_plan']) && in_array($o['payment_plan'], ['installments', 'pushed']));
+        $fullPaymentOrders = $orders->filter(fn($o) => empty($o['payment_plan']) || $o['payment_plan'] === 'full');
+        $bnplCount = $bnplOrders->count();
+        $fullPaymentCount = $fullPaymentOrders->count();
+        $bnplRevenue = $bnplOrders->reduce(fn($c, $i) => $c + $i['amount'], 0);
+        $fullPaymentRevenue = $fullPaymentOrders->reduce(fn($c, $i) => $c + $i['amount'], 0);
+
+        // Payment status breakdown
+        $allPayments = $paymentsHandler->getByX(['organisation' => __oUuid()], ['amount', 'status'], ['location' => $locationIds]);
+        $paymentsByStatus = [
+            'COMPLETED' => ['count' => 0, 'amount' => 0],
+            'SCHEDULED' => ['count' => 0, 'amount' => 0],
+            'PAST_DUE' => ['count' => 0, 'amount' => 0],
+            'FAILED' => ['count' => 0, 'amount' => 0],
+        ];
+        foreach ($allPayments->list() as $payment) {
+            $status = $payment->status;
+            if (isset($paymentsByStatus[$status])) {
+                $paymentsByStatus[$status]['count']++;
+                $paymentsByStatus[$status]['amount'] += $payment->amount;
+            }
+        }
+
+        // Revenue by location
+        $revenueByLocation = [];
+        foreach ($orders->list() as $order) {
+            $locUid = is_object($order->location) ? $order->location->uid : $order->location;
+            $locName = is_object($order->location) ? $order->location->name : 'Ukendt';
+            if (!isset($revenueByLocation[$locUid])) {
+                $revenueByLocation[$locUid] = ['name' => $locName, 'revenue' => 0, 'orders' => 0];
+            }
+            $revenueByLocation[$locUid]['revenue'] += $order->amount;
+            $revenueByLocation[$locUid]['orders']++;
+        }
+        usort($revenueByLocation, fn($a, $b) => $b['revenue'] <=> $a['revenue']);
+
+        // Daily revenue chart data
+        $dailyData = [];
+        $currentDate = strtotime($startDate);
+        $endTimestamp = strtotime($endDate);
+        while ($currentDate <= $endTimestamp) {
+            $dateKey = date('Y-m-d', $currentDate);
+            $dailyData[$dateKey] = ['date' => date('d/m', $currentDate), 'revenue' => 0, 'orders' => 0];
+            $currentDate = strtotime('+1 day', $currentDate);
+        }
+        foreach ($orders->list() as $order) {
+            $dateKey = date('Y-m-d', strtotime($order->created_at));
+            if (isset($dailyData[$dateKey])) {
+                $dailyData[$dateKey]['revenue'] += $order->amount;
+                $dailyData[$dateKey]['orders']++;
+            }
+        }
+
+        // Weekly aggregation for longer periods
+        $weeklyData = [];
+        foreach ($orders->list() as $order) {
+            $weekKey = date('W-Y', strtotime($order->created_at));
+            $weekLabel = 'Uge ' . date('W', strtotime($order->created_at));
+            if (!isset($weeklyData[$weekKey])) {
+                $weeklyData[$weekKey] = ['date' => $weekLabel, 'revenue' => 0, 'orders' => 0];
+            }
+            $weeklyData[$weekKey]['revenue'] += $order->amount;
+            $weeklyData[$weekKey]['orders']++;
+        }
+        ksort($weeklyData);
+
+        // Collection rate (completed vs total scheduled+completed)
+        $totalScheduledAndCompleted = $paymentsByStatus['COMPLETED']['count'] + $paymentsByStatus['SCHEDULED']['count'] + $paymentsByStatus['PAST_DUE']['count'];
+        $collectionRate = $totalScheduledAndCompleted > 0
+            ? ($paymentsByStatus['COMPLETED']['count'] / $totalScheduledAndCompleted) * 100
+            : 0;
+
+        return Views("MERCHANT_REPORTS", compact(
+            'locationOptions', 'startDate', 'endDate',
+            'grossRevenue', 'netRevenue', 'totalFees', 'orderCount', 'orderAverage', 'customerCount',
+            'bnplCount', 'fullPaymentCount', 'bnplRevenue', 'fullPaymentRevenue',
+            'paymentsByStatus', 'revenueByLocation', 'dailyData', 'weeklyData', 'collectionRate'
+        ));
+    }
+
     #[NoReturn] public static function getTerminalQrBytes(array $args): void {
         $terminalId = $args["id"];
         $terminal = Methods::terminals()->get($terminalId);

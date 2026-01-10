@@ -1,0 +1,24 @@
+# Generated reports
+/content/reports/
+
+# IDE
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+/logs/debug/
+/logs/cron/
+
+# Environment
+/env/db/local.php
+/env/encryption/details.php
+
+# Composer
+/vendor/
+
+# Claude
+.claude/

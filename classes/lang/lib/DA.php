@@ -73,6 +73,7 @@ class DA {
             "reports" => "Rapporter",
             "billing" => "Fakturering",
             "wallet" => "Tegnebog",
+            "advertisement" => "Markedsføring",
         ],
         "permissions" => [
             "std_modify" => 'Du mangler tilladelse til at redigere indholdet',
@@ -172,6 +173,8 @@ class DA {
         "Team_roles" => "Roller",
         "role_permissions" => "rolletilladelser",
         "Role_permissions" => "Rolletilladelser",
+        "advertisement" => "markedsføring",
+        "Advertisement" => "Markedsføring",
     ];
 
 

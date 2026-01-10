@@ -10,6 +10,7 @@ class Organisation {
     public string $updateSettings = "api/organisation/settings";
 
     public Team $team;
+    public Reports $reports;
 
 
 

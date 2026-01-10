@@ -91,6 +91,7 @@ class Sidebars {
             'past-due-payments' => ['orders', 'payments'],
             'customers' => ['orders', 'customers'],
             'reports' => ['organisation', 'reports'],
+            'materials' => ['organisation', 'advertisement'],
         ];
 
         // Always show these items
@@ -222,6 +223,13 @@ class Sidebars {
                     "title" => "Rapporter",
                     "data-value" => "reports",
                     "icon-class" => "mdi mdi-file-document-outline",
+                    "access_level" => []
+                ),
+                "materials" => array(
+                    "link" => Links::$merchant->materials,
+                    "title" => "Markedsføring",
+                    "data-value" => "materials",
+                    "icon-class" => "mdi mdi-image-multiple-outline",
                     "access_level" => []
                 ),
                 "support" => array(
@@ -411,6 +419,13 @@ class Sidebars {
                     "title" => "Rapporter",
                     "data-value" => "reports",
                     "icon-class" => "mdi mdi-file-document-outline",
+                    "access_level" => []
+                ),
+                "materials" => array(
+                    "link" => Links::$merchant->materials,
+                    "title" => "Markedsføring",
+                    "data-value" => "materials",
+                    "icon-class" => "mdi mdi-image-multiple-outline",
                     "access_level" => []
                 ),
                 "support" => array(

@@ -23,6 +23,7 @@ Routes::get(Links::$app->auth->consumerLogin, "auth.PageController::consumerDash
 Routes::get(Links::$app->auth->consumerSignup, "auth.PageController::consumerDashboardSignup");
 Routes::get(Links::$app->auth->merchantLogin, "auth.PageController::merchantDashboardLogin");
 Routes::get(Links::$app->auth->merchantSignup, "auth.PageController::merchantDashboardSignup");
+Routes::get(Links::$app->auth->adminLogin, "auth.PageController::adminDashboardLogin"); // Unlisted - not linked anywhere
 Routes::get("qr", "GeneralController::generateQr");
 /**
  *  =========================================
@@ -132,6 +133,7 @@ Routes::group(['api', "requiresApiLogout"], function() {
     Routes::post(Links::$api->auth->merchantLogin, "auth.ApiController::loginUser");
     Routes::post(Links::$api->auth->merchantSignup, "auth.ApiController::signupUser");
     Routes::post(Links::$api->auth->consumerLogin, "auth.ApiController::loginUser");
+    Routes::post(Links::$api->auth->adminLogin, "auth.ApiController::loginUser");
     Routes::post(Links::$api->auth->verify2faLogin, "auth.ApiController::verify2faLogin");
     Routes::post(Links::$api->auth->resend2faLoginCode, "auth.ApiController::resend2faLoginCode");
     /**
@@ -189,6 +191,11 @@ Routes::group(['api','requiresApiLogin'], function() {
         Routes::post(Links::$api->organisation->team->role->permissions, "merchants.OrganisationApiController::updateRolePermissions");
         Routes::post(Links::$api->organisation->team->scopedLocations->get, "merchants.OrganisationApiController::getMemberScopedLocations");
         Routes::post(Links::$api->organisation->team->scopedLocations->update, "merchants.OrganisationApiController::updateMemberScopedLocations");
+
+        // Reports API
+        Routes::post(Links::$api->organisation->reports->generateCsv, "merchants.ReportsApiController::generateCsv");
+        Routes::post(Links::$api->organisation->reports->generatePdf, "merchants.ReportsApiController::generatePdf");
+        Routes::get("api/organisation/reports/download/{filename}", "merchants.ReportsApiController::downloadReport");
 
         Routes::post(Links::$api->locations->team->update, "merchants.LocationApiController::updateLocationMember");
         Routes::post(Links::$api->locations->team->invite, "merchants.LocationApiController::inviteLocationMember");
@@ -303,6 +310,9 @@ Routes::group(["requiresLogin"], function () {
         Routes::get(Links::$merchant->locations->locationPreviewCheckout, "merchants.pages.PageController::locationPageBuilderPreviewCheckout");
         Routes::get(Links::$merchant->terminals->terminalQr, "merchants.pages.PageController::getTerminalQrBytes");
         Routes::get(Links::$merchant->locations->locationQr, "merchants.pages.PageController::getLocationQrBytes");
+
+        Routes::get(Links::$merchant->materials, "merchants.pages.PageController::materials");
+        Routes::get(Links::$merchant->reports, "merchants.pages.PageController::reports");
 
         Routes::get(Links::$merchant->terminals->terminalPosStart, "flows.purchase.MerchantPageController::posStart");
         Routes::get(Links::$merchant->terminals->terminalPosDetails, "flows.purchase.MerchantPageController::posDetails");
@@ -461,7 +471,8 @@ Routes::group(["api"], function() {
  *  =========================================
  */
 Routes::group(['requiresLogin', "admin"], function() {
-    Routes::get("", "admin.AdminController::home");
+    Routes::get("", "admin.PageController::dashboard");
+    Routes::get(Links::$admin->dashboard, "admin.PageController::dashboard");
 
 
 

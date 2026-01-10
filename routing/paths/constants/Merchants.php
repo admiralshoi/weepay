@@ -587,4 +587,60 @@ class Merchants extends \routing\paths\Paths {
             "custom" => [],
         ],
     ];
+
+    const MERCHANT_MATERIALS = [
+        "template" => "MERCHANT_INNER_HTML",
+        "view" => "merchants.pages.materials",
+        "custom_scripts" => "templates.scripts",
+        "title" => "Markedsføring",
+        "head" => "templates.head",
+        "assets" => [
+            "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.features.js",
+                "js.merchant.js",
+                "js.initializer.js",
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+            ],
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
+
+    const MERCHANT_REPORTS = [
+        "template" => "MERCHANT_INNER_HTML",
+        "view" => "merchants.pages.reports",
+        "custom_scripts" => "templates.scripts",
+        "title" => "Rapporter",
+        "head" => "templates.head",
+        "assets" => [
+            "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.features.js",
+                "js.merchant.js",
+                "js.initializer.js",
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+            ],
+            "base" => null,
+            "vendor" => [
+                "vendor.apexcharts.apexcharts.min.js",
+                "js.includes.charts.js",
+                "vendor.moment.moment.min.js",
+                "js.includes.daterangepicker.js",
+                "css.includes.daterangepicker.css",
+            ],
+            "custom" => [],
+        ],
+    ];
 }

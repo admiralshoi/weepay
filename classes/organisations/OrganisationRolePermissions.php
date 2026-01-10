@@ -88,6 +88,7 @@ class OrganisationRolePermissions {
                 'customers' => ['read' => true, 'modify' => true, 'delete' => true],
                 'metrics' => ['read' => true, 'modify' => true, 'delete' => true],
                 'locations' => ['read' => true, 'modify' => true, 'delete' => true],
+                'advertisement' => ['read' => true, 'modify' => true, 'delete' => true],
             ]
         ],
     ];
@@ -172,6 +173,7 @@ class OrganisationRolePermissions {
                 'customers' => ['read' => true, 'modify' => true, 'delete' => true],
                 'metrics' => ['read' => true, 'modify' => true, 'delete' => true],
                 'locations' => ['read' => true, 'modify' => true, 'delete' => true],
+                'advertisement' => ['read' => true, 'modify' => true, 'delete' => true],
             ]
         ],
     ];
@@ -256,6 +258,7 @@ class OrganisationRolePermissions {
                 'customers' => ['read' => true, 'modify' => false, 'delete' => false],
                 'metrics' => ['read' => true, 'modify' => false, 'delete' => false],
                 'locations' => ['read' => true, 'modify' => false, 'delete' => false],
+                'advertisement' => ['read' => true, 'modify' => true, 'delete' => true],
             ]
         ],
     ];
@@ -340,6 +343,7 @@ class OrganisationRolePermissions {
                 'customers' => ['read' => true, 'modify' => false, 'delete' => false],
                 'metrics' => ['read' => true, 'modify' => false, 'delete' => false],
                 'locations' => ['read' => true, 'modify' => false, 'delete' => false],
+                'advertisement' => ['read' => true, 'modify' => true, 'delete' => true],
             ]
         ],
     ];
@@ -425,6 +429,7 @@ class OrganisationRolePermissions {
                 'customers' => ['read' => false, 'modify' => false, 'delete' => false],
                 'metrics' => ['read' => false, 'modify' => false, 'delete' => false],
                 'locations' => ['read' => false, 'modify' => false, 'delete' => false],
+                'advertisement' => ['read' => true, 'modify' => false, 'delete' => false],
             ]
         ],
     ];

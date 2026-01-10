@@ -157,8 +157,21 @@ class Routes {
                 return;
             } else {
                 if(in_array("requiresLogin", $failedMiddlewares)) {
-                    if(in_array("merchant", $failedMiddlewares)) printView(PageController::merchantDashboardLogin($args));
-                    else printView(PageController::consumerDashboardLogin($args));
+                    // Determine which login page to show based on the route path and defined middleware
+                    $routePath = $route['path'] ?? '';
+                    $routeMiddleware = $route['middleware'] ?? [];
+
+                    if(in_array("admin", $routeMiddleware) || str_starts_with($routePath, ADMIN_PANEL_PATH)) {
+                        // Admin routes redirect to home when not admin
+                        Response()->redirect(__url(''));
+                        return;
+                    } elseif(in_array("merchant", $routeMiddleware) || str_starts_with($routePath, 'merchant')) {
+                        printView(PageController::merchantDashboardLogin($args));
+                        return;
+                    } else {
+                        printView(PageController::consumerDashboardLogin($args));
+                        return;
+                    }
                 } elseif(in_array("requiresApiLogin", $failedMiddlewares)) {
                     Response()->e401Json();
                 } elseif(in_array("requiresApiLogout", $failedMiddlewares)) {

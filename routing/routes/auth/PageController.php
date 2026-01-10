@@ -7,9 +7,23 @@ use classes\Methods;
 class PageController {
 
     public static function merchantDashboardLogin(array $args): mixed  {
+        if(isLoggedIn()) {
+            if(Methods::isMerchant()) Response()->redirect(__url(Links::$merchant->dashboard));
+            // Logged in but wrong type - show login page with message
+        }
         $worldCountries = Methods::misc()::getCountriesLib(WORLD_COUNTRIES);
         return Views("MERCHANT_AUTH_DASHBOARD_LOGIN", compact('worldCountries'));
     }
+
+    public static function adminDashboardLogin(array $args): mixed  {
+        if(isLoggedIn()) {
+            if(Methods::isAdmin()) Response()->redirect(__url(Links::$admin->dashboard));
+            // Logged in but wrong type - show login page with message
+        }
+        $worldCountries = Methods::misc()::getCountriesLib(WORLD_COUNTRIES);
+        return Views("ADMIN_AUTH_DASHBOARD_LOGIN", compact('worldCountries'));
+    }
+
     public static function merchantDashboardSignup(array $args): mixed  {
         return Views("MERCHANT_AUTH_DASHBOARD_SIGNUP", $args);
     }

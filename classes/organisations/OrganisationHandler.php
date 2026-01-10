@@ -210,6 +210,11 @@ class OrganisationHandler extends Crud {
                     'modify' => true,
                     'delete' => true
                 ],
+                'advertisement' => [
+                    'read' => true,
+                    'modify' => true,
+                    'delete' => true
+                ],
             ]
         ],
     ];

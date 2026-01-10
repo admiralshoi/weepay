@@ -1,0 +1,36 @@
+{
+    "id": "a83e63e5-e9f2-414d-be77-0d3e062819b8",
+    "accountId": "a-spge-j25bjJdoKxJQ9mQSF6ex",
+    "authenticationUrl": "https:\/\/in-via-aps.sandbox.signicat.com\/broker\/sp\/external-service\/login?messageId=f185517b-1e9e-ef43-bec3-20dfb5d4c608&transactionId=409a969f-a938-4f49-afc5-4cd83e4b6e19",
+    "status": "CREATED",
+    "callbackUrls": {
+        "success": "https:\/\/localhost:443\/weepay\/auth\/user\/verify\/success?ref=oidc_9g5du683jdfrr75&sessionId=a83e63e5-e9f2-414d-be77-0d3e062819b8",
+        "abort": "https:\/\/localhost:443\/weepay\/auth\/user\/verify\/abort?ref=oidc_9g5du683jdfrr75&sessionId=a83e63e5-e9f2-414d-be77-0d3e062819b8",
+        "error": "https:\/\/localhost:443\/weepay\/auth\/user\/verify\/error?ref=oidc_9g5du683jdfrr75&sessionId=a83e63e5-e9f2-414d-be77-0d3e062819b8"
+    },
+    "allowedProviders": [
+        "mitid"
+    ],
+    "flow": "redirect",
+    "requestedAttributes": [
+        "dateOfBirth",
+        "family_name",
+        "firstName",
+        "given_name",
+        "lastName",
+        "mitidAal",
+        "mitidCprSource",
+        "mitidFal",
+        "mitidHasCpr",
+        "mitidIal",
+        "mitidLoa",
+        "mitidNameAndAddressProtection",
+        "mitidReferenceTextBody",
+        "mitidUuid",
+        "name",
+        "nin",
+        "nin_type"
+    ],
+    "sessionLifetime": 1200,
+    "expiresAt": "2026-01-10T12:07:04.9985802+00:00"
+}
