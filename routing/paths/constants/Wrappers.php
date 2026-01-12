@@ -119,7 +119,7 @@ class Wrappers extends \routing\paths\Paths {
 
     const ADMIN_HOME_INNER_HTML = [
         "template" => "ADMIN_HOME_OUTER_HTML",
-        "view" => "templates.home-inner-html",
+        "view" => "templates.admin-panel-inner-html",
         "custom_scripts" => null,
         "head" => null,
         "assets" => [
@@ -133,7 +133,7 @@ class Wrappers extends \routing\paths\Paths {
 
     const ADMIN_HOME_OUTER_HTML = [
         "template" => null,
-        "view" => "templates.home-outer-html",
+        "view" => "templates.admin-panel-outer-html",
         "custom_scripts" => "templates.scripts",
         "head" => "templates.head",
         "assets" => [
@@ -146,6 +146,7 @@ class Wrappers extends \routing\paths\Paths {
                 "js.initializer.js",
                 "css.main.css",
                 "css.styles2.css",
+                "css.styles3.css",
                 "css.responsiveness.css",
             ],
             "base" => null,

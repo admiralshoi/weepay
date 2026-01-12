@@ -6,15 +6,18 @@ class OrganisationPermissions {
 
 
     public static function __oRead(string $mainObject = "", string $subObject = "", bool $strictRole = false): bool {
+        if(\classes\Methods::isAdmin()) return true;
         if(!$strictRole && !\classes\Methods::isMerchant()) return true;
         return \classes\Methods::organisationMembers()->memberHasPermission("read", $mainObject, $subObject);
     }
     public static function __oModify(string $mainObject = "", string $subObject = "", bool $strictRole = false): bool {
+        if(\classes\Methods::isAdmin()) return true;
         if(!$strictRole && !\classes\Methods::isMerchant()) return true;
         if(!self::__oRead($mainObject, $subObject)) return false;
         return \classes\Methods::organisationMembers()->memberHasPermission("modify", $mainObject, $subObject);
     }
     public static function __oDelete(string $mainObject = "", string $subObject = "", bool $strictRole = false): bool {
+        if(\classes\Methods::isAdmin()) return true;
         if(!$strictRole && !\classes\Methods::isMerchant()) return true;
         if(!self::__oModify($mainObject, $subObject)) return false;
         return \classes\Methods::organisationMembers()->memberHasPermission("delete", $mainObject, $subObject);

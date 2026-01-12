@@ -11,7 +11,7 @@ $sidebarHandler = Methods::sidebars();
 
 <div id="sidebar" class="flex-col-between flex-align-start">
     <div class="flex-col-between h-100">
-        <div class="flex-col-start">
+        <div class="flex-col-start h-100">
             <button class="btn-unstyled p-2 m-0 ml-auto border-0 bg-transparent" id="leftSidebarCloseBtn" style="cursor: pointer;" title="Luk menu">
                 <i class="mdi mdi-close font-24 color-gray hover-color-red"></i>
             </button>
@@ -28,7 +28,7 @@ $sidebarHandler = Methods::sidebars();
                 </div>
             </div>
 
-            <div id="side-bar-menu-content" style="max-height: calc(100vh - 225px); overflow-x: auto;" class="w-100 px-2">
+            <div id="side-bar-menu-content" class="w-100 px-2">
 
 
                 <?php

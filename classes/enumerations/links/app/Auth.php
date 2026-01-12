@@ -10,6 +10,7 @@ class Auth {
     public string $consumerLogin = "consumer/login";
     public string $consumerSignup = "consumer/signup";
     public string $adminLogin = "admin/login";
+    public string $changePassword = "auth/change-password";
 
     public Oicd $oicd;
 

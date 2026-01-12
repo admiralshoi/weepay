@@ -23,6 +23,8 @@ class Orders extends \Database\Model {
         "caption"       => ["type" => "string", "nullable" => true, "default" => null],
         "fee"       => ["type" => "float", "default" => 0],
         "fee_amount"       => ["type" => "decimal", "default" => 0],
+        "cardFee"       => ["type" => "decimal", "default" => 0],
+        "paymentProviderFee"       => ["type" => "decimal", "default" => 0],
         "credit_score"       => ["type" => "float", "default" => 0],
         "prid"       => ["type" => "string", "nullable" => true, "default" => null],
         "terminal_session"       => ["type" => "string", "nullable" => true, "default" => null],

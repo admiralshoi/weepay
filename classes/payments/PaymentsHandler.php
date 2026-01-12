@@ -92,6 +92,8 @@ class PaymentsHandler extends Crud {
                 'provider' => $provider,
                 'amount' => $customerAmount,
                 'isv_amount' => $isvAmount,
+                'cardFee' => (float)Settings::$app->cardFee,
+                'paymentProviderFee' => (float)Settings::$app->paymentProviderFee,
                 'currency' => $currency,
                 'installment_number' => $paymentInfo->installment,
                 'due_date' => $dueDate,

@@ -40,7 +40,7 @@ class CustomerApiController {
         $org = $terminalSession->terminal->location->uuid;
         $organisationId = is_object($org) ? $org->uid : $org;
 
-        $plan = $basketHandler->createCheckoutInfo($basket, $planName, 90, $birthdate, $customerId, $organisationId);
+        $plan = $basketHandler->createCheckoutInfo($basket, $planName, $birthdate, $customerId, $organisationId);
         if(isEmpty($plan)) Response()->jsonError("Ugyldigetalingsplan.", [], 404);
 
         $slug = $location->slug;
@@ -83,7 +83,6 @@ class CustomerApiController {
         $paymentSessionUrl = Methods::viva()->checkoutUrl($orderCode);
 
         $order = Methods::viva()->getOrder($merchantId, $orderCode);
-        $resellerFee = (float)Settings::$app->resellerFee;
         Methods::orders()->insert(
             $terminalSession->terminal->uuid->uid,
             $location->uid,
@@ -271,7 +270,7 @@ class CustomerApiController {
 
         $paymentPlans = [];
         foreach (Settings::$app->paymentPlans as $name => $plan){
-            $plan = $basketHandler->createCheckoutInfo($basket, $name, 90, $birthdate, $customerId);
+            $plan = $basketHandler->createCheckoutInfo($basket, $name, $birthdate, $customerId);
             if(isEmpty($plan)) continue;
             $paymentPlans[] = $plan;
         }

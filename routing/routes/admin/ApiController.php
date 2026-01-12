@@ -2,12 +2,204 @@
 
 namespace routing\routes\admin;
 
+use classes\enumerations\Links;
 use classes\Methods;
 use classes\payments\stripe\StripeHandler;
 use classes\payments\stripe\StripeMethods;
+use Database\model\Organisations;
+use Database\model\Payments;
+use Database\model\Users;
 use JetBrains\PhpStorm\NoReturn;
 
 class ApiController {
+
+    /**
+     * Start impersonating an organisation or user as admin
+     * Logs admin in as the organisation owner or directly as a consumer
+     */
+    #[NoReturn] public static function startImpersonation(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', 403);
+        }
+
+        $orgId = $args['organisation'] ?? null;
+        $userId = $args['user'] ?? null;
+
+        // Store admin's UID and access level so we can restore later
+        $adminUid = __uuid();
+        $adminAccessLevel = $_SESSION["access_level"] ?? 9;
+        $adminEmail = \features\Settings::$user->email ?? 'unknown';
+
+        // Impersonate a user directly (consumer or merchant)
+        if (!empty($userId)) {
+            $targetUser = Methods::users()->get($userId);
+
+            if (isEmpty($targetUser)) {
+                Response()->jsonError('Bruger ikke fundet');
+            }
+
+            $accessLevel = (int)$targetUser->access_level;
+            if (!in_array($accessLevel, [1, 2])) {
+                Response()->jsonError('Kan kun impersonere forbrugere eller forhandlere.');
+            }
+
+            $userType = $accessLevel === 1 ? 'consumer' : 'merchant';
+
+            // Log the impersonation for audit
+            debugLog([
+                'admin_uid' => $adminUid,
+                'admin_email' => $adminEmail,
+                'target_uid' => $userId,
+                'target_name' => $targetUser->full_name ?? 'unknown',
+                'type' => $userType,
+                'action' => 'start',
+                'timestamp' => date('Y-m-d H:i:s')
+            ], 'ADMIN_IMPERSONATION');
+
+            // Log in as the user
+            $userData = toArray($targetUser);
+            $sessionKeys = array_keys($userData);
+            $sessionKeys[] = "logged_in";
+            setSessions($userData, $sessionKeys);
+
+            // Store impersonation state AFTER setSessions
+            $_SESSION["admin_impersonating_uid"] = $adminUid;
+            $_SESSION["admin_impersonating_access_level"] = $adminAccessLevel;
+            $_SESSION["admin_impersonating_user"] = $userId;
+
+            // Redirect to appropriate dashboard
+            $redirectUrl = $accessLevel === 1
+                ? __url(Links::$consumer->dashboard)
+                : __url(Links::$merchant->dashboard);
+
+            Response()->jsonSuccess('Du er nu logget ind som ' . ($targetUser->full_name ?? 'bruger'), [
+                'redirect' => $redirectUrl
+            ]);
+        }
+
+        // Impersonate an organisation (via owner)
+        if (empty($orgId)) {
+            Response()->jsonError('Organisation eller bruger ID mangler');
+        }
+
+        $org = Methods::organisations()->get($orgId);
+        if (isEmpty($org)) {
+            Response()->jsonError('Organisation ikke fundet');
+        }
+
+        // Find the owner of this organisation
+        $ownerMember = Methods::organisationMembers()->getFirst([
+            'organisation' => $orgId,
+            'role' => 'owner',
+            'status' => 'ACTIVE'
+        ]);
+
+        if (isEmpty($ownerMember)) {
+            Response()->jsonError('Ingen aktiv ejer fundet for denne organisation');
+        }
+
+        // Get the owner's user ID and user object
+        $ownerUid = is_object($ownerMember->uuid) ? $ownerMember->uuid->uid : $ownerMember->uuid;
+        $ownerUser = Methods::users()->get($ownerUid);
+
+        if (isEmpty($ownerUser)) {
+            Response()->jsonError('Ejerens brugerkonto blev ikke fundet');
+        }
+
+        // Log the impersonation for audit
+        debugLog([
+            'admin_uid' => $adminUid,
+            'admin_email' => $adminEmail,
+            'owner_uid' => $ownerUid,
+            'organisation' => $orgId,
+            'organisation_name' => $org->name,
+            'type' => 'organisation',
+            'action' => 'start',
+            'timestamp' => date('Y-m-d H:i:s')
+        ], 'ADMIN_IMPERSONATION');
+
+        // Log in as the owner - use setSessions like normal login does
+        $ownerData = toArray($ownerUser);
+        $sessionKeys = array_keys($ownerData);
+        $sessionKeys[] = "logged_in";
+        setSessions($ownerData, $sessionKeys);
+
+        // Store impersonation state AFTER setSessions (so it doesn't get overwritten)
+        $_SESSION["admin_impersonating_uid"] = $adminUid;
+        $_SESSION["admin_impersonating_access_level"] = $adminAccessLevel;
+        $_SESSION["admin_impersonating_org"] = $orgId;
+
+        Response()->jsonSuccess('Du er nu logget ind som ejer af ' . $org->name, [
+            'redirect' => __url(Links::$merchant->dashboard)
+        ]);
+    }
+
+    /**
+     * Stop impersonating - restore admin session
+     */
+    #[NoReturn] public static function stopImpersonation(array $args): void {
+        $adminUid = $_SESSION["admin_impersonating_uid"] ?? null;
+        $adminAccessLevel = $_SESSION["admin_impersonating_access_level"] ?? 9;
+        $orgId = $_SESSION["admin_impersonating_org"] ?? null;
+        $userId = $_SESSION["admin_impersonating_user"] ?? null;
+
+        if (empty($adminUid)) {
+            Response()->jsonError('Ingen aktiv impersonering fundet');
+        }
+
+        // Determine redirect URL based on impersonation type
+        $redirectUrl = __url(Links::$admin->dashboard);
+        $targetName = 'Ukendt';
+
+        if (!empty($orgId)) {
+            $org = Methods::organisations()->get($orgId);
+            if ($org) {
+                $targetName = $org->name;
+            }
+            $redirectUrl = __url(Links::$admin->organisations) . '/' . $orgId;
+        } elseif (!empty($userId)) {
+            $user = Methods::users()->get($userId);
+            if ($user) {
+                $targetName = $user->full_name ?? 'Bruger';
+            }
+            $redirectUrl = __url(Links::$admin->users) . '/' . $userId;
+        }
+
+        // Get admin user to restore full session
+        $adminUser = Methods::users()->get($adminUid);
+
+        // Log the impersonation end for audit
+        debugLog([
+            'admin_uid' => $adminUid,
+            'organisation' => $orgId,
+            'user' => $userId,
+            'target_name' => $targetName,
+            'action' => 'stop',
+            'timestamp' => date('Y-m-d H:i:s')
+        ], 'ADMIN_IMPERSONATION');
+
+        // Restore admin session - use setSessions like normal login does
+        if (!isEmpty($adminUser)) {
+            $adminData = toArray($adminUser);
+            $sessionKeys = array_keys($adminData);
+            $sessionKeys[] = "logged_in";
+            setSessions($adminData, $sessionKeys);
+        } else {
+            // Fallback if admin user not found
+            $_SESSION["uid"] = $adminUid;
+            $_SESSION["access_level"] = $adminAccessLevel;
+        }
+
+        // Clear impersonation state
+        unset($_SESSION["admin_impersonating_uid"]);
+        unset($_SESSION["admin_impersonating_access_level"]);
+        unset($_SESSION["admin_impersonating_org"]);
+        unset($_SESSION["admin_impersonating_user"]);
+
+        Response()->jsonSuccess('Du er nu logget tilbage som admin', [
+            'redirect' => $redirectUrl
+        ]);
+    }
 
 
 
@@ -287,6 +479,1226 @@ class ApiController {
     }
 
 
+    #[NoReturn] public static function paymentsList(array $args): void {
+        $page = (int)($args['page'] ?? 1);
+        $perPage = (int)($args['per_page'] ?? 25);
+        $search = $args['search'] ?? '';
+        $orgFilter = $args['organisation'] ?? '';
+        $statusFilter = $args['status'] ?? '';
+        $sortColumn = $args['sort_column'] ?? 'created_at';
+        $sortDirection = strtoupper($args['sort_direction'] ?? 'DESC');
+
+        // Validate sort column
+        $allowedSortColumns = ['created_at', 'due_date', 'amount', 'status'];
+        if (!in_array($sortColumn, $allowedSortColumns)) {
+            $sortColumn = 'created_at';
+        }
+
+        // Build query
+        $query = Payments::queryBuilder()
+            ->select(['uid', 'order', 'uuid', 'organisation', 'location', 'amount', 'currency', 'installment_number', 'due_date', 'paid_at', 'status', 'created_at']);
+
+        // Apply search filter
+        if (!empty($search)) {
+            // Get organisation UIDs matching the search term by name
+            $matchingOrgs = Organisations::queryBuilder()
+                ->select(['uid'])
+                ->whereLike('name', $search)
+                ->all();
+
+            $query->startGroup('OR')
+                ->whereLike('uid', $search)
+                ->whereLike('prid', $search)
+                ->whereLike('order', $search)
+                ->whereLike('organisation', $search);
+
+            foreach ($matchingOrgs->list() as $org) {
+                $query->where('organisation', $org->uid);
+            }
+
+            $query->endGroup();
+        }
+
+        // Apply organisation filter
+        if (!empty($orgFilter)) {
+            $query->where('organisation', $orgFilter);
+        }
+
+        // Apply status filter (supports comma-separated values like "PENDING,SCHEDULED")
+        if (!empty($statusFilter)) {
+            $statuses = array_map('trim', explode(',', $statusFilter));
+            $query->where('status', $statuses);
+        }
+
+        // Get total count
+        $totalCount = (clone $query)->count();
+        $totalPages = max(1, (int)ceil($totalCount / $perPage));
+        $page = min(max(1, $page), $totalPages);
+        $offset = ($page - 1) * $perPage;
+
+        // Apply sorting and pagination
+        $payments = $query->order($sortColumn, $sortDirection)
+            ->limit($perPage)
+            ->offset($offset)
+            ->all();
+
+        // Format payments data with related info
+        $formattedPayments = [];
+        foreach ($payments->list() as $payment) {
+            // Get organisation name
+            $orgName = null;
+            if (!empty($payment->organisation)) {
+                $org = Organisations::where('uid', $payment->organisation)->first();
+                $orgName = $org ? $org->name : null;
+            }
+
+            // Get user info from order
+            $userName = null;
+            $userEmail = null;
+            $userUid = null;
+            if (!empty($payment->uuid)) {
+                $user = Users::where('uid', $payment->uuid)->first();
+                if ($user) {
+                    $userName = trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''));
+                    $userEmail = $user->email;
+                    $userUid = $user->uid;
+                }
+            }
+
+            $formattedPayments[] = [
+                'uid' => $payment->uid,
+                'order_uid' => $payment->order,
+                'user_uid' => $userUid,
+                'user_name' => $userName,
+                'user_email' => $userEmail,
+                'organisation_name' => $orgName,
+                'amount' => $payment->amount,
+                'currency' => $payment->currency,
+                'installment_number' => $payment->installment_number,
+                'due_date' => $payment->due_date,
+                'paid_at' => $payment->paid_at,
+                'status' => $payment->status,
+                'created_at' => $payment->created_at,
+            ];
+        }
+
+        Response()->jsonSuccess('', [
+            'payments' => $formattedPayments,
+            'pagination' => [
+                'page' => $page,
+                'perPage' => $perPage,
+                'total' => $totalCount,
+                'totalPages' => $totalPages,
+            ],
+        ]);
+    }
+
+
+    #[NoReturn] public static function usersList(array $args): void {
+        $page = (int)($args['page'] ?? 1);
+        $perPage = (int)($args['per_page'] ?? 25);
+        $search = $args['search'] ?? '';
+        $roleFilter = $args['role'] ?? '';
+        $statusFilter = $args['status'] ?? '';
+        $sortColumn = $args['sort_column'] ?? 'created_at';
+        $sortDirection = strtoupper($args['sort_direction'] ?? 'DESC');
+
+        $allowedSortColumns = ['created_at', 'full_name', 'email'];
+        if (!in_array($sortColumn, $allowedSortColumns)) {
+            $sortColumn = 'created_at';
+        }
+
+        $query = Users::queryBuilder()
+            ->select(['uid', 'full_name', 'email', 'phone', 'access_level', 'deactivated', 'created_at']);
+
+        if (!empty($search)) {
+            $query->startGroup('OR')
+                ->whereLike('full_name', $search)
+                ->whereLike('email', $search)
+                ->whereLike('phone', $search)
+                ->whereLike('uid', $search)
+                ->endGroup();
+        }
+
+        if (!empty($roleFilter)) {
+            $query->where('access_level', $roleFilter);
+        }
+
+        if (!empty($statusFilter)) {
+            if ($statusFilter === 'active') {
+                $query->where('deactivated', 0);
+            } elseif ($statusFilter === 'deactivated') {
+                $query->where('deactivated', 1);
+            }
+        }
+
+        $totalCount = (clone $query)->count();
+        $totalPages = max(1, (int)ceil($totalCount / $perPage));
+        $page = min(max(1, $page), $totalPages);
+        $offset = ($page - 1) * $perPage;
+
+        $users = $query->order($sortColumn, $sortDirection)
+            ->limit($perPage)
+            ->offset($offset)
+            ->all();
+
+        $formattedUsers = [];
+        foreach ($users->list() as $user) {
+            $formattedUsers[] = [
+                'uid' => $user->uid,
+                'full_name' => $user->full_name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'access_level' => $user->access_level,
+                'deactivated' => (bool)$user->deactivated,
+                'created_at' => $user->created_at,
+            ];
+        }
+
+        Response()->jsonSuccess('', [
+            'users' => $formattedUsers,
+            'pagination' => [
+                'page' => $page,
+                'perPage' => $perPage,
+                'total' => $totalCount,
+                'totalPages' => $totalPages,
+            ],
+        ]);
+    }
+
+
+    #[NoReturn] public static function ordersList(array $args): void {
+        $page = (int)($args['page'] ?? 1);
+        $perPage = (int)($args['per_page'] ?? 25);
+        $search = $args['search'] ?? '';
+        $orgFilter = $args['organisation'] ?? '';
+        $statusFilter = $args['status'] ?? '';
+        $sortColumn = $args['sort_column'] ?? 'created_at';
+        $sortDirection = strtoupper($args['sort_direction'] ?? 'DESC');
+
+        $allowedSortColumns = ['created_at', 'amount', 'status'];
+        if (!in_array($sortColumn, $allowedSortColumns)) {
+            $sortColumn = 'created_at';
+        }
+
+        $query = \Database\model\Orders::queryBuilder()
+            ->select(['uid', 'uuid', 'organisation', 'location', 'caption', 'amount', 'currency', 'status', 'created_at']);
+
+        if (!empty($search)) {
+            $matchingOrgs = Organisations::queryBuilder()
+                ->select(['uid'])
+                ->whereLike('name', $search)
+                ->all();
+
+            $query->startGroup('OR')
+                ->whereLike('uid', $search)
+                ->whereLike('caption', $search);
+
+            foreach ($matchingOrgs->list() as $org) {
+                $query->where('organisation', $org->uid);
+            }
+
+            $query->endGroup();
+        }
+
+        if (!empty($orgFilter)) {
+            $query->where('organisation', $orgFilter);
+        }
+
+        if (!empty($statusFilter)) {
+            $query->where('status', $statusFilter);
+        }
+
+        $totalCount = (clone $query)->count();
+        $totalPages = max(1, (int)ceil($totalCount / $perPage));
+        $page = min(max(1, $page), $totalPages);
+        $offset = ($page - 1) * $perPage;
+
+        $orders = $query->order($sortColumn, $sortDirection)
+            ->limit($perPage)
+            ->offset($offset)
+            ->all();
+
+        $formattedOrders = [];
+        foreach ($orders->list() as $order) {
+            $orgName = null;
+            if (!empty($order->organisation)) {
+                $org = Organisations::where('uid', $order->organisation)->first();
+                $orgName = $org ? $org->name : null;
+            }
+
+            $userName = null;
+            $userEmail = null;
+            $userUid = null;
+            if (!empty($order->uuid)) {
+                $user = Users::where('uid', $order->uuid)->first();
+                if ($user) {
+                    $userName = $user->full_name;
+                    $userEmail = $user->email;
+                    $userUid = $user->uid;
+                }
+            }
+
+            $formattedOrders[] = [
+                'uid' => $order->uid,
+                'user_uid' => $userUid,
+                'user_name' => $userName,
+                'user_email' => $userEmail,
+                'organisation_uid' => $order->organisation,
+                'organisation_name' => $orgName,
+                'caption' => $order->caption,
+                'amount' => $order->amount,
+                'currency' => $order->currency,
+                'status' => $order->status,
+                'created_at' => $order->created_at,
+            ];
+        }
+
+        Response()->jsonSuccess('', [
+            'orders' => $formattedOrders,
+            'pagination' => [
+                'page' => $page,
+                'perPage' => $perPage,
+                'total' => $totalCount,
+                'totalPages' => $totalPages,
+            ],
+        ]);
+    }
+
+
+    #[NoReturn] public static function organisationsList(array $args): void {
+        $page = (int)($args['page'] ?? 1);
+        $perPage = (int)($args['per_page'] ?? 25);
+        $search = $args['search'] ?? '';
+        $statusFilter = $args['status'] ?? '';
+        $sortColumn = $args['sort_column'] ?? 'created_at';
+        $sortDirection = strtoupper($args['sort_direction'] ?? 'DESC');
+
+        $allowedSortColumns = ['created_at', 'name', 'status'];
+        if (!in_array($sortColumn, $allowedSortColumns)) {
+            $sortColumn = 'created_at';
+        }
+
+        $query = Organisations::queryBuilder()
+            ->select(['uid', 'name', 'primary_email', 'cvr', 'company_name', 'status', 'created_at']);
+
+        if (!empty($search)) {
+            $query->startGroup('OR')
+                ->whereLike('name', $search)
+                ->whereLike('primary_email', $search)
+                ->whereLike('cvr', $search)
+                ->whereLike('company_name', $search)
+                ->whereLike('uid', $search)
+                ->endGroup();
+        }
+
+        if (!empty($statusFilter)) {
+            $query->where('status', $statusFilter);
+        }
+
+        $totalCount = (clone $query)->count();
+        $totalPages = max(1, (int)ceil($totalCount / $perPage));
+        $page = min(max(1, $page), $totalPages);
+        $offset = ($page - 1) * $perPage;
+
+        $organisations = $query->order($sortColumn, $sortDirection)
+            ->limit($perPage)
+            ->offset($offset)
+            ->all();
+
+        $formattedOrgs = [];
+        foreach ($organisations->list() as $org) {
+            $formattedOrgs[] = [
+                'uid' => $org->uid,
+                'name' => $org->name,
+                'primary_email' => $org->primary_email,
+                'cvr' => $org->cvr,
+                'company_name' => $org->company_name,
+                'status' => $org->status,
+                'created_at' => $org->created_at,
+            ];
+        }
+
+        Response()->jsonSuccess('', [
+            'organisations' => $formattedOrgs,
+            'pagination' => [
+                'page' => $page,
+                'perPage' => $perPage,
+                'total' => $totalCount,
+                'totalPages' => $totalPages,
+            ],
+        ]);
+    }
+
+
+    #[NoReturn] public static function locationsList(array $args): void {
+        $page = (int)($args['page'] ?? 1);
+        $perPage = (int)($args['per_page'] ?? 25);
+        $search = $args['search'] ?? '';
+        $orgFilter = $args['organisation'] ?? '';
+        $statusFilter = $args['status'] ?? '';
+        $sortColumn = $args['sort_column'] ?? 'created_at';
+        $sortDirection = strtoupper($args['sort_direction'] ?? 'DESC');
+
+        $allowedSortColumns = ['created_at', 'name', 'status'];
+        if (!in_array($sortColumn, $allowedSortColumns)) {
+            $sortColumn = 'created_at';
+        }
+
+        $query = \Database\model\Locations::queryBuilder()
+            ->select(['uid', 'uuid', 'name', 'slug', 'contact_email', 'status', 'created_at']);
+
+        if (!empty($search)) {
+            $matchingOrgs = Organisations::queryBuilder()
+                ->select(['uid'])
+                ->whereLike('name', $search)
+                ->all();
+
+            $query->startGroup('OR')
+                ->whereLike('name', $search)
+                ->whereLike('slug', $search)
+                ->whereLike('contact_email', $search)
+                ->whereLike('uid', $search);
+
+            foreach ($matchingOrgs->list() as $org) {
+                $query->where('uuid', $org->uid);
+            }
+
+            $query->endGroup();
+        }
+
+        if (!empty($orgFilter)) {
+            $query->where('uuid', $orgFilter);
+        }
+
+        if (!empty($statusFilter)) {
+            $query->where('status', $statusFilter);
+        }
+
+        $totalCount = (clone $query)->count();
+        $totalPages = max(1, (int)ceil($totalCount / $perPage));
+        $page = min(max(1, $page), $totalPages);
+        $offset = ($page - 1) * $perPage;
+
+        $locations = $query->order($sortColumn, $sortDirection)
+            ->limit($perPage)
+            ->offset($offset)
+            ->all();
+
+        $formattedLocs = [];
+        foreach ($locations->list() as $loc) {
+            $orgName = null;
+            $orgUid = null;
+            if (!empty($loc->uuid)) {
+                $org = Organisations::where('uid', $loc->uuid)->first();
+                if ($org) {
+                    $orgName = $org->name;
+                    $orgUid = $org->uid;
+                }
+            }
+
+            $formattedLocs[] = [
+                'uid' => $loc->uid,
+                'name' => $loc->name,
+                'slug' => $loc->slug,
+                'contact_email' => $loc->contact_email,
+                'organisation_uid' => $orgUid,
+                'organisation_name' => $orgName,
+                'status' => $loc->status,
+                'created_at' => $loc->created_at,
+            ];
+        }
+
+        Response()->jsonSuccess('', [
+            'locations' => $formattedLocs,
+            'pagination' => [
+                'page' => $page,
+                'perPage' => $perPage,
+                'total' => $totalCount,
+                'totalPages' => $totalPages,
+            ],
+        ]);
+    }
+
+
+    #[NoReturn] public static function organisationStatusUpdate(array $args): void {
+        $orgId = $args['id'] ?? '';
+        $status = $args['status'] ?? '';
+
+        if (empty($orgId)) {
+            Response()->jsonError('Organisation ID mangler');
+        }
+
+        $validStatuses = ['ACTIVE', 'INACTIVE', 'DRAFT'];
+        if (!in_array($status, $validStatuses)) {
+            Response()->jsonError('Ugyldig status');
+        }
+
+        $organisation = Methods::organisations()->get($orgId);
+        if (isEmpty($organisation)) {
+            Response()->jsonError('Organisation ikke fundet');
+        }
+
+        $updated = Methods::organisations()->update(['status' => $status], ['uid' => $orgId]);
+
+        if (!$updated) {
+            Response()->jsonError('Kunne ikke opdatere organisation status');
+        }
+
+        Response()->jsonSuccess('Organisation status opdateret');
+    }
+
+    #[NoReturn] public static function dashboardStats(array $args): void {
+        $startDate = $args['start_date'] ?? date('Y-m-d');
+        $endDate = $args['end_date'] ?? date('Y-m-d');
+
+        // Convert to timestamps
+        $startTimestamp = strtotime($startDate . ' 00:00:00');
+        $endTimestamp = strtotime($endDate . ' 23:59:59');
+
+        // Revenue from completed payments in the date range
+        $revenue = Methods::payments()->queryBuilder()
+            ->where('status', 'COMPLETED')
+            ->whereTimeAfter('paid_at', $startTimestamp, '>=')
+            ->whereTimeBefore('paid_at', $endTimestamp, '<=')
+            ->sum('amount') ?? 0;
+
+        // ISV (net sales) from completed payments in the date range
+        $isvAmount = Methods::payments()->queryBuilder()
+            ->where('status', 'COMPLETED')
+            ->whereTimeAfter('paid_at', $startTimestamp, '>=')
+            ->whereTimeBefore('paid_at', $endTimestamp, '<=')
+            ->sum('isv_amount') ?? 0;
+
+        // Orders count in the date range
+        $ordersCount = Methods::orders()->queryBuilder()
+            ->where('status', 'COMPLETED')
+            ->whereTimeAfter('created_at', $startTimestamp, '>=')
+            ->whereTimeBefore('created_at', $endTimestamp, '<=')
+            ->count();
+
+        // New users in the date range
+        $newUsers = Methods::users()->queryBuilder()
+            ->whereTimeAfter('created_at', $startTimestamp, '>=')
+            ->whereTimeBefore('created_at', $endTimestamp, '<=')
+            ->count();
+
+        // Chart data: daily breakdown for the selected date range
+        $revenueChartData = [];
+        $userGrowthChartData = [];
+        $currentDate = strtotime($startDate);
+        $endDateTs = strtotime($endDate);
+
+        while ($currentDate <= $endDateTs) {
+            $dayStart = strtotime(date('Y-m-d', $currentDate) . ' 00:00:00');
+            $dayEnd = strtotime(date('Y-m-d', $currentDate) . ' 23:59:59');
+
+            // Revenue chart data
+            $dayRevenue = Methods::payments()->queryBuilder()
+                ->where('status', 'COMPLETED')
+                ->whereTimeAfter('paid_at', $dayStart, '>=')
+                ->whereTimeBefore('paid_at', $dayEnd, '<=')
+                ->sum('amount') ?? 0;
+            $dayPayments = Methods::payments()->queryBuilder()
+                ->where('status', 'COMPLETED')
+                ->whereTimeAfter('paid_at', $dayStart, '>=')
+                ->whereTimeBefore('paid_at', $dayEnd, '<=')
+                ->count();
+
+            $revenueChartData[] = [
+                'date' => date('d/m', $currentDate),
+                'revenue' => (float)$dayRevenue,
+                'payments' => (int)$dayPayments
+            ];
+
+            // User growth chart data
+            $newConsumers = Methods::users()->queryBuilder()
+                ->where('access_level', 1)
+                ->whereTimeAfter('created_at', $dayStart, '>=')
+                ->whereTimeBefore('created_at', $dayEnd, '<=')
+                ->count();
+            $newMerchants = Methods::users()->queryBuilder()
+                ->where('access_level', 2)
+                ->whereTimeAfter('created_at', $dayStart, '>=')
+                ->whereTimeBefore('created_at', $dayEnd, '<=')
+                ->count();
+
+            $userGrowthChartData[] = [
+                'date' => date('d/m', $currentDate),
+                'consumers' => (int)$newConsumers,
+                'merchants' => (int)$newMerchants
+            ];
+
+            $currentDate = strtotime('+1 day', $currentDate);
+        }
+
+        Response()->jsonSuccess('', [
+            'revenue' => (float)$revenue,
+            'isv_amount' => (float)$isvAmount,
+            'orders_count' => (int)$ordersCount,
+            'new_users' => (int)$newUsers,
+            'date_range' => [
+                'start' => $startDate,
+                'end' => $endDate,
+            ],
+            'revenue_chart' => $revenueChartData,
+            'user_growth_chart' => $userGrowthChartData,
+        ]);
+    }
+
+
+    /**
+     * Update a single AppMeta setting or handle special panel operations
+     */
+    #[NoReturn] public static function panelUpdateSetting(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', 403);
+        }
+
+        $key = $args['key'] ?? null;
+        $value = $args['value'] ?? null;
+
+        if (empty($key)) {
+            Response()->jsonError('Nøgle mangler');
+        }
+
+        // Handle special org fee operations
+        if ($key === 'org_fee_save') {
+            self::handleOrgFeeSave((array)$value);
+            return;
+        }
+
+        if ($key === 'org_fee_delete') {
+            self::handleOrgFeeDelete((array)$value);
+            return;
+        }
+
+        // Handle country operations
+        if ($key === 'country_add') {
+            self::handleCountryAdd((array)$value);
+            return;
+        }
+
+        if ($key === 'country_remove') {
+            self::handleCountryRemove((array)$value);
+            return;
+        }
+
+        // Validate organisation_roles - ensure fixed roles are not removed and clean new roles
+        if ($key === 'organisation_roles' && is_array($value)) {
+            $fixedOrgRoles = \classes\organisations\OrganisationRolePermissions::getFixedRoles();
+            // Clean all role names and validate
+            $cleanedValue = [];
+            foreach ($value as $role) {
+                $sanitized = \classes\utility\Titles::sanitizeKey($role);
+                if (empty($sanitized)) {
+                    Response()->jsonError('Ugyldigt rollenavn: "' . htmlspecialchars($role) . '". Brug kun bogstaver (a-z, æ, ø, å) og mellemrum.');
+                }
+                $cleanedValue[] = $sanitized;
+            }
+            $value = array_unique($cleanedValue);
+            $value = array_values($value);
+            foreach ($fixedOrgRoles as $fixedRole) {
+                if (!in_array($fixedRole, $value)) {
+                    Response()->jsonError('Systemrollen "' . $fixedRole . '" kan ikke fjernes');
+                }
+            }
+        }
+
+        // Validate location_roles - ensure fixed roles are not removed and clean new roles
+        if ($key === 'location_roles' && is_array($value)) {
+            $fixedLocationRoles = \classes\organisations\LocationRolePermissions::getFixedRoles();
+            // Clean all role names and validate
+            $cleanedValue = [];
+            foreach ($value as $role) {
+                $sanitized = \classes\utility\Titles::sanitizeKey($role);
+                if (empty($sanitized)) {
+                    Response()->jsonError('Ugyldigt rollenavn: "' . htmlspecialchars($role) . '". Brug kun bogstaver (a-z, æ, ø, å) og mellemrum.');
+                }
+                $cleanedValue[] = $sanitized;
+            }
+            $value = array_unique($cleanedValue);
+            $value = array_values($value);
+            foreach ($fixedLocationRoles as $fixedRole) {
+                if (!in_array($fixedRole, $value)) {
+                    Response()->jsonError('Systemrollen "' . $fixedRole . '" kan ikke fjernes');
+                }
+            }
+        }
+
+        // Check if the setting exists, create if it doesn't
+        $success = false;
+        if (!Methods::appMeta()->exists($key)) {
+            // Determine type based on value
+            $type = 'string';
+            if (is_bool($value)) $type = 'bool';
+            elseif (is_int($value)) $type = 'int';
+            elseif (is_float($value)) $type = 'float';
+            elseif (is_array($value) || is_object($value)) $type = 'array';
+
+            $success = Methods::appMeta()->create([
+                'name' => $key,
+                'value' => is_array($value) || is_object($value) ? json_encode($value) : (string)$value,
+                'type' => $type
+            ]);
+        } else {
+            // Update the setting
+            $success = Methods::appMeta()->update($value, $key);
+        }
+
+        if ($success) {
+            debugLog([
+                'admin' => __uuid(),
+                'key' => $key,
+                'action' => 'update_setting'
+            ], 'ADMIN_PANEL_SETTING');
+
+            // Return the sanitized value for roles so frontend can display correctly
+            $responseData = [];
+            if ($key === 'organisation_roles' || $key === 'location_roles') {
+                $responseData['value'] = $value;
+            }
+            Response()->jsonSuccess('Indstillingen er opdateret', $responseData);
+        } else {
+            Response()->jsonError('Kunne ikke opdatere indstillingen');
+        }
+    }
+
+    /**
+     * Create a new user from admin panel
+     */
+    #[NoReturn] public static function panelCreateUser(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', 403);
+        }
+
+        $fullName = trim($args['full_name'] ?? '');
+        $accessLevel = (int)($args['access_level'] ?? 0);
+        $email = trim($args['email'] ?? '');
+        $username = trim($args['username'] ?? '');
+
+        // Validate required fields
+        if (empty($fullName)) {
+            Response()->jsonError('Navn er påkrævet');
+        }
+
+        if (empty($accessLevel)) {
+            Response()->jsonError('Rolle er påkrævet');
+        }
+
+        // Validate email if provided
+        if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            Response()->jsonError('Ugyldigt email format');
+        }
+
+        // Check if email already exists
+        if (!empty($email)) {
+            $existingEmail = Methods::users()->getFirst(['email' => $email]);
+            if (!isEmpty($existingEmail)) {
+                Response()->jsonError('Denne email er allerede registreret');
+            }
+        }
+
+        // Check if username already exists
+        if (!empty($username)) {
+            $existingUsername = Methods::localAuthentication()->excludeForeignKeys()->getFirst(['username' => $username]);
+            if (!isEmpty($existingUsername)) {
+                Response()->jsonError('Dette brugernavn er allerede taget');
+            }
+        }
+
+        $userHandler = Methods::users();
+
+        // Generate username if not provided
+        if (empty($username)) {
+            // Use "weepay" as org prefix for admin-created users
+            $username = $userHandler->generateUniqueUsername('weepay', $fullName);
+        }
+
+        // Generate a temporary password
+        $password = substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 12);
+
+        // Create user
+        if (!$userHandler->create([
+            'full_name' => $fullName,
+            'email' => !empty($email) ? $email : null,
+            'access_level' => $accessLevel,
+            'lang' => 'DA',
+            'created_by' => __uuid()
+        ])) {
+            Response()->jsonError('Kunne ikke oprette brugeren. Prøv igen senere.');
+        }
+
+        $userUid = $userHandler->recentUid;
+
+        // Create auth record
+        Methods::localAuthentication()->create([
+            'username' => $username,
+            'email' => !empty($email) ? $email : null,
+            'password' => passwordHashing($password),
+            'user' => $userUid,
+            'enabled' => 1,
+            'force_password_change' => 1
+        ]);
+
+        // Log notification if email is provided
+        $emailSent = false;
+        if (!empty($email)) {
+            Methods::notificationHandler()->userCreated([
+                'uid' => $userUid,
+                'organisation_name' => BRAND_NAME,
+                'username' => $username,
+                'password' => $password,
+                'ref' => null,
+                'push_type' => 1 // Email
+            ]);
+            $emailSent = true;
+        }
+
+        // Log admin action
+        debugLog([
+            'admin' => __uuid(),
+            'created_user' => $userUid,
+            'username' => $username,
+            'access_level' => $accessLevel,
+            'action' => 'create_user'
+        ], 'ADMIN_PANEL_CREATE_USER');
+
+        // Return success with credentials
+        Response()->jsonSuccess(
+            'Brugeren er blevet oprettet.',
+            [
+                'user_created' => true,
+                'username' => $username,
+                'password' => $password,
+                'email_sent' => $emailSent,
+                'full_name' => $fullName
+            ]
+        );
+    }
+
+    /**
+     * Handle organisation fee save
+     */
+    #[NoReturn] private static function handleOrgFeeSave(array $data): void {
+        $uid = $data['uid'] ?? null;
+        $organisations = $data['organisations'] ?? [];
+        $fee = (float)($data['fee'] ?? 0);
+        $startDate = $data['start_date'] ?? null;
+        $endDate = $data['end_date'] ?? null;
+        $reason = $data['reason'] ?? null;
+
+        if (empty($uid) && empty($organisations)) {
+            Response()->jsonError('Mindst én organisation er påkrævet');
+        }
+
+        if ($fee < 0 || $fee > 100) {
+            Response()->jsonError('Gebyret skal være mellem 0 og 100');
+        }
+
+        // Validate minimum fee (card fee + payment provider fee)
+        $cardFee = Methods::appMeta()->get('cardFee') ?? 0.39;
+        $paymentProviderFee = Methods::appMeta()->get('paymentProviderFee') ?? 0.39;
+        $minFee = $cardFee + $paymentProviderFee;
+
+        if ($fee < $minFee) {
+            Response()->jsonError('Gebyret kan ikke være lavere end ' . number_format($minFee, 2, ',', '.') . ' % (kortgebyr + betalingsudbyder gebyr)');
+        }
+
+        $handler = Methods::organisationFees();
+
+        if (!empty($uid)) {
+            // Update existing fee - only reason can be changed
+            $success = $handler->update([
+                'reason' => $reason
+            ], ['uid' => $uid]);
+        } else {
+            // Calculate proper timestamps for new fees
+            $now = time();
+            $todayStart = strtotime('today 00:00:00');
+            $todayEnd = strtotime('today 23:59:59');
+
+            // Parse start date
+            if (!empty($startDate)) {
+                $startDateObj = strtotime($startDate);
+                $startDateStart = strtotime(date('Y-m-d', $startDateObj) . ' 00:00:00');
+
+                // Validate not in the past
+                if ($startDateStart < $todayStart) {
+                    Response()->jsonError('Startdato kan ikke være i fortiden');
+                }
+
+                // If today, use current time. Otherwise use start of day
+                if ($startDateStart === $todayStart) {
+                    $startTime = $now;
+                } else {
+                    $startTime = $startDateStart;
+                }
+            } else {
+                $startTime = $now;
+            }
+
+            // Parse end date - always end of day
+            $endTime = null;
+            if (!empty($endDate)) {
+                $endDateObj = strtotime($endDate);
+                $endDateEnd = strtotime(date('Y-m-d', $endDateObj) . ' 23:59:59');
+
+                // Validate not in the past
+                if ($endDateEnd < $todayEnd) {
+                    Response()->jsonError('Slutdato kan ikke være i fortiden');
+                }
+
+                // Validate end is not before start
+                if ($endDateEnd < $startTime) {
+                    Response()->jsonError('Slutdato kan ikke være før startdato');
+                }
+
+                $endTime = $endDateEnd;
+            }
+
+            // Insert new fee(s) for each organisation with overlap handling
+            $success = true;
+            foreach ($organisations as $organisation) {
+                // Handle overlapping fees for this organisation
+                self::handleOrgFeeOverlaps($handler, $organisation, $startTime, $endTime);
+
+                // Insert the new fee
+                $feeUid = $handler->insertFee(
+                    $organisation,
+                    $fee,
+                    $startTime,
+                    $endTime,
+                    __uuid(),
+                    $reason
+                );
+                if (empty($feeUid)) {
+                    $success = false;
+                }
+            }
+        }
+
+        if ($success) {
+            debugLog([
+                'admin' => __uuid(),
+                'uid' => $uid,
+                'organisations' => $organisations,
+                'fee' => $fee,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'reason' => $reason,
+                'action' => $uid ? 'update_org_fee' : 'create_org_fee'
+            ], 'ADMIN_PANEL_ORG_FEE');
+
+            Response()->jsonSuccess('Gebyret er gemt');
+        } else {
+            Response()->jsonError('Kunne ikke gemme gebyret');
+        }
+    }
+
+    /**
+     * Handle overlapping fee periods for an organisation
+     * New fee supersedes existing ones - splits existing fees if needed
+     */
+    private static function handleOrgFeeOverlaps($handler, string $organisation, int $newStartTime, ?int $newEndTime): void {
+        // Get all active fees for this organisation
+        $existingFees = $handler->getByX(['organisation' => $organisation, 'enabled' => 1]);
+
+        if (empty($existingFees)) {
+            return;
+        }
+
+        foreach ($existingFees as $existingFee) {
+            $existingStart = (int)$existingFee->start_time;
+            $existingEnd = $existingFee->end_time ? (int)$existingFee->end_time : null;
+
+            // Check if there's an overlap
+            $overlaps = false;
+
+            // Case: new fee has no end (infinite)
+            if ($newEndTime === null) {
+                // Overlaps if existing starts at or after new start, OR existing ends at or after new start
+                if ($existingEnd === null || $existingEnd >= $newStartTime) {
+                    $overlaps = true;
+                }
+            }
+            // Case: new fee has an end
+            else {
+                // Check for any overlap
+                if ($existingEnd === null) {
+                    // Existing is infinite - overlaps if existing starts before new ends
+                    if ($existingStart <= $newEndTime) {
+                        $overlaps = true;
+                    }
+                } else {
+                    // Both have ends - standard overlap check
+                    if ($existingStart <= $newEndTime && $existingEnd >= $newStartTime) {
+                        $overlaps = true;
+                    }
+                }
+            }
+
+            if (!$overlaps) {
+                continue;
+            }
+
+            // Handle the overlap - end existing fee just before new one starts
+            $newExistingEnd = $newStartTime - 1;
+
+            // If the new fee would end before the existing fee, we need to create a continuation
+            $needsContinuation = false;
+            $continuationStart = null;
+
+            if ($newEndTime !== null && ($existingEnd === null || $existingEnd > $newEndTime)) {
+                $needsContinuation = true;
+                $continuationStart = $newEndTime + 1;
+            }
+
+            // If existing fee hasn't started yet and starts after new one starts, disable it entirely
+            if ($existingStart >= $newStartTime) {
+                if ($needsContinuation && ($existingEnd === null || $existingEnd > $newEndTime)) {
+                    // Existing fee starts within new period but extends beyond - update start time
+                    $handler->update([
+                        'start_time' => $continuationStart
+                    ], ['uid' => $existingFee->uid]);
+                } else {
+                    // Existing fee is completely covered - disable it
+                    $handler->update([
+                        'enabled' => 0
+                    ], ['uid' => $existingFee->uid]);
+                }
+            } else {
+                // Existing fee started before new one - end it before new one starts
+                $handler->update([
+                    'end_time' => $newExistingEnd
+                ], ['uid' => $existingFee->uid]);
+
+                // If we need a continuation after the new fee ends
+                if ($needsContinuation) {
+                    $handler->insertFee(
+                        $organisation,
+                        $existingFee->fee,
+                        $continuationStart,
+                        $existingEnd,
+                        __uuid(),
+                        $existingFee->reason ? $existingFee->reason . ' (fortsat)' : null
+                    );
+                }
+            }
+        }
+    }
+
+    /**
+     * Handle organisation fee delete
+     */
+    #[NoReturn] private static function handleOrgFeeDelete(array $data): void {
+        $uid = $data['uid'] ?? null;
+
+        if (empty($uid)) {
+            Response()->jsonError('Gebyr ID mangler');
+        }
+
+        $handler = Methods::organisationFees();
+        $success = $handler->update(['enabled' => 0], ['uid' => $uid]);
+
+        if ($success) {
+            debugLog([
+                'admin' => __uuid(),
+                'uid' => $uid,
+                'action' => 'delete_org_fee'
+            ], 'ADMIN_PANEL_ORG_FEE');
+
+            Response()->jsonSuccess('Gebyret er slettet');
+        } else {
+            Response()->jsonError('Kunne ikke slette gebyret');
+        }
+    }
+
+    /**
+     * Handle adding a country
+     */
+    #[NoReturn] private static function handleCountryAdd(array $data): void {
+        debugLog(['data' => $data], 'COUNTRY_ADD_DEBUG');
+
+        $code = $data['code'] ?? null;
+        $name = $data['name'] ?? null;
+
+        debugLog(['code' => $code, 'name' => $name], 'COUNTRY_ADD_DEBUG');
+
+        if (empty($code) || empty($name)) {
+            debugLog(['error' => 'missing code or name'], 'COUNTRY_ADD_DEBUG');
+            Response()->jsonError('Landekode og navn er påkrævet');
+        }
+
+        // Check if country already exists
+        $existing = \Database\model\Countries::where('code', $code)->first();
+
+        if ($existing) {
+            // Enable if disabled
+            if ($existing->enabled == 0) {
+                $success = \Database\model\Countries::where('code', $code)->update(['enabled' => 1]);
+            } else {
+                Response()->jsonError('Landet findes allerede');
+            }
+        } else {
+            // Insert new country
+            $success = \Database\model\Countries::insert([
+                'code' => strtoupper($code),
+                'name' => $name,
+                'enabled' => 1
+            ]);
+        }
+
+        if ($success ?? false) {
+            debugLog([
+                'admin' => __uuid(),
+                'code' => $code,
+                'name' => $name,
+                'action' => 'add_country'
+            ], 'ADMIN_PANEL_COUNTRY');
+
+            Response()->jsonSuccess('Landet er tilføjet');
+        } else {
+            Response()->jsonError('Kunne ikke tilføje landet');
+        }
+    }
+
+    /**
+     * Handle removing a country (disabling it)
+     */
+    #[NoReturn] private static function handleCountryRemove(array $data): void {
+        $code = $data['code'] ?? null;
+
+        if (empty($code)) {
+            Response()->jsonError('Landekode mangler');
+        }
+
+        // Check if this is the default country
+        $defaultCountry = Methods::appMeta()->get('default_country');
+        if ($defaultCountry === $code) {
+            Response()->jsonError('Kan ikke fjerne standardlandet. Skift standardland først.');
+        }
+
+        $success = \Database\model\Countries::where('code', $code)->update(['enabled' => 0]);
+
+        if ($success) {
+            debugLog([
+                'admin' => __uuid(),
+                'code' => $code,
+                'action' => 'remove_country'
+            ], 'ADMIN_PANEL_COUNTRY');
+
+            Response()->jsonSuccess('Landet er fjernet');
+        } else {
+            Response()->jsonError('Kunne ikke fjerne landet');
+        }
+    }
+
+    /**
+     * Create a new user role
+     */
+    #[NoReturn] public static function panelCreateRole(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', 403);
+        }
+
+        $accessLevel = isset($args['access_level']) ? (int)$args['access_level'] : null;
+        $name = trim($args['name'] ?? '');
+        $description = trim($args['description'] ?? '');
+
+        if ($accessLevel === null) {
+            Response()->jsonError('Adgangsniveau er påkrævet');
+        }
+
+        if (empty($name)) {
+            Response()->jsonError('Rollenavn er påkrævet');
+        }
+
+        // Validate access level range (3-7 allowed, 0, 1, 2, 8, 9 are reserved)
+        if ($accessLevel < 3 || $accessLevel > 7) {
+            Response()->jsonError('Adgangsniveau skal være mellem 3 og 7 (0, 1, 2, 8, 9 er reserveret)');
+        }
+
+        // Check if access level already exists
+        $existing = \Database\model\UserRoles::where('access_level', $accessLevel)->first();
+        if ($existing) {
+            Response()->jsonError('Adgangsniveau ' . $accessLevel . ' findes allerede');
+        }
+
+        // Clean role name (lowercase, no special chars)
+        $cleanName = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $name));
+
+        // Check if name already exists
+        $existingName = \Database\model\UserRoles::where('name', $cleanName)->first();
+        if ($existingName) {
+            Response()->jsonError('Rollenavn "' . $name . '" findes allerede');
+        }
+
+        // Insert new role
+        $success = \Database\model\UserRoles::insert([
+            'access_level' => $accessLevel,
+            'name' => $cleanName,
+            'description' => $description,
+            'depth' => '',
+            'defined' => 0
+        ]);
+
+        if ($success) {
+            debugLog([
+                'admin' => __uuid(),
+                'access_level' => $accessLevel,
+                'name' => $cleanName,
+                'action' => 'create_role'
+            ], 'ADMIN_PANEL_CREATE_ROLE');
+
+            Response()->jsonSuccess('Rollen er blevet oprettet');
+        } else {
+            Response()->jsonError('Kunne ikke oprette rollen');
+        }
+    }
+
+    /**
+     * Update an existing user role
+     */
+    #[NoReturn] public static function panelUpdateRole(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', 403);
+        }
+
+        $accessLevel = isset($args['access_level']) ? (int)$args['access_level'] : null;
+        $description = trim($args['description'] ?? '');
+        $defined = (int)($args['defined'] ?? 0);
+
+        if ($accessLevel === null) {
+            Response()->jsonError('Adgangsniveau er påkrævet');
+        }
+
+        // Check if role exists
+        $existing = \Database\model\UserRoles::where('access_level', $accessLevel)->first();
+        if (!$existing) {
+            Response()->jsonError('Rollen findes ikke');
+        }
+
+        // Update role
+        $success = \Database\model\UserRoles::where('access_level', $accessLevel)->update([
+            'description' => $description,
+            'defined' => $defined
+        ]);
+
+        if ($success) {
+            debugLog([
+                'admin' => __uuid(),
+                'access_level' => $accessLevel,
+                'description' => $description,
+                'defined' => $defined,
+                'action' => 'update_role'
+            ], 'ADMIN_PANEL_UPDATE_ROLE');
+
+            Response()->jsonSuccess('Rollen er blevet opdateret');
+        } else {
+            Response()->jsonError('Kunne ikke opdatere rollen');
+        }
+    }
 
 
 }

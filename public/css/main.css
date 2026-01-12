@@ -109,6 +109,7 @@
     --light-blue: #1DA1F2;
     --lighter-blue: #DFE3F5;
     --lightest-blue: #EEF5FA;
+    --cyan: #06b6d4;
     --purple-gray-light: #EDEFF4;
     --purple-gray: #F0EBFA;
     --purple: #9D50FF;
@@ -1164,6 +1165,7 @@ form th, form td {
 .border-radius-20px { border-radius: 20px !important; }
 .border-radius-15px { border-radius: 15px !important; }
 .border-radius-10px { border-radius: 10px !important; }
+.border-radius-8px { border-radius: 8px !important; }
 .border-radius-5px {border-radius: 5px !important;}
 .border-radius-none { border-radius: 0 !important; }
 .border-radius-tl-bl-20px { border-radius: 20px 0 0 20px !important; }

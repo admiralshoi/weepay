@@ -16,7 +16,7 @@ $merchantActionRequired = empty($organisation?->merchant_prid);
 $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
 
 
-
+\features\DbMigration::_migrate_db();
 
 ?>
 

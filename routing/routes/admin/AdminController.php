@@ -3,6 +3,7 @@ namespace routing\routes\admin;
 use classes\Methods;
 use classes\utility\Numbers;
 use Database\Collection;
+use Database\model\AuthLocal;
 use Database\model\UserRoles;
 use Database\model\Users;
 use features\Migration;
@@ -122,36 +123,12 @@ class AdminController {
 
 
     public static function users(array $args = []): mixed  {
-        $view = array_key_exists("role", $args) ? $args["role"] : "all";
-        $userRoles = UserRoles::where("defined", 1)->where("access_level", "<=", __accessLevel())->select(["access_level","name"])->all();
-        $query = Users::where("access_level", "<=", __accessLevel());
-        $accessLevels = match($view) {
-            default => 0,
-            "creators" => [1,3],
-            "brands" => [2,4],
-            "admins" => [8,9]
-        };
-        if($accessLevels !== 0) $query->where("access_level", $accessLevels);
-        $query->select(["id", "username", "access_level", "full_name", "created_at", "uid", "deactivated"]);
-        $users = $query->paginate(100, 0, "id","ASC");
+        $userRoles = UserRoles::where("access_level", "<=", __accessLevel())
+            ->select(["access_level", "name", "description", "defined"])
+            ->order("access_level", "ASC")
+            ->all();
 
-
-
-
-
-        $users = $users->map(function ($user) use ($userRoles) {
-            $accessLevel = (int)$user["access_level"];
-            $name = "";
-            foreach ($userRoles->list() as $role) {
-                if((int)$role->access_level === $accessLevel) {
-                    $name = $role->name;
-                    break;
-                }
-            }
-            return array_merge($user, ["role" => $name]);
-        });
-
-        return Views("ADMIN_USERS", compact("view", "users", "userRoles"));
+        return Views("ADMIN_USERS", compact("userRoles"));
     }
 
 

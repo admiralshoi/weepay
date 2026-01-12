@@ -87,7 +87,31 @@ class ConsumerAuth extends \routing\paths\Paths {
         ],
     ];
 
-
+    const AUTH_CHANGE_PASSWORD = [
+        "template" => "AUTH_INNER_HTML",
+        "view" => "auth.change-password",
+        "custom_scripts" => "templates.scripts",
+        "title" => "Skift adgangskode",
+        "head" => "templates.head",
+        "assets" => [
+            "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.features.js",
+                "js.auth.js",
+                "js.initializer.js",
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.auth.auth.css",
+                "css.responsiveness.css",
+            ],
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
 
 
 }

@@ -460,4 +460,11 @@ class OrganisationRolePermissions {
             'location_employee' => self::LOCATION_EMPLOYEE,
         ];
     }
+
+    /**
+     * Get list of fixed/system role names that cannot be removed
+     */
+    public static function getFixedRoles(): array {
+        return ['owner', 'admin', 'team_manager', 'analyst', 'location_employee'];
+    }
 }

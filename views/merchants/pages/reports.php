@@ -73,7 +73,7 @@ $paymentsByStatus = toArray($args->paymentsByStatus);
         </div>
 
         <!-- Net Revenue -->
-        <div class="col-12 col-md-6 col-lg-4 d-flex">
+        <div class="col-12 col-md-6 col-lg-4 d-flex ">
             <div class="card border-radius-10px w-100">
                 <div class="card-body">
                     <div class="flex-row-between-center flex-nowrap g-075">

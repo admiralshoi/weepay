@@ -16,6 +16,7 @@ class OrganisationFeesHandler extends Crud {
     /**
      * Get the reseller fee for an organisation
      * Returns active fee if exists, otherwise platform default
+     * The returned fee is the total fee minus cardFee and paymentProviderFee
      */
     public function resellerFee(string $organisationId): float {
         $now = time();
@@ -30,8 +31,13 @@ class OrganisationFeesHandler extends Crud {
             ->endGroup()
             ->first();
 
-        if(!isEmpty($activeFee)) return (float) $activeFee->fee;
-        return (float) Settings::$app->resellerFee;
+        $totalFee = !isEmpty($activeFee) ? (float) $activeFee->fee : (float) Settings::$app->resellerFee;
+
+        // Subtract card fee and payment provider fee
+        $cardFee = (float) (Settings::$app->cardFee ?? 0.39);
+        $paymentProviderFee = (float) (Settings::$app->paymentProviderFee ?? 0.39);
+
+        return max(0, $totalFee - $cardFee - $paymentProviderFee);
     }
 
     /**

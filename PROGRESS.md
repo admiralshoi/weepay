@@ -81,9 +81,56 @@
 ## Admin Dashboard
 
 ### 10. Admin Dashboard Core
-- [ ] Create admin dashboard to govern all existing features
-- **Status**: Not started
-- **Notes**:
+- [x] Create admin dashboard base structure (templates, nav, wrappers)
+- [x] Admin login page at `/admin/login` (unlisted)
+- [x] Login type validation (prevent wrong user types)
+- [ ] Build out full admin dashboard pages
+- **Status**: In Progress
+- **Notes**: See detailed structure below
+
+#### Admin Dashboard Structure
+
+**Dashboard (`/dashboard/*`)** - Daily Operations
+| Route | Page | Status |
+|-------|------|--------|
+| `/dashboard` | Home - KPIs & activity overview | [ ] |
+| `/dashboard/users` | All users list | [ ] |
+| `/dashboard/users/{id}` | User detail | [ ] |
+| `/dashboard/consumers` | Consumer management | [ ] |
+| `/dashboard/merchants` | Merchant management | [ ] |
+| `/dashboard/organisations` | Organisation list | [ ] |
+| `/dashboard/organisations/{id}` | Organisation detail | [ ] |
+| `/dashboard/locations` | All locations | [ ] |
+| `/dashboard/locations/{id}` | Location detail | [ ] |
+| `/dashboard/orders` | All orders | [ ] |
+| `/dashboard/orders/{id}` | Order detail | [ ] |
+| `/dashboard/payments` | All payments | [ ] |
+| `/dashboard/payments/pending` | Pending payments | [ ] |
+| `/dashboard/payments/past-due` | Past due payments | [ ] |
+| `/dashboard/bnpl` | BNPL overview & risk | [ ] |
+| `/dashboard/reports` | Analytics & reports | [ ] |
+| `/dashboard/support` | Support tickets (future) | [ ] |
+
+**Panel (`/panel/*`)** - System Configuration
+| Route | Page | Status |
+|-------|------|--------|
+| `/panel` | System overview | [x] (existing) |
+| `/panel/settings` | App settings & AppMeta | [ ] |
+| `/panel/fees` | Organisation fees configuration | [ ] |
+| `/panel/users` | User roles/access levels | [x] (existing) |
+| `/panel/logs/list` | Log browser | [x] (existing) |
+| `/panel/logs/{type}` | Log viewer | [x] (existing) |
+| `/panel/webhooks` | Webhook configuration | [ ] |
+| `/panel/api` | API keys & usage | [ ] |
+| `/panel/feature-flags` | Feature toggles | [ ] |
+| `/panel/maintenance` | Maintenance mode | [ ] |
+| `/panel/cache` | Cache management | [ ] |
+| `/panel/jobs` | Background jobs/cron status | [ ] |
+| `/panel/migrations` | DB migrations | [x] (existing) |
+
+#### Key Differences
+- **Dashboard**: Business operations, user/order management, daily admin work
+- **Panel**: Technical configuration, system settings, developer tools
 
 ### 11. Late Payment Fee System
 - [ ] System to charge fees for late payments

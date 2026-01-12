@@ -520,6 +520,90 @@ class QueryBuilder {
         }
     }
 
+    public function sum(string $column): float|int|null {
+        if($this->deadDraw) {
+            debugLog("Dead draw", "Sql sum, $this->table");
+            $this->deadDraw = $this->retainDeadDraw ? $this->deadDraw : false;
+            return null;
+        }
+        try {
+            $escapedColumn = $this->escapeIdentifier($column);
+            $sql = "SELECT SUM({$escapedColumn}) AS total FROM {$this->table}" . $this->predicateSql();
+            debugLog($sql, 'sum-sql');
+            debugLog($this->bindings, 'sum-bindings');
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute($this->bindings);
+            $result = $stmt->fetch(PDO::FETCH_OBJ);
+            return $result->total !== null ? (float)$result->total : null;
+        } catch (\PDOException $e) {
+            errorLog($e->getMessage() . "  -   " . $e->getTraceAsString(), "Sql sum, $this->table");
+            return null;
+        }
+    }
+
+    public function avg(string $column): float|int|null {
+        if($this->deadDraw) {
+            debugLog("Dead draw", "Sql avg, $this->table");
+            $this->deadDraw = $this->retainDeadDraw ? $this->deadDraw : false;
+            return null;
+        }
+        try {
+            $escapedColumn = $this->escapeIdentifier($column);
+            $sql = "SELECT AVG({$escapedColumn}) AS average FROM {$this->table}" . $this->predicateSql();
+            debugLog($sql, 'avg-sql');
+            debugLog($this->bindings, 'avg-bindings');
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute($this->bindings);
+            $result = $stmt->fetch(PDO::FETCH_OBJ);
+            return $result->average !== null ? (float)$result->average : null;
+        } catch (\PDOException $e) {
+            errorLog($e->getMessage() . "  -   " . $e->getTraceAsString(), "Sql avg, $this->table");
+            return null;
+        }
+    }
+
+    public function min(string $column): float|int|string|null {
+        if($this->deadDraw) {
+            debugLog("Dead draw", "Sql min, $this->table");
+            $this->deadDraw = $this->retainDeadDraw ? $this->deadDraw : false;
+            return null;
+        }
+        try {
+            $escapedColumn = $this->escapeIdentifier($column);
+            $sql = "SELECT MIN({$escapedColumn}) AS minimum FROM {$this->table}" . $this->predicateSql();
+            debugLog($sql, 'min-sql');
+            debugLog($this->bindings, 'min-bindings');
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute($this->bindings);
+            $result = $stmt->fetch(PDO::FETCH_OBJ);
+            return $result->minimum;
+        } catch (\PDOException $e) {
+            errorLog($e->getMessage() . "  -   " . $e->getTraceAsString(), "Sql min, $this->table");
+            return null;
+        }
+    }
+
+    public function max(string $column): float|int|string|null {
+        if($this->deadDraw) {
+            debugLog("Dead draw", "Sql max, $this->table");
+            $this->deadDraw = $this->retainDeadDraw ? $this->deadDraw : false;
+            return null;
+        }
+        try {
+            $escapedColumn = $this->escapeIdentifier($column);
+            $sql = "SELECT MAX({$escapedColumn}) AS maximum FROM {$this->table}" . $this->predicateSql();
+            debugLog($sql, 'max-sql');
+            debugLog($this->bindings, 'max-bindings');
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute($this->bindings);
+            $result = $stmt->fetch(PDO::FETCH_OBJ);
+            return $result->maximum;
+        } catch (\PDOException $e) {
+            errorLog($e->getMessage() . "  -   " . $e->getTraceAsString(), "Sql max, $this->table");
+            return null;
+        }
+    }
+
     public function getColumn(string $column): mixed {
         if($this->deadDraw) {
             debugLog("Dead draw", "Sql column, $this->table");

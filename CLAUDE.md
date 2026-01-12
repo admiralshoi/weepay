@@ -2,6 +2,28 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Core Principle - Use Existing Patterns
+
+**CRITICAL: This codebase has established patterns for all core functionality. NEVER invent custom solutions when a system already exists.**
+
+Before implementing anything, check if there's an existing pattern:
+
+| Task | Use This | NOT This |
+|------|----------|----------|
+| Database queries | Models (`Database/model/`) | Raw PDO/SQL |
+| AJAX requests | `post()`, `get()`, `del()` from `server.js` | Native `fetch()` |
+| URL generation | `Links` class (`classes/enumerations/Links`) | Hardcoded strings |
+| Page routing | `routing/web.php` with Controllers | Custom routing |
+| Asset loading | Path Constants (`routing/paths/constants/`) | Inline `<script>`/`<link>` |
+| Business logic | Handler classes via `Methods::` | Direct Model calls in controllers |
+| Response handling | `Response()->json...()` methods | Manual `echo json_encode()` |
+
+**When building new features:**
+1. Find a similar existing feature in the codebase
+2. Follow its exact patterns for structure, naming, and organization
+3. Use the same classes/methods it uses
+4. If unsure, search for how existing code handles the same type of task
+
 ## Project Overview
 
 WeePay is a PHP-based payment platform with POS (Point of Sale) functionality. It's a multi-tenant system supporting merchants and consumers, with features including checkout flows, terminal management, location management, and order processing. The application uses OIDC authentication (MitID) and integrates with payment providers.
@@ -317,6 +339,70 @@ Views are PHP templates in `views/` directory:
 - Organized by feature (e.g., `views/merchants/`, `views/purchase-flow/`)
 - Use `printView()` to render
 - Data passed via `$data` variable in view context
+
+### View File Rules - CRITICAL
+**View files are sacred - keep them clean!**
+
+**ALLOWED in view files:**
+- HTML markup
+- PHP for outputting data: `<?=$variable?>`, `<?php foreach(...): ?>`
+- Variable declarations for passing PHP data to JS: `var apiUrl = <?=json_encode($url)?>;`
+- Chart building JS (ApexCharts initialization)
+
+**NOT ALLOWED in view files:**
+- Inline CSS - use CSS files
+- Complex JavaScript logic - use external JS files
+- Business logic - belongs in controllers
+- Direct `<script src="...">` includes - use Path Constants
+
+### Asset Imports - Path Constants System
+**NEVER include JS/CSS files directly in views with `<script src="">` or `<link href="">`.**
+
+Assets are defined in `routing/paths/constants/` files. Each page has a constant defining its assets:
+
+```php
+// In routing/paths/constants/Admin.php
+const ADMIN_DASHBOARD_PAYMENTS = [
+    "template" => "ADMIN_INNER_HTML",
+    "view" => "admin.dashboard.payments",
+    "assets" => [
+        "main" => [
+            "js.server.js",        // public/js/server.js
+            "js.main.js",          // public/js/main.js
+            "js.admin-payments.js", // public/js/admin-payments.js (custom page script)
+            "css.main.css",        // public/css/main.css
+        ],
+        "vendor" => [
+            "vendor.apexcharts.apexcharts.min.js",
+        ],
+    ],
+];
+```
+
+**Dot notation mapping:**
+- `js.filename.js` → `public/js/filename.js`
+- `css.filename.css` → `public/css/filename.css`
+- `vendor.folder.file.js` → `public/vendor/folder/file.js`
+
+**To add a new JS file for a page:**
+1. Create the file in `public/js/`
+2. Add it to the page's constant in `routing/paths/constants/`
+
+### JavaScript API Methods
+**NEVER use native `fetch()` in JavaScript.** Always use the project's methods from `server.js`:
+- `post(url, data)` - POST request
+- `get(url)` - GET request
+- `del(url)` - DELETE request
+
+```javascript
+// CORRECT
+const result = await post(apiUrl, { page: 1, search: term });
+if (result.status === 'error') { ... }
+const data = result.data;
+
+// WRONG - never use fetch directly
+const response = await fetch(url, { method: 'POST', body: JSON.stringify(data) });
+```
 
 ## Testing
 

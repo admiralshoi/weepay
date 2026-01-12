@@ -112,7 +112,7 @@ class ApiController {
         // Check if password change is required
         if(!isEmpty($authRecord) && $authRecord->force_password_change == 1) {
             // Redirect to password change page
-            Response()->setRedirect(__url('settings/change-password'))->jsonSuccess("Du skal ændre dit kodeord før du kan fortsætte.");
+            Response()->setRedirect(__url(Links::$app->auth->changePassword))->jsonSuccess("Du skal ændre dit kodeord før du kan fortsætte.");
             return;
         }
 
@@ -189,7 +189,7 @@ class ApiController {
             ->first();
 
         if(!isEmpty($authRecord) && $authRecord->force_password_change == 1) {
-            Response()->setRedirect(__url('settings/change-password'))->jsonSuccess("Du skal ændre dit kodeord før du kan fortsætte.");
+            Response()->setRedirect(__url(Links::$app->auth->changePassword))->jsonSuccess("Du skal ændre dit kodeord før du kan fortsætte.");
             return;
         }
 
@@ -412,6 +412,62 @@ class ApiController {
         }
 
         Response()->jsonSuccess("Kode verificeret");
+    }
+
+    #[NoReturn] public static function changePassword(array $args): void {
+        $userId = __uuid();
+        if(isEmpty($userId)) Response()->jsonError("Bruger ikke fundet", [], 404);
+
+        // Validate required fields
+        foreach (['new_password', 'confirm_password'] as $key) {
+            if(!array_key_exists($key, $args) || empty($args[$key])) {
+                Response()->jsonError("Mangler obligatorisk felt", [], 400);
+            }
+        }
+
+        $newPassword = $args['new_password'];
+        $confirmPassword = $args['confirm_password'];
+
+        // Validate passwords match
+        if($newPassword !== $confirmPassword) {
+            Response()->jsonError("Adgangskoderne matcher ikke", [], 400);
+        }
+
+        // Validate password length
+        if(strlen($newPassword) < 8) {
+            Response()->jsonError("Adgangskoden skal være mindst 8 tegn", [], 400);
+        }
+
+        // Get auth record
+        $localAuthHandler = Methods::localAuthentication();
+        $authRecord = $localAuthHandler->excludeForeignKeys()->getFirst(['user' => $userId]);
+
+        if(isEmpty($authRecord)) {
+            Response()->jsonError("Ingen adgangskode fundet for denne bruger", [], 404);
+        }
+
+        // Hash new password and update
+        $hashedPassword = passwordHashing($newPassword);
+        $updateResult = $localAuthHandler->update([
+            'password' => $hashedPassword,
+            'force_password_change' => 0
+        ], ['user' => $userId]);
+
+        if(!$updateResult) {
+            Response()->jsonError("Kunne ikke opdatere adgangskode. Prøv igen.", [], 500);
+        }
+
+        // Determine redirect URL based on user role
+        $user = Methods::users()->get($userId);
+        $role = Methods::roles()->name($user?->access_level ?? 0);
+        $redirectUrl = match ($role) {
+            default => __url(""),
+            "consumer" => __url(Links::$consumer->dashboard),
+            "merchant" => __url(Links::$merchant->dashboard),
+            "admin", "system_admin" => __url(Links::$admin->dashboard),
+        };
+
+        Response()->setRedirect($redirectUrl)->jsonSuccess("Adgangskode ændret");
     }
 
     #[NoReturn] public static function updateConsumerProfile(array $args): void {

@@ -38,6 +38,9 @@ class LocationMemberHandler extends Crud {
 
 
     public function memberHasPermission(?object $location, string $type, string $mainObject = "", string $subObject = ""): bool {
+        // Admins have full permissions on all locations
+        if(Methods::isAdmin()) return true;
+
         if(isEmpty($location)) return false;
         if(!in_array($type, ["read", "modify", "delete"])) return false;
         if(isEmpty($mainObject) && empty($subObject)) return false;

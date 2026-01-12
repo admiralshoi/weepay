@@ -49,6 +49,7 @@ class LocationPermissions {
     }
 
     public static function __oRead(?object $location, string $mainObject = "", string $subObject = "", bool $strictRole = false): bool {
+        if(\classes\Methods::isAdmin()) return true;
         $type = 'read';
         if(empty($subObject)) {
             $subObject = $mainObject;
@@ -59,6 +60,7 @@ class LocationPermissions {
         return self::checkParent($type, $location, $subObject, $strictRole);
     }
     public static function __oModify(?object $location, string $mainObject = "", string $subObject = "", bool $strictRole = false): bool {
+        if(\classes\Methods::isAdmin()) return true;
         $type = 'modify';
         if(empty($subObject)) {
             $subObject = $mainObject;
@@ -69,6 +71,7 @@ class LocationPermissions {
         return self::checkParent($type, $location, $subObject, $strictRole);
     }
     public static function __oDelete(?object $location, string $mainObject = "", string $subObject = "", bool $strictRole = false): bool {
+        if(\classes\Methods::isAdmin()) return true;
         $type = 'delete';
         if(empty($subObject)) {
             $subObject = $mainObject;

@@ -69,6 +69,11 @@ class Routes {
             exit;
         }
 
+        if(requiresPasswordChange()) {
+            header("location: " . __url(Links::$app->auth->changePassword));
+            exit;
+        }
+
         if(requiresWhitelistedIp()) {
             header("location: " . __url(Links::$merchant->accessDenied));
             exit;

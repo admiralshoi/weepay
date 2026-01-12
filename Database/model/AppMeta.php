@@ -84,6 +84,21 @@ class AppMeta extends \Database\Model {
             "type" => "float",
         ],
         [
+            "name" => "cardFee",
+            "value" => '0.39',
+            "type" => "float",
+        ],
+        [
+            "name" => "paymentProviderFee",
+            "value" => '0.39',
+            "type" => "float",
+        ],
+        [
+            "name" => "bnplInstallmenMaxDuration",
+            "value" => '90',
+            "type" => "int",
+        ],
+        [
             "name" => "oidc_session_lifetime",
             "value" => '300',
             "type" => "int",

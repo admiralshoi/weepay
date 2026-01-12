@@ -102,6 +102,16 @@ class PageController {
         return Views("CONSUMER_AUTH_DASHBOARD_SIGNUP", compact('oidcSessionId', 'authError'));
     }
 
+    public static function changePassword(array $args): mixed  {
+        if(!isLoggedIn()) Response()->redirect(__url(Links::$app->home));
+
+        $user = \features\Settings::$user;
+        $authRecord = Methods::localAuthentication()->excludeForeignKeys()->getFirst(['user' => __uuid()]);
+        $isForced = !isEmpty($authRecord) && (int)$authRecord->force_password_change === 1;
+
+        return Views("AUTH_CHANGE_PASSWORD", compact('user', 'isForced'));
+    }
+
     public static function consumerCompleteProfile(array $args): mixed  {
         if(!isLoggedIn()) Response()->redirect(__url(Links::$app->auth->consumerSignup));
         if(!Methods::isConsumer()) Response()->redirect(__url(Links::$app->home));

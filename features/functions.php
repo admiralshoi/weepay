@@ -853,6 +853,30 @@ function requiresProfileCompletion(): bool {
         !in_array(realUrlPath(), $exceptionPaths);
 }
 
+function requiresPasswordChange(): bool {
+    // Skip for non-logged-in users
+    if(!isLoggedIn()) return false;
+    if(!isOidcAuthenticated()) return false;
+
+    $headers = apache_request_headers();
+    // Skip for API requests
+    if(array_key_exists("Request-Type", $headers) && $headers["Request-Type"] === "api") return false;
+
+    $exceptionPaths = [
+        Links::$app->auth->changePassword,
+        Links::$app->logout
+    ];
+
+    // Check if current path is an exception
+    if(in_array(realUrlPath(), $exceptionPaths)) return false;
+
+    // Get user's auth record to check force_password_change flag
+    $authRecord = \classes\Methods::localAuthentication()->excludeForeignKeys()->getFirst(['user' => __uuid()]);
+    if(isEmpty($authRecord)) return false;
+
+    return (int)$authRecord->force_password_change === 1;
+}
+
 function requiresWhitelistedIp(): bool {
     // Skip for non-logged-in users (landing pages, public pages)
     if(!isLoggedIn()) return false;

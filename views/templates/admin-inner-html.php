@@ -14,7 +14,7 @@ use classes\Methods;
 
 
 
-<div class="page-wrapper home">
+<div class="page-wrapper home" data-area="admin">
     <?php
     include_once __view("templates.nav.admin.top-nav");
     ?>

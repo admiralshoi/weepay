@@ -36,6 +36,20 @@ class Titles {
         return strtolower(str_replace(" ", "_", $str));
     }
 
+    /**
+     * Sanitize a role/key name - lowercase, underscores, only a-z and Danish æøå
+     */
+    public static function sanitizeKey(string $str): string {
+        // First apply reverseClean (lowercase, spaces to underscores)
+        $str = self::reverseClean($str);
+        // Remove any character that is not a-z, æøå, or underscore
+        $str = preg_replace('/[^a-zæøå_]/u', '', $str);
+        // Remove multiple consecutive underscores
+        $str = preg_replace('/_+/', '_', $str);
+        // Trim underscores from start/end
+        return trim($str, '_');
+    }
+
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------
 

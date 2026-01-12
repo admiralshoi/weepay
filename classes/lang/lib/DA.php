@@ -9,6 +9,10 @@ class DA {
             "title" => "Titel"
         ],
         "footer_info" => "Sidefod info",
+        "payment_start" => [
+            "now" => "Nu",
+            "first day of next month" => "1. i næste måned",
+        ],
         "checkout" => [
             "status" => [
                 "void" => "Annulleret",
@@ -19,7 +23,7 @@ class DA {
             ],
         ],
         "order" => [
-            "installments" => "betalingsrater"
+            "installments" => "betalingsrater",
         ],
         // Location-specific terminology (employees instead of members)
         "location" => [
@@ -98,6 +102,7 @@ class DA {
         // Organisation translations
         "organisation" => "virksomhed",
         "organisations" => "virksomheder",
+        "organisationer" => "virksomheder",
         "organisationen" => "virksomheden",
         "organisationerne" => "virksomhederne",
         "organisationens" => "virksomhedens",
@@ -110,6 +115,7 @@ class DA {
 
         // Capital variations
         "Organisation" => "Virksomhed",
+        "Organisationer" => "Virksomheder",
         "Organisations" => "Virksomheder",
         "Organisationen" => "Virksomheden",
         "Organisationerne" => "Virksomhederne",

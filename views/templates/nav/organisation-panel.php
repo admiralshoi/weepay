@@ -15,7 +15,7 @@ $organisations = Methods::organisationMembers()->getUserOrganisations();
 
 <div id="sidebar" class="flex-col-between flex-align-start">
     <div class="flex-col-between h-100">
-        <div class="flex-col-start">
+        <div class="flex-col-start h-100">
             <div class="flex-row-end flex-align-center px-2 pt-2 color-gray flex-nowrap" style="column-gap: .25rem" id="leftSidebarCloseBtn">
                 <i class="font-16  fa-solid fa-xmark" id="" ></i>
                 <span class="text-sm">Close</span>
@@ -77,7 +77,7 @@ $organisations = Methods::organisationMembers()->getUserOrganisations();
                 </div>
             </div>
 
-            <div id="side-bar-menu-content" style="max-height: calc(100vh - 225px); overflow-x: auto;" class="w-100 px-2">
+            <div id="side-bar-menu-content" class="w-100 px-2">
 
 
                 <?php

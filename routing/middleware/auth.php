@@ -89,3 +89,8 @@ function consumerProfileComplete(): bool {
     if(!Methods::isConsumer()) return true;
     return !isEmpty(\features\Settings::$user?->phone) && !isEmpty(\features\Settings::$user?->full_name);
 }
+
+function isImpersonating(): bool {
+    return !empty($_SESSION["admin_impersonating_uid"]) &&
+           (!empty($_SESSION["admin_impersonating_org"]) || !empty($_SESSION["admin_impersonating_user"]));
+}

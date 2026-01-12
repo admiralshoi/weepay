@@ -26,6 +26,10 @@ class Settings {
     public static ?object $user = null;
     public static ?object $organisation = null;
 
+    // Admin impersonation
+    public static bool $impersonatingOrganisation = false;
+    public static ?string $impersonatedOrganisationId = null;
+
 
 
 

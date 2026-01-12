@@ -9,59 +9,41 @@ class CronWorker extends Crud {
     private object|array $info = [];
     protected bool $log = true;
     private array $typesList = array(
-        "hashtag_tracking" => array(
-            "log_file" => CRON_LOGS."cronLog_hashtag_tracking.log",
-            "log_date_file" => CRON_LOGS."cronDate_hashtag_tracking.log",
-            "log_memory_file" => CRON_LOGS."cronMemory_hashtag_tracking.log",
-            "row_id" => 'crn_3i3uzrwyal2m5j4',
-            "time_gab" => (60 * 59 - 10),
-            "max_run_time" => (60 * 3),
-            "sleep_timer" => (60 * 0)
+        "take_payments" => array(
+            "log_file" => CRON_LOGS."cronLog_take_payments.log",
+            "log_date_file" => CRON_LOGS."cronDate_take_payments.log",
+            "log_memory_file" => CRON_LOGS."cronMemory_take_payments.log",
+            "row_id" => 'crn_take_payments',
+            "time_gab" => (60 * 60), // 1 hour between runs
+            "max_run_time" => (60 * 10), // 10 min max
+            "sleep_timer" => (60 * 5) // 5 min sleep between pauses
         ),
-        "media_update" => array(
-            "log_file" => CRON_LOGS."cronLog_media_update.log",
-            "log_date_file" => CRON_LOGS."cronDate_media_update.log",
-            "log_memory_file" => CRON_LOGS."cronMemory_media_update.log",
-            "row_id" => 'crn_9ezwcjusz2yf8av',
-            "time_gab" => 0,
-            "max_run_time" => 0,
-            "sleep_timer" => (60 * 0)
+        "retry_payments" => array(
+            "log_file" => CRON_LOGS."cronLog_retry_payments.log",
+            "log_date_file" => CRON_LOGS."cronDate_retry_payments.log",
+            "log_memory_file" => CRON_LOGS."cronMemory_retry_payments.log",
+            "row_id" => 'crn_retry_payments',
+            "time_gab" => (60 * 60 * 4), // 4 hours between runs
+            "max_run_time" => (60 * 10), // 10 min max
+            "sleep_timer" => (60 * 5) // 5 min sleep between pauses
         ),
-        "tag_mentions" => array(
-            "log_file" => CRON_LOGS."cronLog_tag_mentions.log",
-            "log_date_file" => CRON_LOGS."cronDate_tag_mentions.log",
-            "log_memory_file" => CRON_LOGS."cronMemory_tag_mentions.log",
-            "row_id" => 'crn_2ywksq8hm1fogp8',
-            "time_gab" => (60 * 59 - 10),
-            "max_run_time" => (60 * 3),
-            "sleep_timer" => (60 * 0)
-        ),
-        "account_insights" => array(
-            "log_file" => CRON_LOGS."cronLog_account_insights.log",
-            "log_date_file" => CRON_LOGS."cronDate_account_insights.log",
-            "log_memory_file" => CRON_LOGS."cronMemory_account_insights.log",
-            "row_id" => 'crn_fny6zh56nw2dy3c',
-            "time_gab" => (60 * 30 - 10),
-            "max_run_time" => (60 * 5),
-            "sleep_timer" => (60 * 0)
-        ),
-        "event_mode" => array(
-            "log_file" => CRON_LOGS."cronLog_event_mode.log",
-            "log_date_file" => CRON_LOGS."cronDate_event_mode.log",
-            "log_memory_file" => CRON_LOGS."cronMemory_event_mode.log",
-            "row_id" => 'crn_tkw3fwyq3cuj7xw',
-            "time_gab" => (60 * 7),
-            "max_run_time" => (60 * 5),
+        "cleanup_logs" => array(
+            "log_file" => CRON_LOGS."cronLog_cleanup_logs.log",
+            "log_date_file" => CRON_LOGS."cronDate_cleanup_logs.log",
+            "log_memory_file" => CRON_LOGS."cronMemory_cleanup_logs.log",
+            "row_id" => 'crn_cleanup_logs',
+            "time_gab" => (60 * 60 * 24), // Daily
+            "max_run_time" => (60 * 5), // 5 min max
             "sleep_timer" => (60)
         ),
-        "affiliate_pay_period" => array(
-            "log_file" => CRON_LOGS."cronLog_affiliate_pay_period.log",
-            "log_date_file" => CRON_LOGS."cronDate_affiliate_pay_period.log",
-            "log_memory_file" => CRON_LOGS."cronMemory_affiliate_pay_period.log",
-            "row_id" => 'crn_2ppdykrmb0ux842',
-            "time_gab" => (60 * 60 * 23),
-            "max_run_time" => (60 * 5),
-            "sleep_timer" => (60)
+        "payment_notifications" => array(
+            "log_file" => CRON_LOGS."cronLog_payment_notifications.log",
+            "log_date_file" => CRON_LOGS."cronDate_payment_notifications.log",
+            "log_memory_file" => CRON_LOGS."cronMemory_payment_notifications.log",
+            "row_id" => 'crn_payment_notifications',
+            "time_gab" => (60 * 60 * 12), // Every 12 hours
+            "max_run_time" => (60 * 10), // 10 min max
+            "sleep_timer" => (60 * 2)
         ),
     );
 

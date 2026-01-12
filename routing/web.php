@@ -157,6 +157,9 @@ Routes::group(['api', "requiresApiLogout"], function() {
  *  =========================================
  */
 Routes::group(['api','requiresApiLogin'], function() {
+    // Password change API - available to all logged-in users
+    Routes::post(Links::$api->auth->changePassword, "auth.ApiController::changePassword");
+
     // Common user settings API (for both merchants and consumers)
     Routes::group(['merchantOrConsumer'], function() {
         Routes::post(Links::$api->user->updateProfile, "UserApiController::updateProfile");
@@ -278,7 +281,8 @@ Routes::group(['api','requiresApiLogin'], function() {
  */
 Routes::group(["requiresLogin"], function () {
 
-
+    // Password change page - available to all logged-in users
+    Routes::get(Links::$app->auth->changePassword, "auth.PageController::changePassword");
 
 
     /**
@@ -471,10 +475,36 @@ Routes::group(["api"], function() {
  *  =========================================
  */
 Routes::group(['requiresLogin', "admin"], function() {
+
+    /**
+     *  =========================================
+     *  =========== DASHBOARD START =============
+     *  =========================================
+     */
     Routes::get("", "admin.PageController::dashboard");
     Routes::get(Links::$admin->dashboard, "admin.PageController::dashboard");
-
-
+    Routes::get(Links::$admin->users, "admin.PageController::users");
+    Routes::get(Links::$admin->users . "/{id}", "admin.PageController::userDetail");
+    Routes::get(Links::$admin->consumers, "admin.PageController::consumers");
+    Routes::get(Links::$admin->merchants, "admin.PageController::merchants");
+    Routes::get(Links::$admin->organisations, "admin.PageController::organisations");
+    Routes::get(Links::$admin->organisations . "/{id}", "admin.PageController::organisationDetail");
+    Routes::get(Links::$admin->locations, "admin.PageController::locations");
+    Routes::get(Links::$admin->locations . "/{id}", "admin.PageController::locationDetail");
+    Routes::get(Links::$admin->orders, "admin.PageController::orders");
+    Routes::get(Links::$admin->orders . "/{id}", "admin.PageController::orderDetail");
+    Routes::get(Links::$admin->payments, "admin.PageController::payments");
+    Routes::get(Links::$admin->payments . "/{id}", "admin.PageController::paymentDetail");
+    Routes::get(Links::$admin->paymentsPending, "admin.PageController::paymentsPending");
+    Routes::get(Links::$admin->paymentsPastDue, "admin.PageController::paymentsPastDue");
+    Routes::get(Links::$admin->kpi, "admin.PageController::kpi");
+    Routes::get(Links::$admin->reports, "admin.PageController::reports");
+    Routes::get(Links::$admin->support, "admin.PageController::support");
+    /**
+     *  =========================================
+     *  ============ DASHBOARD END ==============
+     *  =========================================
+     */
 
 
     /**
@@ -482,14 +512,30 @@ Routes::group(['requiresLogin', "admin"], function() {
      *  ============= PANEL START ===============
      *  =========================================
      */
-    Routes::get(ADMIN_PANEL_PATH, "admin.AdminController::home");
-    Routes::get(ADMIN_PANEL_PATH . "/app", "admin.AdminController::appSettings");
-    Routes::get(ADMIN_PANEL_PATH . "/users", "admin.AdminController::users");
-    Routes::get(ADMIN_PANEL_PATH . "/users/{role}", "admin.AdminController::users");
-    Routes::get(ADMIN_PANEL_PATH . "/logs/list", "admin.AdminController::logList");
+    Routes::get(ADMIN_PANEL_PATH, "admin.PanelController::home");
+    Routes::get(Links::$admin->panelSettings, "admin.PanelController::settings");
+    Routes::get(Links::$admin->panelMarketing, "admin.PanelController::marketing");
+    Routes::get(Links::$admin->panelFees, "admin.PanelController::fees");
+    Routes::get(Links::$admin->panelUsers, "admin.AdminController::users");
+    Routes::get(Links::$admin->panelUsers . "/{role}", "admin.AdminController::users");
+    Routes::get(Links::$admin->panelLogs, "admin.AdminController::logList");
     Routes::get(ADMIN_PANEL_PATH . "/logs/{type}", "admin.AdminController::logView");
     Routes::get(ADMIN_PANEL_PATH . "/logs/{type}/{month}", "admin.AdminController::logView");
     Routes::get(ADMIN_PANEL_PATH . "/logs/{type}/{month}/{day}", "admin.AdminController::logView");
+    Routes::get(Links::$admin->panelWebhooks, "admin.PanelController::webhooks");
+    Routes::get(Links::$admin->panelApi, "admin.PanelController::api");
+    Routes::get(Links::$admin->panelPaymentPlans, "admin.PanelController::paymentPlans");
+    Routes::get(Links::$admin->panelMaintenance, "admin.PanelController::maintenance");
+    Routes::get(Links::$admin->panelCache, "admin.PanelController::cache");
+    Routes::get(Links::$admin->panelJobs, "admin.PanelController::jobs");
+
+    // Content & Policies
+    Routes::get(Links::$admin->panelPolicies, "admin.PanelController::policies");
+    Routes::get(Links::$admin->panelPoliciesPrivacy, "admin.PanelController::policiesPrivacy");
+    Routes::get(Links::$admin->panelPoliciesTerms, "admin.PanelController::policiesTerms");
+    Routes::get(Links::$admin->panelPoliciesCookies, "admin.PanelController::policiesCookies");
+    Routes::get(Links::$admin->panelContactForms, "admin.PanelController::contactForms");
+    Routes::get(Links::$admin->panelNotifications, "admin.PanelController::notifications");
     /**
      *  =========================================
      *  ============== PANEL END ================
@@ -526,9 +572,33 @@ Routes::group(['requiresLogin', "admin"], function() {
  *  ==== REQUIRES API LOGIN ADMIN START =====
  *  =========================================
  */
+// Impersonation stop - requires active impersonation session
+Routes::group(['requiresApiLogin', "isImpersonating", "api"], function() {
+    Routes::post("api/admin/impersonate/stop", "admin.ApiController::stopImpersonation");
+});
+
 Routes::group(['requiresApiLogin', "admin", "api"], function() {
+    // Admin impersonation start (requires admin)
+    Routes::post("api/admin/impersonate/start", "admin.ApiController::startImpersonation");
+
     Routes::post("webhook/test", "admin.AdminController::testWebhook");
     Routes::post("api/admin/settings/app/{name}/{action}", "admin.ApiController::appMetaUpdate");
+    Routes::post("api/admin/panel/update-setting", "admin.ApiController::panelUpdateSetting");
+    Routes::post("api/admin/panel/create-user", "admin.ApiController::panelCreateUser");
+    Routes::post("api/admin/panel/create-role", "admin.ApiController::panelCreateRole");
+    Routes::post("api/admin/panel/update-role", "admin.ApiController::panelUpdateRole");
+    Routes::post("api/admin/payments/list", "admin.ApiController::paymentsList");
+    Routes::post("api/admin/users/list", "admin.ApiController::usersList");
+    Routes::post("api/admin/orders/list", "admin.ApiController::ordersList");
+    Routes::post("api/admin/organisations/list", "admin.ApiController::organisationsList");
+    Routes::post("api/admin/locations/list", "admin.ApiController::locationsList");
+    Routes::post("api/admin/dashboard/stats", "admin.ApiController::dashboardStats");
+    Routes::post("api/admin/organisation/{id}/status", "admin.ApiController::organisationStatusUpdate");
+    // Admin Reports API
+    Routes::post("api/admin/reports/stats", "admin.ReportsApiController::getStats");
+    Routes::post("api/admin/reports/generate-csv", "admin.ReportsApiController::generateCsv");
+    Routes::post("api/admin/reports/generate-pdf", "admin.ReportsApiController::generatePdf");
+    Routes::get("api/admin/reports/download/{filename}", "admin.ReportsApiController::downloadReport");
     Routes::post("api/create-user-on-behalf", "api.AuthController::createUserThirdParty");
     Routes::post("api/user/{id}/toggle", "api.ContentController::userToggleSuspension");
 });

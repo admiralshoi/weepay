@@ -40,6 +40,19 @@ foreach (\Database\model\UserRoles::where("defined", 1)->order("access_level", "
 if(isLoggedIn()) {
     Settings::$user = Methods::users()->get(__uuid());
     debugLog(Settings::$user->cookies, 'user-cookies');
+
+    // Check if we're impersonating (admin logged in as merchant owner or consumer)
+    if (!empty($_SESSION["admin_impersonating_uid"])) {
+        if (!empty($_SESSION["admin_impersonating_org"])) {
+            Settings::$impersonatingOrganisation = true;
+            Settings::$impersonatedOrganisationId = $_SESSION["admin_impersonating_org"];
+        } elseif (!empty($_SESSION["admin_impersonating_user"])) {
+            Settings::$impersonatingOrganisation = true; // Reuse flag for both types
+            Settings::$impersonatedOrganisationId = $_SESSION["admin_impersonating_user"]; // Store user ID here
+        }
+    }
+
+    // Normal organisation context loading
     if(!is_null(Settings::$user->cookies) && array_key_exists("organisation", toArray(Settings::$user->cookies))) {
         $organisationId = Settings::$user->cookies->organisation;
         $memberRow = Methods::organisationMembers()->getMember($organisationId);

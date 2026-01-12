@@ -7,6 +7,7 @@ use classes\utility\Crud;
 use Database\Collection;
 use Database\model\Orders;
 use env\api\Viva;
+use features\Settings;
 
 class OrderHandler extends Crud {
 
@@ -73,6 +74,8 @@ class OrderHandler extends Crud {
             "amount" => $amount,
             "fee_amount" => $isvAmount,
             "fee" => $isvFee,
+            'cardFee' => (float)Settings::$app->cardFee,
+            'paymentProviderFee' => (float)Settings::$app->paymentProviderFee,
             "source_code" => $sourceCode,
             "caption" => $caption,
             "prid" => $prid,

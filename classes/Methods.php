@@ -56,6 +56,7 @@ class Methods {
     public static function checkoutBasket(): \classes\organisations\CheckoutBasketHandler { return new \classes\organisations\CheckoutBasketHandler(); }
     public static function orders(): \classes\payments\OrderHandler { return new \classes\payments\OrderHandler(); }
     public static function payments(): \classes\payments\PaymentsHandler { return new \classes\payments\PaymentsHandler(); }
+    public static function paymentProviders(): \classes\payments\PaymentProvidersHandler { return new \classes\payments\PaymentProvidersHandler(); }
     public static function terminals(): \classes\organisations\TerminalHandler { return new \classes\organisations\TerminalHandler(); }
     public static function terminalSessions(): \classes\organisations\TerminalSessionHandler { return new \classes\organisations\TerminalSessionHandler(); }
     public static function locations(): \classes\organisations\LocationHandler { return new \classes\organisations\LocationHandler(); }

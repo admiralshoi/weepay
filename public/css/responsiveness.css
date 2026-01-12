@@ -205,6 +205,14 @@
     #sidebar.mb-open, #sidebar-admin-panel.mb-open {
         margin-left: 0 !important;
     }
+    #sidebar, #sidebar-admin-panel {
+        overflow: hidden;
+    }
+    #sidebar #side-bar-menu-content, #sidebar-admin-panel #side-bar-menu-content {
+        max-height: calc(100vh - 60px) !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+    }
 
     .flex-row-sm-end { justify-content: start; }
 
@@ -298,9 +306,16 @@
         transition: width 200ms ease;
         z-index: 99;
         width: var(--left-nav-collapsed-width);
+        overflow: hidden;
+    }
+    #sidebar #side-bar-menu-content, #sidebar-admin-panel #side-bar-menu-content {
+        max-height: calc(100vh - var(--top-nav-height) - 20px) !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
     }
     #sidebar #sidebar-top-logo, #sidebar-admin-panel #sidebar-top-logo { display: none; }
-    #sidebar .sidebar-text, #sidebar #sidebar-bottom-nav, #sidebar-admin-panel .sidebar-text, #sidebar-admin-panel #sidebar-bottom-nav {
+    #sidebar .sidebar-text, #sidebar #sidebar-bottom-nav, #sidebar-admin-panel .sidebar-text, #sidebar-admin-panel #sidebar-bottom-nav,
+    #sidebar .sidebar-section-title, #sidebar-admin-panel .sidebar-section-title {
         display: none;
     }
     #sidebar .sidebar-nav-link.pr-3, #sidebar-admin-panel .sidebar-nav-link.pr-3 {
@@ -328,13 +343,13 @@
     #sidebar.mb-open #leftSidebarCloseBtn { display: flex !important; }
     #sidebar.mb-open #sidebar-top-logo { display: block !important; }
     #sidebar.mb-open #sidebar-top-logo { padding: .25rem 1rem 1rem 1rem; }
-    #sidebar.mb-open .sidebar-text { display: block !important; }
+    #sidebar.mb-open .sidebar-text, #sidebar.mb-open .sidebar-section-title { display: block !important; }
     #sidebar.mb-open #sidebar-top-nav { display: none !important; }
     #sidebar.mb-open #sidebar-bottom-nav {display: flex !important;}
     #sidebar.mb-open #sidebar-bottom-nav-icon {display: none !important;}
 
     #sidebar-admin-panel.mb-open #sidebar-top-logo { display: block !important; }
-    #sidebar-admin-panel.mb-open .sidebar-text { display: block !important; }
+    #sidebar-admin-panel.mb-open .sidebar-text, #sidebar-admin-panel.mb-open .sidebar-section-title { display: block !important; }
     #sidebar-admin-panel.mb-open #sidebar-top-nav { display: none !important; }
     #sidebar-admin-panel.mb-open #sidebar-bottom-nav {display: flex !important;}
     #sidebar-admin-panel.mb-open #sidebar-bottom-nav-icon {display: none !important;}

@@ -9,8 +9,8 @@
 function setDataTable(el, sort = [], datePicker = false, entries = [], defaultDisplayLength = 0, columnDefs = []) {
     entries = (!empty(entries) ? entries :
             [
-                [10, 30, 50, 100, 500, 1000, 2500, 5000, -1],
-                [10, 30, 50, 100, 500, 1000, 2500, 5000, "All"]
+                [10, 15, 30, 50, 100, 500, 1000, 2500, 5000, -1],
+                [10, 15, 30, 50, 100, 500, 1000, 2500, 5000, "All"]
             ]
     );
     defaultDisplayLength = defaultDisplayLength === 0 ? entries[0][0] : defaultDisplayLength;

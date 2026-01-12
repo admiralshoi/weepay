@@ -691,3 +691,56 @@ const consumerCompleteProfileHandler = () => {
     })
 }
 consumerCompleteProfileHandler();
+
+
+const changePasswordHandler = () => {
+    let isLoading = false;
+
+    const changePassword = async (btn) => {
+        if(isLoading) return;
+
+        let form = btn.parents('form').first();
+        let newPassword = form.find("#new_password").val();
+        let confirmPassword = form.find("#confirm_password").val();
+
+        if(!newPassword || newPassword.trim() === '') {
+            showErrorNotification("Fejl", "Indtast ny adgangskode");
+            return false;
+        }
+
+        if(newPassword.length < 8) {
+            showErrorNotification("Fejl", "Adgangskoden skal være mindst 8 tegn");
+            return false;
+        }
+
+        if(newPassword !== confirmPassword) {
+            showErrorNotification("Fejl", "Adgangskoderne matcher ikke");
+            return false;
+        }
+
+        let formData = new FormData(form.get(0));
+        let dest = form.attr("action");
+
+        btn.get(0).disabled = true;
+        isLoading = true;
+
+        let result = await post(dest, formData);
+        console.log(result);
+
+        if(result.status === 'error') {
+            btn.get(0).disabled = false;
+            isLoading = false;
+            showErrorNotification("Kunne ikke ændre adgangskode", result.error.message);
+            return false;
+        }
+
+        queueNotificationOnLoad("Adgangskode ændret", result.message, 'success', 2000);
+        handleStandardApiRedirect(result, 1);
+    }
+
+    $("button[name=change-password-button]").on("click", function (e) {
+        e.preventDefault();
+        changePassword($(this));
+    })
+}
+changePasswordHandler();

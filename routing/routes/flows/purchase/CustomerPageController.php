@@ -263,7 +263,7 @@ class CustomerPageController {
         $hasPastDue = !isEmpty($customerId) && Methods::payments()->exists(['uuid' => $customerId, 'status' => 'PAST_DUE']);
 
         foreach (Settings::$app->paymentPlans as $name => $plan){
-            $plan = $basketHandler->createCheckoutInfo($basket, $name, 90, $birthdate, $customerId, $organisationId);
+            $plan = $basketHandler->createCheckoutInfo($basket, $name, $birthdate, $customerId, $organisationId);
             if(isEmpty($plan)) continue;
 
             $paymentPlans[] = $plan;

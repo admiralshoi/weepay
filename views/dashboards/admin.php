@@ -1,110 +1,27 @@
 <?php
 /**
- * @var object $args
+ * Admin Panel Home
  */
 
-use classes\Methods;
-
-$pageTitle = "Analytics";
-
-$postsCount = Methods::actorMedia()->getMediaWithCampaignCount();
-$mentionsToday = Methods::actorMedia()->getMediaWithCampaignTodayCount();
-$creatorCount = Methods::actors()->count(["deactivated" => 0]);
-$activeCampaigns = Methods::campaigns()->getActiveCampaignCount();
-
-
-
+$pageTitle = "System Panel";
 ?>
-    <script>
-        var pageTitle = <?=json_encode($pageTitle)?>;
-        activePage = "home";
-    </script>
-    <div class="page-content position-relative" data-page="dashboard">
+<script>
+    var pageTitle = <?=json_encode($pageTitle)?>;
+    activePage = "panel-home";
+</script>
 
-        <div class="row">
-            <div class="col-12 col-md-6 col-lg-4 col-xl-3 mt-1">
-                <div class="card border-radius-10px">
-                    <div class="card-body position-relative">
-                        <p class="font-32 font-weight-bold"><?=$postsCount?></p>
-                        <p class="font-16 mt-1">Total mentions</p>
-                    </div>
-                </div>
+<div class="page-content py-3">
+    <div class="page-inner-content">
+        <div class="flex-col-start" style="row-gap: 1.5rem;">
+            <div class="flex-row-between flex-align-center w-100">
+                <h1 class="mb-0 font-24 font-weight-bold">System Panel</h1>
             </div>
-            <div class="col-12 col-md-6 col-lg-4 col-xl-3 mt-1">
-                <div class="card border-radius-10px">
-                    <div class="card-body position-relative">
-                        <p class="font-32 font-weight-bold"><?=$mentionsToday?></p>
-                        <p class="font-16 mt-1">Mentions today</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-md-6 col-lg-4 col-xl-3 mt-1">
-                <div class="card border-radius-10px">
-                    <div class="card-body position-relative">
-                        <p class="font-32 font-weight-bold"><?=$activeCampaigns?></p>
-                        <p class="font-16 mt-1">Active campaigns</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-md-6 col-lg-4 col-xl-3 mt-1">
-                <div class="card border-radius-10px">
-                    <div class="card-body position-relative">
-                        <p class="font-32 font-weight-bold"><?=$creatorCount?></p>
-                        <p class="font-16 mt-1">Total creators</p>
-                    </div>
-                </div>
-            </div>
-
-
-        </div>
-
-
-
-
-
-
-
-
-
-
-        <div class="row mt-5">
-            <div class="col-12">
-                <div class="card mt-2">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-12">
-                                <p class="font-18 font-weight-bold color-primary-cta">Live tracking</p>
-                            </div>
-                            <div class="col-12 mt-1">
-
-                                <div class="table-responsive container-fluid overflow-x-hidden mt-3">
-                                    <table class="table table-hover dataTable prettyTable" id="live_mention_table">
-                                        <thead>
-                                        <tr>
-                                            <th>Id</th>
-                                            <th>Username</th>
-                                            <th>Type</th>
-                                            <th>Campaign</th>
-                                            <th>Time</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                            </div>
-
-                        </div>
-                    </div>
+            <div class="card border-radius-10px">
+                <div class="card-body flex-col-center flex-align-center py-5">
+                    <i class="mdi mdi-cog-outline font-50 color-gray"></i>
+                    <p class="mb-0 font-16 color-gray mt-2">System panel oversigt kommer snart</p>
                 </div>
             </div>
         </div>
-
-
-
-
-
     </div>
-
+</div>

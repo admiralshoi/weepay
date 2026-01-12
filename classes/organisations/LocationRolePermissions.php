@@ -111,4 +111,11 @@ class LocationRolePermissions {
             'cashier' => self::CASHIER,
         ];
     }
+
+    /**
+     * Get list of fixed/system role names that cannot be removed
+     */
+    public static function getFixedRoles(): array {
+        return ['store_manager', 'team_manager', 'cashier'];
+    }
 }

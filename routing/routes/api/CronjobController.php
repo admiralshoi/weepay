@@ -11,175 +11,67 @@ use JetBrains\PhpStorm\NoReturn;
 class CronjobController {
 
 
-
-
-
-    #[NoReturn] public static function manualExtra(): array {
-        require_once __view("testing/simplif-3.php");
-        Response()->jsonSuccess("Finished running cronjob");
-    }
-
-
-
-
-
-    #[NoReturn] public static function affiliatePayPeriod(): array {
-        $worker = self::init("affiliate_pay_period");
-        if($worker === null) Response()->jsonError("Cronjob may not be initiated.", [], 202);
-
-        Methods::cronRequestHandler()->affiliatePayPeriod($worker);
-
-        self::end($worker);
-        Response()->jsonSuccess("Finished running cronjob");
-    }
-
-
-
-
-    #[ArrayShape(["result" => "\array|null|string", "response_code" => "int"])]
-    public static function accountAnalytics(array $args): array {
-        $worker = self::init("account_insights");
+    /**
+     * Take scheduled payments (BNPL installments, deferred payments)
+     */
+    #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
+    public static function takePayments(): array {
+        $worker = self::init("take_payments");
         if($worker === null) return self::returnJsonResponse("Cronjob may not be initiated.", 202);
 
         $requestHandler = Methods::cronRequestHandler();
-        $creatorItems = $requestHandler->findCreatorsToQueryAccountAnalytics($worker);
-        $worker->log("Found " . $creatorItems->count() . " creators to fetch account insights and analytics from.");
-
-        if (!$creatorItems->empty()) {
-            $worker->log("Proceeding...");
-            $requestHandler->queryAccountAnalytics($creatorItems, $worker);
-        }
+        $requestHandler->takePayments($worker);
 
         return self::end($worker);
     }
 
 
-
-
-
-
-
-
-
-    #[ArrayShape(["result" => "\array|null|string", "response_code" => "int"])]
-    public static function campaignMediaUpdate(): array {
-        $worker = self::init("media_update");
+    /**
+     * Retry failed payments
+     */
+    #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
+    public static function retryPayments(): array {
+        $worker = self::init("retry_payments");
         if($worker === null) return self::returnJsonResponse("Cronjob may not be initiated.", 202);
 
         $requestHandler = Methods::cronRequestHandler();
-        $mediasToUpdate = $requestHandler->getCreatorMediaToUpdate($worker);
-        $worker->log("Found " . $mediasToUpdate->count() . " media to update.");
-
-        if (!$mediasToUpdate->empty()) {
-            $worker->log("Proceeding...");
-            $requestHandler->queryCampaignMedias($mediasToUpdate, $worker);
-        }
+        $requestHandler->retryPayments($worker);
 
         return self::end($worker);
     }
 
 
-
-
-
-    #[NoReturn] public static function hashtagTracking(): array {
-        $worker = self::init("hashtag_tracking");
-        if($worker === null) Response()->jsonError("Cronjob may not be initiated.", [], 202);
-
-        $requestHandler = Methods::cronRequestHandler();
-        $hashtagsToTrack = Methods::cronRequestHandler()->findHashtagsToTrack($worker);
-        $worker->log("Found " . $hashtagsToTrack->count() . " hashtag(s) to track.");
-
-        if (!$hashtagsToTrack->empty()) {
-            $worker->log("Proceeding...");
-            $requestHandler->hashtagTracking($hashtagsToTrack, $worker);
-        }
-
-        self::end($worker);
-        Response()->jsonSuccess("Finished running cronjob");
-    }
-
-
-
-
-
-
-    #[NoReturn] public static function contentTagMention(): void {
-        $worker = self::init("tag_mentions");
-        if($worker === null) Response()->jsonError("Cronjob may not be initiated.", [], 202);
-
-        $requestHandler = Methods::cronRequestHandler();
-        $uniqueItems = $requestHandler->tagMentionFlowFindPosts($worker);
-        $worker->log("Found " . $uniqueItems->count() . " integrations to Tag-track");
-
-        if (!$uniqueItems->empty()) {
-            $worker->log("Proceeding...");
-            $requestHandler->runTagMentionQueries($uniqueItems, $worker);
-
-            $campaignIds = [];
-            foreach ($uniqueItems->toArray() as $item) {
-                $campaignIds = array_merge($campaignIds, array_map(function ($campaign) { return $campaign["campaign"]["id"]; }, $item["items"]));
-            }
-            $worker?->log("Finished processing media queries. " . count($campaignIds) . " campaign's will be updated.");
-            Methods::campaigns()->update(["last_tag_discovery" => time()], ["id" => $campaignIds]);
-        }
-
-        self::end($worker);
-        Response()->jsonSuccess("Finished running cronjob");
-    }
-
-
-
-
-    #[ArrayShape(["result" => "\array|null|string", "response_code" => "int"])]
-    public static function eventMode(): array {
-        $worker = self::init("event_mode");
+    /**
+     * Clean up old log files
+     */
+    #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
+    public static function cleanupLogs(): array {
+        $worker = self::init("cleanup_logs");
         if($worker === null) return self::returnJsonResponse("Cronjob may not be initiated.", 202);
 
         $requestHandler = Methods::cronRequestHandler();
-        $campaignHandler = Methods::campaigns();
-        $response = Methods::cronRequestHandler()->getEventModeCampaignsToUpdate($worker);
-
-        if (!$response["actors"]->empty()) {
-            $worker->log("Proceeding...");
-            $requestHandler->runEventMode($response["actors"], $worker);
-        }
-
-        if(!empty($response["campaign_ids"])) {
-            $worker->log("Updating campaign ids...");
-            foreach ($response["campaign_ids"] as $campaignId) {
-                $campaign = $campaignHandler->get($campaignId, ["end"]);
-                if(isEmpty($campaign)) continue;
-                $params = ["last_event_discovery" => time()];
-                if($campaign->end <= time()) $params["event_discovery_active"] = 0;
-                $campaignHandler->update($params, ["id" => $campaignId]);
-            }
-        }
+        $requestHandler->cleanupLogs($worker);
 
         return self::end($worker);
     }
 
 
+    /**
+     * Send payment notification reminders before due dates
+     */
+    #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
+    public static function paymentNotifications(): array {
+        $worker = self::init("payment_notifications");
+        if($worker === null) return self::returnJsonResponse("Cronjob may not be initiated.", 202);
+
+        $requestHandler = Methods::cronRequestHandler();
+        $requestHandler->paymentNotifications($worker);
+
+        return self::end($worker);
+    }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    #[ArrayShape(["result" => "\array|null|string", "response_code" => "int"])]
+    #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
     private static function end(CronWorker $worker): array {
         $worker->log("Finished running cronjob");
         $worker->end();
@@ -192,9 +84,6 @@ class CronjobController {
         $timeOfInit = time();
         return !$worker->init($timeOfInit, $force) ? null : $worker;
     }
-
-
-
 
 
     #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]

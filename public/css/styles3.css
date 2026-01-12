@@ -636,5 +636,67 @@ ul#error-box li:not(:last-of-type)  {
     }
 }
 
+/* Tag chips for settings */
+.tag-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    background: var(--light-gray);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--dark);
+}
+.tag-chip i {
+    font-size: 14px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.tag-chip i:hover {
+    opacity: 1;
+    color: var(--danger);
+}
+
+/* Toggle switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+}
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .3s;
+    border-radius: 26px;
+}
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+}
+input:checked + .toggle-slider {
+    background-color: var(--green);
+}
+input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+}
+
 
 

@@ -50,6 +50,8 @@ class OrganisationMemberHandler extends Crud {
 
     public function userIsMember(?string $organisationId, string $uuid = ''): bool {
         if(empty($organisationId)) return false;
+        // Admins have access to all organisations
+        if(Methods::isAdmin()) return true;
         if(empty($uuid)) $uuid = __uuid();
         return OrganisationMembers::queryBuilder()
             ->where('uuid', $uuid)
@@ -76,6 +78,9 @@ class OrganisationMemberHandler extends Crud {
 
 
     public function memberHasPermission(string $type, string $mainObject = "", string $subObject = ""): bool {
+        // Admins have full permissions on all organisations
+        if(Methods::isAdmin()) return true;
+
         if(!in_array($type, ["read", "modify", "delete"])) return false;
         if(isEmpty($mainObject) && empty($subObject)) return false;
         $organisation = \features\Settings::$organisation;

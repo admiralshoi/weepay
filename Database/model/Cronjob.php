@@ -22,8 +22,8 @@ class Cronjob extends \Database\Model {
 
     protected static array $requiredRows = [
         [
-            "uid" => "crn_3i3uzrwyal2m5j4",
-            "name" => "Hashtag tracking",
+            "uid" => "crn_take_payments",
+            "name" => "Take Payments",
             "started_at" => 0,
             "finished_at" => 0,
             "can_run" => 1,
@@ -31,8 +31,8 @@ class Cronjob extends \Database\Model {
             "access_level" => 8
         ],
         [
-            "uid" => "crn_9ezwcjusz2yf8av",
-            "name" => "Media Update",
+            "uid" => "crn_retry_payments",
+            "name" => "Retry Payments",
             "started_at" => 0,
             "finished_at" => 0,
             "can_run" => 1,
@@ -40,8 +40,8 @@ class Cronjob extends \Database\Model {
             "access_level" => 8
         ],
         [
-            "uid" => "crn_2ywksq8hm1fogp8",
-            "name" => "Tag Mentions",
+            "uid" => "crn_cleanup_logs",
+            "name" => "Cleanup Logs",
             "started_at" => 0,
             "finished_at" => 0,
             "can_run" => 1,
@@ -49,26 +49,8 @@ class Cronjob extends \Database\Model {
             "access_level" => 8
         ],
         [
-            "uid" => "crn_fny6zh56nw2dy3c",
-            "name" => "Account Insights",
-            "started_at" => 0,
-            "finished_at" => 0,
-            "can_run" => 1,
-            "is_running" => 0,
-            "access_level" => 8
-        ],
-        [
-            "uid" => "crn_tkw3fwyq3cuj7xw",
-            "name" => "Event Mode",
-            "started_at" => 0,
-            "finished_at" => 0,
-            "can_run" => 1,
-            "is_running" => 0,
-            "access_level" => 8
-        ],
-        [
-            "uid" => "crn_2ppdykrmb0ux842",
-            "name" => "Affiliate payment period",
+            "uid" => "crn_payment_notifications",
+            "name" => "Payment Notifications",
             "started_at" => 0,
             "finished_at" => 0,
             "can_run" => 1,

@@ -41,9 +41,10 @@ class CheckoutBasketHandler extends Crud {
 
 
 
-    public function createCheckoutInfo(object $basket, string $planName, int $paymentTimeframe = 90, ?string $birthdate = null, ?string $customerId = null, ?string $organisationId = null): ?object {
+    public function createCheckoutInfo(object $basket, string $planName, ?string $birthdate = null, ?string $customerId = null, ?string $organisationId = null): ?object {
         $plan = Settings::$app->paymentPlans->$planName;
         if(!$plan->enabled) return null;
+        $paymentTimeframe = Settings::$app->bnplInstallmenMaxDuration;
 
         // Check age restriction for BNPL plans (installments and pushed)
         if(in_array($planName, ['installments', 'pushed'])) {

@@ -14,6 +14,8 @@ class Payments extends \Database\Model {
         "provider"          => "string",
         "amount"            => ["type" => "decimal", "nullable" => false, "default" => 0, "precision" => 10, "scale" => 2],
         "isv_amount"        => ["type" => "decimal", "nullable" => false, "default" => 0, "precision" => 10, "scale" => 2],
+        "cardFee"       => ["type" => "decimal", "default" => 0],
+        "paymentProviderFee"       => ["type" => "decimal", "default" => 0],
         "currency"          => "string",
         "installment_number" => ["type" => "integer", "default" => 1],
         "due_date"          => ["type" => "timestamp", "nullable" => true, "default" => null],
