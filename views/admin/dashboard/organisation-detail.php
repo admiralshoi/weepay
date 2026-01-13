@@ -22,6 +22,10 @@ $statusLabels = [
     'DELETED' => ['label' => 'Slettet', 'class' => 'danger-box'],
 ];
 $statusInfo = $statusLabels[$organisation->status ?? 'DRAFT'] ?? ['label' => 'Ukendt', 'class' => 'mute-box'];
+
+
+
+
 ?>
 <script>
     var pageTitle = <?=json_encode($pageTitle)?>;

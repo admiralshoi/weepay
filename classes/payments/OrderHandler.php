@@ -3,6 +3,7 @@
 namespace classes\payments;
 
 use classes\Methods;
+use classes\notifications\NotificationTriggers;
 use classes\utility\Crud;
 use Database\Collection;
 use Database\model\Orders;
@@ -29,7 +30,17 @@ class OrderHandler extends Crud {
 
 
     public function setCompleted(string $id): bool {
-        return $this->update(['status' => 'COMPLETED'], ['uid' => $id]);
+        $result = $this->update(['status' => 'COMPLETED'], ['uid' => $id]);
+
+        // Trigger order completed notification
+        if ($result) {
+            $order = $this->get($id);
+            if (!isEmpty($order)) {
+                NotificationTriggers::orderCompleted($order);
+            }
+        }
+
+        return $result;
     }
     public function setPending(string $id): bool {
         return $this->update(['status' => 'PENDING'], ['uid' => $id]);

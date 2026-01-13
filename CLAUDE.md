@@ -404,6 +404,45 @@ const data = result.data;
 const response = await fetch(url, { method: 'POST', body: JSON.stringify(data) });
 ```
 
+### JavaScript Notifications
+Use the built-in notification functions from `utility.js` (NOT SweetAlert/swal):
+
+```javascript
+// Show error notification (red)
+showErrorNotification('Fejl', 'Der opstod en fejl');
+
+// Show success notification (green)
+showSuccessNotification('Success', 'Handlingen blev udført');
+
+// Show neutral notification
+showNeutralNotification('Info', 'Her er noget information');
+
+// All accept optional timeout (default 5000ms)
+showErrorNotification('Fejl', 'Beskrivelse', 3000);
+
+// Queue notification to show after page load/redirect
+queueNotificationOnLoad('Titel', 'Beskrivelse', 'success'); // types: 'success', 'error', 'neutral'
+```
+
+**For confirmation dialogs:** Use `SweetPrompt.confirm()` (NOT native `confirm()`):
+
+```javascript
+// CORRECT - Use SweetPrompt for confirmations
+SweetPrompt.confirm('Slet element?', 'Er du sikker på at du vil slette dette?', {
+    confirmButtonText: 'Ja, slet',
+    onConfirm: async function() {
+        // Do the delete action
+        var response = await post('api/delete', {uid: uid});
+        if (response.status === 'success') {
+            location.reload();
+        }
+    }
+});
+
+// WRONG - Never use native confirm()
+if (!confirm('Are you sure?')) return;
+```
+
 ## Testing
 
 - Testing environment accessible via `/testing` URL path

@@ -57,6 +57,15 @@ class Cronjob extends \Database\Model {
             "is_running" => 0,
             "access_level" => 8
         ],
+        [
+            "uid" => "crn_notification_queue",
+            "name" => "Notification Queue",
+            "started_at" => 0,
+            "finished_at" => 0,
+            "can_run" => 1,
+            "is_running" => 0,
+            "access_level" => 8
+        ],
     ];
     protected static array $requiredRowsTesting = [];
     public static array $encodeColumns = [];

@@ -5,6 +5,7 @@ namespace routing\routes\merchants;
 use classes\app\OrganisationPermissions;
 use classes\lang\Translate;
 use classes\Methods;
+use classes\notifications\NotificationTriggers;
 use classes\organisations\MemberEnum;
 use classes\organisations\OrganisationRolePermissions;
 use classes\utility\Titles;
@@ -209,6 +210,13 @@ class OrganisationApiController {
                         ]);
                 }
 
+                // Trigger organisation member joined notification
+                $organisation = Methods::organisations()->get($organisationId);
+                $joiningUser = Methods::users()->get(__uuid());
+                if (!isEmpty($organisation) && !isEmpty($joiningUser)) {
+                    NotificationTriggers::organisationMemberJoined($organisation, $joiningUser);
+                }
+
                 Methods::organisations()->setChosenOrganisation($organisationId);
                 Response()->setRedirect(__url(ORGANISATION_PANEL_PATH))->jsonSuccess("Invitationen er blevet accepteret.");
         }
@@ -269,6 +277,15 @@ class OrganisationApiController {
                 'ref' => $organisationId
             ]);
 
+            // Trigger organisation member invited notification
+            $inviter = Methods::users()->get(__uuid());
+            NotificationTriggers::organisationMemberInvited(
+                $organisation,
+                $existingUser->email ?? '',
+                $inviter,
+                __url(ORGANISATION_PANEL_PATH . '/add') // Link to pending invitations page
+            );
+
             Response()->setRedirect()->jsonSuccess('Brugeren er blevet inviteret, og en email er blevet sendt.');
         } else {
             // NEW USER PATH - Create user and add to team
@@ -300,6 +317,15 @@ class OrganisationApiController {
 
             // Create member with PENDING status (will change when they log in)
             Methods::organisationMembers()->createNewMember($organisationId, $userUid, $role, MemberEnum::INVITATION_PENDING, $scopedLocations);
+
+            // Trigger organisation member invited notification (for new user path)
+            $inviter = Methods::users()->get(__uuid());
+            NotificationTriggers::organisationMemberInvited(
+                $organisation,
+                $email ?? '',
+                $inviter,
+                __url(ORGANISATION_PANEL_PATH . '/add')
+            );
 
             // Log notification
             if($email) {

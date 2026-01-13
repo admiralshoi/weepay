@@ -79,20 +79,64 @@ class CronRequestHandler {
 
 
     /**
-     * Send payment notification reminders
-     * Notifies users about upcoming payments (1 day, 3 days, 7 days before)
+     * Process scheduled notification breakpoints
+     * Triggers notifications based on scheduled events (payment reminders, overdue, etc.)
      */
     public function paymentNotifications(?CronWorker $worker = null): void {
-        $worker?->log("Running paymentNotifications...");
+        $worker?->log("Running scheduled notification breakpoints...");
 
-        // TODO: Implement notification logic
-        // 1. Find BNPL installments due in 1, 3, 7 days
-        // 2. Find "pushed" payments due in 1, 3, 7 days
-        // 3. Check if notification already sent for this period
-        // 4. Send email/SMS reminders
-        // 5. Log notification sent
+        $results = \classes\notifications\NotificationService::processScheduledBreakpoints();
 
+        $worker?->log("Scheduled breakpoints processed: " . json_encode($results));
         $worker?->log("paymentNotifications completed.");
+    }
+
+
+    /**
+     * Process notification queue
+     * Sends scheduled/delayed notifications from the queue
+     */
+    public function processNotificationQueue(?CronWorker $worker = null): void {
+        $worker?->log("Running processNotificationQueue...");
+
+        $batchSize = 100;
+        $totalProcessed = 0;
+        $totalSent = 0;
+        $totalFailed = 0;
+
+        // Process in batches while worker can run
+        while ($worker === null || $worker->canRun()) {
+            $results = \classes\notifications\NotificationService::processQueue($batchSize);
+
+            if ($results['processed'] === 0) {
+                $worker?->log("No more notifications to process.");
+                break;
+            }
+
+            $totalProcessed += $results['processed'];
+            $totalSent += $results['sent'];
+            $totalFailed += $results['failed'];
+
+            $worker?->log("Batch processed: {$results['processed']} (sent: {$results['sent']}, failed: {$results['failed']})");
+            $worker?->memoryLog("after_batch");
+
+            // Small delay between batches
+            usleep(100000); // 100ms
+        }
+
+        // Cleanup old queue items (sent/cancelled older than 30 days)
+        $cleaned = Methods::notificationQueue()->cleanupOld(30);
+        if ($cleaned > 0) {
+            $worker?->log("Cleaned up $cleaned old queue items.");
+        }
+
+        // Cleanup old notification logs (older than 90 days, only read ones)
+        $cleanedLogs = Methods::userNotifications()->deleteOld(90, true);
+        if ($cleanedLogs > 0) {
+            $worker?->log("Cleaned up $cleanedLogs old user notifications.");
+        }
+
+        $worker?->log("processNotificationQueue completed. Total: $totalProcessed (sent: $totalSent, failed: $totalFailed)");
     }
 
 

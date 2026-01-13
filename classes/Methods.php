@@ -94,6 +94,15 @@ class Methods {
     #[Pure] public static function userCreationError(): ?array { return UserCreation::$error; }
     #[Pure] public static function passwordHandler(): PasswordHandler { return new PasswordHandler(); }
     #[Pure] public static function notificationHandler(): NotificationHandler { return new NotificationHandler(); }
+
+    // Notification System Handlers
+    public static function notificationTemplates(): \classes\notifications\NotificationTemplateHandler { return new \classes\notifications\NotificationTemplateHandler(); }
+    public static function notificationBreakpoints(): \classes\notifications\NotificationBreakpointHandler { return new \classes\notifications\NotificationBreakpointHandler(); }
+    public static function notificationFlows(): \classes\notifications\NotificationFlowHandler { return new \classes\notifications\NotificationFlowHandler(); }
+    public static function notificationFlowActions(): \classes\notifications\NotificationFlowActionHandler { return new \classes\notifications\NotificationFlowActionHandler(); }
+    public static function notificationQueue(): \classes\notifications\NotificationQueueHandler { return new \classes\notifications\NotificationQueueHandler(); }
+    public static function notificationLogs(): \classes\notifications\NotificationLogHandler { return new \classes\notifications\NotificationLogHandler(); }
+    public static function userNotifications(): \classes\notifications\UserNotificationHandler { return new \classes\notifications\UserNotificationHandler(); }
     public static function sortByKey(&$arr,$key = "", $ascending = false, array $specialReplacement = array(), array $splitReplace = array(), $key2 = ""): void {
         (new SortByKey())->run($arr, $key, $ascending, $specialReplacement, $splitReplace, $key2); }
     public static function hasAccess(string $type, string $name, int $actionType, string|int $requestingLevel): bool {

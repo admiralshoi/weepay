@@ -2,6 +2,7 @@
 namespace classes\auth;
 
 use classes\Methods;
+use classes\notifications\NotificationTriggers;
 use classes\utility\Crud;
 use Database\model\AuthLocal;
 use Database\model\Users;
@@ -157,6 +158,9 @@ class LocalSignup extends Crud {
 
         // Load the created user
         $this->user = $userHandler->get($this->userId);
+
+        // Trigger user registered notification
+        NotificationTriggers::userRegistered($this->user);
 
         return true;
     }

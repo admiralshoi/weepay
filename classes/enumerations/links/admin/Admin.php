@@ -57,6 +57,13 @@ class Admin {
     public string $panelContactForms = "panel/contact-forms";
     public string $panelNotifications = "panel/notifications";
 
+    // Notification System
+    public string $panelNotificationTemplates = "panel/notifications/templates";
+    public string $panelNotificationBreakpoints = "panel/notifications/breakpoints";
+    public string $panelNotificationFlows = "panel/notifications/flows";
+    public string $panelNotificationQueue = "panel/notifications/queue";
+    public string $panelNotificationLogs = "panel/notifications/logs";
+
     // Dynamic route helpers
     public function userDetail(string $userId): string {
         return "dashboard/users/{$userId}";
@@ -97,6 +104,15 @@ class Admin {
 
     public function dashboardPaymentDetail(string $paymentId): string {
         return "dashboard/payments/{$paymentId}";
+    }
+
+    // Notification System dynamic routes
+    public function notificationTemplateDetail(string $templateId): string {
+        return "panel/notifications/templates/{$templateId}";
+    }
+
+    public function notificationFlowDetail(string $flowId): string {
+        return "panel/notifications/flows/{$flowId}";
     }
 
 

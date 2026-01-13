@@ -536,6 +536,15 @@ Routes::group(['requiresLogin', "admin"], function() {
     Routes::get(Links::$admin->panelPoliciesCookies, "admin.PanelController::policiesCookies");
     Routes::get(Links::$admin->panelContactForms, "admin.PanelController::contactForms");
     Routes::get(Links::$admin->panelNotifications, "admin.PanelController::notifications");
+
+    // Notification System
+    Routes::get(Links::$admin->panelNotificationTemplates, "admin.NotificationController::templates");
+    Routes::get(Links::$admin->panelNotificationTemplates . "/{id}", "admin.NotificationController::templateDetail");
+    Routes::get(Links::$admin->panelNotificationBreakpoints, "admin.NotificationController::breakpoints");
+    Routes::get(Links::$admin->panelNotificationFlows, "admin.NotificationController::flows");
+    Routes::get(Links::$admin->panelNotificationFlows . "/{id}", "admin.NotificationController::flowDetail");
+    Routes::get(Links::$admin->panelNotificationQueue, "admin.NotificationController::queue");
+    Routes::get(Links::$admin->panelNotificationLogs, "admin.NotificationController::logs");
     /**
      *  =========================================
      *  ============== PANEL END ================
@@ -601,6 +610,28 @@ Routes::group(['requiresApiLogin', "admin", "api"], function() {
     Routes::get("api/admin/reports/download/{filename}", "admin.ReportsApiController::downloadReport");
     Routes::post("api/create-user-on-behalf", "api.AuthController::createUserThirdParty");
     Routes::post("api/user/{id}/toggle", "api.ContentController::userToggleSuspension");
+
+    // Notification System API
+    Routes::post("api/admin/notifications/templates/list", "admin.NotificationApiController::templatesList");
+    Routes::post("api/admin/notifications/templates/create", "admin.NotificationApiController::templateCreate");
+    Routes::post("api/admin/notifications/templates/update", "admin.NotificationApiController::templateUpdate");
+    Routes::post("api/admin/notifications/templates/delete", "admin.NotificationApiController::templateDelete");
+    Routes::post("api/admin/notifications/templates/preview", "admin.NotificationApiController::templatePreview");
+    Routes::post("api/admin/notifications/flows/list", "admin.NotificationApiController::flowsList");
+    Routes::post("api/admin/notifications/flows/create", "admin.NotificationApiController::flowCreate");
+    Routes::post("api/admin/notifications/flows/update", "admin.NotificationApiController::flowUpdate");
+    Routes::post("api/admin/notifications/flows/delete", "admin.NotificationApiController::flowDelete");
+    Routes::post("api/admin/notifications/flows/actions/create", "admin.NotificationApiController::flowActionCreate");
+    Routes::post("api/admin/notifications/flows/actions/update", "admin.NotificationApiController::flowActionUpdate");
+    Routes::post("api/admin/notifications/flows/actions/delete", "admin.NotificationApiController::flowActionDelete");
+    Routes::post("api/admin/notifications/queue/list", "admin.NotificationApiController::queueList");
+    Routes::post("api/admin/notifications/queue/cancel", "admin.NotificationApiController::queueCancel");
+    Routes::post("api/admin/notifications/logs/list", "admin.NotificationApiController::logsList");
+
+    // Notification System Debug/Test Endpoints
+    Routes::post("api/admin/notifications/test/trigger", "admin.NotificationApiController::testTrigger");
+    Routes::post("api/admin/notifications/test/process-queue", "admin.NotificationApiController::processQueue");
+    Routes::post("api/admin/notifications/test/process-scheduled", "admin.NotificationApiController::processScheduled");
 });
 /**
  *  =========================================
@@ -641,7 +672,11 @@ Routes::group(['requiresApiLogout'], function() {
  *  =========================================
  */
 Routes::group(['requiresApiLogout', "cronJobAuth"], function() {
-
+    Routes::post("cron/take-payments", "api.CronjobController::takePayments");
+    Routes::post("cron/retry-payments", "api.CronjobController::retryPayments");
+    Routes::post("cron/cleanup-logs", "api.CronjobController::cleanupLogs");
+    Routes::post("cron/payment-notifications", "api.CronjobController::paymentNotifications");
+    Routes::post("cron/notification-queue", "api.CronjobController::notificationQueue");
 });
 /**
  *  =========================================

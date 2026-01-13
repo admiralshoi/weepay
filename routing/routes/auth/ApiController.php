@@ -3,6 +3,7 @@
 namespace routing\routes\auth;
 use classes\enumerations\Links;
 use classes\Methods;
+use classes\notifications\NotificationTriggers;
 use classes\utility\Numbers;
 use features\Settings;
 use JetBrains\PhpStorm\NoReturn;
@@ -446,6 +447,9 @@ class ApiController {
             Response()->jsonError("Ingen adgangskode fundet for denne bruger", [], 404);
         }
 
+        // Check if this is a forced password change (admin-created user completing registration)
+        $wasForced = (int)$authRecord->force_password_change === 1;
+
         // Hash new password and update
         $hashedPassword = passwordHashing($newPassword);
         $updateResult = $localAuthHandler->update([
@@ -459,6 +463,11 @@ class ApiController {
 
         // Determine redirect URL based on user role
         $user = Methods::users()->get($userId);
+
+        // Trigger user.registered notification for admin-created users completing their registration
+        if ($wasForced && !isEmpty($user)) {
+            NotificationTriggers::userRegistered($user);
+        }
         $role = Methods::roles()->name($user?->access_level ?? 0);
         $redirectUrl = match ($role) {
             default => __url(""),

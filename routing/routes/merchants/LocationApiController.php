@@ -6,6 +6,7 @@ use classes\app\LocationPermissions;
 use classes\app\OrganisationPermissions;
 use classes\lang\Translate;
 use classes\Methods;
+use classes\notifications\NotificationTriggers;
 use classes\organisations\LocationRolePermissions;
 use classes\organisations\MemberEnum;
 use classes\utility\Titles;
@@ -257,6 +258,16 @@ class LocationApiController {
                         'organisation_uid' => $organisationId,
                         'invited_by' => __uuid()
                     ]);
+
+                    // Trigger organisation member invited notification
+                    $organisation = Methods::organisations()->get($organisationId);
+                    $inviter = Methods::users()->get(__uuid());
+                    NotificationTriggers::organisationMemberInvited(
+                        $organisation,
+                        $existingUser->email ?? '',
+                        $inviter,
+                        __url(ORGANISATION_PANEL_PATH . '/add')
+                    );
                 } elseif(!$isActiveOrgMember) {
                     // Was an org member but suspended/deleted - reactivate with pending invitation
                     $scopedLocations = !isEmpty($orgMember->scoped_locations) ? toArray($orgMember->scoped_locations) : [];
@@ -276,6 +287,16 @@ class LocationApiController {
                         'organisation_uid' => $organisationId,
                         'invited_by' => __uuid()
                     ]);
+
+                    // Trigger organisation member invited notification
+                    $organisation = Methods::organisations()->get($organisationId);
+                    $inviter = Methods::users()->get(__uuid());
+                    NotificationTriggers::organisationMemberInvited(
+                        $organisation,
+                        $existingUser->email ?? '',
+                        $inviter,
+                        __url(ORGANISATION_PANEL_PATH . '/add')
+                    );
                 } else {
                     // Active org member - just ensure location is in their scope
                     $scopedLocations = !isEmpty($orgMember->scoped_locations) ? toArray($orgMember->scoped_locations) : null;
@@ -355,6 +376,16 @@ class LocationApiController {
                     'location_employee',
                     MemberEnum::INVITATION_PENDING,
                     [$locationUid]
+                );
+
+                // Trigger organisation member invited notification
+                $organisation = Methods::organisations()->get($organisationId);
+                $inviter = Methods::users()->get(__uuid());
+                NotificationTriggers::organisationMemberInvited(
+                    $organisation,
+                    $email ?? '',
+                    $inviter,
+                    __url(ORGANISATION_PANEL_PATH . '/add')
                 );
 
                 // Add to location with PENDING status

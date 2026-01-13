@@ -3,6 +3,7 @@
 namespace classes\auth;
 
 use classes\Methods;
+use classes\notifications\NotificationTriggers;
 use classes\utility\Crud;
 use Database\model\AuthOidc;
 use features\Settings;
@@ -94,6 +95,13 @@ class OidcAuthentication extends Crud {
             debugLog($userParams,"newOidcUser-auth-create-error");
             return false;
         }
+
+        // Trigger user registered notification
+        $newUser = $userHandler->get($uid);
+        if(!isEmpty($newUser)) {
+            NotificationTriggers::userRegistered($newUser);
+        }
+
         return true;
     }
 

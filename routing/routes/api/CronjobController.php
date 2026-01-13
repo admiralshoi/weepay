@@ -71,6 +71,21 @@ class CronjobController {
     }
 
 
+    /**
+     * Process notification queue - send scheduled/delayed notifications
+     */
+    #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
+    public static function notificationQueue(): array {
+        $worker = self::init("notification_queue");
+        if($worker === null) return self::returnJsonResponse("Cronjob may not be initiated.", 202);
+
+        $requestHandler = Methods::cronRequestHandler();
+        $requestHandler->processNotificationQueue($worker);
+
+        return self::end($worker);
+    }
+
+
     #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
     private static function end(CronWorker $worker): array {
         $worker->log("Finished running cronjob");
