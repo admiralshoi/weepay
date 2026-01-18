@@ -16,10 +16,12 @@ class GatewayApi {
     public function sendSms(string $recipient, string $message, ?string $sender = null): array {
         $requests = Methods::requests();
 
+        $normalizedPhone = $this->normalizePhoneNumber($recipient);
+
         // Build payload
         $payload = [
             'recipients' => [
-                ['msisdn' => $this->normalizePhoneNumber($recipient)]
+                ['msisdn' => $normalizedPhone]
             ],
             'message' => $message,
         ];
@@ -29,14 +31,27 @@ class GatewayApi {
             $payload['sender'] = substr($sender, 0, 11);
         }
 
+        debugLog([
+            'recipient_input' => $recipient,
+            'normalized_phone' => $normalizedPhone,
+            'message_length' => strlen($message),
+            'sender' => $sender,
+            'payload' => $payload,
+        ], 'GatewayApi_sendSms');
+
         // Set up request
         $requests->basicAuth(API::TOKEN, ''); //Intentional. no pwd to use.
         $requests->setHeaderContentTypeJson();
         $requests->setBody($payload);
         $requests->post('https://gatewayapi.eu/rest/mtsms');
 
+        $response = $requests->getResponse();
 
-        return $requests->getResponse();
+        debugLog([
+            'response' => $response,
+        ], 'GatewayApi_sendSms_response');
+
+        return $response;
     }
 
     /**

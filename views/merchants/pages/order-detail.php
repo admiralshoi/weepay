@@ -22,7 +22,29 @@ $paymentStatusMap = [
     'FAILED' => ['label' => 'Fejlet', 'class' => 'danger-box'],
     'CANCELLED' => ['label' => 'Annulleret', 'class' => 'mute-box'],
     'REFUNDED' => ['label' => 'Refunderet', 'class' => 'warning-box'],
+    'VOIDED' => ['label' => 'Ophævet', 'class' => 'mute-box'],
 ];
+
+// Status mapping for orders
+$orderStatusMap = [
+    'COMPLETED' => ['label' => 'GENNEMFØRT', 'class' => 'success-box'],
+    'PENDING' => ['label' => 'AFVENTER', 'class' => 'action-box'],
+    'CANCELLED' => ['label' => 'ANNULLERET', 'class' => 'mute-box'],
+    'REFUNDED' => ['label' => 'REFUNDERET', 'class' => 'warning-box'],
+    'VOIDED' => ['label' => 'OPHÆVET', 'class' => 'mute-box'],
+];
+$orderStatusInfo = $orderStatusMap[$order->status] ?? null;
+
+// Check if order has pending/scheduled payments (future payments that will be voided on refund)
+$hasPendingPayments = false;
+if(!isEmpty($payments)) {
+    foreach($payments->list() as $p) {
+        if(in_array($p->status, ['PENDING', 'SCHEDULED'])) {
+            $hasPendingPayments = true;
+            break;
+        }
+    }
+}
 ?>
 
 
@@ -43,9 +65,16 @@ $paymentStatusMap = [
         </a>
     </div>
 
-    <div class="flex-col-start mb-4">
-        <p class="mb-0 font-30 font-weight-bold">Ordre Detaljer</p>
-        <p class="mb-0 font-16 font-weight-medium color-gray">Ordre ID: <?=$order->uid?></p>
+    <div class="flex-row-between-center mb-4">
+        <div class="flex-col-start">
+            <p class="mb-0 font-30 font-weight-bold">Ordre Detaljer</p>
+            <p class="mb-0 font-16 font-weight-medium color-gray">Ordre ID: <?=$order->uid?></p>
+        </div>
+        <?php if($orderStatusInfo): ?>
+            <div class="<?=$orderStatusInfo['class']?> font-24 font-weight-bold px-4 py-2">
+                <?=$orderStatusInfo['label']?>
+            </div>
+        <?php endif; ?>
     </div>
 
     <div class="row">
@@ -227,9 +256,9 @@ $paymentStatusMap = [
 
                     <div class="flex-col-start" style="row-gap: .75rem;">
                         <?php if($order->status === 'COMPLETED' || $order->status === 'PENDING'): ?>
-                        <button type="button" class="btn-v2 danger-outline-btn w-100 flex-row-center flex-align-center" style="gap: .5rem;" data-refund-order="<?=$order->uid?>">
+                        <button type="button" class="btn-v2 danger-outline-btn w-100 flex-row-center flex-align-center" style="gap: .5rem;" data-refund-order="<?=$order->uid?>" data-has-pending-payments="<?=$hasPendingPayments ? 'true' : 'false'?>">
                             <i class="mdi mdi-cash-refund font-16"></i>
-                            <span class="font-14">Refunder Ordre</span>
+                            <span class="font-14">Annuller & Refunder</span>
                         </button>
                         <?php endif; ?>
                     </div>
@@ -255,14 +284,21 @@ $paymentStatusMap = [
                             <p class="mb-0 font-14 color-danger"><?=number_format($order->fee_amount, 2) . ' ' . currencySymbol($order->currency)?></p>
                         </div>
 
-                        <div class="flex-row-between-center pb-3 border-bottom-card">
+                        <div class="flex-row-between-center <?=(float)$order->amount_refunded > 0 ? '' : 'pb-3 border-bottom-card'?>">
                             <p class="mb-0 font-14 color-gray">Gebyr (%)</p>
                             <p class="mb-0 font-14"><?=number_format($order->fee, 2)?>%</p>
                         </div>
 
+                        <?php if((float)$order->amount_refunded > 0): ?>
+                        <div class="flex-row-between-center pb-3 border-bottom-card">
+                            <p class="mb-0 font-14 color-gray">Refunderet</p>
+                            <p class="mb-0 font-14 font-weight-medium color-warning-text">-<?=number_format($order->amount_refunded, 2) . ' ' . currencySymbol($order->currency)?></p>
+                        </div>
+                        <?php endif; ?>
+
                         <div class="flex-row-between-center">
                             <p class="mb-0 font-16 font-weight-bold">Net Beløb</p>
-                            <p class="mb-0 font-18 font-weight-bold color-success-text"><?=number_format($order->amount - $order->fee_amount, 2) . ' ' . currencySymbol($order->currency)?></p>
+                            <p class="mb-0 font-18 font-weight-bold color-success-text"><?=number_format($order->amount - $order->fee_amount - $order->amount_refunded, 2) . ' ' . currencySymbol($order->currency)?></p>
                         </div>
 
                         <?php if($order->test): ?>
@@ -329,3 +365,11 @@ $paymentStatusMap = [
     </div>
 
 </div>
+
+<?php scriptStart(); ?>
+<script>
+    $(document).ready(function() {
+        initMerchantRefunds();
+    });
+</script>
+<?php scriptEnd(); ?>

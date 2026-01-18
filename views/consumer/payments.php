@@ -52,6 +52,17 @@ $pageTitle = "Betalinger";
                             <input type="text" class="form-control-v2 form-field-v2" id="consumer-payments-search"
                                    placeholder="Søg betaling eller ordre..." style="min-width: 200px;">
                         </div>
+                        <div class="form-group mb-0">
+                            <select class="form-select-v2" id="consumer-payments-filter-status" data-selected="all" style="min-width: 140px;">
+                                <option value="all" selected>Alle statusser</option>
+                                <option value="COMPLETED">Gennemført</option>
+                                <option value="PENDING">Afventer</option>
+                                <option value="SCHEDULED">Planlagt</option>
+                                <option value="PAST_DUE">Forsinket</option>
+                                <option value="REFUNDED">Refunderet</option>
+                                <option value="VOIDED">Ophævet</option>
+                            </select>
+                        </div>
                         <div class="form-group mb-0 position-relative">
                             <input type="text" class="form-control-v2 form-field-v2" id="consumer-payments-daterange"
                                    placeholder="Vælg datointerval" style="min-width: 220px; padding-right: 30px;" readonly>

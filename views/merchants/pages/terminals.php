@@ -8,6 +8,8 @@ use classes\enumerations\Links;
 $pageTitle = "Kasseapparater";
 
 
+\features\DbMigration::_migrate_db();
+
 
 
 ?>

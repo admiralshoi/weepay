@@ -16,7 +16,6 @@ $merchantActionRequired = empty($organisation?->merchant_prid);
 $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
 
 
-\features\DbMigration::_migrate_db();
 
 ?>
 
@@ -500,7 +499,7 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
 <?php scriptStart(); ?>
 <script>
     $(document).ready(function () {
-        VivaWallet.init('<?=$connectedAccount?->state?>');
+        VivaWallet.init('<?=$connectedAccount?->state?>', '<?=$organisation?->uid?>');
 
         // Whitelist toggle handler
         $('#whitelistEnabledToggle').on('change', async function() {

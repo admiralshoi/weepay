@@ -12,8 +12,8 @@ $template = $args->template ?? null;
 $isNew = $args->isNew ?? true;
 $breakpoints = $args->breakpoints ?? new \Database\Collection();
 
-// Get component templates for insertion
-$componentTemplates = \classes\Methods::notificationTemplates()->getByX(['category' => 'component', 'status' => 'active']);
+// Get component templates for insertion (those with status 'template' are base components)
+$componentTemplates = \classes\Methods::notificationTemplates()->getByX(['category' => 'component', 'status' => 'template']);
 
 // Build component templates group dynamically
 $componentPlaceholders = [];
@@ -48,24 +48,58 @@ $placeholderGroups = [
         ]
     ],
     'user' => [
-        'label' => 'Bruger',
+        'label' => 'Bruger/Kunde',
         'icon' => 'mdi-account',
         'placeholders' => [
             '{{user.full_name}}' => 'Fulde navn',
+            '{{user.first_name}}' => 'Fornavn',
+            '{{user.last_name}}' => 'Efternavn',
             '{{user.email}}' => 'E-mail',
             '{{user.phone}}' => 'Telefon',
             '{{user.uid}}' => 'Bruger ID',
         ]
     ],
+    'organisation' => [
+        'label' => 'Forretning/Organisation',
+        'icon' => 'mdi-domain',
+        'placeholders' => [
+            '{{organisation.name}}' => 'Forretningsnavn',
+            '{{organisation.email}}' => 'Forretnings e-mail',
+            '{{organisation.phone}}' => 'Forretnings telefon',
+            '{{organisation.address}}' => 'Forretnings adresse',
+            '{{organisation.city}}' => 'Forretnings by',
+            '{{organisation.zip}}' => 'Forretnings postnummer',
+            '{{organisation.cvr}}' => 'Forretnings CVR',
+            '{{organisation.uid}}' => 'Organisation ID',
+        ]
+    ],
+    'location' => [
+        'label' => 'Lokation/Butik',
+        'icon' => 'mdi-map-marker',
+        'placeholders' => [
+            '{{location.name}}' => 'Lokationsnavn',
+            '{{location.address}}' => 'Lokations adresse',
+            '{{location.city}}' => 'Lokations by',
+            '{{location.zip}}' => 'Lokations postnummer',
+            '{{location.phone}}' => 'Lokations telefon',
+            '{{location.email}}' => 'Lokations e-mail',
+            '{{location.uid}}' => 'Lokation ID',
+        ]
+    ],
     'order' => [
-        'label' => 'Ordre',
+        'label' => 'Ordre/Køb',
         'icon' => 'mdi-cart',
         'placeholders' => [
             '{{order.uid}}' => 'Ordre ID',
-            '{{order.amount}}' => 'Beløb',
-            '{{order.formatted_amount}}' => 'Formateret beløb',
+            '{{order.amount}}' => 'Beløb (øre)',
+            '{{order.formatted_amount}}' => 'Købsbeløb (formateret)',
             '{{order.currency}}' => 'Valuta',
             '{{order.status}}' => 'Status',
+            '{{order.caption}}' => 'Ordrebeskrivelse',
+            '{{order.created_at}}' => 'Oprettelsesdato (rå)',
+            '{{order.created_date}}' => 'Oprettelsesdato (DD.MM.ÅÅÅÅ)',
+            '{{order.created_time}}' => 'Oprettelsestidspunkt (HH:MM)',
+            '{{order.created_datetime}}' => 'Oprettet dato+tid',
         ]
     ],
     'payment' => [
@@ -75,36 +109,58 @@ $placeholderGroups = [
             '{{payment.uid}}' => 'Betalings ID',
             '{{payment.amount}}' => 'Beløb (øre)',
             '{{payment.formatted_amount}}' => 'Beløb (formateret)',
-            '{{payment.due_date}}' => 'Forfaldsdato',
-            '{{payment.due_date_formatted}}' => 'Forfaldsdato (formateret)',
+            '{{payment.due_date}}' => 'Forfaldsdato (rå)',
+            '{{payment.due_date_formatted}}' => 'Forfaldsdato (DD.MM.ÅÅÅÅ)',
+            '{{payment.paid_at}}' => 'Betalingsdato (rå)',
+            '{{payment.paid_date}}' => 'Betalingsdato (DD.MM.ÅÅÅÅ)',
+            '{{payment.paid_time}}' => 'Betalingstidspunkt (HH:MM)',
             '{{payment.installment_number}}' => 'Rate nummer',
             '{{payment.status}}' => 'Status',
+            '{{payment.status_label}}' => 'Status (dansk)',
         ]
     ],
     'payment_plan' => [
-        'label' => 'Betalingsplan',
+        'label' => 'Betalingsaftale',
         'icon' => 'mdi-calendar-clock',
         'placeholders' => [
             '{{payment_plan.total_installments}}' => 'Antal rater i alt',
             '{{payment_plan.remaining_installments}}' => 'Resterende rater',
-            '{{payment_plan.first_amount}}' => 'Første rate beløb',
+            '{{payment_plan.completed_installments}}' => 'Gennemførte rater',
+            '{{payment_plan.first_amount}}' => 'Første rate beløb (øre)',
             '{{payment_plan.first_amount_formatted}}' => 'Første rate (formateret)',
-            '{{payment_plan.installment_amount}}' => 'Rate beløb',
+            '{{payment_plan.installment_amount}}' => 'Rate beløb (øre)',
             '{{payment_plan.installment_amount_formatted}}' => 'Rate beløb (formateret)',
-            '{{payment_plan.remaining_amount}}' => 'Resterende beløb',
+            '{{payment_plan.remaining_amount}}' => 'Resterende beløb (øre)',
+            '{{payment_plan.remaining_amount_formatted}}' => 'Resterende beløb (formateret)',
+            '{{payment_plan.total_amount}}' => 'Samlet beløb (øre)',
+            '{{payment_plan.total_amount_formatted}}' => 'Samlet beløb (formateret)',
             '{{payment_plan.next_due_date}}' => 'Næste forfaldsdato',
             '{{payment_plan.first_due_date}}' => 'Første forfaldsdato',
             '{{payment_plan.last_due_date}}' => 'Sidste forfaldsdato',
             '{{payment_plan.schedule_summary}}' => 'Oversigt over betalingsplan',
         ]
     ],
-    'organisation' => [
-        'label' => 'Organisation',
-        'icon' => 'mdi-domain',
+    'card' => [
+        'label' => 'Betalingskort',
+        'icon' => 'mdi-credit-card-outline',
         'placeholders' => [
-            '{{organisation.name}}' => 'Navn',
-            '{{organisation.email}}' => 'E-mail',
-            '{{organisation.uid}}' => 'Organisation ID',
+            '{{card.last4}}' => 'Sidste 4 cifre',
+            '{{card.brand}}' => 'Korttype (Visa, Mastercard, etc.)',
+            '{{card.expiry}}' => 'Udløbsdato (MM/ÅÅ)',
+            '{{card.holder_name}}' => 'Kortholders navn',
+        ]
+    ],
+    'fees' => [
+        'label' => 'Gebyrer',
+        'icon' => 'mdi-currency-usd',
+        'placeholders' => [
+            '{{fees.reminder_fee}}' => 'Rykkergebyr (formateret)',
+            '{{fees.reminder_fee_amount}}' => 'Rykkergebyr (øre)',
+            '{{fees.total_fees}}' => 'Samlede gebyrer (formateret)',
+            '{{fees.total_fees_amount}}' => 'Samlede gebyrer (øre)',
+            '{{fees.reminder_count}}' => 'Antal rykkere sendt',
+            '{{fees.total_outstanding}}' => 'Samlet udestående inkl. gebyrer',
+            '{{fees.total_outstanding_formatted}}' => 'Samlet udestående (formateret)',
         ]
     ],
     'inviter' => [
@@ -122,6 +178,7 @@ $placeholderGroups = [
             '{{app.name}}' => 'App navn',
             '{{app.url}}' => 'App URL',
             '{{app.support_email}}' => 'Support e-mail',
+            '{{app.login_url}}' => 'Login side URL',
         ]
     ],
     'links' => [
@@ -133,20 +190,34 @@ $placeholderGroups = [
             '{{payment_link}}' => 'Betalingslink',
             '{{receipt_link}}' => 'Kvitteringslink',
             '{{order_link}}' => 'Ordrelink',
-            '{{agreement_link}}' => 'Aftalelink',
+            '{{agreement_link}}' => 'Betalingsaftale link',
             '{{retry_link}}' => 'Prøv igen link',
+            '{{dashboard_link}}' => 'Overblik/dashboard link',
+            '{{history_link}}' => 'Betalingshistorik link',
+        ]
+    ],
+    'dates' => [
+        'label' => 'Datoer & Tid',
+        'icon' => 'mdi-calendar',
+        'placeholders' => [
+            '{{today}}' => 'Dags dato (DD.MM.ÅÅÅÅ)',
+            '{{today_full}}' => 'Dags dato (d. DD. måned ÅÅÅÅ)',
+            '{{current_time}}' => 'Nuværende tid (HH:MM)',
+            '{{current_year}}' => 'Nuværende år',
+            '{{days_until_due}}' => 'Dage til forfald',
+            '{{days_overdue}}' => 'Dage overskredet',
         ]
     ],
     'misc' => [
         'label' => 'Andet',
         'icon' => 'mdi-dots-horizontal',
         'placeholders' => [
-            '{{days_until_due}}' => 'Dage til forfald',
-            '{{days_overdue}}' => 'Dage overskredet',
             '{{failure_reason}}' => 'Fejlårsag',
-            '{{refund_amount}}' => 'Refunderet beløb',
+            '{{refund_amount}}' => 'Refunderet beløb (øre)',
             '{{refund_formatted_amount}}' => 'Refunderet beløb (formateret)',
             '{{refund_reason}}' => 'Refunderingsårsag',
+            '{{suspension_reason}}' => 'Suspendering årsag',
+            '{{viva_note}}' => 'VIVA håndterings note',
         ]
     ],
 ];
@@ -166,11 +237,10 @@ $placeholderGroups = [
         display: inline-block;
     }
     .placeholder-menu {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        z-index: 5;
-        min-width: 280px;
+        position: fixed;
+        z-index: 1050;
+        width: 320px;
+        max-width: calc(100vw - 40px);
         max-height: 350px;
         overflow-y: auto;
         background: #fff;
@@ -180,11 +250,7 @@ $placeholderGroups = [
         display: none;
         padding: 0;
         margin: 0;
-        box-sizing: content-box;
-    }
-    .html-editor-toolbar .placeholder-menu {
-        left: auto;
-        right: 0;
+        box-sizing: border-box;
     }
     .placeholder-menu.show {
         display: block;
@@ -230,8 +296,8 @@ $placeholderGroups = [
         padding: 8px 12px;
         cursor: pointer;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
         transition: background 0.15s;
     }
     .placeholder-item:hover {
@@ -239,15 +305,19 @@ $placeholderGroups = [
     }
     .placeholder-item-code {
         font-family: monospace;
-        font-size: 12px;
+        font-size: 11px;
         color: #5c6bc0;
         background: #e8eaf6;
         padding: 2px 6px;
         border-radius: 4px;
+        word-break: break-all;
+        max-width: 100%;
     }
     .placeholder-item-label {
         font-size: 13px;
         color: #333;
+        flex: 1;
+        min-width: 80px;
     }
     .placeholder-item.hidden {
         display: none;
@@ -436,7 +506,9 @@ $placeholderGroups = [
                                         <option value="draft" <?=($template->status ?? 'draft') === 'draft' ? 'selected' : ''?>>Kladde</option>
                                         <option value="active" <?=($template->status ?? '') === 'active' ? 'selected' : ''?>>Aktiv</option>
                                         <option value="inactive" <?=($template->status ?? '') === 'inactive' ? 'selected' : ''?>>Inaktiv</option>
+                                        <option value="template" <?=($template->status ?? '') === 'template' ? 'selected' : ''?>>Skabelon</option>
                                     </select>
+                                    <small class="form-text text-muted">Skabelon-status bruges til base komponenter (header, footer) og kan ikke vælges i flow handlinger</small>
                                 </div>
 
                                 <!-- Submit -->
@@ -590,6 +662,29 @@ $placeholderGroups = [
             menu.classList.add('show');
             currentTargetInput = document.getElementById(targetInputId);
             currentMenu = menu;
+
+            // Position menu using fixed positioning relative to viewport
+            var btnRect = btn.getBoundingClientRect();
+            var menuWidth = 320;
+            var viewportWidth = window.innerWidth;
+            var viewportHeight = window.innerHeight;
+
+            // Position below button, align right edge with button right edge
+            var left = btnRect.right - menuWidth;
+            var top = btnRect.bottom + 4;
+
+            // Keep within viewport bounds
+            if (left < 10) left = 10;
+            if (left + menuWidth > viewportWidth - 10) left = viewportWidth - menuWidth - 10;
+
+            // If menu would go below viewport, position above button
+            if (top + 350 > viewportHeight) {
+                top = btnRect.top - 350 - 4;
+                if (top < 10) top = 10;
+            }
+
+            menu.style.left = left + 'px';
+            menu.style.top = top + 'px';
 
             // Show/hide HTML-only options based on whether it's HTML editor
             menu.querySelectorAll('.placeholder-item').forEach(function(item) {

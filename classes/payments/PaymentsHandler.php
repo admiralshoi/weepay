@@ -42,6 +42,21 @@ class PaymentsHandler extends Crud {
     }
 
     /**
+     * Store initial transaction ID on all payments for an order
+     * Used for recurring charges with pushed payment plan
+     *
+     * @param string $orderId Order UID
+     * @param string $transactionId The initial transaction ID from card validation
+     * @return bool Success status
+     */
+    public function storeInitialTransactionId(string $orderId, string $transactionId): bool {
+        return $this->update(
+            ['initial_transaction_id' => $transactionId],
+            ['order' => $orderId]
+        );
+    }
+
+    /**
      * Create payment installments for an order using plan structure
      *
      * @param string $orderId Order UID

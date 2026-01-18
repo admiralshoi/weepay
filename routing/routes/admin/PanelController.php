@@ -93,6 +93,14 @@ class PanelController {
     }
 
     public static function jobs(array $args): mixed {
+        // Get all cronjobs from database
+        $cronjobs = Methods::cronWorker()->getByX([]);
+        $args['cronjobs'] = $cronjobs;
+
+        // Get cronjob configuration from CronWorker
+        $worker = Methods::cronWorker();
+        $args['cronConfig'] = $worker->getTypesList();
+
         return Views("ADMIN_PANEL_JOBS", $args);
     }
 

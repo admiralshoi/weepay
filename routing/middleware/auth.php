@@ -87,6 +87,7 @@ function cronJobAuth(array $args): bool {
 
 function consumerProfileComplete(): bool {
     if(!Methods::isConsumer()) return true;
+    if(isImpersonating()) return true;
     return !isEmpty(\features\Settings::$user?->phone) && !isEmpty(\features\Settings::$user?->full_name);
 }
 

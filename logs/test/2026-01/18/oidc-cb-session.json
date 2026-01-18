@@ -1,0 +1,16 @@
+{
+    "id": 216,
+    "created_at": "2026-01-18 16:51:18",
+    "updated_at": "2026-01-18 16:51:20",
+    "uid": "oidc_id5m6hoy2wxywaq",
+    "provider": "mitid",
+    "prid": "721125c2-2e9d-45e0-ba7b-eb77e85aebdf",
+    "uuid": null,
+    "info": {
+        "next": "consumer_login"
+    },
+    "reason": "authenticate",
+    "status": "PENDING",
+    "expires_at": 1768751878,
+    "token": "2392548786"
+}

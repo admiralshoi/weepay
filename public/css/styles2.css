@@ -2469,6 +2469,30 @@ table.blue-purple-table-head thead th, table.blue-purple-table-head tbody td {
     border-color: var(--blue);
 }
 
+.outline-btn, .outline-btn-lg {
+    background: transparent;
+    color: var(--primary-dark);
+    border-color: var(--card-border-color);
+}
+.outline-btn:not(.outline-btn[disabled]):hover,
+.outline-btn-lg:not(.outline-btn-lg[disabled]):hover {
+    background: var(--wrapper-color-hover);
+    color: var(--blue);
+    border-color: var(--blue);
+}
+
+.danger-outline-btn, .danger-outline-btn-lg {
+    background: transparent;
+    color: var(--color-danger);
+    border-color: var(--color-danger);
+}
+.danger-outline-btn:not(.danger-outline-btn[disabled]):hover,
+.danger-outline-btn-lg:not(.danger-outline-btn-lg[disabled]):hover {
+    background: var(--color-danger);
+    color: #fff;
+    border-color: var(--color-danger);
+}
+
 .trans-hover-design-action-btn, .trans-hover-design-action-btn-lg {
     background: transparent;
     color: var(--dark);

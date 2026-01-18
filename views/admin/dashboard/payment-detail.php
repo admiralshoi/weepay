@@ -25,10 +25,18 @@ $paymentStatusMap = [
     'PAST_DUE' => ['label' => 'Forsinket', 'class' => 'danger-box'],
     'FAILED' => ['label' => 'Fejlet', 'class' => 'danger-box'],
     'CANCELLED' => ['label' => 'Annulleret', 'class' => 'mute-box'],
-    'REFUNDED' => ['label' => 'Refunderet', 'class' => 'mute-box'],
+    'REFUNDED' => ['label' => 'Refunderet', 'class' => 'warning-box'],
+    'VOIDED' => ['label' => 'Ophævet', 'class' => 'mute-box'],
 ];
 
 $statusInfo = $paymentStatusMap[$payment->status ?? 'PENDING'] ?? ['label' => 'Ukendt', 'class' => 'mute-box'];
+
+// Big label for special statuses
+$bigLabelStatusMap = [
+    'REFUNDED' => ['label' => 'REFUNDERET', 'class' => 'warning-box'],
+    'VOIDED' => ['label' => 'OPHÆVET', 'class' => 'mute-box'],
+];
+$bigLabelInfo = $bigLabelStatusMap[$payment->status ?? ''] ?? null;
 
 // Calculate total payments for this order
 $totalPayments = 0;
@@ -83,6 +91,11 @@ $orderUid = is_object($order) ? $order->uid : ($payment->order ?? null);
                     </div>
                 </div>
                 <div class="flex-row-end flex-align-center" style="gap: .5rem;">
+                    <?php if($bigLabelInfo): ?>
+                        <div class="<?=$bigLabelInfo['class']?> font-24 font-weight-bold px-4 py-2">
+                            <?=$bigLabelInfo['label']?>
+                        </div>
+                    <?php endif; ?>
                     <a href="<?=__url(Links::$admin->dashboardPayments)?>" class="btn-v2 trans-btn">
                         <i class="mdi mdi-arrow-left mr-1"></i> Tilbage
                     </a>
@@ -408,3 +421,11 @@ $orderUid = is_object($order) ? $order->uid : ($payment->order ?? null);
         </div>
     </div>
 </div>
+
+<?php scriptStart(); ?>
+<script>
+    $(document).ready(function() {
+        initAdminRefunds();
+    });
+</script>
+<?php scriptEnd(); ?>

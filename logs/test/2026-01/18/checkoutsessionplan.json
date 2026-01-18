@@ -1,0 +1,22 @@
+{
+    "enabled": true,
+    "title": "Betal d. 1. i M\u00e5neden",
+    "caption": "Udskyd betalingen til n\u00e6ste m\u00e5ned",
+    "installments": 1,
+    "start": "first day of next month",
+    "default": false,
+    "name": "pushed",
+    "price_title": "12.00kr",
+    "subtitle": "Betales den 01. februar. Ingen renter",
+    "next_payment_price": 12,
+    "to_pay_now": 0,
+    "payments": {
+        "0": {
+            "price": "12.00",
+            "date": "01. februar",
+            "date_title": "01. februar",
+            "timestamp": 1769900400,
+            "installment": 1
+        }
+    }
+}

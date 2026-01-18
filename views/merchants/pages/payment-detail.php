@@ -22,6 +22,7 @@ $paymentStatusMap = [
     'FAILED' => ['label' => 'Fejlet', 'class' => 'danger-box'],
     'CANCELLED' => ['label' => 'Annulleret', 'class' => 'mute-box'],
     'REFUNDED' => ['label' => 'Refunderet', 'class' => 'warning-box'],
+    'VOIDED' => ['label' => 'Ophævet', 'class' => 'mute-box'],
 ];
 
 $statusInfo = $paymentStatusMap[$payment->status] ?? ['label' => $payment->status, 'class' => 'mute-box'];
@@ -53,9 +54,16 @@ if(!isEmpty($orderPayments)) {
         </a>
     </div>
 
-    <div class="flex-col-start mb-4">
-        <p class="mb-0 font-30 font-weight-bold">Betaling Detaljer</p>
-        <p class="mb-0 font-16 font-weight-medium color-gray">Betaling ID: <?=$payment->uid?></p>
+    <div class="flex-row-between-center mb-4">
+        <div class="flex-col-start">
+            <p class="mb-0 font-30 font-weight-bold">Betaling Detaljer</p>
+            <p class="mb-0 font-16 font-weight-medium color-gray">Betaling ID: <?=$payment->uid?></p>
+        </div>
+        <?php if($payment->status === 'REFUNDED'): ?>
+            <div class="refunded-badge warning-box font-24 font-weight-bold px-4 py-2">
+                REFUNDERET
+            </div>
+        <?php endif; ?>
     </div>
 
     <div class="row">
@@ -359,3 +367,10 @@ if(!isEmpty($orderPayments)) {
 
 </div>
 
+<?php scriptStart(); ?>
+<script>
+    $(document).ready(function() {
+        initMerchantRefunds();
+    });
+</script>
+<?php scriptEnd(); ?>

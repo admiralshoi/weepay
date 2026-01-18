@@ -30,14 +30,16 @@ class OrderHandler extends Crud {
 
 
     public function setCompleted(string $id): bool {
+        $order = $this->get($id);
+        if (isEmpty($order) || $order->status === 'COMPLETED') {
+            return false;
+        }
+
         $result = $this->update(['status' => 'COMPLETED'], ['uid' => $id]);
 
-        // Trigger order completed notification
         if ($result) {
-            $order = $this->get($id);
-            if (!isEmpty($order)) {
-                NotificationTriggers::orderCompleted($order);
-            }
+            $order->status = 'COMPLETED';
+            NotificationTriggers::orderCompleted($order);
         }
 
         return $result;

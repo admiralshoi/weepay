@@ -31,6 +31,27 @@ class Viva {
         );
     }
 
+    /**
+     * Recurring payment URL - POST /api/transactions/{transactionId}
+     */
+    public static function recurringPaymentUrl(string $transactionId): string {
+        $baseUrl = self::$sandbox ? self::SANDBOX_RECURRING_PAYMENT_URL : self::RECURRING_PAYMENT_URL;
+        return $baseUrl . '/' . $transactionId;
+    }
+
+    /**
+     * Cancel order URL - DELETE /api/orders/{orderCode}
+     */
+    public static function cancelOrderUrl(string $orderCode): string {
+        return (self::$sandbox ? self::SANDBOX_CANCEL_ORDER_URL : self::CANCEL_ORDER_URL) . $orderCode;
+    }
+
+    /**
+     * Refund/cancel transaction URL - DELETE /api/transactions/{transactionId}
+     */
+    public static function refundTransactionUrl(string $transactionId): string {
+        return (self::$sandbox ? self::SANDBOX_REFUND_TRANSACTION_URL : self::REFUND_TRANSACTION_URL) . $transactionId;
+    }
 
 
     private static bool $sandbox = true;
@@ -60,9 +81,11 @@ class Viva {
     private const ORDER_READ_URL = "https://www.vivapayments.com/api/orders/";
     private const SANDBOX_CHECKOUT_URL = "https://demo.vivapayments.com/web/checkout?ref=";
     private const CHECKOUT_URL = "https://www.vivapayments.com/web/checkout?ref=";
-
-
-
-
+    private const SANDBOX_RECURRING_PAYMENT_URL = "https://demo.vivapayments.com/api/transactions";
+    private const RECURRING_PAYMENT_URL = "https://www.vivapayments.com/api/transactions";
+    private const SANDBOX_CANCEL_ORDER_URL = "https://demo.vivapayments.com/api/orders/";
+    private const CANCEL_ORDER_URL = "https://www.vivapayments.com/api/orders/";
+    private const SANDBOX_REFUND_TRANSACTION_URL = "https://demo.vivapayments.com/api/transactions/";
+    private const REFUND_TRANSACTION_URL = "https://www.vivapayments.com/api/transactions/";
 
 }

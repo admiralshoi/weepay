@@ -4,6 +4,7 @@ namespace routing\routes\flows\purchase;
 
 use classes\enumerations\Links;
 use classes\Methods;
+use classes\payments\CardValidationService;
 use classes\utility\Titles;
 use features\Settings;
 use JetBrains\PhpStorm\NoReturn;
@@ -58,20 +59,34 @@ class CustomerApiController {
         if(isEmpty($merchantId)) Response()->jsonError("Forhandlers ID er ikke gyldigt. Prøv igen senere", [$location], 404);
         $resellerFee = Methods::organisationFees()->resellerFee($organisationId);
 
+        // For "pushed" plan: create 1 unit currency validation payment with allowRecurring
+        // For other plans: create normal payment with to_pay_now amount
+        $isPushedPlan = $planName === 'pushed';
+        $paymentAmount = $isPushedPlan ? CardValidationService::getValidationAmount() : $plan->to_pay_now;
+        $allowRecurring = $isPushedPlan || !($plan->start === 'now' && $plan->installments === 1);
+
+        // Customize description for pushed plan
+        $customerNote = $isPushedPlan
+            ? "Kortvalidering - " . $location->name
+            : $location->name . ": " . $basket->name;
+        $merchantNote = $isPushedPlan
+            ? "Kortvalidering - " . $basket->name
+            : $location->name . " - " . $basket->name;
+
         $paymentSession = Methods::viva()->createPayment(
             $merchantId,
-            $plan->to_pay_now,
+            $paymentAmount,
             $location->source_prid,
             $terminalSession->customer,
             $location->name,
-            $location->name . ": " . $basket->name,
-            $location->name . " - " . $basket->name,
+            $customerNote,
+            $merchantNote,
             $basket->currency,
-            !($plan->start === 'now' && $plan->installments === 1),
+            $allowRecurring,
             false,
             [$location->name, $basket->name, $customer->user->full_name, $customer->user->birthdate],
             null,
-            $resellerFee
+            $isPushedPlan ? 0 : $resellerFee  // No reseller fee on 1 unit validation
         );
 
         if(nestedArray($paymentSession, ['status']) === 'error')
@@ -150,6 +165,73 @@ class CustomerApiController {
             elseif($status === 'COMPLETED') {
                 Methods::terminalSessions()->setCompleted($terminalSessionId);
                 Methods::checkoutBasket()->setFulfilled($basket->uid);
+
+                $currency = $order->currency ?? 'DKK';
+                $isTestOrder = (bool)($order->test ?? false);
+
+                // For pushed plan: process card validation (refund 1 unit and store transaction ID)
+                if ($order->payment_plan === 'pushed') {
+                    $validationResult = CardValidationService::processValidationPayment(
+                        $merchantId,
+                        $orderCode,
+                        $currency,
+                        $isTestOrder
+                    );
+
+                    if ($validationResult['success'] && !empty($validationResult['transaction_id'])) {
+                        // Store the transaction ID on all payments for this order
+                        Methods::payments()->storeInitialTransactionId(
+                            $order->uid,
+                            $validationResult['transaction_id']
+                        );
+                    } else {
+                        // Log error but don't fail - order is created, we can retry later
+                        errorLog([
+                            'orderUid' => $order->uid,
+                            'orderCode' => $orderCode,
+                            'validationResult' => $validationResult,
+                        ], 'pushed-card-validation-failed');
+                    }
+                }
+                // For installments plan: get transaction ID from first payment and store on all payments
+                elseif ($order->payment_plan === 'installments') {
+                    $viva = Methods::viva();
+                    if (!$isTestOrder) {
+                        $viva->live();
+                    }
+
+                    $paymentDetails = $viva->getPaymentByOrderId($merchantId, $orderCode);
+                    $transactions = $paymentDetails['Transactions'] ?? [];
+
+                    // Find the completed transaction
+                    $transactionId = null;
+                    foreach ($transactions as $tx) {
+                        if (($tx['StatusId'] ?? '') === 'F') { // F = Finished/Completed
+                            $transactionId = $tx['TransactionId'] ?? null;
+                            break;
+                        }
+                    }
+
+                    if (!empty($transactionId)) {
+                        // Store the transaction ID on all SCHEDULED payments for future recurring charges
+                        Methods::payments()->storeInitialTransactionId(
+                            $order->uid,
+                            $transactionId
+                        );
+
+                        debugLog([
+                            'orderUid' => $order->uid,
+                            'transactionId' => $transactionId,
+                        ], 'INSTALLMENTS_TRANSACTION_ID_STORED');
+                    } else {
+                        errorLog([
+                            'orderUid' => $order->uid,
+                            'orderCode' => $orderCode,
+                            'paymentDetails' => $paymentDetails,
+                        ], 'installments-transaction-id-not-found');
+                    }
+                }
+
                 $orderHandler->setCompleted($order->uid);
 
                 Response()

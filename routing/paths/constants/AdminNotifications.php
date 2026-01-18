@@ -21,7 +21,7 @@ class AdminNotifications extends \routing\paths\Paths {
                 "vendor.sweetalert.sweetalert2.min.css",
                 "js.includes.sweetAlert.js",
                 "vendor.sweetalert.sweetalert2.min.js",
-                "js.includes.sweetPrompt.js",
+                "js.includes.SweetPrompt.js",
                 "vendor.datatables.dataTables.js",
                 "vendor.datatables.dataTablesBs.js",
                 "vendor.datatables.dataTablesBs.css",
@@ -46,7 +46,7 @@ class AdminNotifications extends \routing\paths\Paths {
                 "vendor.sweetalert.sweetalert2.min.css",
                 "js.includes.sweetAlert.js",
                 "vendor.sweetalert.sweetalert2.min.js",
-                "js.includes.sweetPrompt.js",
+                "js.includes.SweetPrompt.js",
             ],
             "custom" => [
                 "js.admin-notifications.js",
@@ -86,7 +86,7 @@ class AdminNotifications extends \routing\paths\Paths {
                 "vendor.sweetalert.sweetalert2.min.css",
                 "js.includes.sweetAlert.js",
                 "vendor.sweetalert.sweetalert2.min.js",
-                "js.includes.sweetPrompt.js",
+                "js.includes.SweetPrompt.js",
                 "vendor.datatables.dataTables.js",
                 "vendor.datatables.dataTablesBs.js",
                 "vendor.datatables.dataTablesBs.css",
@@ -111,7 +111,7 @@ class AdminNotifications extends \routing\paths\Paths {
                 "vendor.sweetalert.sweetalert2.min.css",
                 "js.includes.sweetAlert.js",
                 "vendor.sweetalert.sweetalert2.min.js",
-                "js.includes.sweetPrompt.js",
+                "js.includes.SweetPrompt.js",
             ],
             "custom" => [
                 "js.admin-notifications.js",
@@ -132,7 +132,7 @@ class AdminNotifications extends \routing\paths\Paths {
                 "vendor.sweetalert.sweetalert2.min.css",
                 "js.includes.sweetAlert.js",
                 "vendor.sweetalert.sweetalert2.min.js",
-                "js.includes.sweetPrompt.js",
+                "js.includes.SweetPrompt.js",
                 "vendor.datatables.dataTables.js",
                 "vendor.datatables.dataTablesBs.js",
                 "vendor.datatables.dataTablesBs.css",
@@ -154,12 +154,13 @@ class AdminNotifications extends \routing\paths\Paths {
             "main" => null,
             "base" => null,
             "vendor" => [
-                "vendor.datatables.dataTables.js",
-                "vendor.datatables.dataTablesBs.js",
-                "vendor.datatables.dataTablesBs.css",
-                "js.includes.dataTables.js",
+                "vendor.sweetalert.sweetalert2.min.css",
+                "vendor.sweetalert.sweetalert2.min.js",
+                "js.includes.SweetPrompt.js",
             ],
-            "custom" => [],
+            "custom" => [
+                "js.admin-notification-logs.js",
+            ],
         ],
     ];
 

@@ -4,6 +4,7 @@ namespace routing\routes\flows\purchase;
 
 use classes\enumerations\Links;
 use classes\Methods;
+use classes\payments\CardValidationService;
 use Database\model\Locations;
 use features\Settings;
 use JetBrains\PhpStorm\NoReturn;
@@ -390,10 +391,44 @@ class CustomerPageController {
 
         // Update order status if completed
         if($paymentStatus === 'COMPLETED') {
-            $orderHandler->setCompleted($order->uid);
             Methods::terminalSessions()->setCompleted($order->terminal_session?->uid);
             $basket = Methods::checkoutBasket()->getFirst(['terminal_session' => $order->terminal_session->uid, 'status' => 'FULFILLED']);
             if(isEmpty($basket)) Methods::checkoutBasket()->update(['status' => 'FULFILLED'], ['terminal_session' => $order->terminal_session->uid]);
+
+            // Store initial_transaction_id for BNPL orders (for future recurring charges)
+            $isTestOrder = (bool)($order->test ?? false);
+            $currency = $order->currency ?? 'DKK';
+
+            if ($order->payment_plan === 'pushed') {
+                // For pushed plan: refund the 1 unit validation and store transaction ID
+                $validationResult = CardValidationService::processValidationPayment(
+                    $merchantId,
+                    $orderCode,
+                    $currency,
+                    $isTestOrder
+                );
+
+                if ($validationResult['success'] && !empty($validationResult['transaction_id'])) {
+                    $paymentsHandler->storeInitialTransactionId($order->uid, $validationResult['transaction_id']);
+                } else {
+                    errorLog([
+                        'orderUid' => $order->uid,
+                        'orderCode' => $orderCode,
+                        'validationResult' => $validationResult,
+                    ], 'pushed-card-validation-failed-callback');
+                }
+            } elseif ($order->payment_plan === 'installments') {
+                // For installments: store the transaction ID from first payment
+                if (!empty($transactionId)) {
+                    $paymentsHandler->storeInitialTransactionId($order->uid, $transactionId);
+                    debugLog([
+                        'orderUid' => $order->uid,
+                        'transactionId' => $transactionId,
+                    ], 'INSTALLMENTS_TRANSACTION_ID_STORED_CALLBACK');
+                }
+            }
+
+            $orderHandler->setCompleted($order->uid);
 
             // Success: redirect to confirmation page
             $confirmationUrl = __url(Links::$checkout->createOrderConfirmation($order->uid));

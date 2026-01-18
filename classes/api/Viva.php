@@ -254,10 +254,185 @@ class Viva {
     }
 
 
+    /**
+     * Charge a recurring payment using a previous transaction ID
+     * The initial transaction must have been created with allowRecurring=true
+     *
+     * @param string $merchantId The merchant's Viva account ID
+     * @param string $initialTransactionId The transaction ID from the initial payment (used as orderCode)
+     * @param int|float|string $amount Amount in major currency units (e.g., 100.00 for 100 DKK)
+     * @param string|null $sourceCode Optional source code (defaults to initial transaction's source)
+     * @param string|null $merchantTrns Optional merchant reference
+     * @param string|null $customerTrns Optional customer-facing description
+     * @param string|null $currency Optional 3-letter currency code (e.g., 'DKK')
+     * @param int|float|string|null $resellerFee Optional ISV fee amount
+     * @return array|null Response array or null on failure
+     */
+    public function chargeRecurring(
+        string $merchantId,
+        string $initialTransactionId,
+        int|float|string $amount,
+        ?string $sourceCode = null,
+        ?string $merchantTrns = null,
+        ?string $customerTrns = null,
+        ?string $currency = null,
+        int|float|string|null $resellerFee = null
+    ): ?array {
+        $requests = Methods::requests();
+        $requests->basicAuth(API::resellerBasicAuthId($merchantId), API::resellerApiKey());
+        $requests->setHeaderContentTypeJson();
+
+        // Build payload - transaction ID goes in URL, not body
+        $payload = [
+            'amount' => (int)((float)$amount * 100),
+        ];
+
+        if (!empty($sourceCode)) $payload['sourceCode'] = $sourceCode;
+        if (!empty($merchantTrns)) $payload['merchantTrns'] = $merchantTrns;
+        if (!empty($customerTrns)) $payload['customerTrns'] = $customerTrns;
+        if (!empty($currency) && array_key_exists($currency, self::ISO_CURRENCIES)) {
+            $payload['CurrencyCode'] = self::ISO_CURRENCIES[$currency];
+        }
+
+        // Use passed ISV amount directly (from payment record, already in major currency units)
+        // Convert to cents for Viva API
+        if (!empty($resellerFee)) {
+            $payload['isvAmount'] = (int)((float)$resellerFee * 100);
+        }
+
+        $requests->setBody($payload);
+        // POST /api/transactions/{initialTransactionId}
+        $requests->post(API::recurringPaymentUrl($initialTransactionId));
+
+        $response = $requests->getResponse();
+        if (is_null($response) || (isset($response['ErrorCode']) && $response['ErrorCode'] !== 0)) {
+            errorLog([
+                'payload' => $payload,
+                'response' => $response,
+                'headers' => $requests->getHeaders(),
+            ], 'viva-recurring-payment-failed');
+        }
+
+        return $response;
+    }
 
 
+    /**
+     * Cancel an open payment order (before it has been paid)
+     *
+     * @param string $merchantId The merchant's Viva account ID
+     * @param string $orderCode The order code to cancel
+     * @return array|null Response array or null on failure
+     */
+    public function cancelOrder(string $merchantId, string $orderCode): ?array {
+        $requests = Methods::requests();
+        $requests->basicAuth(API::resellerBasicAuthId($merchantId), API::resellerApiKey());
+        $requests->delete(API::cancelOrderUrl($orderCode));
+
+        $response = $requests->getResponse();
+        if (is_null($response) || $requests->getResponseCode() >= 400) {
+            errorLog([
+                'orderCode' => $orderCode,
+                'response' => $response,
+                'responseCode' => $requests->getResponseCode(),
+                'headers' => $requests->getHeaders(),
+            ], 'viva-cancel-order-failed');
+        }
+
+        return $response;
+    }
 
 
+    /**
+     * Refund or cancel a transaction (partial or full)
+     * - Same day: performs a cancel/reversal
+     * - Previous day: performs a refund
+     *
+     * @param string $merchantId The merchant's Viva account ID
+     * @param string $transactionId The transaction ID to refund
+     * @param int|float|string|null $amount Optional amount for partial refund (in major currency units). Omit for full refund.
+     * @param string|null $sourceCode Optional source code
+     * @param string|null $currency Optional 3-letter currency code
+     * @return array|null Response array or null on failure
+     */
+    public function refundTransaction(
+        string $merchantId,
+        string $transactionId,
+        int|float|string|null $amount = null,
+        ?string $sourceCode = null,
+        ?string $currency = null
+    ): ?array {
+        debugLog([
+            'method' => 'refundTransaction',
+            'merchantId' => $merchantId,
+            'transactionId' => $transactionId,
+            'amount' => $amount,
+            'sourceCode' => $sourceCode,
+            'currency' => $currency,
+        ], 'VIVA_REFUND_START');
 
+        $requests = Methods::requests();
+        $basicAuthId = API::resellerBasicAuthId($merchantId);
+        $basicAuthKey = API::resellerApiKey();
+
+        debugLog([
+            'basicAuthId' => $basicAuthId,
+            'basicAuthKeyLength' => strlen($basicAuthKey),
+        ], 'VIVA_REFUND_AUTH');
+
+        $requests->basicAuth($basicAuthId, $basicAuthKey);
+
+        $queryParams = [];
+        if (!is_null($amount)) {
+            $queryParams['amount'] = (int)((float)$amount * 100);
+        }
+        if (!empty($sourceCode)) {
+            $queryParams['sourceCode'] = $sourceCode;
+        }
+        if (!empty($currency) && array_key_exists($currency, self::ISO_CURRENCIES)) {
+            $queryParams['currencyCode'] = self::ISO_CURRENCIES[$currency];
+        }
+
+        debugLog(['queryParams' => $queryParams], 'VIVA_REFUND_PARAMS');
+
+        $url = API::refundTransactionUrl($transactionId);
+        if (!empty($queryParams)) {
+            $url .= '?' . http_build_query($queryParams);
+        }
+
+        debugLog(['url' => $url], 'VIVA_REFUND_URL');
+
+        $requests->delete($url);
+
+        $responseCode = $requests->getResponseCode();
+        $response = $requests->getResponse();
+        $responseHeaders = $requests->getHeaders();
+
+        debugLog([
+            'responseCode' => $responseCode,
+            'response' => $response,
+            'responseHeaders' => $responseHeaders,
+        ], 'VIVA_REFUND_RESPONSE');
+
+        if (is_null($response) || $responseCode >= 400) {
+            errorLog([
+                'transactionId' => $transactionId,
+                'amount' => $amount,
+                'url' => $url,
+                'response' => $response,
+                'responseCode' => $responseCode,
+                'headers' => $responseHeaders,
+            ], 'viva-refund-transaction-failed');
+
+            debugLog(['error' => 'Request failed', 'responseCode' => $responseCode], 'VIVA_REFUND_ERROR');
+        } else {
+            debugLog([
+                'success' => true,
+                'transactionId' => $response['TransactionId'] ?? null,
+            ], 'VIVA_REFUND_SUCCESS');
+        }
+
+        return $response;
+    }
 
 }

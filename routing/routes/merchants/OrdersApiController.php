@@ -5,6 +5,7 @@ namespace routing\routes\merchants;
 use classes\app\OrganisationPermissions;
 use classes\enumerations\Links;
 use classes\Methods;
+use classes\notifications\NotificationTriggers;
 use classes\utility\Titles;
 use features\Settings;
 use JetBrains\PhpStorm\NoReturn;
@@ -36,8 +37,7 @@ class OrdersApiController {
         // Build base query
         $orderHandler = Methods::orders();
         $query = $orderHandler->queryBuilder()
-            ->where('organisation', $organisationUid)
-            ->where('status', ['DRAFT', 'PENDING', 'COMPLETED', 'CANCELLED']);
+            ->where('organisation', $organisationUid);
 
         // Apply scoped location filter if applicable
         $locationIds = Methods::locations()->userLocationPredicate();
@@ -221,8 +221,7 @@ class OrdersApiController {
         // Build base query
         $orderHandler = Methods::orders();
         $query = $orderHandler->queryBuilder()
-            ->where('location', $location->uid)
-            ->where('status', ['DRAFT', 'PENDING', 'COMPLETED', 'CANCELLED']);
+            ->where('location', $location->uid);
 
         // Apply status filter
         if(!empty($filterStatus)) {
@@ -360,6 +359,517 @@ class OrdersApiController {
                 "total" => $totalCount,
                 "totalPages" => $totalPages,
             ],
+        ]);
+    }
+
+
+    /**
+     * Refund an entire order - refunds all completed payments
+     * POST api/merchant/orders/{id}/refund
+     */
+    #[NoReturn] public static function refundOrder(array $args): void {
+        $orderId = $args['id'] ?? null;
+
+        debugLog(['action' => 'refundOrder', 'orderId' => $orderId, 'args' => $args], 'REFUND_ORDER_START');
+
+        if(isEmpty($orderId)) {
+            debugLog(['error' => 'Missing order ID'], 'REFUND_ORDER_ERROR');
+            Response()->jsonError("Ordre ID mangler.");
+        }
+
+        // Validate organisation
+        if(isEmpty(Settings::$organisation)) {
+            debugLog(['error' => 'No organisation'], 'REFUND_ORDER_ERROR');
+            Response()->jsonError("Du er ikke medlem af nogen aktiv organisation.");
+        }
+
+        // Check permissions
+        if(!OrganisationPermissions::__oModify('orders', 'payments')) {
+            debugLog(['error' => 'No permission'], 'REFUND_ORDER_ERROR');
+            Response()->jsonError("Du har ikke tilladelse til at refundere ordrer.");
+        }
+
+        $organisationUid = Settings::$organisation->organisation->uid;
+        debugLog(['organisationUid' => $organisationUid], 'REFUND_ORDER_ORG');
+
+        // Get the order
+        $orderHandler = Methods::orders();
+        $order = $orderHandler->get($orderId);
+
+        if(isEmpty($order)) {
+            debugLog(['error' => 'Order not found', 'orderId' => $orderId], 'REFUND_ORDER_ERROR');
+            Response()->jsonError("Ordre ikke fundet.");
+        }
+
+        // Get organisation UID from order (could be object or string depending on handler)
+        $orderOrgUid = is_object($order->organisation) ? $order->organisation->uid : $order->organisation;
+
+        debugLog([
+            'orderId' => $order->uid,
+            'orderStatus' => $order->status,
+            'orderAmount' => $order->amount,
+            'orderOrganisation' => $orderOrgUid,
+        ], 'REFUND_ORDER_FOUND');
+
+        // Verify the order belongs to the current organisation
+        if($orderOrgUid !== $organisationUid) {
+            debugLog([
+                'error' => 'Organisation mismatch',
+                'orderOrg' => $orderOrgUid,
+                'userOrg' => $organisationUid,
+            ], 'REFUND_ORDER_ERROR');
+            Response()->jsonError("Du har ikke adgang til denne ordre.");
+        }
+
+        // Check order status - can only refund COMPLETED or PENDING orders
+        if(!in_array($order->status, ['COMPLETED', 'PENDING'])) {
+            debugLog(['error' => 'Invalid order status', 'status' => $order->status], 'REFUND_ORDER_ERROR');
+            Response()->jsonError("Denne ordre kan ikke refunderes (status: {$order->status}).");
+        }
+
+        // Get all payments for this order
+        $paymentHandler = Methods::payments();
+        $completedPayments = $paymentHandler->getByX(['order' => $orderId, 'status' => 'COMPLETED']);
+
+        // Check for pending/scheduled payments that will be voided
+        $pendingPayments = $paymentHandler->queryBuilder()
+            ->where('order', $orderId)
+            ->startGroup('OR')
+                ->where('status', 'PENDING')
+                ->where('status', 'SCHEDULED')
+            ->endGroup()
+            ->all();
+
+        $hasCompletedPayments = !$completedPayments->empty();
+        $hasPendingPayments = $pendingPayments && !$pendingPayments->empty();
+
+        debugLog([
+            'completedPaymentsCount' => $completedPayments->count(),
+            'pendingPaymentsCount' => $hasPendingPayments ? $pendingPayments->count() : 0,
+        ], 'REFUND_ORDER_PAYMENTS');
+
+        // Must have either completed payments to refund OR pending payments to void
+        if(!$hasCompletedPayments && !$hasPendingPayments) {
+            debugLog(['error' => 'No payments to refund or void'], 'REFUND_ORDER_ERROR');
+            Response()->jsonError("Der er ingen betalinger at refundere eller annullere.");
+        }
+
+        // Resolve organisation (could be object or string)
+        $orderOrg = is_object($order->organisation) ? $order->organisation : Methods::organisations()->get($order->organisation);
+
+        $totalRefunded = 0;
+        $refundErrors = [];
+        $paymentsRefundedCount = 0; // Count of payments refunded in this operation
+
+        // Only process Viva refunds if there are completed payments
+        if($hasCompletedPayments) {
+            $merchantId = $orderOrg->merchant_prid ?? null;
+
+            debugLog(['merchantId' => $merchantId, 'organisationUid' => $orderOrg->uid ?? null], 'REFUND_ORDER_MERCHANT');
+
+            if(isEmpty($merchantId)) {
+                debugLog(['error' => 'Missing merchant ID'], 'REFUND_ORDER_ERROR');
+                Response()->jsonError("Organisation mangler Viva merchant ID.");
+            }
+
+            // Get the Viva API
+            $viva = Methods::viva();
+
+            // Refund each completed payment
+            foreach($completedPayments->list() as $payment) {
+            debugLog([
+                'paymentId' => $payment->uid,
+                'paymentStatus' => $payment->status,
+                'paymentAmount' => $payment->amount,
+                'paymentPrid' => $payment->prid,
+            ], 'REFUND_ORDER_PAYMENT_LOOP');
+
+            // Skip if already refunded
+            if($payment->status === 'REFUNDED') {
+                debugLog(['skipped' => 'Already refunded', 'paymentId' => $payment->uid], 'REFUND_ORDER_SKIP');
+                continue;
+            }
+
+            // Get transaction ID (prid)
+            $transactionId = $payment->prid;
+            if(isEmpty($transactionId)) {
+                debugLog(['error' => 'Missing prid', 'paymentId' => $payment->uid], 'REFUND_ORDER_ERROR');
+                $refundErrors[] = "Betaling {$payment->uid} mangler transaktion ID.";
+                continue;
+            }
+
+            debugLog([
+                'calling' => 'viva->refundTransaction',
+                'merchantId' => $merchantId,
+                'transactionId' => $transactionId,
+                'currency' => $payment->currency,
+            ], 'REFUND_ORDER_VIVA_CALL');
+
+            // Call Viva refund API (full refund)
+            $result = $viva->refundTransaction(
+                $merchantId,
+                $transactionId,
+                (float)$payment->amount, // Amount is required by Viva
+                null,
+                $payment->currency
+            );
+
+            debugLog(['vivaResult' => $result], 'REFUND_ORDER_VIVA_RESULT');
+
+            if(!isEmpty($result) && isset($result['TransactionId'])) {
+                debugLog([
+                    'success' => true,
+                    'paymentId' => $payment->uid,
+                    'refundTransactionId' => $result['TransactionId'],
+                ], 'REFUND_ORDER_PAYMENT_SUCCESS');
+
+                // Update payment status to REFUNDED
+                $paymentHandler->update(['status' => 'REFUNDED'], ['uid' => $payment->uid]);
+                $totalRefunded += (float)$payment->amount;
+                $paymentsRefundedCount++;
+            } else {
+                $errorMsg = $result['message'] ?? $result['Message'] ?? $result['ErrorText'] ?? 'Ukendt fejl';
+                debugLog([
+                    'error' => 'Viva refund failed',
+                    'paymentId' => $payment->uid,
+                    'errorMsg' => $errorMsg,
+                    'fullResult' => $result,
+                ], 'REFUND_ORDER_PAYMENT_ERROR');
+                $refundErrors[] = "Betaling {$payment->uid}: {$errorMsg}";
+            }
+        }
+
+        } // End if($hasCompletedPayments)
+
+        debugLog([
+            'totalRefunded' => $totalRefunded,
+            'refundErrors' => $refundErrors,
+        ], 'REFUND_ORDER_SUMMARY');
+
+        // Void all future/pending payments (PENDING, SCHEDULED status)
+        $voidedCount = 0;
+        if($hasPendingPayments) {
+            foreach($pendingPayments->list() as $futurePayment) {
+                $paymentHandler->update(['status' => 'VOIDED'], ['uid' => $futurePayment->uid]);
+                $voidedCount++;
+                debugLog(['voided' => $futurePayment->uid, 'amount' => $futurePayment->amount], 'REFUND_ORDER_VOIDED_PAYMENT');
+            }
+        }
+
+        debugLog(['voidedCount' => $voidedCount], 'REFUND_ORDER_VOIDED_SUMMARY');
+
+        // Update order amount_refunded, fee_amount and status
+        $orderAmount = (float)$order->amount;
+        $newAmountRefunded = (float)$order->amount_refunded + $totalRefunded;
+        $updateData = ['amount_refunded' => $newAmountRefunded];
+
+        // Recalculate fee_amount based on remaining amount after refund
+        $feePercentage = (float)($order->fee ?? 0);
+        $remainingAmount = $orderAmount - $newAmountRefunded;
+
+        if($remainingAmount <= 0) {
+            // Full refund - no fee
+            $updateData['fee_amount'] = 0;
+        } else {
+            // Partial refund - recalculate fee on remaining amount
+            $newFeeAmount = $remainingAmount * ($feePercentage / 100);
+            $updateData['fee_amount'] = round($newFeeAmount, 2);
+        }
+
+        debugLog([
+            'orderAmount' => $orderAmount,
+            'feePercentage' => $feePercentage,
+            'remainingAmount' => $remainingAmount,
+            'newFeeAmount' => $updateData['fee_amount'],
+        ], 'REFUND_ORDER_FEE_RECALC');
+
+        // Determine order status: REFUNDED if any payments have been refunded (now or previously), VOIDED if only voided
+        // Check if there are any refunded payments on this order (including previously refunded ones)
+        $refundedPaymentsCount = $paymentHandler->count(['order' => $orderId, 'status' => 'REFUNDED']);
+
+        if($refundedPaymentsCount > 0 || $totalRefunded > 0) {
+            $updateData['status'] = 'REFUNDED';
+            $successMessage = "Ordre refunderet succesfuldt.";
+        } else {
+            $updateData['status'] = 'VOIDED';
+            $successMessage = "Ordre annulleret succesfuldt.";
+        }
+
+        debugLog(['updateData' => $updateData, 'newStatus' => $updateData['status']], 'REFUND_ORDER_UPDATE');
+        $orderHandler->update($updateData, ['uid' => $orderId]);
+
+        // Trigger order.refunded notification if at least one payment was refunded (not just voided)
+        if($paymentsRefundedCount > 0) {
+            // Resolve user from order
+            $user = null;
+            if(!isEmpty($order->uuid)) {
+                $user = is_object($order->uuid) ? $order->uuid : Methods::users()->get($order->uuid);
+            }
+
+            // Resolve location from order
+            $location = null;
+            if(!isEmpty($order->location)) {
+                $location = is_object($order->location) ? $order->location : Methods::locations()->get($order->location);
+            }
+
+            NotificationTriggers::orderRefunded(
+                $order,
+                $user,
+                $totalRefunded,
+                $paymentsRefundedCount,
+                $voidedCount,
+                'Refundering anmodet af forretningen',
+                $orderOrg,
+                $location
+            );
+
+            debugLog(['order_refunded_notification_triggered' => true, 'orderId' => $order->uid, 'paymentsRefundedCount' => $paymentsRefundedCount], 'REFUND_ORDER_NOTIFICATION');
+        }
+
+        if(!empty($refundErrors)) {
+            debugLog(['result' => 'partial_success'], 'REFUND_ORDER_COMPLETE');
+            Response()->setRedirect()->jsonSuccess("Delvis refundering gennemført. " . implode(' ', $refundErrors), [
+                'total_refunded' => $totalRefunded,
+                'voided_payments' => $voidedCount,
+                'currency' => $order->currency,
+                'errors' => $refundErrors,
+            ]);
+        }
+
+        debugLog(['result' => 'success', 'totalRefunded' => $totalRefunded, 'voidedCount' => $voidedCount], 'REFUND_ORDER_COMPLETE');
+        Response()->setRedirect()->jsonSuccess($successMessage, [
+            'total_refunded' => $totalRefunded,
+            'voided_payments' => $voidedCount,
+            'currency' => $order->currency,
+        ]);
+    }
+
+
+    /**
+     * Refund a single payment
+     * POST api/merchant/payments/{id}/refund
+     */
+    #[NoReturn] public static function refundPayment(array $args): void {
+        $paymentId = $args['id'] ?? null;
+
+        debugLog(['action' => 'refundPayment', 'paymentId' => $paymentId, 'args' => $args], 'REFUND_PAYMENT_START');
+
+        if(isEmpty($paymentId)) {
+            debugLog(['error' => 'Missing payment ID'], 'REFUND_PAYMENT_ERROR');
+            Response()->jsonError("Betalings ID mangler.");
+        }
+
+        // Validate organisation
+        if(isEmpty(Settings::$organisation)) {
+            debugLog(['error' => 'No organisation'], 'REFUND_PAYMENT_ERROR');
+            Response()->jsonError("Du er ikke medlem af nogen aktiv organisation.");
+        }
+
+        // Check permissions
+        if(!OrganisationPermissions::__oModify('orders', 'payments')) {
+            debugLog(['error' => 'No permission'], 'REFUND_PAYMENT_ERROR');
+            Response()->jsonError("Du har ikke tilladelse til at refundere betalinger.");
+        }
+
+        $organisationUid = Settings::$organisation->organisation->uid;
+        debugLog(['organisationUid' => $organisationUid], 'REFUND_PAYMENT_ORG');
+
+        // Get the payment
+        $paymentHandler = Methods::payments();
+        $payment = $paymentHandler->get($paymentId);
+
+        if(isEmpty($payment)) {
+            debugLog(['error' => 'Payment not found', 'paymentId' => $paymentId], 'REFUND_PAYMENT_ERROR');
+            Response()->jsonError("Betaling ikke fundet.");
+        }
+
+        // Get organisation UID from payment (could be object or string depending on handler)
+        $paymentOrgUid = is_object($payment->organisation) ? $payment->organisation->uid : $payment->organisation;
+
+        debugLog([
+            'paymentId' => $payment->uid,
+            'paymentStatus' => $payment->status,
+            'paymentAmount' => $payment->amount,
+            'paymentCurrency' => $payment->currency,
+            'paymentPrid' => $payment->prid,
+            'paymentOrganisation' => $paymentOrgUid,
+        ], 'REFUND_PAYMENT_FOUND');
+
+        // Verify the payment belongs to the current organisation
+        if($paymentOrgUid !== $organisationUid) {
+            debugLog([
+                'error' => 'Organisation mismatch',
+                'paymentOrg' => $paymentOrgUid,
+                'userOrg' => $organisationUid,
+            ], 'REFUND_PAYMENT_ERROR');
+            Response()->jsonError("Du har ikke adgang til denne betaling.");
+        }
+
+        // Check payment status - can only refund COMPLETED payments
+        if($payment->status !== 'COMPLETED') {
+            debugLog(['error' => 'Invalid payment status', 'status' => $payment->status], 'REFUND_PAYMENT_ERROR');
+            Response()->jsonError("Kun gennemførte betalinger kan refunderes (status: {$payment->status}).");
+        }
+
+        // Get transaction ID (prid)
+        $transactionId = $payment->prid;
+        if(isEmpty($transactionId)) {
+            debugLog(['error' => 'Missing prid', 'paymentId' => $payment->uid], 'REFUND_PAYMENT_ERROR');
+            Response()->jsonError("Betaling mangler transaktion ID.");
+        }
+
+        debugLog(['transactionId' => $transactionId], 'REFUND_PAYMENT_TRANSACTION');
+
+        // Get the order to access merchant ID (could be object or string)
+        $orderValue = $payment->order;
+        if(isEmpty($orderValue)) {
+            debugLog(['error' => 'Order not found for payment'], 'REFUND_PAYMENT_ERROR');
+            Response()->jsonError("Tilhørende ordre ikke fundet.");
+        }
+
+        // Resolve order if it's a string UID
+        $order = is_object($orderValue) ? $orderValue : Methods::orders()->get($orderValue);
+        if(isEmpty($order)) {
+            debugLog(['error' => 'Could not resolve order', 'orderValue' => $orderValue], 'REFUND_PAYMENT_ERROR');
+            Response()->jsonError("Tilhørende ordre ikke fundet.");
+        }
+
+        debugLog([
+            'orderId' => $order->uid,
+            'orderStatus' => $order->status,
+            'orderAmount' => $order->amount,
+            'orderAmountRefunded' => $order->amount_refunded,
+        ], 'REFUND_PAYMENT_ORDER');
+
+        // Get organisation from order (could be object or string)
+        $orderOrg = is_object($order->organisation) ? $order->organisation : Methods::organisations()->get($order->organisation);
+        $merchantId = $orderOrg->merchant_prid ?? null;
+        if(isEmpty($merchantId)) {
+            debugLog(['error' => 'Missing merchant ID', 'organisationId' => $orderOrg->uid ?? 'N/A'], 'REFUND_PAYMENT_ERROR');
+            Response()->jsonError("Organisation mangler Viva merchant ID.");
+        }
+
+        debugLog(['merchantId' => $merchantId], 'REFUND_PAYMENT_MERCHANT');
+
+        // Call Viva refund API (full refund)
+        $viva = Methods::viva();
+
+        debugLog([
+            'calling' => 'viva->refundTransaction',
+            'merchantId' => $merchantId,
+            'transactionId' => $transactionId,
+            'amount' => (float)$payment->amount,
+            'currency' => $payment->currency,
+        ], 'REFUND_PAYMENT_VIVA_CALL');
+
+        $result = $viva->refundTransaction(
+            $merchantId,
+            $transactionId,
+            (float)$payment->amount, // Amount is required by Viva
+            null,
+            $payment->currency
+        );
+
+        debugLog(['vivaResult' => $result], 'REFUND_PAYMENT_VIVA_RESULT');
+
+        if(isEmpty($result) || !isset($result['TransactionId'])) {
+            $errorMsg = $result['message'] ?? $result['Message'] ?? $result['ErrorText'] ?? 'Ukendt fejl fra betalingsudbyder';
+            debugLog([
+                'error' => 'Viva refund failed',
+                'errorMsg' => $errorMsg,
+                'fullResult' => $result,
+            ], 'REFUND_PAYMENT_ERROR');
+            Response()->jsonError("Refundering fejlede: {$errorMsg}");
+        }
+
+        debugLog([
+            'success' => true,
+            'refundTransactionId' => $result['TransactionId'],
+        ], 'REFUND_PAYMENT_VIVA_SUCCESS');
+
+        // Update payment status to REFUNDED
+        debugLog(['updating' => 'payment status to REFUNDED', 'paymentId' => $paymentId], 'REFUND_PAYMENT_UPDATE');
+        $paymentHandler->update(['status' => 'REFUNDED'], ['uid' => $paymentId]);
+
+        // Update order amount_refunded and recalculate fee_amount (but NOT status - single payment refund doesn't change order status)
+        $orderHandler = Methods::orders()->excludeForeignKeys();
+        $orderData = $orderHandler->get($order->uid);
+        $newAmountRefunded = (float)$orderData->amount_refunded + (float)$payment->amount;
+
+        // Recalculate fee_amount based on remaining amount after refund
+        $orderAmount = (float)$orderData->amount;
+        $feePercentage = (float)($orderData->fee ?? 0);
+        $remainingAmount = $orderAmount - $newAmountRefunded;
+
+        $updateData = ['amount_refunded' => $newAmountRefunded];
+
+        if($remainingAmount <= 0) {
+            // Full refund - no fee
+            $updateData['fee_amount'] = 0;
+        } else {
+            // Partial refund - recalculate fee on remaining amount
+            $newFeeAmount = $remainingAmount * ($feePercentage / 100);
+            $updateData['fee_amount'] = round($newFeeAmount, 2);
+        }
+
+        // If all payments are now refunded (amount == amount_refunded), set order status to REFUNDED
+        if($newAmountRefunded >= $orderAmount) {
+            $updateData['status'] = 'REFUNDED';
+            debugLog(['order_fully_refunded' => true, 'newAmountRefunded' => $newAmountRefunded, 'orderAmount' => $orderAmount], 'REFUND_PAYMENT_ORDER_FULLY_REFUNDED');
+        }
+
+        debugLog([
+            'updating' => 'order amount_refunded and fee_amount',
+            'orderId' => $order->uid,
+            'previousAmountRefunded' => $orderData->amount_refunded,
+            'paymentAmount' => $payment->amount,
+            'newAmountRefunded' => $newAmountRefunded,
+            'orderAmount' => $orderAmount,
+            'feePercentage' => $feePercentage,
+            'remainingAmount' => $remainingAmount,
+            'newFeeAmount' => $updateData['fee_amount'],
+            'newStatus' => $updateData['status'] ?? 'unchanged',
+        ], 'REFUND_PAYMENT_ORDER_UPDATE');
+
+        $orderHandler->update($updateData, ['uid' => $order->uid]);
+
+        // Trigger refund notification
+        // Resolve user from order
+        $user = null;
+        if(!isEmpty($order->uuid)) {
+            $user = is_object($order->uuid) ? $order->uuid : Methods::users()->get($order->uuid);
+        }
+
+        // Resolve location from order
+        $location = null;
+        if(!isEmpty($order->location)) {
+            $location = is_object($order->location) ? $order->location : Methods::locations()->get($order->location);
+        }
+
+        // Trigger notification (use $orderOrg which is already resolved)
+        NotificationTriggers::paymentRefunded(
+            $payment,
+            $user,
+            $order,
+            (float)$payment->amount,
+            'Refundering anmodet af forretningen',
+            $orderOrg,
+            $location
+        );
+
+        debugLog(['notification_triggered' => true, 'paymentId' => $payment->uid], 'REFUND_PAYMENT_NOTIFICATION');
+
+        debugLog([
+            'result' => 'success',
+            'amountRefunded' => (float)$payment->amount,
+            'currency' => $payment->currency,
+            'transactionId' => $result['TransactionId'],
+        ], 'REFUND_PAYMENT_COMPLETE');
+
+        Response()->setRedirect()->jsonSuccess("Betaling refunderet succesfuldt.", [
+            'amount_refunded' => (float)$payment->amount,
+            'currency' => $payment->currency,
+            'transaction_id' => $result['TransactionId'],
         ]);
     }
 }

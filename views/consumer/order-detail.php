@@ -11,6 +11,16 @@ $payments = $args->payments;
 $billingDetails = toArray($order->billing_details ?? []);
 
 $pageTitle = "Ordre Detaljer - " . substr($order->uid, 0, 8);
+
+// Order status mapping for big label
+$orderStatusMap = [
+    'COMPLETED' => ['label' => 'GENNEMFØRT', 'class' => 'success-box'],
+    'PENDING' => ['label' => 'AFVENTER', 'class' => 'action-box'],
+    'CANCELLED' => ['label' => 'ANNULLERET', 'class' => 'mute-box'],
+    'REFUNDED' => ['label' => 'REFUNDERET', 'class' => 'warning-box'],
+    'VOIDED' => ['label' => 'OPHÆVET', 'class' => 'mute-box'],
+];
+$orderStatusInfo = $orderStatusMap[$order->status] ?? null;
 ?>
 
 <script>
@@ -27,9 +37,16 @@ $pageTitle = "Ordre Detaljer - " . substr($order->uid, 0, 8);
         </a>
     </div>
 
-    <div class="flex-col-start mb-4">
-        <p class="mb-0 font-30 font-weight-bold">Ordre Detaljer</p>
-        <p class="mb-0 font-16 font-weight-medium color-gray">Ordre ID: <?=substr($order->uid, 0, 8)?></p>
+    <div class="flex-row-between-center mb-4">
+        <div class="flex-col-start">
+            <p class="mb-0 font-30 font-weight-bold">Ordre Detaljer</p>
+            <p class="mb-0 font-16 font-weight-medium color-gray">Ordre ID: <?=substr($order->uid, 0, 8)?></p>
+        </div>
+        <?php if($orderStatusInfo): ?>
+            <div class="<?=$orderStatusInfo['class']?> font-24 font-weight-bold px-4 py-2">
+                <?=$orderStatusInfo['label']?>
+            </div>
+        <?php endif; ?>
     </div>
 
     <div class="row">

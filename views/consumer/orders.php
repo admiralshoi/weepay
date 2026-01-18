@@ -50,6 +50,8 @@ $pageTitle = "Ordre";
                                 <option value="COMPLETED">Gennemført</option>
                                 <option value="PENDING">Afventer</option>
                                 <option value="CANCELLED">Annulleret</option>
+                                <option value="REFUNDED">Refunderet</option>
+                                <option value="VOIDED">Ophævet</option>
                             </select>
                         </div>
                         <div class="form-group mb-0 position-relative">

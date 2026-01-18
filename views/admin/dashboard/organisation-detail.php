@@ -44,7 +44,7 @@ $statusInfo = $statusLabels[$organisation->status ?? 'DRAFT'] ?? ['label' => 'Uk
             </div>
 
             <!-- Page Header -->
-            <div class="flex-row-between flex-align-start w-100 flex-wrap" style="gap: 1rem;">
+            <div class="flex-col-start w-100" style="gap: 1rem;">
                 <div class="flex-row-start flex-align-center" style="gap: 1rem;">
                     <div class="square-70 bg-light-gray border-radius-8px flex-row-center-center">
                         <i class="mdi mdi-domain font-40 color-blue"></i>
@@ -59,6 +59,12 @@ $statusInfo = $statusLabels[$organisation->status ?? 'DRAFT'] ?? ['label' => 'Uk
                 </div>
                 <div class="flex-row-end flex-align-center flex-wrap" style="gap: .5rem;">
                     <input type="text" class="form-field-v2" id="date-range-picker" style="min-width: 220px;" readonly>
+                    <a href="<?=__url(Links::$admin->orders)?>?org=<?=$organisation->uid?>&status=COMPLETED" class="btn-v2 mute-btn">
+                        <i class="mdi mdi-receipt mr-1"></i> Se ordrer
+                    </a>
+                    <a href="<?=__url(Links::$admin->payments)?>?org=<?=$organisation->uid?>&status=COMPLETED" class="btn-v2 mute-btn">
+                        <i class="mdi mdi-credit-card mr-1"></i> Se betalinger
+                    </a>
                     <button class="btn-v2 action-btn" onclick="startImpersonation()">
                         <i class="mdi mdi-account-switch mr-1"></i> Se som <?=\classes\lang\Translate::word("organisation")?>
                     </button>

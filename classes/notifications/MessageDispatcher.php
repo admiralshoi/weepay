@@ -23,7 +23,6 @@ use Database\model\Users;
 class MessageDispatcher {
 
     private const DEFAULT_FROM_EMAIL = "no-reply@wee-pay.dk";
-    private const DEFAULT_FROM_NAME = "WeePay";
     private const DEFAULT_SMS_SENDER = "WeePay";
 
     // =====================================================
@@ -67,13 +66,18 @@ class MessageDispatcher {
         }
 
         $fromEmail = $fromEmail ?? self::DEFAULT_FROM_EMAIL;
-        $fromName = $fromName ?? self::DEFAULT_FROM_NAME;
+        $fromName = $fromName ?? strtoupper(BRAND_NAME);
+
+        // Encode from name for UTF-8 support (RFC 2047)
+        $encodedFromName = '=?UTF-8?B?' . base64_encode($fromName) . '?=';
+
+        debugLog(compact('fromEmail', 'fromName', 'encodedFromName'), 'MESSAGE_DISPATCHER_EMAIL_FROM');
 
         // Generate boundary for multipart
         $boundary = md5(uniqid('', true));
 
         // Build headers
-        $headers = "From: $fromName <$fromEmail>\r\n";
+        $headers = "From: $encodedFromName <$fromEmail>\r\n";
         $headers .= "Reply-To: $fromEmail\r\n";
         $headers .= "MIME-Version: 1.0\r\n";
         $headers .= "Content-Type: multipart/alternative; boundary=\"$boundary\"\r\n";
@@ -102,8 +106,8 @@ class MessageDispatcher {
 
         $message .= "--$boundary--";
 
-        // Send the email
-        $result = @mail($to, $subject, $message, $headers);
+        // Send the email with envelope sender for better deliverability
+        $result = @mail($to, $subject, $message, $headers, "-f$fromEmail");
 
         if (!$result) {
             debugLog([
@@ -227,10 +231,13 @@ class MessageDispatcher {
             return false;
         }
 
-        // Get country code from user if available
-        $countryCode = $user->phone_country_code ?? null;
+        // Get country code from user if available and convert to dialer code
+        $dialerCode = null;
+        if (!empty($user->phone_country_code)) {
+            $dialerCode = \classes\utility\Misc::callerCode($user->phone_country_code);
+        }
 
-        return self::sms($user->phone, $message, $sender, $countryCode);
+        return self::sms($user->phone, $message, $sender, $dialerCode);
     }
 
     // =====================================================

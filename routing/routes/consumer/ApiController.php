@@ -34,8 +34,8 @@ class ApiController {
         if(!empty($filterStatus) && $filterStatus !== 'all') {
             $query->where('status', $filterStatus);
         } else {
-            // Default: show COMPLETED and PENDING orders (not DRAFT or CANCELLED)
-            $query->where('status', ['COMPLETED', 'PENDING']);
+            // Default: show all relevant orders (not DRAFT)
+            $query->where('status', ['PENDING', 'COMPLETED', 'CANCELLED', 'EXPIRED', 'REFUNDED', 'VOIDED']);
         }
 
         // Apply date range filter

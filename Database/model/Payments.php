@@ -20,11 +20,15 @@ class Payments extends \Database\Model {
         "installment_number" => ["type" => "integer", "default" => 1],
         "due_date"          => ["type" => "timestamp", "nullable" => true, "default" => null],
         "paid_at"           => ["type" => "timestamp", "nullable" => true, "default" => null],
-        "status"            => ["type" => "enum", "default" => "PENDING", "values" => ["PENDING", "PAST_DUE", "SCHEDULED", "COMPLETED", "FAILED", "CANCELLED", "REFUNDED"]],
+        "status"            => ["type" => "enum", "default" => "PENDING", "values" => ["PENDING", "PAST_DUE", "SCHEDULED", "COMPLETED", "FAILED", "CANCELLED", "REFUNDED", "VOIDED"]],
         "prid"              => ["type" => "string", "nullable" => true, "default" => null],
+        "initial_transaction_id" => ["type" => "string", "nullable" => true, "default" => null],
         "failure_reason"    => ["type" => "string", "nullable" => true, "default" => null],
         "metadata"          => ["type" => "text", "nullable" => true, "default" => null],
         "test"              => "tinyInteger",
+        "processing_at"     => ["type" => "timestamp", "nullable" => true, "default" => null],
+        "scheduled_at"      => ["type" => "timestamp", "nullable" => true, "default" => null],
+        "attempts"          => ["type" => "integer", "default" => 0],
     ];
 
     public static array $indexes = ["order", "uuid", "organisation", "location", "status", "due_date"];

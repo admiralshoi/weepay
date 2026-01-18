@@ -74,8 +74,8 @@ $templates = $args->templates ?? new \Database\Collection();
                                         $typeLabel = $typeLabels[$template->type] ?? $template->type;
                                         $typeClass = $typeClasses[$template->type] ?? 'mute-box';
 
-                                        $statusLabels = ['active' => 'Aktiv', 'inactive' => 'Inaktiv', 'draft' => 'Kladde'];
-                                        $statusClasses = ['active' => 'success-box', 'inactive' => 'danger-box', 'draft' => 'mute-box'];
+                                        $statusLabels = ['active' => 'Aktiv', 'inactive' => 'Inaktiv', 'draft' => 'Kladde', 'template' => 'Skabelon'];
+                                        $statusClasses = ['active' => 'success-box', 'inactive' => 'danger-box', 'draft' => 'mute-box', 'template' => 'info-box'];
                                         $statusLabel = $statusLabels[$template->status] ?? $template->status;
                                         $statusClass = $statusClasses[$template->status] ?? 'mute-box';
 

@@ -85,7 +85,20 @@ class CheckoutBasketHandler extends Crud {
         $payments = [];
         $averagePrice = floor($price / $installments);
         $remainingPrice = $price - $averagePrice * ($installments - 1);
-        if($installments > 1) {
+
+        // For pushed plan with single payment, create one scheduled payment
+        if($planName === 'pushed' && $installments === 1) {
+            $paymentTime = strtotime($plan->start);
+            $payments[] = [
+                'price' => $price,
+                'date' => Translate::sentence(strtolower(date("d. F", $paymentTime))),
+                'date_title' => Translate::sentence(strtolower(date("d. F", $paymentTime))),
+                "timestamp" => strtotime(date("Y-m-d", $paymentTime)),
+                'installment' => 1,
+            ];
+        }
+        // For multi-installment plans
+        elseif($installments > 1) {
             $remainingRatesAfterFirstPayment = $installments -1;
             $daysBetween = max(1, floor($paymentTimeframe / $remainingRatesAfterFirstPayment) -1);
             for($i = 0; $i < $installments; $i++) {

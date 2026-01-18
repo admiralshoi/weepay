@@ -455,24 +455,65 @@ const VivaWallet = {
     onboardingWindow: null,
     onboardingInterval: null,
     accountStatus: "DRAFT",
-    init(accountStatus) {
+    organisationUid: null,
+    storageKey: 'viva_wallet_completed',
+
+    init(accountStatus, organisationUid) {
         if(!empty(accountStatus)) this.accountStatus = accountStatus;
+        if(!empty(organisationUid)) this.organisationUid = organisationUid;
+
+        // If already marked as completed in localStorage for this org, skip polling
+        if(this.isMarkedCompleted()) {
+            this.accountStatus = 'COMPLETED';
+            return;
+        }
+
         this.bindEvents();
     },
-    bindEvents() {
-        if(this.accountStatus !== 'COMPLETED') {
-            this.onboardingInterval = setInterval(this.checkAccountStatus.bind(this), 3500);
+
+    // Check if this organisation's Viva account is marked as completed in localStorage
+    isMarkedCompleted() {
+        if(!this.organisationUid) return false;
+        try {
+            var completed = JSON.parse(localStorage.getItem(this.storageKey) || '{}');
+            return completed[this.organisationUid] === true;
+        } catch(e) {
+            return false;
         }
     },
+
+    // Mark this organisation's Viva account as completed in localStorage
+    markAsCompleted() {
+        if(!this.organisationUid) return;
+        try {
+            var completed = JSON.parse(localStorage.getItem(this.storageKey) || '{}');
+            completed[this.organisationUid] = true;
+            localStorage.setItem(this.storageKey, JSON.stringify(completed));
+        } catch(e) {
+            console.warn('Could not save Viva status to localStorage');
+        }
+    },
+
+    bindEvents() {
+        // Only poll if account is not completed
+        if(this.accountStatus !== 'COMPLETED') {
+            // Do an immediate check on page load
+            this.checkAccountStatus();
+            // Then poll every 5 seconds (increased from 3.5s to reduce server load)
+            this.onboardingInterval = setInterval(this.checkAccountStatus.bind(this), 5000);
+        }
+    },
+
     async checkAccountStatus() {
-        let result = await get(platformLinks.api.organisation.vivaConnectedAccount);
+        var result = await get(platformLinks.api.organisation.vivaConnectedAccount);
         if(result.status === "error") {
-            console.warn("Der opstod en fejl", result.error.message)
-            clearInterval(this.onboardingInterval)
+            console.warn("Der opstod en fejl", result.error.message);
+            clearInterval(this.onboardingInterval);
             this.onboardingInterval = null;
             return;
         }
 
+        // Close onboarding window if account moved past DRAFT
         if(this.onboardingWindow !== null && result?.data?.state !== 'DRAFT') {
             if(!this.onboardingWindow.closed) {
                 this.onboardingWindow.close();
@@ -480,44 +521,51 @@ const VivaWallet = {
             }
         }
 
+        // Account is now completed
         if(result?.data?.state === 'COMPLETED') {
-            clearInterval(this.onboardingInterval)
+            clearInterval(this.onboardingInterval);
             this.onboardingInterval = null;
+
+            // Mark as completed in localStorage to avoid future checks
+            this.markAsCompleted();
+
+            // If status changed from non-completed to completed, reload page
             if(this.accountStatus !== 'COMPLETED') {
                 queueNotificationOnLoad(
                     'Din Viva wallet er opsat',
                     "Du kan nu begynde at oprette lokationer og tage imod betalinger",
                     'success'
-                )
+                );
                 window.location.reload();
                 return;
             }
         }
     },
+
     async setupVivaWallet(btn) {
         if(this.accountStatus !== 'DRAFT' && this.accountStatus !== null) return;
         btn.disabled = true;
 
-        let result = await post(platformLinks.api.organisation.vivaConnectedAccount);
+        var result = await post(platformLinks.api.organisation.vivaConnectedAccount);
         if(result.status === "error") {
             btn.disabled = false;
-            showErrorNotification("Der opstod en fejl", result.error.message)
+            showErrorNotification("Der opstod en fejl", result.error.message);
             return;
         }
 
         if(!('onboarding' in result.data)) {
-            showErrorNotification("Der opstod en fejl", 'Kunne ikke finde onoarding linket');
+            showErrorNotification("Der opstod en fejl", 'Kunne ikke finde onboarding linket');
             btn.disabled = false;
             return;
         }
 
-        showNeutralNotification("Klargøre opsættelse...", result.message)
+        showNeutralNotification("Klargører opsættelse...", result.message);
 
         this.onboardingWindow = window.open(
             result.data.onboarding,
             'onboardingWindow',
             'width="100%",height="100%"'
-        )
+        );
         if (!this.onboardingWindow) {
             window.location.href = result.data.onboarding;
         }

@@ -10,7 +10,7 @@ Abstract class Email {
 
     protected bool $dataIsSet = false;
     protected string $defaultFromEmail = "no-reply@" . SITE_NAME;
-    protected string $defaultFromName = SITE_NAME;
+    protected string $defaultFromName = "";
     private const MIME_VERSION = "MIME-Version: 1.0\r\n";
     private string $boundary;
     private string $headers;
@@ -38,7 +38,7 @@ Abstract class Email {
     protected function prepare(string|int $recipientIdOrEmail, string $subject, string $emailContent): void {
         if(!LIVE) return;
         $this->setSenderFromEmail($this->defaultFromEmail);
-        $this->setSenderFromName($this->defaultFromName);
+        $this->setSenderFromName(strtoupper(BRAND_NAME));
         $this->setRecipients($recipientIdOrEmail);
         $this->setSubject($subject);
         $this->setHeaders();

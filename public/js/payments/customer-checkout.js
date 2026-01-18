@@ -123,9 +123,9 @@ const CustomerCheckout = {
     interval: null,
     tsId: null,
     basketHash: null,
-    sessionPopup: null,
     elements: {
         payButton: null,
+        payButtonText: null,
         toPayNow: null,
         paymentCards: null,
         paymentButtonLoader: null,
@@ -138,6 +138,7 @@ const CustomerCheckout = {
 
         this.elements.acceptTerms = document.querySelector('[name=accept_terms]');
         this.elements.payButton = document.getElementById('payButton');
+        this.elements.payButtonText = document.getElementById('payButtonText');
         this.elements.toPayNow = document.getElementById('to-pay-now');
         this.elements.paymentButtonLoader = document.getElementById('paymentButtonLoader');
         this.elements.paymentCards = document.querySelectorAll('.payment-card');
@@ -177,10 +178,6 @@ const CustomerCheckout = {
         let hash = result.data.hash;
         if(hash !== this.basketHash) {
             if(!empty(result.data.goto)) {
-                // Close popup if it's open before redirecting
-                if(this.sessionPopup && !this.sessionPopup.closed) {
-                    this.sessionPopup.close();
-                }
                 showNeutralNotification("Kurven er blevet opdateret", "Omredigerer...")
                 setTimeout(()=> window.location =  result.data.goto, 1000);
             }
@@ -191,8 +188,18 @@ const CustomerCheckout = {
             if(plan.name === planName) {
                 this.selectedPlan = plan;
                 this.elements.toPayNow.innerText = phpNumberFormat(this.selectedPlan.to_pay_now)
+                this.updatePayButtonText();
                 break;
             }
+        }
+    },
+    updatePayButtonText() {
+        if(!this.elements.payButtonText) return;
+        // For pushed plan, show "Bekræft kort" (Validate card) instead of payment amount
+        if(this.selectedPlan && this.selectedPlan.name === 'pushed') {
+            this.elements.payButtonText.innerText = 'Bekræft kort';
+        } else {
+            this.elements.payButtonText.innerText = 'Betal nu';
         }
     },
     updateSelection() {
@@ -209,7 +216,6 @@ const CustomerCheckout = {
         if(!this.listenStatus) return;
         const result = await post(`api/checkout/order/status`, {ts_id: this.tsId, order_code: orderCode})
         if(result.status === 'error') {
-            // showErrorNotification("Unable to fetch order", result.error.message)
             this.elements.payButton.disabled = false;
             this.elements.paymentButtonLoader.style.display = 'none';
             this.listenStatus = false;
@@ -220,12 +226,6 @@ const CustomerCheckout = {
             queueNotificationOnLoad("Ordre fuldført", result.message, 'success')
             this.elements.paymentButtonLoader.style.display = 'none';
             this.listenStatus = false;
-
-            if (this.sessionPopup && !this.sessionPopup.closed) {
-                this.sessionPopup.close();
-                this.sessionPopup = null;
-            }
-
             handleStandardApiRedirect(result)
             return true
         }
@@ -235,11 +235,6 @@ const CustomerCheckout = {
             this.elements.payButton.disabled = false;
             this.elements.paymentButtonLoader.style.display = 'none';
             this.listenStatus = false;
-
-            if (this.sessionPopup && !this.sessionPopup.closed) {
-                this.sessionPopup.close();
-                this.sessionPopup = null;
-            }
             return true
         }
 
@@ -248,11 +243,6 @@ const CustomerCheckout = {
             this.elements.payButton.disabled = false;
             this.elements.paymentButtonLoader.style.display = 'none';
             this.listenStatus = false;
-
-            if (this.sessionPopup && !this.sessionPopup.closed) {
-                this.sessionPopup.close();
-                this.sessionPopup = null;
-            }
             return true
         }
 
@@ -261,7 +251,7 @@ const CustomerCheckout = {
 
     async generateCheckoutLink() {
         if(!this.elements.acceptTerms.checked) {
-            showErrorNotification("Please agree to the terms", "You must check the box and agree to the terms stated before proceeding.")
+            showErrorNotification("Acceptér vilkår", "Du skal acceptere vilkårene før du kan fortsætte.")
             return;
         }
         this.elements.payButton.disabled = true;
@@ -269,79 +259,21 @@ const CustomerCheckout = {
 
         const result = await post(`api/checkout/payment/session`, {ts_id: this.tsId, plan: this.selectedPlan.name})
         if(result.status === 'error') {
-            showErrorNotification("Unable to proceed", result.error.message)
+            showErrorNotification("Kunne ikke fortsætte", result.error.message)
             this.elements.payButton.disabled = false;
             this.elements.paymentButtonLoader.style.display = 'none';
             return
         }
 
         let paymentSessionUrl = result.data.paymentSessionUrl;
-        let orderCode = result.data.orderCode
 
-        // Use redirect on mobile instead of popup
-        if (isMobileDevice()) {
-            // Stop basket hash checking before redirect
-            if(this.interval) {
-                window.clearInterval(this.interval);
-                this.interval = null;
-            }
-
-            // Full redirect on mobile - callback will handle return
-            window.location.href = paymentSessionUrl;
-            return;
+        // Stop basket hash checking before redirect
+        if(this.interval) {
+            window.clearInterval(this.interval);
+            this.interval = null;
         }
 
-        // Desktop: use popup
-        this.sessionPopup = window.open(
-            paymentSessionUrl,
-            'paymentSessionPopup',
-            'width="100%",height="100%"'
-        )
-        if (!this.sessionPopup) {
-            window.location.href = paymentSessionUrl;
-        }
-        else {
-            // Stop basket hash checking while popup is open
-            if(this.interval) {
-                window.clearInterval(this.interval);
-                this.interval = null;
-            }
-
-            let popupIntervalCheck = setInterval(() => {
-                if (this.sessionPopup.closed) {
-                    console.warn("Payment window closed.");
-                    this.elements.payButton.disabled = false;
-                    this.elements.paymentButtonLoader.style.display = 'none';
-                    this.listenStatus = false;
-                    window.clearInterval(popupIntervalCheck);
-
-                    // Restart basket hash checking when popup closes
-                    if(this.basketHash) {
-                        this.interval = window.setInterval(this.fetchBasketHash.bind(this), 1200);
-                    }
-
-                    // Cleanup abandoned order if payment wasn't completed
-                    this.evaluateAbandonedOrder(orderCode);
-                }
-            }, 500);
-        }
-
-
-
-        this.listenStatus = true;
-        this.listenOrderStatus.bind(this)(orderCode);
-    },
-
-    async evaluateAbandonedOrder(orderCode) {
-        // Silently send request to cleanup abandoned order if not processed
-        try {
-            await post(`api/checkout/order/evaluate`, {
-                ts_id: this.tsId,
-                order_code: orderCode
-            });
-        } catch (error) {
-            // Silent cleanup - don't show errors to user
-            console.log('Order evaluation completed');
-        }
+        // Always use redirect flow (no popup)
+        window.location.href = paymentSessionUrl;
     }
 }

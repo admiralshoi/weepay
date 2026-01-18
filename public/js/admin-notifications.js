@@ -54,6 +54,7 @@ async function saveTemplate() {
     var response = await post(endpoint, data);
     if (response.status === 'success') {
         if (isNewTemplate && response.data && response.data.uid) {
+            queueNotificationOnLoad('Skabelon oprettet', response.message || 'Skabelonen blev oprettet', 'success');
             window.location.href = serverHost + platformLinks.admin.panelNotificationTemplates + '/' + response.data.uid;
         } else {
             showSuccessToast(response.message || 'Skabelon gemt');

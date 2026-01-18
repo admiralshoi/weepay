@@ -62,8 +62,8 @@ class NotificationController {
         $flows = Methods::notificationFlows()->getByXOrderBy('created_at', 'DESC', []);
         $args['flows'] = $flows;
 
-        // Get breakpoints for creating new flows
-        $breakpoints = Methods::notificationBreakpoints()->getByX(['status' => 'active']);
+        // Get all breakpoints (for category lookup in view)
+        $breakpoints = Methods::notificationBreakpoints()->getByXOrderBy('category', 'ASC', []);
         $args['breakpoints'] = $breakpoints;
 
         return Views("NOTIFICATION_FLOWS", $args, "AdminNotifications");
@@ -92,9 +92,9 @@ class NotificationController {
 
         // Get breakpoints and templates for selection
         $breakpoints = Methods::notificationBreakpoints()->getByX(['status' => 'active']);
-        // Include both active and draft templates for selection, sorted by created_at desc
+        // Include active and draft templates for selection (exclude 'template' status as those are base components)
         $query = Methods::notificationTemplates()->queryBuilder()
-            ->where('status', '!=', 'archived')
+            ->where('status', '!=', 'template')
             ->order('created_at', 'DESC');
         $templates = Methods::notificationTemplates()->queryGetAll($query);
         $args['breakpoints'] = $breakpoints;

@@ -7,7 +7,6 @@ use classes\enumerations\Links;
 
 $pageTitle = "Forhandler Dashboard";
 
-
 $kpiContainerCol = $args->terminals->count() > 0 ? 'col-lg-7' : '';
 $kpiCardCol = $args->terminals->count() > 0 ? 'col-md-4 col-lg-6' : 'col-lg-3';
 

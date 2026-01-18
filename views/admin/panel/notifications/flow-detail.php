@@ -12,6 +12,10 @@ $isNew = $args->isNew ?? true;
 $breakpoints = $args->breakpoints ?? new \Database\Collection();
 $templates = $args->templates ?? new \Database\Collection();
 $flowActions = $args->flowActions ?? new \Database\Collection();
+
+
+if (isEmpty($flow->conditions)) $conditions = [];
+else $conditions = array_values(toArray($flow->conditions));
 ?>
 <script>
     var pageTitle = <?=json_encode($pageTitle)?>;
@@ -23,6 +27,8 @@ $flowActions = $args->flowActions ?? new \Database\Collection();
 <div class="page-content py-3">
     <div class="page-inner-content">
         <div class="flex-col-start" style="row-gap: 1.5rem;">
+
+
 
             <!-- Breadcrumb -->
             <div class="flex-row-start flex-align-center" style="gap: .5rem;">
@@ -65,12 +71,19 @@ $flowActions = $args->flowActions ?? new \Database\Collection();
                                 </div>
 
                                 <!-- Breakpoint -->
+                                <?php
+                                // Get breakpoint key - handle both object (foreign key) and string
+                                $flowBreakpointKey = null;
+                                if ($flow && $flow->breakpoint) {
+                                    $flowBreakpointKey = is_object($flow->breakpoint) ? $flow->breakpoint->key : $flow->breakpoint;
+                                }
+                                ?>
                                 <div class="mb-3">
                                     <label class="form-label font-13 font-weight-medium">Breakpoint <span class="color-red">*</span></label>
                                     <select name="breakpoint" class="form-select-v2 w-100" data-search="true" required>
                                         <option value="">Vælg breakpoint...</option>
                                         <?php foreach ($breakpoints->list() as $bp): ?>
-                                            <option value="<?=$bp->key?>" <?=($flow->breakpoint ?? '') === $bp->key ? 'selected' : ''?>>
+                                            <option value="<?=$bp->key?>" <?=$flowBreakpointKey === $bp->key ? 'selected' : ''?>>
                                                 <?=htmlspecialchars($bp->name)?> (<?=$bp->key?>)
                                             </option>
                                         <?php endforeach; ?>
@@ -116,6 +129,22 @@ $flowActions = $args->flowActions ?? new \Database\Collection();
                                         <option value="inactive" <?=($flow->status ?? '') === 'inactive' ? 'selected' : ''?>>Inaktiv</option>
                                     </select>
                                 </div>
+
+                                <hr class="my-4">
+
+                                <p class="font-14 font-weight-bold mb-3">Betingelser</p>
+                                <p class="font-13 color-gray mb-3">Tilføj betingelser for hvornår dette flow skal trigges. Alle betingelser skal være opfyldt.</p>
+
+                                <!-- Conditions -->
+                                <div class="mb-3" id="conditions-container">
+                                    <div id="conditions-list">
+                                        <!-- Conditions will be rendered here by JS -->
+                                    </div>
+                                    <button type="button" class="btn-v2 mute-btn btn-sm mt-2" onclick="addCondition()">
+                                        <i class="mdi mdi-plus mr-1"></i> Tilføj betingelse
+                                    </button>
+                                </div>
+                                <input type="hidden" name="conditions" id="conditions-input" value="<?=htmlspecialchars(json_encode($conditions))?>">
 
                                 <hr class="my-4">
 
@@ -335,5 +364,222 @@ $flowActions = $args->flowActions ?? new \Database\Collection();
         if (customEmailField) {
             customEmailField.style.display = this.value === 'custom' ? 'block' : 'none';
         }
+    });
+
+    // ========================================
+    // CONDITIONS MANAGEMENT
+    // ========================================
+
+    // Payment plans from AppMeta (Settings::$app->paymentPlans)
+    var paymentPlans = <?=json_encode(\features\Settings::$app->paymentPlans ?? new stdClass())?>;
+    var paymentPlanOptions = [];
+    if (paymentPlans) {
+        Object.keys(paymentPlans).forEach(function(key) {
+            var plan = paymentPlans[key];
+            if (plan && plan.enabled) {
+                paymentPlanOptions.push({ value: key, label: plan.title || key });
+            }
+        });
+    }
+
+    // Available fields for conditions (matches placeholders)
+    // valueType: 'select' = dropdown with options, 'number' = numeric input, 'text' = free text
+    var conditionFields = [
+        { value: 'order.payment_plan', label: 'Betalingsplan', valueType: 'select', options: paymentPlanOptions },
+        { value: 'payment_plan.total_installments', label: 'Betalingsplan: Antal rater', valueType: 'number' },
+        { value: 'payment_plan.remaining_installments', label: 'Betalingsplan: Resterende rater', valueType: 'number' },
+        { value: 'payment_plan.completed_installments', label: 'Betalingsplan: Gennemførte rater', valueType: 'number' },
+        { value: 'payment.status', label: 'Betalingsstatus', valueType: 'select', options: [
+            { value: 'PENDING', label: 'Afventer' },
+            { value: 'SCHEDULED', label: 'Planlagt' },
+            { value: 'COMPLETED', label: 'Betalt' },
+            { value: 'PAST_DUE', label: 'Forsinket' },
+            { value: 'FAILED', label: 'Fejlet' },
+            { value: 'CANCELLED', label: 'Annulleret' },
+            { value: 'REFUNDED', label: 'Refunderet' },
+        ]},
+        { value: 'payment.installment_number', label: 'Rate nummer', valueType: 'number' },
+        { value: 'order.status', label: 'Ordrestatus', valueType: 'select', options: [
+            { value: 'DRAFT', label: 'Kladde' },
+            { value: 'PENDING', label: 'Afventer' },
+            { value: 'COMPLETED', label: 'Gennemført' },
+            { value: 'CANCELLED', label: 'Annulleret' },
+            { value: 'EXPIRED', label: 'Udløbet' },
+        ]},
+        { value: 'order.amount', label: 'Ordrebeløb (øre)', valueType: 'number' },
+        { value: 'order.currency', label: 'Valuta', valueType: 'select', options: [
+            { value: 'DKK', label: 'DKK' },
+            { value: 'EUR', label: 'EUR' },
+            { value: 'USD', label: 'USD' },
+            { value: 'SEK', label: 'SEK' },
+            { value: 'NOK', label: 'NOK' },
+        ]},
+        { value: 'user.email', label: 'Bruger e-mail', valueType: 'text' },
+        { value: 'organisation.name', label: 'Organisation navn', valueType: 'text' },
+        { value: 'location.name', label: 'Lokation navn', valueType: 'text' },
+        { value: 'days_until_due', label: 'Dage til forfald', valueType: 'number' },
+        { value: 'days_overdue', label: 'Dage overskredet', valueType: 'number' },
+        { value: 'fees.reminder_count', label: 'Antal rykkere', valueType: 'number' },
+    ];
+
+    // Helper to get field config by value
+    function getFieldConfig(fieldValue) {
+        return conditionFields.find(function(f) { return f.value === fieldValue; });
+    }
+
+    var conditionOperators = [
+        { value: '=', label: 'er lig med' },
+        { value: '!=', label: 'er ikke lig med' },
+        { value: '>', label: 'større end' },
+        { value: '>=', label: 'større end eller lig' },
+        { value: '<', label: 'mindre end' },
+        { value: '<=', label: 'mindre end eller lig' },
+        { value: 'contains', label: 'indeholder' },
+        { value: 'starts_with', label: 'starter med' },
+        { value: 'ends_with', label: 'slutter med' },
+    ];
+
+    var conditions = <?=json_encode($conditions)?>;
+    if (!Array.isArray(conditions)) conditions = [];
+
+    function renderConditions() {
+        var container = document.getElementById('conditions-list');
+        if (!container) return;
+
+        if (conditions.length === 0) {
+            container.innerHTML = '<p class="font-13 color-gray mb-0"><i class="mdi mdi-information-outline mr-1"></i>Ingen betingelser - flowet trigges altid når breakpointet udløses.</p>';
+            return;
+        }
+
+        var html = '';
+        conditions.forEach(function(cond, index) {
+            var fieldConfig = getFieldConfig(cond.field);
+
+            html += '<div class="condition-row flex-row-start flex-align-center flex-wrap mb-2" style="gap: .5rem;" data-index="' + index + '">';
+
+            // Field select
+            html += '<select class="form-select-v2 condition-field-select" data-index="' + index + '" style="min-width: 160px;">';
+            html += '<option value="">Vælg felt...</option>';
+            conditionFields.forEach(function(f) {
+                var selected = f.value === cond.field ? ' selected' : '';
+                html += '<option value="' + f.value + '"' + selected + '>' + f.label + '</option>';
+            });
+            html += '</select>';
+
+            // Operator select
+            html += '<select class="form-select-v2 condition-operator-select" data-index="' + index + '" style="min-width: 140px;">';
+            conditionOperators.forEach(function(op) {
+                var selected = op.value === cond.operator ? ' selected' : '';
+                html += '<option value="' + op.value + '"' + selected + '>' + op.label + '</option>';
+            });
+            html += '</select>';
+
+            // Value input - type depends on field
+            html += renderValueInput(cond, index, fieldConfig);
+
+            // Remove button
+            html += '<button type="button" class="btn-v2 danger-btn btn-sm" style="padding: 8px 10px;" onclick="removeCondition(' + index + ')" title="Fjern betingelse"><i class="mdi mdi-close"></i></button>';
+
+            html += '</div>';
+        });
+
+        container.innerHTML = html;
+
+        // Initialize select-v2 elements
+        container.querySelectorAll('.form-select-v2').forEach(function(select) {
+            selectV2(select);
+        });
+
+        // Bind change events for field selects (need to re-render when field changes)
+        container.querySelectorAll('.condition-field-select').forEach(function(select) {
+            select.addEventListener('change', function() {
+                var idx = parseInt(this.dataset.index);
+                conditions[idx].field = this.value;
+                conditions[idx].value = ''; // Reset value when field changes
+                updateConditionsInput();
+                renderConditions(); // Re-render to show correct value input type
+            });
+        });
+        container.querySelectorAll('.condition-operator-select').forEach(function(select) {
+            select.addEventListener('change', function() {
+                updateCondition(parseInt(this.dataset.index), 'operator', this.value);
+            });
+        });
+        container.querySelectorAll('.condition-value-input').forEach(function(input) {
+            input.addEventListener('change', function() {
+                updateCondition(parseInt(this.dataset.index), 'value', this.value);
+            });
+        });
+        container.querySelectorAll('.condition-value-select').forEach(function(select) {
+            select.addEventListener('change', function() {
+                updateCondition(parseInt(this.dataset.index), 'value', this.value);
+            });
+        });
+    }
+
+    function renderValueInput(cond, index, fieldConfig) {
+        if (!fieldConfig || !cond.field) {
+            // No field selected yet - show placeholder text input
+            return '<input type="text" class="form-field-v2 condition-value-input" data-index="' + index + '" style="min-width: 140px;" value="" placeholder="Vælg felt først" disabled>';
+        }
+
+        var valueType = fieldConfig.valueType || 'text';
+
+        if (valueType === 'select' && fieldConfig.options) {
+            // Dropdown with predefined options
+            var html = '<select class="form-select-v2 condition-value-select" data-index="' + index + '" style="min-width: 140px;">';
+            html += '<option value="">Vælg værdi...</option>';
+            fieldConfig.options.forEach(function(opt) {
+                var selected = opt.value === cond.value ? ' selected' : '';
+                html += '<option value="' + opt.value + '"' + selected + '>' + opt.label + '</option>';
+            });
+            html += '</select>';
+            return html;
+        } else if (valueType === 'number') {
+            // Numeric input
+            return '<input type="number" class="form-field-v2 condition-value-input" data-index="' + index + '" style="min-width: 100px; max-width: 120px;" value="' + escapeHtml(cond.value || '') + '" placeholder="0">';
+        } else {
+            // Text input (default)
+            return '<input type="text" class="form-field-v2 condition-value-input" data-index="' + index + '" style="min-width: 140px;" value="' + escapeHtml(cond.value || '') + '" placeholder="Værdi">';
+        }
+    }
+
+    function addCondition() {
+        conditions.push({ field: '', operator: '=', value: '' });
+        renderConditions();
+        updateConditionsInput();
+    }
+
+    function removeCondition(index) {
+        conditions.splice(index, 1);
+        renderConditions();
+        updateConditionsInput();
+    }
+
+    function updateCondition(index, key, value) {
+        if (conditions[index]) {
+            conditions[index][key] = value;
+            updateConditionsInput();
+        }
+    }
+
+    function updateConditionsInput() {
+        // Filter out empty conditions
+        var validConditions = conditions.filter(function(c) {
+            return c.field && c.value !== '';
+        });
+        document.getElementById('conditions-input').value = JSON.stringify(validConditions);
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        var div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Initialize conditions on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        renderConditions();
     });
 </script>

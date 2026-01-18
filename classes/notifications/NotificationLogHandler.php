@@ -54,6 +54,40 @@ class NotificationLogHandler extends Crud {
         return $this->count($params);
     }
 
+    /**
+     * Generate dedup hash from notification parameters
+     */
+    public static function generateDedupHash(
+        ?string $flowUid,
+        ?string $recipientUid,
+        string $channel,
+        ?string $referenceId,
+        ?string $referenceType
+    ): string {
+        return md5("{$flowUid}:{$recipientUid}:{$channel}:{$referenceId}:{$referenceType}");
+    }
+
+    /**
+     * Check if a notification has already been sent successfully
+     */
+    public function alreadySent(
+        ?string $flowUid,
+        ?string $recipientUid,
+        string $channel,
+        ?string $referenceId,
+        ?string $referenceType
+    ): bool {
+        $hash = self::generateDedupHash($flowUid, $recipientUid, $channel, $referenceId, $referenceType);
+        return $this->exists(['dedup_hash' => $hash, 'status' => 'sent']);
+    }
+
+    /**
+     * Get existing log entry by dedup hash
+     */
+    public function getByDedupHash(string $hash): ?object {
+        return $this->getFirst(['dedup_hash' => $hash]);
+    }
+
     public function insert(
         string $channel,
         string $content,
@@ -69,6 +103,8 @@ class NotificationLogHandler extends Crud {
         ?int $scheduleOffset = null,
         ?array $metadata = null
     ): bool {
+        $dedupHash = self::generateDedupHash($flowUid, $recipientUid, $channel, $referenceId, $referenceType);
+
         return $this->create([
             'flow' => $flowUid,
             'template' => $templateUid,
@@ -83,6 +119,7 @@ class NotificationLogHandler extends Crud {
             'reference_type' => $referenceType,
             'schedule_offset' => $scheduleOffset,
             'metadata' => $metadata,
+            'dedup_hash' => $dedupHash,
         ]);
     }
 }

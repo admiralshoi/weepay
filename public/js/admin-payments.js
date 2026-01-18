@@ -38,11 +38,39 @@ const AdminPaymentsPagination = (function() {
 
         if (!$tbody.length || typeof adminPaymentsApiUrl === 'undefined') return;
 
+        // Check for query params and apply filters
+        applyQueryParams();
+
         // Bind events
         bindEvents();
 
         // Initial load
         fetchPayments();
+    }
+
+    function applyQueryParams() {
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // Apply organisation filter from query param
+        const orgParam = urlParams.get('org');
+        if (orgParam && $filterOrg.find(`option[value="${orgParam}"]`).length) {
+            filterOrg = orgParam;
+            updateSelectV2Value($filterOrg.get(0), orgParam);
+        }
+
+        // Apply status filter from query param
+        const statusParam = urlParams.get('status');
+        if (statusParam && $filterStatus.find(`option[value="${statusParam}"]`).length) {
+            filterStatus = statusParam;
+            updateSelectV2Value($filterStatus.get(0), statusParam);
+        }
+
+        // Apply search from query param
+        const searchParam = urlParams.get('search');
+        if (searchParam) {
+            $search.val(searchParam);
+            searchTerm = searchParam;
+        }
     }
 
     function bindEvents() {
@@ -194,7 +222,8 @@ const AdminPaymentsPagination = (function() {
             'COMPLETED': { label: 'Betalt', class: 'success-box' },
             'FAILED': { label: 'Fejlet', class: 'danger-box' },
             'CANCELLED': { label: 'Annulleret', class: 'mute-box' },
-            'REFUNDED': { label: 'Refunderet', class: 'mute-box' }
+            'REFUNDED': { label: 'Refunderet', class: 'warning-box' },
+            'VOIDED': { label: 'Ophævet', class: 'mute-box' }
         };
 
         const status = statusLabels[payment.status] || { label: 'Ukendt', class: 'mute-box' };

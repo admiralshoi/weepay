@@ -142,8 +142,14 @@ class Merchants extends \routing\paths\Paths {
                 "css.responsiveness.css",
             ],
             "base" => null,
-            "vendor" => [],
-            "custom" => [],
+            "vendor" => [
+                "vendor.sweetalert.sweetalert2.min.css",
+                "vendor.sweetalert.sweetalert2.min.js",
+            ],
+            "custom" => [
+                "js.includes.SweetPrompt.js",
+                "js.merchant-refunds.js",
+            ],
         ],
     ];
 
@@ -199,8 +205,14 @@ class Merchants extends \routing\paths\Paths {
                 "css.responsiveness.css",
             ],
             "base" => null,
-            "vendor" => [],
-            "custom" => [],
+            "vendor" => [
+                "vendor.sweetalert.sweetalert2.min.css",
+                "vendor.sweetalert.sweetalert2.min.js",
+            ],
+            "custom" => [
+                "js.includes.SweetPrompt.js",
+                "js.merchant-refunds.js",
+            ],
         ],
     ];
 

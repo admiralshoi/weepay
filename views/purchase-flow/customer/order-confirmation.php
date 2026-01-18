@@ -13,31 +13,32 @@ $orderStatus = $order->status ?? 'DRAFT';
 $firstPayment = $payments->first();
 $paymentStatus = $firstPayment?->status ?? 'PENDING';
 
-// Determine if order is successful
-$isSuccess = in_array($orderStatus, ['COMPLETED']) &&
-             in_array($paymentStatus, ['COMPLETED']);
+// Determine if order is successful based on order status only
+// For pushed plan, payments are SCHEDULED but order is COMPLETED
+$isSuccess = in_array($orderStatus, ['COMPLETED']);
 
-$statusColor = match($paymentStatus) {
+$statusColor = match($orderStatus) {
     'COMPLETED' => 'success',
-    'PENDING' => 'warning',
-    'FAILED', 'CANCELLED' => 'danger',
+    'PENDING', 'DRAFT' => 'warning',
+    'FAILED', 'CANCELLED', 'EXPIRED' => 'danger',
     default => 'secondary'
 };
 
-$statusText = match($paymentStatus) {
-    'COMPLETED' => 'Betaling gennemført',
-    'PENDING' => 'Afventer betaling',
-    'FAILED' => 'Betaling mislykkedes',
-    'CANCELLED' => 'Betaling annulleret',
+$statusText = match($orderStatus) {
+    'COMPLETED' => 'Ordre bekræftet',
+    'PENDING' => 'Afventer bekræftelse',
+    'DRAFT' => 'Kladde',
+    'FAILED' => 'Ordre mislykkedes',
+    'CANCELLED' => 'Ordre annulleret',
+    'EXPIRED' => 'Ordre udløbet',
     'REFUNDED' => 'Refunderet',
-    'SCHEDULED' => 'Planlagt',
     default => 'Ukendt status'
 };
 
-$statusIcon = match($paymentStatus) {
+$statusIcon = match($orderStatus) {
     'COMPLETED' => 'check-circle',
-    'PENDING' => 'clock-outline',
-    'FAILED', 'CANCELLED' => 'close-circle',
+    'PENDING', 'DRAFT' => 'clock-outline',
+    'FAILED', 'CANCELLED', 'EXPIRED' => 'close-circle',
     'REFUNDED' => 'cash-refund',
     default => 'help-circle'
 };

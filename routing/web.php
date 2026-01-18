@@ -212,6 +212,8 @@ Routes::group(['api','requiresApiLogin'], function() {
         Routes::post(Links::$api->orders->locationList, "merchants.OrdersApiController::getLocationOrders");
         Routes::post(Links::$api->orders->payments->list, "merchants.PaymentsApiController::getPayments");
         Routes::get("api/payments/{id}/receipt", "merchants.PaymentsApiController::downloadReceipt");
+        Routes::post("api/merchant/orders/{id}/refund", "merchants.OrdersApiController::refundOrder");
+        Routes::post("api/merchant/payments/{id}/refund", "merchants.OrdersApiController::refundPayment");
         Routes::post(Links::$api->orders->customers->list, "merchants.CustomersApiController::getCustomers");
 
         Routes::post(Links::$api->forms->createOrganisation, "merchants.ApiController::createOrganisation");
@@ -599,6 +601,8 @@ Routes::group(['requiresApiLogin', "admin", "api"], function() {
     Routes::post("api/admin/payments/list", "admin.ApiController::paymentsList");
     Routes::post("api/admin/users/list", "admin.ApiController::usersList");
     Routes::post("api/admin/orders/list", "admin.ApiController::ordersList");
+    Routes::post("api/admin/orders/{id}/refund", "admin.ApiController::refundOrder");
+    Routes::post("api/admin/payments/{id}/refund", "admin.ApiController::refundPayment");
     Routes::post("api/admin/organisations/list", "admin.ApiController::organisationsList");
     Routes::post("api/admin/locations/list", "admin.ApiController::locationsList");
     Routes::post("api/admin/dashboard/stats", "admin.ApiController::dashboardStats");
@@ -621,17 +625,23 @@ Routes::group(['requiresApiLogin', "admin", "api"], function() {
     Routes::post("api/admin/notifications/flows/create", "admin.NotificationApiController::flowCreate");
     Routes::post("api/admin/notifications/flows/update", "admin.NotificationApiController::flowUpdate");
     Routes::post("api/admin/notifications/flows/delete", "admin.NotificationApiController::flowDelete");
+    Routes::post("api/admin/notifications/flows/clone", "admin.NotificationApiController::flowClone");
     Routes::post("api/admin/notifications/flows/actions/create", "admin.NotificationApiController::flowActionCreate");
     Routes::post("api/admin/notifications/flows/actions/update", "admin.NotificationApiController::flowActionUpdate");
     Routes::post("api/admin/notifications/flows/actions/delete", "admin.NotificationApiController::flowActionDelete");
     Routes::post("api/admin/notifications/queue/list", "admin.NotificationApiController::queueList");
     Routes::post("api/admin/notifications/queue/cancel", "admin.NotificationApiController::queueCancel");
     Routes::post("api/admin/notifications/logs/list", "admin.NotificationApiController::logsList");
+    Routes::post("api/admin/notifications/logs/resend", "admin.NotificationApiController::logsResend");
 
     // Notification System Debug/Test Endpoints
     Routes::post("api/admin/notifications/test/trigger", "admin.NotificationApiController::testTrigger");
     Routes::post("api/admin/notifications/test/process-queue", "admin.NotificationApiController::processQueue");
     Routes::post("api/admin/notifications/test/process-scheduled", "admin.NotificationApiController::processScheduled");
+
+    // Cronjob Admin API
+    Routes::post("api/admin/cronjobs/force-run", "api.CronjobController::forceRun");
+    Routes::get("api/admin/cronjobs/logs", "api.CronjobController::getLogs");
 });
 /**
  *  =========================================
@@ -677,6 +687,8 @@ Routes::group(['requiresApiLogout', "cronJobAuth"], function() {
     Routes::post("cron/cleanup-logs", "api.CronjobController::cleanupLogs");
     Routes::post("cron/payment-notifications", "api.CronjobController::paymentNotifications");
     Routes::post("cron/notification-queue", "api.CronjobController::notificationQueue");
+    Routes::post("cron/rykker-checks", "api.CronjobController::rykkerChecks");
+    Routes::post("cron/weekly-reports", "api.CronjobController::weeklyReports");
 });
 /**
  *  =========================================

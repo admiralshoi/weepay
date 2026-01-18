@@ -173,6 +173,28 @@ class NotificationService {
             'recipient' => $recipientData['email'] ?? $recipientData['phone'] ?? $recipientData['uid'] ?? 'unknown'
         ]);
 
+        // Check for duplicate notification
+        $referenceId = $context['reference_id'] ?? null;
+        $referenceType = $context['reference_type'] ?? null;
+        $recipientUid = $recipientData['uid'] ?? null;
+
+        if (Methods::notificationLogs()->alreadySent(
+            $flow->uid,
+            $recipientUid,
+            $action->channel,
+            $referenceId,
+            $referenceType
+        )) {
+            self::debug("SKIP: Duplicate notification already sent", [
+                'flow_uid' => $flow->uid,
+                'recipient' => $recipientUid,
+                'channel' => $action->channel,
+                'reference_id' => $referenceId,
+                'reference_type' => $referenceType
+            ]);
+            return false;
+        }
+
         $content = self::replacePlaceholders($template->content, $context, false);
         $subject = $template->subject ? self::replacePlaceholders($template->subject, $context, false) : null;
         $htmlContent = $template->html_content ? self::replacePlaceholders($template->html_content, $context, true) : null;
@@ -189,7 +211,7 @@ class NotificationService {
         switch ($action->channel) {
             case 'email':
                 self::debug("Sending via EMAIL channel");
-                $success = self::sendEmail($recipientData, $subject, $content, $htmlContent);
+                $success = self::sendEmail($recipientData, $subject, $content, $htmlContent, $context);
                 break;
             case 'sms':
                 self::debug("Sending via SMS channel");
@@ -207,6 +229,15 @@ class NotificationService {
 
         // Log the notification with reference data for deduplication
         $breakpointKey = is_object($flow->breakpoint) ? $flow->breakpoint->key : $flow->breakpoint;
+
+        // Determine recipient identifier based on channel
+        $recipientIdentifier = match($action->channel) {
+            'sms' => $recipientData['phone'] ?? null,
+            'email' => $recipientData['email'] ?? null,
+            'bell' => $recipientData['uid'] ?? null,
+            default => $recipientData['email'] ?? $recipientData['phone'] ?? null,
+        };
+
         $logResult = self::logNotification(
             $action->channel,
             $content,
@@ -215,7 +246,7 @@ class NotificationService {
             $template->uid,
             $breakpointKey,
             $recipientData['uid'] ?? null,
-            $recipientData['email'] ?? $recipientData['phone'] ?? null,
+            $recipientIdentifier,
             $subject,
             $context['reference_id'] ?? null,
             $context['reference_type'] ?? null,
@@ -358,6 +389,15 @@ class NotificationService {
             // Log the notification
             $breakpointKey = $flow && is_object($flow->breakpoint) ? $flow->breakpoint->key : ($flow->breakpoint ?? null);
             $context = $item->context_data ?? [];
+
+            // Determine recipient identifier based on channel
+            $recipientIdentifier = match($item->channel) {
+                'sms' => $recipientData['phone'] ?? null,
+                'email' => $recipientData['email'] ?? null,
+                'bell' => $recipientData['uid'] ?? null,
+                default => $recipientData['email'] ?? $recipientData['phone'] ?? null,
+            };
+
             self::logNotification(
                 $item->channel,
                 $item->content,
@@ -366,7 +406,7 @@ class NotificationService {
                 $template->uid ?? null,
                 $breakpointKey,
                 $recipientData['uid'],
-                $recipientData['email'] ?? $recipientData['phone'],
+                $recipientIdentifier,
                 $item->subject,
                 $context['reference_id'] ?? null,
                 $context['reference_type'] ?? null,
@@ -382,13 +422,20 @@ class NotificationService {
     /**
      * Send email notification via MessageDispatcher
      */
-    private static function sendEmail(array $recipientData, ?string $subject, string $content, ?string $htmlContent = null): bool {
+    private static function sendEmail(array $recipientData, ?string $subject, string $content, ?string $htmlContent = null, array $context = []): bool {
+        // Determine from name - use location name if available for consumer emails
+        $fromName = null;
+        if (!empty($context['location']['name'])) {
+            $fromName = $context['location']['name'];
+        }
+
         self::debug("sendEmail called", [
             'has_email' => !empty($recipientData['email']),
             'has_uid' => !empty($recipientData['uid']),
             'email' => $recipientData['email'] ?? null,
             'uid' => $recipientData['uid'] ?? null,
-            'subject' => $subject
+            'subject' => $subject,
+            'fromName' => $fromName
         ]);
 
         // Resolve email if not provided
@@ -415,12 +462,14 @@ class NotificationService {
         }
 
         try {
-            self::debug("Calling MessageDispatcher::email", ['to' => $recipientData['email']]);
+            self::debug("Calling MessageDispatcher::email", ['to' => $recipientData['email'], 'fromName' => $fromName]);
             $result = MessageDispatcher::email(
                 $recipientData['email'],
                 $subject ?? BRAND_NAME,
                 $content,
-                $htmlContent
+                $htmlContent,
+                null,      // fromEmail - use default
+                $fromName  // fromName - location name or default
             );
             self::debug("MessageDispatcher::email result", ['success' => $result]);
             return $result;
@@ -438,12 +487,13 @@ class NotificationService {
             'has_phone' => !empty($recipientData['phone']),
             'has_uid' => !empty($recipientData['uid']),
             'phone' => $recipientData['phone'] ?? null,
+            'phone_country_code' => $recipientData['phone_country_code'] ?? null,
             'content_length' => strlen($content)
         ]);
 
-        // Resolve phone if not provided
-        if (empty($recipientData['phone']) && !empty($recipientData['uid'])) {
-            self::debug("Phone not provided, sending to user by UID");
+        // If we have a UID, use smsToUser to get proper country code from user record
+        if (!empty($recipientData['uid'])) {
+            self::debug("Sending SMS via smsToUser (has UID)");
             try {
                 $result = MessageDispatcher::smsToUser($recipientData['uid'], $content);
                 self::debug("smsToUser result", ['success' => $result]);
@@ -459,8 +509,14 @@ class NotificationService {
             return false;
         }
 
+        // Fallback: use phone directly with country code if available
         try {
-            $result = MessageDispatcher::sms($recipientData['phone'], $content);
+            $dialerCode = null;
+            if (!empty($recipientData['phone_country_code'])) {
+                $dialerCode = \classes\utility\Misc::callerCode($recipientData['phone_country_code']);
+            }
+            self::debug("Sending SMS directly", ['phone' => $recipientData['phone'], 'dialer_code' => $dialerCode]);
+            $result = MessageDispatcher::sms($recipientData['phone'], $content, null, $dialerCode);
             self::debug("MessageDispatcher::sms result", ['success' => $result]);
             return $result;
         } catch (\Exception $e) {
@@ -592,8 +648,12 @@ class NotificationService {
         return preg_replace_callback('/\{\{template\.([a-zA-Z0-9_]+)\}\}/', function($matches) use ($context, $isHtml) {
             $slug = $matches[1];
 
-            // Get the component template by slug
-            $template = Methods::notificationTemplates()->getFirst(['slug' => $slug, 'category' => 'component', 'status' => 'active']);
+            // Get the component template by slug (status 'template' for base components)
+            $template = Methods::notificationTemplates()->getFirst(['slug' => $slug, 'category' => 'component', 'status' => 'template']);
+            if (isEmpty($template)) {
+                // Fallback to 'active' for backwards compatibility
+                $template = Methods::notificationTemplates()->getFirst(['slug' => $slug, 'category' => 'component', 'status' => 'active']);
+            }
             if (isEmpty($template)) {
                 return $matches[0]; // Return original if not found
             }
@@ -647,10 +707,10 @@ class NotificationService {
     private static function getBrandPlaceholder(string $key, bool $isHtml = false): string {
         return match ($key) {
             'logo' => $isHtml
-                ? '<img src="' . __asset(LOGO_WIDE_HEADER) . '" alt="' . BRAND_NAME . '" style="max-width: 150px; height: auto;">'
+                ? '<img src="' . __asset(str_replace('.svg', '.png', LOGO_WIDE_HEADER)) . '" alt="' . BRAND_NAME . '" style="max-width: 150px; height: auto;">'
                 : BRAND_NAME,
             'logo_icon' => $isHtml
-                ? '<img src="' . __asset(LOGO_ICON) . '" alt="' . BRAND_NAME . '" style="width: 40px; height: 40px;">'
+                ? '<img src="' . __asset(str_replace('.svg', '.png', LOGO_ICON)) . '" alt="' . BRAND_NAME . '" style="width: 40px; height: 40px;">'
                 : BRAND_NAME,
             'name' => BRAND_NAME,
             'site' => SITE_NAME,
@@ -668,16 +728,33 @@ class NotificationService {
      * Evaluate flow conditions against context
      */
     private static function evaluateConditions(?array $conditions, array $context): bool {
+        self::debug("evaluateConditions START", [
+            'conditions_count' => $conditions ? count($conditions) : 0,
+            'conditions' => $conditions,
+        ]);
+
         if (empty($conditions)) {
+            self::debug("evaluateConditions: No conditions, returning TRUE");
             return true;
         }
 
-        foreach ($conditions as $condition) {
+        foreach ($conditions as $index => $condition) {
+            // Handle both array and object conditions
+            if (is_object($condition)) {
+                $condition = (array) $condition;
+            }
             $field = $condition['field'] ?? null;
             $operator = $condition['operator'] ?? '=';
             $value = $condition['value'] ?? null;
 
+            self::debug("evaluateConditions: Checking condition #$index", [
+                'field' => $field,
+                'operator' => $operator,
+                'expected_value' => $value,
+            ]);
+
             if (!$field) {
+                self::debug("evaluateConditions: Skipping condition #$index - no field");
                 continue;
             }
 
@@ -695,6 +772,13 @@ class NotificationService {
                 }
             }
 
+            self::debug("evaluateConditions: Resolved actual value", [
+                'field' => $field,
+                'actual_value' => $actualValue,
+                'expected_value' => $value,
+                'operator' => $operator,
+            ]);
+
             // Evaluate the condition
             $result = match ($operator) {
                 '=' => $actualValue == $value,
@@ -711,11 +795,20 @@ class NotificationService {
                 default => true,
             };
 
+            self::debug("evaluateConditions: Condition #$index result", [
+                'result' => $result,
+                'actual_value' => $actualValue,
+                'operator' => $operator,
+                'expected_value' => $value,
+            ]);
+
             if (!$result) {
+                self::debug("evaluateConditions: Condition #$index FAILED, returning FALSE");
                 return false;
             }
         }
 
+        self::debug("evaluateConditions: All conditions passed, returning TRUE");
         return true;
     }
 
@@ -939,24 +1032,28 @@ class NotificationService {
      * @return array Payment plan context data
      */
     public static function buildPaymentPlanContext(object $order): array {
+        $currency = $order->currency ?? 'DKK';
+        $orderAmount = $order->amount ?? 0;
+
         $context = [
             'total_installments' => 1,
             'remaining_installments' => 0,
-            'first_amount' => $order->amount ?? 0,
-            'first_amount_formatted' => '',
-            'installment_amount' => $order->amount ?? 0,
-            'installment_amount_formatted' => '',
+            'completed_installments' => 0,
+            'first_amount' => $orderAmount,
+            'first_amount_formatted' => self::formatAmount($orderAmount, $currency),
+            'installment_amount' => $orderAmount,
+            'installment_amount_formatted' => self::formatAmount($orderAmount, $currency),
             'remaining_amount' => 0,
-            'remaining_amount_formatted' => '0,00 DKK',
+            'remaining_amount_formatted' => '0,00 ' . $currency,
+            'total_amount' => $orderAmount,
+            'total_amount_formatted' => self::formatAmount($orderAmount, $currency),
             'next_due_date' => null,
             'first_due_date' => null,
             'last_due_date' => null,
             'schedule_summary' => '',
             'total_paid' => 0,
-            'total_paid_formatted' => '0,00 DKK',
+            'total_paid_formatted' => '0,00 ' . $currency,
         ];
-
-        $currency = $order->currency ?? 'DKK';
 
         // Get payment units for this order
         $paymentUnits = \Database\model\PartialPaymentUnits::where('order', $order->uid)
@@ -965,8 +1062,6 @@ class NotificationService {
 
         if (empty($paymentUnits)) {
             // Single payment order
-            $context['first_amount_formatted'] = self::formatAmount($order->amount ?? 0, $currency);
-            $context['installment_amount_formatted'] = $context['first_amount_formatted'];
             return $context;
         }
 
@@ -1002,7 +1097,7 @@ class NotificationService {
 
             // Build schedule summary line
             $statusText = $isPaid ? '✓' : '';
-            $dueDateFormatted = $unit->due_date ? date('d/m/Y', strtotime($unit->due_date)) : '-';
+            $dueDateFormatted = $unit->due_date ? date('d.m.Y', strtotime($unit->due_date)) : '-';
             $scheduleLines[] = "Rate " . ($i + 1) . ": " . self::formatAmount($unit->amount, $currency) . " - " . $dueDateFormatted . " " . $statusText;
         }
 
@@ -1013,13 +1108,14 @@ class NotificationService {
         }
 
         $context['remaining_installments'] = $context['total_installments'] - $paidCount;
+        $context['completed_installments'] = $paidCount;
         $context['remaining_amount'] = $remaining;
         $context['remaining_amount_formatted'] = self::formatAmount($remaining, $currency);
         $context['total_paid'] = $totalPaid;
         $context['total_paid_formatted'] = self::formatAmount($totalPaid, $currency);
-        $context['next_due_date'] = $nextDueDate ? date('d/m/Y', strtotime($nextDueDate)) : null;
-        $context['first_due_date'] = $firstDueDate ? date('d/m/Y', strtotime($firstDueDate)) : null;
-        $context['last_due_date'] = $lastDueDate ? date('d/m/Y', strtotime($lastDueDate)) : null;
+        $context['next_due_date'] = $nextDueDate ? date('d.m.Y', strtotime($nextDueDate)) : null;
+        $context['first_due_date'] = $firstDueDate ? date('d.m.Y', strtotime($firstDueDate)) : null;
+        $context['last_due_date'] = $lastDueDate ? date('d.m.Y', strtotime($lastDueDate)) : null;
         $context['schedule_summary'] = implode("\n", $scheduleLines);
 
         return $context;
@@ -1046,6 +1142,9 @@ class NotificationService {
             'payment_link' => HOST . 'pay/' . $orderUid,
             'receipt_link' => HOST . 'receipt/' . $orderUid,
             'agreement_link' => HOST . 'agreement/' . $orderUid,
+            'dashboard_link' => HOST . 'dashboard',
+            'history_link' => HOST . 'payments',
+            'retry_link' => HOST . 'pay/' . $orderUid . '?retry=1',
         ];
     }
 
@@ -1280,15 +1379,7 @@ class NotificationService {
             $payment = $record['payment'];
             $currency = 'DKK';
 
-            $context['payment'] = [
-                'uid' => $payment->uid,
-                'amount' => $payment->amount,
-                'formatted_amount' => self::formatAmount($payment->amount, $currency),
-                'due_date' => $payment->due_date,
-                'due_date_formatted' => $payment->due_date ? date('d/m/Y', strtotime($payment->due_date)) : null,
-                'status' => $payment->status,
-                'installment_number' => $payment->installment_number ?? null,
-            ];
+            $context['payment'] = self::buildPaymentContext($payment, $currency);
 
             // Calculate days until/overdue
             $dueTimestamp = strtotime($payment->due_date);
@@ -1304,14 +1395,7 @@ class NotificationService {
             if ($order) {
                 $currency = $order->currency ?? 'DKK';
 
-                $context['order'] = [
-                    'uid' => $order->uid,
-                    'amount' => $order->amount,
-                    'formatted_amount' => self::formatAmount($order->amount, $currency),
-                    'currency' => $currency,
-                    'caption' => $order->caption ?? null,
-                    'status' => $order->status,
-                ];
+                $context['order'] = self::buildOrderContext($order, $currency);
 
                 // Add payment plan context
                 $context['payment_plan'] = self::buildPaymentPlanContext($order);
@@ -1322,12 +1406,14 @@ class NotificationService {
                 $context['receipt_link'] = $links['receipt_link'];
                 $context['order_link'] = $links['order_link'];
                 $context['agreement_link'] = $links['agreement_link'];
+                $context['dashboard_link'] = $links['dashboard_link'];
+                $context['history_link'] = $links['history_link'];
 
                 // Get user from order
                 if ($order->user) {
                     $user = is_object($order->user) ? $order->user : Methods::users()->get($order->user);
                     if ($user) {
-                        $context['user'] = $user;
+                        $context['user'] = self::buildUserContext($user);
                     }
                 }
 
@@ -1335,7 +1421,7 @@ class NotificationService {
                 if ($order->organisation) {
                     $org = is_object($order->organisation) ? $order->organisation : Methods::organisations()->get($order->organisation);
                     if ($org) {
-                        $context['organisation'] = $org;
+                        $context['organisation'] = self::buildOrganisationContext($org);
                     }
                 }
 
@@ -1343,17 +1429,221 @@ class NotificationService {
                 if ($order->location) {
                     $location = is_object($order->location) ? $order->location : Methods::locations()->get($order->location);
                     if ($location) {
-                        $context['location'] = $location;
+                        $context['location'] = self::buildLocationContext($location);
                     }
                 }
+
+                // Get card info if available
+                $context['card'] = self::buildCardContext($order);
+
+                // Build fees context
+                $context['fees'] = self::buildFeesContext($order);
             }
         }
+
+        // Add date/time context
+        $context['today'] = date('d.m.Y');
+        $context['today_full'] = self::formatDateFull(time());
+        $context['current_time'] = date('H:i');
+        $context['current_year'] = date('Y');
+
+        // Add app context
+        $context['app'] = [
+            'name' => BRAND_NAME,
+            'url' => HOST,
+            'support_email' => CONTACT_EMAIL ?? (BRAND_NAME . ' Support'),
+            'login_url' => HOST . 'login',
+        ];
+
+        // Add VIVA note (standard text)
+        $context['viva_note'] = 'Opkrævning og afvikling af betalinger håndteres af VIVA på vegne af forretningen.';
 
         // Store reference for deduplication
         $context['reference_id'] = $record['reference_id'];
         $context['reference_type'] = $record['reference_type'];
 
         return $context;
+    }
+
+    /**
+     * Build user context with all available placeholders
+     */
+    public static function buildUserContext($user): array {
+        if (is_string($user)) {
+            $user = Methods::users()->get($user);
+        }
+        if (!$user) return [];
+
+        return [
+            'uid' => $user->uid ?? null,
+            'full_name' => $user->full_name ?? null,
+            'first_name' => $user->first_name ?? null,
+            'last_name' => $user->last_name ?? null,
+            'email' => $user->email ?? null,
+            'phone' => $user->phone ?? null,
+        ];
+    }
+
+    /**
+     * Build organisation context with all available placeholders
+     */
+    public static function buildOrganisationContext($org): array {
+        if (is_string($org)) {
+            $org = Methods::organisations()->get($org);
+        }
+        if (!$org) return [];
+
+        return [
+            'uid' => $org->uid ?? null,
+            'name' => $org->name ?? null,
+            'email' => $org->email ?? null,
+            'phone' => $org->phone ?? null,
+            'address' => $org->address ?? null,
+            'city' => $org->city ?? null,
+            'zip' => $org->zip ?? null,
+            'cvr' => $org->cvr ?? null,
+        ];
+    }
+
+    /**
+     * Build location context with all available placeholders
+     */
+    public static function buildLocationContext($location): array {
+        if (is_string($location)) {
+            $location = Methods::locations()->get($location);
+        }
+        if (!$location) return [];
+
+        return [
+            'uid' => $location->uid ?? null,
+            'name' => $location->name ?? null,
+            'address' => $location->address ?? null,
+            'city' => $location->city ?? null,
+            'zip' => $location->zip ?? null,
+            'phone' => $location->phone ?? null,
+            'email' => $location->email ?? null,
+        ];
+    }
+
+    /**
+     * Build order context with all available placeholders
+     */
+    public static function buildOrderContext($order, string $currency = 'DKK'): array {
+        if (is_string($order)) {
+            $order = Methods::orders()->get($order);
+        }
+        if (!$order) return [];
+
+        $createdAt = $order->created_at ?? null;
+        $createdTimestamp = is_numeric($createdAt) ? (int)$createdAt : ($createdAt ? strtotime($createdAt) : null);
+
+        return [
+            'uid' => $order->uid ?? null,
+            'amount' => $order->amount ?? 0,
+            'formatted_amount' => self::formatAmount($order->amount ?? 0, $currency),
+            'currency' => $currency,
+            'status' => $order->status ?? null,
+            'payment_plan' => $order->payment_plan ?? null, // direct, pushed, installments
+            'caption' => $order->caption ?? null,
+            'created_at' => $createdAt,
+            'created_date' => $createdTimestamp ? date('d.m.Y', $createdTimestamp) : null,
+            'created_time' => $createdTimestamp ? date('H:i', $createdTimestamp) : null,
+            'created_datetime' => $createdTimestamp ? date('d.m.Y H:i', $createdTimestamp) : null,
+        ];
+    }
+
+    /**
+     * Build payment context with all available placeholders
+     */
+    public static function buildPaymentContext($payment, string $currency = 'DKK'): array {
+        if (is_string($payment)) {
+            $payment = Methods::partialPaymentUnits()->get($payment);
+        }
+        if (!$payment) return [];
+
+        $dueDate = $payment->due_date ?? null;
+        $paidAt = $payment->paid_at ?? null;
+        $paidTimestamp = is_numeric($paidAt) ? (int)$paidAt : ($paidAt ? strtotime($paidAt) : null);
+
+        $statusLabels = [
+            'PENDING' => 'Afventer',
+            'SCHEDULED' => 'Planlagt',
+            'COMPLETED' => 'Betalt',
+            'PAID' => 'Betalt',
+            'PAST_DUE' => 'Forsinket',
+            'FAILED' => 'Fejlet',
+            'CANCELLED' => 'Annulleret',
+            'REFUNDED' => 'Refunderet',
+        ];
+
+        return [
+            'uid' => $payment->uid ?? null,
+            'amount' => $payment->amount ?? 0,
+            'formatted_amount' => self::formatAmount($payment->amount ?? 0, $currency),
+            'due_date' => $dueDate,
+            'due_date_formatted' => $dueDate ? date('d.m.Y', strtotime($dueDate)) : null,
+            'paid_at' => $paidAt,
+            'paid_date' => $paidTimestamp ? date('d.m.Y', $paidTimestamp) : null,
+            'paid_time' => $paidTimestamp ? date('H:i', $paidTimestamp) : null,
+            'installment_number' => $payment->installment_number ?? null,
+            'status' => $payment->status ?? null,
+            'status_label' => $statusLabels[$payment->status ?? ''] ?? ($payment->status ?? 'Ukendt'),
+        ];
+    }
+
+    /**
+     * Build card context (masked card info)
+     */
+    public static function buildCardContext($order): array {
+        // Try to get card info from order's payment method or viva transaction
+        // This is a placeholder - actual implementation depends on where card data is stored
+        return [
+            'last4' => '****', // Would come from stored card data
+            'brand' => null,
+            'expiry' => null,
+            'holder_name' => null,
+        ];
+    }
+
+    /**
+     * Build fees context
+     */
+    public static function buildFeesContext($order): array {
+        $reminderFee = 10000; // 100 DKK in øre - this should come from config
+        $currency = $order->currency ?? 'DKK';
+
+        // Count reminders sent for this order
+        $reminderCount = 0;
+        // This would query notification logs for reminder notifications for this order
+        // For now, just returning structure
+
+        $totalFees = $reminderCount * $reminderFee;
+        $orderAmount = $order->amount ?? 0;
+
+        return [
+            'reminder_fee' => self::formatAmount($reminderFee, $currency),
+            'reminder_fee_amount' => $reminderFee,
+            'total_fees' => self::formatAmount($totalFees, $currency),
+            'total_fees_amount' => $totalFees,
+            'reminder_count' => $reminderCount,
+            'total_outstanding' => $orderAmount + $totalFees,
+            'total_outstanding_formatted' => self::formatAmount($orderAmount + $totalFees, $currency),
+        ];
+    }
+
+    /**
+     * Format date in full Danish format
+     */
+    private static function formatDateFull(int $timestamp): string {
+        $months = [
+            1 => 'januar', 2 => 'februar', 3 => 'marts', 4 => 'april',
+            5 => 'maj', 6 => 'juni', 7 => 'juli', 8 => 'august',
+            9 => 'september', 10 => 'oktober', 11 => 'november', 12 => 'december'
+        ];
+        $day = date('j', $timestamp);
+        $month = $months[(int)date('n', $timestamp)];
+        $year = date('Y', $timestamp);
+        return "d. {$day}. {$month} {$year}";
     }
 
     /**

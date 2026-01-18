@@ -37,29 +37,31 @@ $organisations = $args->organisations ?? new \Database\Collection();
                     <div class="flex-row-between flex-align-center flex-wrap" style="gap: .75rem;">
                         <div class="flex-row-start flex-align-center flex-wrap" style="gap: .5rem;">
                             <input type="text" class="form-field-v2" id="orders-search" placeholder="Søg efter ordre ID, caption eller org..." style="min-width: 250px;">
-                            <select class="form-select-v2" id="orders-filter-org" style="min-width: 180px;">
+                            <select class="form-select-v2 h-45px" id="orders-filter-org" data-search="true" style="min-width: 180px;">
                                 <option value="all" selected>Alle <?=Translate::word("organisationer")?></option>
                                 <?php foreach ($organisations->list() as $org): ?>
                                 <option value="<?=$org->uid?>"><?=htmlspecialchars($org->name)?></option>
                                 <?php endforeach; ?>
                             </select>
-                            <select class="form-select-v2" id="orders-filter-status" style="min-width: 130px;">
+                            <select class="form-select-v2 h-45px" id="orders-filter-status" style="min-width: 130px;">
                                 <option value="all" selected>Alle status</option>
                                 <option value="DRAFT">Kladde</option>
                                 <option value="PENDING">Afventer</option>
                                 <option value="COMPLETED">Gennemført</option>
                                 <option value="CANCELLED">Annulleret</option>
                                 <option value="EXPIRED">Udløbet</option>
+                                <option value="REFUNDED">Refunderet</option>
+                                <option value="VOIDED">Ophævet</option>
                             </select>
                         </div>
                         <div class="flex-row-end flex-align-center flex-wrap" style="gap: .5rem;">
-                            <select class="form-select-v2" id="orders-sort" style="min-width: 150px;">
+                            <select class="form-select-v2 h-45px" id="orders-sort" style="min-width: 150px;">
                                 <option value="created_at-DESC" selected>Nyeste først</option>
                                 <option value="created_at-ASC">Ældste først</option>
                                 <option value="amount-DESC">Beløb (høj-lav)</option>
                                 <option value="amount-ASC">Beløb (lav-høj)</option>
                             </select>
-                            <select class="form-select-v2" id="orders-per-page" style="min-width: 80px;">
+                            <select class="form-select-v2 h-45px" id="orders-per-page" style="min-width: 80px;">
                                 <option value="10">10</option>
                                 <option value="25" selected>25</option>
                                 <option value="50">50</option>

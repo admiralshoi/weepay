@@ -37,8 +37,36 @@ const AdminOrdersPagination = (function() {
 
         if (!$tbody.length || typeof adminOrdersApiUrl === 'undefined') return;
 
+        // Check for query params and apply filters
+        applyQueryParams();
+
         bindEvents();
         fetchOrders();
+    }
+
+    function applyQueryParams() {
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // Apply organisation filter from query param
+        const orgParam = urlParams.get('org');
+        if (orgParam && $filterOrg.find(`option[value="${orgParam}"]`).length) {
+            filterOrg = orgParam;
+            updateSelectV2Value($filterOrg.get(0), orgParam);
+        }
+
+        // Apply status filter from query param
+        const statusParam = urlParams.get('status');
+        if (statusParam && $filterStatus.find(`option[value="${statusParam}"]`).length) {
+            filterStatus = statusParam;
+            updateSelectV2Value($filterStatus.get(0), statusParam);
+        }
+
+        // Apply search from query param
+        const searchParam = urlParams.get('search');
+        if (searchParam) {
+            $search.val(searchParam);
+            searchTerm = searchParam;
+        }
     }
 
     function bindEvents() {
@@ -179,7 +207,9 @@ const AdminOrdersPagination = (function() {
             'PENDING': { label: 'Afventer', class: 'warning-box' },
             'COMPLETED': { label: 'Gennemført', class: 'success-box' },
             'CANCELLED': { label: 'Annulleret', class: 'danger-box' },
-            'EXPIRED': { label: 'Udløbet', class: 'mute-box' }
+            'EXPIRED': { label: 'Udløbet', class: 'mute-box' },
+            'REFUNDED': { label: 'Refunderet', class: 'warning-box' },
+            'VOIDED': { label: 'Ophævet', class: 'mute-box' }
         };
 
         const status = statusLabels[order.status] || { label: 'Ukendt', class: 'mute-box' };

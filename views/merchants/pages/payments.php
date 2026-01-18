@@ -58,8 +58,13 @@ $pageTitle = "Betalinger";
                                 <div class="form-group mb-0" id="payments-status-filter-container">
                                     <select class="form-select-v2" id="payments-filter-status" data-selected="all" style="min-width: 140px;">
                                         <option value="all" selected>Alle statusser</option>
+                                        <option value="COMPLETED">Gennemført</option>
                                         <option value="PENDING">Afventer</option>
                                         <option value="SCHEDULED">Planlagt</option>
+                                        <option value="PAST_DUE">Forsinket</option>
+                                        <option value="FAILED">Fejlet</option>
+                                        <option value="REFUNDED">Refunderet</option>
+                                        <option value="VOIDED">Ophævet</option>
                                     </select>
                                 </div>
                                 <div class="form-group mb-0 position-relative">

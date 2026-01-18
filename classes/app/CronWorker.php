@@ -14,45 +14,63 @@ class CronWorker extends Crud {
             "log_date_file" => CRON_LOGS."cronDate_take_payments.log",
             "log_memory_file" => CRON_LOGS."cronMemory_take_payments.log",
             "row_id" => 'crn_take_payments',
-            "time_gab" => (60 * 60), // 1 hour between runs
+            "time_gab" => 10, // 10 seconds for testing
             "max_run_time" => (60 * 10), // 10 min max
-            "sleep_timer" => (60 * 5) // 5 min sleep between pauses
+            "sleep_timer" => 10 // 10 seconds for testing
         ),
         "retry_payments" => array(
             "log_file" => CRON_LOGS."cronLog_retry_payments.log",
             "log_date_file" => CRON_LOGS."cronDate_retry_payments.log",
             "log_memory_file" => CRON_LOGS."cronMemory_retry_payments.log",
             "row_id" => 'crn_retry_payments',
-            "time_gab" => (60 * 60 * 4), // 4 hours between runs
+            "time_gab" => 10, // 10 seconds for testing
             "max_run_time" => (60 * 10), // 10 min max
-            "sleep_timer" => (60 * 5) // 5 min sleep between pauses
+            "sleep_timer" => 10 // 10 seconds for testing
         ),
         "cleanup_logs" => array(
             "log_file" => CRON_LOGS."cronLog_cleanup_logs.log",
             "log_date_file" => CRON_LOGS."cronDate_cleanup_logs.log",
             "log_memory_file" => CRON_LOGS."cronMemory_cleanup_logs.log",
             "row_id" => 'crn_cleanup_logs',
-            "time_gab" => (60 * 60 * 24), // Daily
+            "time_gab" => 10, // 10 seconds for testing
             "max_run_time" => (60 * 5), // 5 min max
-            "sleep_timer" => (60)
+            "sleep_timer" => 10 // 10 seconds for testing
         ),
         "payment_notifications" => array(
             "log_file" => CRON_LOGS."cronLog_payment_notifications.log",
             "log_date_file" => CRON_LOGS."cronDate_payment_notifications.log",
             "log_memory_file" => CRON_LOGS."cronMemory_payment_notifications.log",
             "row_id" => 'crn_payment_notifications',
-            "time_gab" => (60 * 60 * 12), // Every 12 hours
+            "time_gab" => 10, // 10 seconds for testing
             "max_run_time" => (60 * 10), // 10 min max
-            "sleep_timer" => (60 * 2)
+            "sleep_timer" => 10 // 10 seconds for testing
         ),
         "notification_queue" => array(
             "log_file" => CRON_LOGS."cronLog_notification_queue.log",
             "log_date_file" => CRON_LOGS."cronDate_notification_queue.log",
             "log_memory_file" => CRON_LOGS."cronMemory_notification_queue.log",
             "row_id" => 'crn_notification_queue',
-            "time_gab" => (60 * 5), // Every 5 minutes
+            "time_gab" => 10, // 10 seconds for testing
             "max_run_time" => (60 * 5), // 5 min max
-            "sleep_timer" => (60) // 1 min sleep between pauses
+            "sleep_timer" => 10 // 10 seconds for testing
+        ),
+        "rykker_checks" => array(
+            "log_file" => CRON_LOGS."cronLog_rykker_checks.log",
+            "log_date_file" => CRON_LOGS."cronDate_rykker_checks.log",
+            "log_memory_file" => CRON_LOGS."cronMemory_rykker_checks.log",
+            "row_id" => 'crn_rykker_checks',
+            "time_gab" => 10, // 10 seconds for testing
+            "max_run_time" => (60 * 10), // 10 min max
+            "sleep_timer" => 10 // 10 seconds for testing
+        ),
+        "weekly_reports" => array(
+            "log_file" => CRON_LOGS."cronLog_weekly_reports.log",
+            "log_date_file" => CRON_LOGS."cronDate_weekly_reports.log",
+            "log_memory_file" => CRON_LOGS."cronMemory_weekly_reports.log",
+            "row_id" => 'crn_weekly_reports',
+            "time_gab" => 10, // 10 seconds for testing
+            "max_run_time" => (60 * 15), // 15 min max
+            "sleep_timer" => 10 // 10 seconds for testing
         ),
     );
 
@@ -71,6 +89,13 @@ class CronWorker extends Crud {
             "date" => $item["log_date_file"],
             "memory" => $item["log_memory_file"],
         ];
+    }
+
+    /**
+     * Get all cronjob types configuration
+     */
+    public function getTypesList(): array {
+        return $this->typesList;
     }
 
     public function log($string,$init = false):void {

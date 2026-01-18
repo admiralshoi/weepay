@@ -19,8 +19,42 @@ $statusLabels = [
     'COMPLETED' => ['label' => 'Gennemført', 'class' => 'success-box'],
     'CANCELLED' => ['label' => 'Annulleret', 'class' => 'danger-box'],
     'EXPIRED' => ['label' => 'Udløbet', 'class' => 'mute-box'],
+    'REFUNDED' => ['label' => 'Refunderet', 'class' => 'warning-box'],
+    'VOIDED' => ['label' => 'Ophævet', 'class' => 'mute-box'],
 ];
 $statusInfo = $statusLabels[$order->status ?? 'DRAFT'] ?? ['label' => 'Ukendt', 'class' => 'mute-box'];
+
+// Big label for special statuses
+$bigLabelStatusMap = [
+    'REFUNDED' => ['label' => 'REFUNDERET', 'class' => 'warning-box'],
+    'VOIDED' => ['label' => 'OPHÆVET', 'class' => 'mute-box'],
+];
+$bigLabelInfo = $bigLabelStatusMap[$order->status ?? ''] ?? null;
+
+// Check for pending/scheduled payments
+$hasPendingPayments = false;
+if (!$payments->empty()) {
+    foreach ($payments->list() as $p) {
+        if (in_array($p->status, ['PENDING', 'SCHEDULED'])) {
+            $hasPendingPayments = true;
+            break;
+        }
+    }
+}
+
+// Check for completed payments (for refund button)
+$hasCompletedPayments = false;
+if (!$payments->empty()) {
+    foreach ($payments->list() as $p) {
+        if ($p->status === 'COMPLETED') {
+            $hasCompletedPayments = true;
+            break;
+        }
+    }
+}
+
+// Can refund if order is COMPLETED or PENDING and has payments to refund/void
+$canRefund = in_array($order->status, ['COMPLETED', 'PENDING']) && ($hasCompletedPayments || $hasPendingPayments);
 
 $paymentStatusLabels = [
     'PENDING' => ['label' => 'Afventer', 'class' => 'warning-box'],
@@ -29,7 +63,8 @@ $paymentStatusLabels = [
     'COMPLETED' => ['label' => 'Betalt', 'class' => 'success-box'],
     'FAILED' => ['label' => 'Fejlet', 'class' => 'danger-box'],
     'CANCELLED' => ['label' => 'Annulleret', 'class' => 'mute-box'],
-    'REFUNDED' => ['label' => 'Refunderet', 'class' => 'mute-box'],
+    'REFUNDED' => ['label' => 'Refunderet', 'class' => 'warning-box'],
+    'VOIDED' => ['label' => 'Ophævet', 'class' => 'mute-box'],
 ];
 
 // Extract foreign key data
@@ -72,7 +107,16 @@ $providerName = is_object($order->provider) ? ($order->provider->name ?? '-') : 
                     </div>
                 </div>
                 <div class="flex-row-end flex-align-center" style="gap: .5rem;">
-                    <?php if($order->status === 'PENDING'): ?>
+                    <?php if($bigLabelInfo): ?>
+                        <div class="<?=$bigLabelInfo['class']?> font-24 font-weight-bold px-4 py-2">
+                            <?=$bigLabelInfo['label']?>
+                        </div>
+                    <?php endif; ?>
+                    <?php if($canRefund): ?>
+                        <button class="btn-v2 danger-btn" data-refund-order="<?=$order->uid?>" data-has-pending-payments="<?=$hasPendingPayments ? '1' : '0'?>">
+                            <i class="mdi mdi-cash-refund mr-1"></i> Annuller & Refunder
+                        </button>
+                    <?php elseif($order->status === 'PENDING'): ?>
                         <button class="btn-v2 warning-btn" onclick="cancelOrder()">
                             <i class="mdi mdi-close mr-1"></i> Annuller
                         </button>
@@ -198,6 +242,12 @@ $providerName = is_object($order->provider) ? ($order->provider->name ?? '-') : 
                                     <p class="mb-0 font-12 color-gray">Gebyr</p>
                                     <p class="mb-0 font-14 font-weight-medium"><?=number_format($order->fee_amount, 2, ',', '.')?> kr (<?=number_format($order->fee * 100, 1)?>%)</p>
                                 </div>
+                                <?php if((float)($order->amount_refunded ?? 0) > 0): ?>
+                                <div class="flex-col-start">
+                                    <p class="mb-0 font-12 color-gray">Refunderet</p>
+                                    <p class="mb-0 font-14 font-weight-medium color-warning"><?=number_format($order->amount_refunded, 2, ',', '.')?> kr</p>
+                                </div>
+                                <?php endif; ?>
                                 <div class="flex-col-start">
                                     <p class="mb-0 font-12 color-gray">Oprettet</p>
                                     <p class="mb-0 font-14 font-weight-medium"><?=date('d/m/Y H:i', strtotime($order->created_at))?></p>
@@ -273,6 +323,10 @@ $providerName = is_object($order->provider) ? ($order->provider->name ?? '-') : 
 
 <?php scriptStart(); ?>
 <script>
+    $(document).ready(function() {
+        initAdminRefunds();
+    });
+
     function cancelOrder() {
         const orderId = '<?=$order->uid?>';
         if (confirm('Er du sikker på at du vil annullere denne ordre?')) {

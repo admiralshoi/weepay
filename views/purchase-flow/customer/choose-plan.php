@@ -147,7 +147,7 @@ $pageTitle = "Vælg betalingsplan";
                     <button id="payButton" class="mt-3  btn-v2 design-action-btn-lg flex-row-center flex-align-center flex-nowrap" style="gap: .5rem;">
                         <i class="mdi mdi-credit-card-outline font-20"></i>
                         <span class="font-18">
-                            Bekræft og Betal
+                            <span id="payButtonText">Betal nu</span>
                             (<span id="to-pay-now"><?=number_format($args->defaultToPayNow, 2)?></span>
                             <?=currencySymbol($basket->currency)?>)
                         </span>

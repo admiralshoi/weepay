@@ -167,6 +167,8 @@ class QueryBuilder {
         $this->addCondition("{$column} IS NULL");
         return $this;
     }
+    public function whereNotNull(string $column): static { return $this->whereColumnIsNotNull($column); } //For stupid AIS that dont understand whereColumnIsNull is its own method...
+    public function whereNull(string $column): static { return $this->whereColumnIsNull($column); } //For stupid AIS that dont understand whereColumnIsNull is its own method...
     public function whereColumn(string $column1, string $operator, string $column2): static {
         $column1 = $this->escapeIdentifier($column1);
         $column2 = $this->escapeIdentifier($column2);

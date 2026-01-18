@@ -291,6 +291,11 @@ class NotificationApiController {
         $startsAt = $args['starts_at'] ?? null;
         $endsAt = $args['ends_at'] ?? null;
         $conditions = $args['conditions'] ?? null;
+        // Decode conditions if it's a JSON string
+        if (is_string($conditions) && !empty($conditions)) {
+            $conditions = json_decode($conditions, true);
+            if (!is_array($conditions)) $conditions = null;
+        }
         $scheduleOffsetDays = (int)($args['schedule_offset_days'] ?? 0);
         $recipientType = $args['recipient_type'] ?? 'user';
         $recipientEmail = trim($args['recipient_email'] ?? '') ?: null;
@@ -409,6 +414,11 @@ class NotificationApiController {
         $startsAt = $args['starts_at'] ?? null;
         $endsAt = $args['ends_at'] ?? null;
         $conditions = $args['conditions'] ?? null;
+        // Decode conditions if it's a JSON string
+        if (is_string($conditions) && !empty($conditions)) {
+            $conditions = json_decode($conditions, true);
+            if (!is_array($conditions)) $conditions = null;
+        }
         $scheduleOffsetDays = isset($args['schedule_offset_days']) ? (int)$args['schedule_offset_days'] : null;
         $recipientType = $args['recipient_type'] ?? null;
         $recipientEmail = isset($args['recipient_email']) ? (trim($args['recipient_email']) ?: null) : null;
@@ -496,6 +506,67 @@ class NotificationApiController {
         } else {
             Response()->jsonError('Kunne ikke slette flow');
         }
+    }
+
+    #[NoReturn] public static function flowClone(array $args): void {
+        $uid = $args['uid'] ?? null;
+
+        if (empty($uid)) {
+            Response()->jsonError('Flow ID mangler');
+        }
+
+        $flowHandler = Methods::notificationFlows();
+        $flow = $flowHandler->excludeForeignKeys()->get($uid);
+
+        if (isEmpty($flow)) {
+            Response()->jsonError('Flow ikke fundet');
+        }
+
+        // Create new flow with copied data
+        $success = $flowHandler->insert(
+            $flow->name . ' (kopi)',
+            $flow->breakpoint,
+            $flow->description,
+            'draft', // Always start as draft
+            $flow->priority,
+            $flow->starts_at,
+            $flow->ends_at,
+            $flow->conditions ? array_values(toArray($flow->conditions)) : null,
+            __uuid(),
+            $flow->schedule_offset_days,
+            $flow->recipient_type,
+            $flow->recipient_email
+        );
+
+        if (!$success) {
+            Response()->jsonError('Kunne ikke klone flow');
+        }
+
+        $newFlowUid = $flowHandler->recentUid;
+
+        // Clone all actions
+        $actionHandler = Methods::notificationFlowActions();
+        $actions = $actionHandler->excludeForeignKeys()->getByX(['flow' => $uid]);
+
+        $clonedActions = 0;
+        if ($actions && !$actions->empty()) {
+            foreach ($actions->list() as $action) {
+                $actionSuccess = $actionHandler->insert(
+                    $newFlowUid,
+                    $action->template,
+                    $action->channel,
+                    $action->delay_minutes,
+                    $action->status
+                );
+                if ($actionSuccess) $clonedActions++;
+            }
+        }
+
+        $redirectUrl = __url(\classes\enumerations\Links::$admin->panelNotificationFlows) . '/' . $newFlowUid;
+        Response()->setRedirect($redirectUrl)->jsonSuccess('Flow klonet', [
+            'uid' => $newFlowUid,
+            'cloned_actions' => $clonedActions,
+        ]);
     }
 
     // =====================================================
@@ -805,7 +876,9 @@ class NotificationApiController {
             $sortColumn = 'created_at';
         }
 
-        $query = NotificationLogs::queryBuilder();
+        // Use handler for proper foreign key resolution
+        $handler = Methods::notificationLogs();
+        $query = $handler->queryBuilder();
 
         if (!empty($statusFilter)) {
             $query->where('status', $statusFilter);
@@ -827,18 +900,32 @@ class NotificationApiController {
         $page = min(max(1, $page), $totalPages);
         $offset = ($page - 1) * $perPage;
 
-        $logs = $query->order($sortColumn, $sortDirection)
+        $query->order($sortColumn, $sortDirection)
             ->limit($perPage)
-            ->offset($offset)
-            ->all();
+            ->offset($offset);
+
+        // Use queryGetAll for proper foreign key resolution
+        $logs = $handler->queryGetAll($query);
 
         $formattedLogs = [];
         foreach ($logs->list() as $log) {
+            // Handle recipient - could be a User object (foreign key) or a string
+            $recipientName = null;
+            $recipientIdentifier = $log->recipient_identifier;
+
+            if (is_object($log->recipient)) {
+                // Foreign key resolved to User object
+                $recipientName = $log->recipient->full_name ?? null;
+                if (!$recipientIdentifier) {
+                    $recipientIdentifier = $log->recipient->email ?? $log->recipient->phone ?? null;
+                }
+            }
+
             $formattedLogs[] = [
                 'uid' => $log->uid,
                 'channel' => $log->channel,
-                'recipient' => $log->recipient,
-                'recipient_identifier' => $log->recipient_identifier,
+                'recipient_name' => $recipientName,
+                'recipient_identifier' => $recipientIdentifier,
                 'subject' => $log->subject,
                 'status' => $log->status,
                 'breakpoint_key' => $log->breakpoint_key,
@@ -854,6 +941,160 @@ class NotificationApiController {
                 'total' => $totalCount,
                 'totalPages' => $totalPages,
             ],
+        ]);
+    }
+
+    /**
+     * Resend a notification from logs
+     */
+    #[NoReturn] public static function logsResend(array $args): void {
+        $uid = $args['uid'] ?? null;
+
+        if (empty($uid)) {
+            Response()->jsonError('Manglende log UID');
+        }
+
+        // Get the original log entry
+        $handler = Methods::notificationLogs();
+        $log = $handler->get($uid);
+
+        if (!$log) {
+            Response()->jsonError('Log ikke fundet');
+        }
+
+        // Get recipient info
+        $recipientUid = null;
+        $recipientEmail = null;
+        $recipientPhone = null;
+
+        if (is_object($log->recipient)) {
+            $recipientUid = $log->recipient->uid;
+            $recipientEmail = $log->recipient->email;
+            $recipientPhone = $log->recipient->phone;
+        } elseif (!empty($log->recipient)) {
+            $recipientUid = $log->recipient;
+            // Try to get user
+            $user = Methods::users()->get($log->recipient);
+            if ($user) {
+                $recipientEmail = $user->email;
+                $recipientPhone = $user->phone;
+            }
+        }
+
+        // Use recipient_identifier as fallback
+        if (empty($recipientEmail) && empty($recipientPhone) && !empty($log->recipient_identifier)) {
+            if ($log->channel === 'email') {
+                $recipientEmail = $log->recipient_identifier;
+            } elseif ($log->channel === 'sms') {
+                $recipientPhone = $log->recipient_identifier;
+            }
+        }
+
+        $success = false;
+        $errorMessage = null;
+
+        try {
+            switch ($log->channel) {
+                case 'email':
+                    if (empty($recipientEmail)) {
+                        $errorMessage = 'Ingen e-mail adresse fundet';
+                        break;
+                    }
+                    $success = \classes\notifications\MessageDispatcher::email(
+                        $recipientEmail,
+                        $log->subject ?? 'Ingen emne',
+                        $log->content ?? '',
+                        null // No HTML content stored separately
+                    );
+                    break;
+
+                case 'sms':
+                    if ($recipientUid) {
+                        $success = \classes\notifications\MessageDispatcher::smsToUser(
+                            $recipientUid,
+                            $log->content ?? ''
+                        );
+                    } elseif (!empty($recipientPhone)) {
+                        $success = \classes\notifications\MessageDispatcher::sms(
+                            $recipientPhone,
+                            $log->content ?? ''
+                        );
+                    } else {
+                        $errorMessage = 'Ingen telefonnummer fundet';
+                    }
+                    break;
+
+                case 'bell':
+                    if (empty($recipientUid)) {
+                        $errorMessage = 'Ingen bruger fundet for push-notifikation';
+                        break;
+                    }
+                    $success = \classes\notifications\MessageDispatcher::bell(
+                        $recipientUid,
+                        $log->subject ?? 'Notifikation',
+                        $log->content ?? ''
+                    );
+                    break;
+
+                default:
+                    $errorMessage = 'Ukendt kanal: ' . $log->channel;
+            }
+        } catch (\Exception $e) {
+            $errorMessage = 'Fejl ved afsendelse: ' . $e->getMessage();
+            debugLog(['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()], 'NotificationApiController_logsResend');
+        }
+
+        if (!$success) {
+            Response()->jsonError($errorMessage ?? 'Kunne ikke gensende notifikationen');
+        }
+
+        // Create a new log entry for the resent notification
+        // Use correct identifier based on channel
+        $newRecipientIdentifier = match($log->channel) {
+            'sms' => $recipientPhone,
+            'email' => $recipientEmail,
+            'bell' => $recipientUid,
+            default => $log->recipient_identifier,
+        };
+
+        $newLogData = [
+            'flow' => is_object($log->flow) ? $log->flow->uid : $log->flow,
+            'template' => is_object($log->template) ? $log->template->uid : $log->template,
+            'breakpoint_key' => $log->breakpoint_key,
+            'recipient' => $recipientUid,
+            'recipient_identifier' => $newRecipientIdentifier,
+            'channel' => $log->channel,
+            'subject' => $log->subject,
+            'content' => $log->content,
+            'status' => 'sent',
+            'reference_id' => $log->reference_id,
+            'reference_type' => $log->reference_type,
+        ];
+
+        $newLog = $handler->create($newLogData);
+
+        // Format the new log for response
+        $formattedLog = null;
+        if ($newLog) {
+            $recipientName = null;
+            if (is_object($log->recipient)) {
+                $recipientName = $log->recipient->full_name ?? null;
+            }
+
+            $formattedLog = [
+                'uid' => $newLog->uid,
+                'channel' => $newLog->channel,
+                'recipient_name' => $recipientName,
+                'recipient_identifier' => $newLog->recipient_identifier,
+                'subject' => $newLog->subject,
+                'status' => $newLog->status,
+                'breakpoint_key' => $newLog->breakpoint_key,
+                'created_at' => $newLog->created_at,
+            ];
+        }
+
+        Response()->jsonSuccess('Notifikationen blev gensendt', [
+            'log' => $formattedLog,
         ]);
     }
 

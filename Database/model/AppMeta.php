@@ -108,6 +108,16 @@ class AppMeta extends \Database\Model {
             "value" => '1000',
             "type" => "float",
         ],
+        [
+            "name" => "payment_max_attempts",
+            "value" => '6',
+            "type" => "int",
+        ],
+        [
+            "name" => "payment_retry_day_interval",
+            "value" => '1',
+            "type" => "int",
+        ],
     ];
     protected static array $requiredRowsTesting = [];
 

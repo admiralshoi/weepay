@@ -323,6 +323,7 @@ class Admin extends \routing\paths\Paths {
                 "js.main.js",
                 "js.utility.js",
                 "js.features.js",
+                "js.admin-refunds.js",
                 "js.initializer.js",
                 "css.main.css",
                 "css.styles2.css",
@@ -330,8 +331,13 @@ class Admin extends \routing\paths\Paths {
                 "css.responsiveness.css",
             ],
             "base" => null,
-            "vendor" => [],
-            "custom" => [],
+            "vendor" => [
+                "vendor.sweetalert.sweetalert2.min.js",
+                "vendor.sweetalert.sweetalert2.min.css",
+            ],
+            "custom" => [
+                "js.includes.SweetPrompt.js",
+            ],
         ],
     ];
 
@@ -372,6 +378,7 @@ class Admin extends \routing\paths\Paths {
                 "js.main.js",
                 "js.utility.js",
                 "js.features.js",
+                "js.admin-refunds.js",
                 "js.initializer.js",
                 "css.main.css",
                 "css.styles2.css",
@@ -379,8 +386,13 @@ class Admin extends \routing\paths\Paths {
                 "css.responsiveness.css",
             ],
             "base" => null,
-            "vendor" => [],
-            "custom" => [],
+            "vendor" => [
+                "vendor.sweetalert.sweetalert2.min.js",
+                "vendor.sweetalert.sweetalert2.min.css",
+            ],
+            "custom" => [
+                "js.includes.SweetPrompt.js",
+            ],
         ],
     ];
 
@@ -707,7 +719,9 @@ class Admin extends \routing\paths\Paths {
             "main" => null,
             "base" => null,
             "vendor" => [],
-            "custom" => [],
+            "custom" => [
+                "js.admin-panel-jobs.js",
+            ],
         ],
     ];
 
@@ -790,8 +804,13 @@ class Admin extends \routing\paths\Paths {
         "assets" => [
             "main" => null,
             "base" => null,
-            "vendor" => [],
-            "custom" => [],
+            "vendor" => [
+                "vendor.sweetalert.sweetalert2.min.js",
+                "vendor.sweetalert.sweetalert2.min.css",
+            ],
+            "custom" => [
+                "js.includes.SweetPrompt.js",
+            ],
         ],
     ];
 

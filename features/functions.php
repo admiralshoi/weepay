@@ -841,6 +841,7 @@ function requiresSelectedOrganisationWallet(): bool {
         !in_array(realUrlPath(), $exceptionPaths);
 }
 function requiresProfileCompletion(): bool {
+    if(adminImpersonating()) return false;
     $headers = apache_request_headers();
     if(array_key_exists("Request-Type", $headers) && $headers["Request-Type"] === "api") return false;
     $exceptionPaths = [
@@ -856,6 +857,7 @@ function requiresProfileCompletion(): bool {
 function requiresPasswordChange(): bool {
     // Skip for non-logged-in users
     if(!isLoggedIn()) return false;
+    if(adminImpersonating()) return false;
     if(!isOidcAuthenticated()) return false;
 
     $headers = apache_request_headers();
@@ -921,6 +923,10 @@ function requiresWhitelistedIp(): bool {
     return !in_array($userIp, $whitelistIps);
 }
 
+function adminImpersonating(): bool {
+    return !empty($_SESSION["admin_impersonating_uid"]) &&
+        (!empty($_SESSION["admin_impersonating_org"]) || !empty($_SESSION["admin_impersonating_user"]));
+}
 function getUserIp(): string {
     // Check for forwarded IP (from proxy/load balancer)
     if(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {

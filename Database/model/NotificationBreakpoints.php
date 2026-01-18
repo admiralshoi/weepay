@@ -101,6 +101,17 @@ class NotificationBreakpoints extends \Database\Model {
             "is_system" => 1,
             "status" => "active"
         ],
+        [
+            "uid" => "nbp_order_refunded",
+            "key" => "order.refunded",
+            "name" => "Ordre refunderet",
+            "description" => "Udløses når en ordre refunderes (mindst én betaling refunderet)",
+            "category" => "order",
+            "available_placeholders" => '["user.full_name","user.email","user.phone","order.uid","order.amount","order.formatted_amount","order.currency","order.caption","order.created_date","total_refunded","total_refunded_formatted","payments_refunded_count","payments_voided_count","refund_reason","refund_date","refund_time","refund_datetime","organisation.uid","organisation.name","organisation.email","organisation.phone","location.uid","location.name","location.email","location.address","location.city","location.zip","order_link","receipt_link","dashboard_link","app.name","app.url"]',
+            "trigger_type" => "instant",
+            "is_system" => 1,
+            "status" => "active"
+        ],
         // Payment breakpoints
         [
             "uid" => "nbp_payment_successful",
@@ -130,7 +141,7 @@ class NotificationBreakpoints extends \Database\Model {
             "name" => "Betaling refunderet",
             "description" => "Udløses når en betaling refunderes",
             "category" => "payment",
-            "available_placeholders" => '["user.full_name","user.email","payment.uid","payment.amount","payment.formatted_amount","refund_amount","refund_formatted_amount","refund_reason","order.uid","organisation.name","app.name"]',
+            "available_placeholders" => '["user.full_name","user.email","user.phone","payment.uid","payment.amount","payment.formatted_amount","payment.due_date","payment.due_date_formatted","payment.installment_number","refund_amount","refund_formatted_amount","refund_reason","refund_date","refund_time","refund_datetime","is_partial_refund","is_full_refund","order.uid","order.amount","order.formatted_amount","order.currency","order.caption","organisation.uid","organisation.name","organisation.email","organisation.phone","organisation.cvr","location.uid","location.name","location.email","location.address","location.city","location.zip","payment_link","receipt_link","order_link","dashboard_link","app.name","app.url"]',
             "trigger_type" => "instant",
             "is_system" => 1,
             "status" => "active"
@@ -177,6 +188,109 @@ class NotificationBreakpoints extends \Database\Model {
             "category" => "organisation",
             "available_placeholders" => '["user.full_name","user.email","organisation.name","app.name"]',
             "trigger_type" => "instant",
+            "is_system" => 1,
+            "status" => "active"
+        ],
+        // Rykker/Dunning breakpoints
+        [
+            "uid" => "nbp_payment_rykker_1",
+            "key" => "payment.rykker_1",
+            "name" => "1. rykker",
+            "description" => "Udløses ved første rykker (f.eks. 7 dage efter forfald)",
+            "category" => "payment",
+            "available_placeholders" => '["user.full_name","user.email","payment.uid","payment.amount","payment.formatted_amount","payment.due_date","payment.due_date_formatted","days_overdue","order.uid","order.caption","organisation.name","payment_link","app.name"]',
+            "trigger_type" => "scheduled",
+            "is_system" => 1,
+            "status" => "active"
+        ],
+        [
+            "uid" => "nbp_payment_rykker_2",
+            "key" => "payment.rykker_2",
+            "name" => "2. rykker",
+            "description" => "Udløses ved anden rykker (f.eks. 14 dage efter forfald)",
+            "category" => "payment",
+            "available_placeholders" => '["user.full_name","user.email","payment.uid","payment.amount","payment.formatted_amount","payment.due_date","payment.due_date_formatted","days_overdue","order.uid","order.caption","organisation.name","payment_link","app.name"]',
+            "trigger_type" => "scheduled",
+            "is_system" => 1,
+            "status" => "active"
+        ],
+        [
+            "uid" => "nbp_payment_rykker_final",
+            "key" => "payment.rykker_final",
+            "name" => "Sidste rykker / Inkassovarsel",
+            "description" => "Udløses ved sidste rykker før inkasso (f.eks. 21 dage efter forfald)",
+            "category" => "payment",
+            "available_placeholders" => '["user.full_name","user.email","payment.uid","payment.amount","payment.formatted_amount","payment.due_date","payment.due_date_formatted","days_overdue","order.uid","order.caption","organisation.name","payment_link","app.name"]',
+            "trigger_type" => "scheduled",
+            "is_system" => 1,
+            "status" => "active"
+        ],
+        // Merchant breakpoints
+        [
+            "uid" => "nbp_merchant_order_received",
+            "key" => "merchant.order_received",
+            "name" => "Ny ordre modtaget (forretning)",
+            "description" => "Udløses når en forretning modtager en ny ordre",
+            "category" => "order",
+            "available_placeholders" => '["user.full_name","user.email","user.phone","order.uid","order.amount","order.formatted_amount","order.currency","order.caption","order.created_date","order.created_time","organisation.name","location.name","payment_plan.total_installments","payment_plan.first_amount_formatted","payment_plan.total_amount_formatted","app.name"]',
+            "trigger_type" => "instant",
+            "is_system" => 1,
+            "status" => "active"
+        ],
+        [
+            "uid" => "nbp_merchant_org_ready",
+            "key" => "merchant.org_ready",
+            "name" => "Forretningskonto klar",
+            "description" => "Udløses når en forretningskonto er klar til brug",
+            "category" => "organisation",
+            "available_placeholders" => '["user.full_name","user.email","organisation.name","organisation.cvr","dashboard_link","app.name","app.url"]',
+            "trigger_type" => "instant",
+            "is_system" => 1,
+            "status" => "active"
+        ],
+        [
+            "uid" => "nbp_merchant_viva_approved",
+            "key" => "merchant.viva_approved",
+            "name" => "Viva godkendelse",
+            "description" => "Udløses når Viva godkender forretningens betalingsaftale",
+            "category" => "organisation",
+            "available_placeholders" => '["user.full_name","user.email","organisation.name","organisation.cvr","dashboard_link","app.name","app.url"]',
+            "trigger_type" => "instant",
+            "is_system" => 1,
+            "status" => "active"
+        ],
+        // System breakpoints
+        [
+            "uid" => "nbp_system_policy_updated",
+            "key" => "system.policy_updated",
+            "name" => "Politikopdatering",
+            "description" => "Udløses når vilkår eller privatlivspolitik opdateres",
+            "category" => "system",
+            "available_placeholders" => '["user.full_name","user.email","policy_type","policy_name","update_summary","policy_link","app.name","app.url"]',
+            "trigger_type" => "instant",
+            "is_system" => 1,
+            "status" => "active"
+        ],
+        // Report breakpoints
+        [
+            "uid" => "nbp_report_weekly_org",
+            "key" => "report.weekly_organisation",
+            "name" => "Ugentlig rapport (organisation)",
+            "description" => "Ugentlig opsummering for organisationsejere",
+            "category" => "organisation",
+            "available_placeholders" => '["user.full_name","user.email","organisation.name","report_period_start","report_period_end","total_orders","total_revenue","total_revenue_formatted","pending_payments","completed_payments","dashboard_link","app.name"]',
+            "trigger_type" => "scheduled",
+            "is_system" => 1,
+            "status" => "active"
+        ],
+        [
+            "uid" => "nbp_report_weekly_location",
+            "key" => "report.weekly_location",
+            "name" => "Ugentlig rapport (lokation)",
+            "description" => "Ugentlig opsummering for lokationsejere",
+            "category" => "organisation",
+            "available_placeholders" => '["user.full_name","user.email","organisation.name","location.name","report_period_start","report_period_end","total_orders","total_revenue","total_revenue_formatted","pending_payments","completed_payments","dashboard_link","app.name"]',
+            "trigger_type" => "scheduled",
             "is_system" => 1,
             "status" => "active"
         ],
