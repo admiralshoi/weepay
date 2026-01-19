@@ -301,24 +301,6 @@ class CronRequestHandler {
 
 
     /**
-     * Retry failed payments
-     * Attempts to reprocess payments that previously failed
-     */
-    public function retryPayments(?CronWorker $worker = null): void {
-        $worker?->log("Running retryPayments...");
-
-        // TODO: Implement retry logic
-        // 1. Find all failed payments eligible for retry (based on retry policy)
-        // 2. Attempt to charge each payment again
-        // 3. Update retry count and status
-        // 4. Mark as permanently failed after max retries
-        // 5. Send notifications for successful retries or final failures
-
-        $worker?->log("retryPayments completed.");
-    }
-
-
-    /**
      * Clean up old log files
      * Removes logs older than configured retention period
      */
@@ -621,4 +603,248 @@ class CronRequestHandler {
     }
 
 
+    /**
+     * Retry failed PAST_DUE payments
+     * Attempts to charge payments that have failed previously, including rykker fees
+     * Similar to consumer payNow but automated via cronjob
+     *
+     * Uses configurable settings:
+     * - payment_max_attempts: Maximum charge attempts before stopping retries
+     * - payment_retry_day_interval: Days between retry attempts
+     */
+    public function retryPayments(?CronWorker $worker = null): void {
+        $worker?->log("Running retryPayments...");
+
+        // Get configurable settings
+        $maxAttempts = (int)(Settings::$app->payment_max_attempts ?? 5);
+        $retryIntervalDays = (int)(Settings::$app->payment_retry_day_interval ?? 3);
+
+        $paymentsHandler = Methods::payments();
+        $ordersHandler = Methods::orders();
+        $now = date('Y-m-d H:i:s');
+        $lockTimeout = date('Y-m-d H:i:s', time() - self::PAYMENT_LOCK_TIMEOUT);
+
+        $stats = [
+            'checked' => 0,
+            'success' => 0,
+            'failed' => 0,
+            'skipped' => 0,
+        ];
+
+        while (true) {
+            // Find PAST_DUE payments eligible for retry:
+            // - attempts < maxAttempts (under the limit)
+            // - sent_to_collection = 0 (not yet in collection)
+            // - has initial_transaction_id (can charge stored card)
+            // - scheduled_at <= now (time to retry)
+            // - not locked or lock is stale
+            $payment = $paymentsHandler->excludeForeignKeys()->queryBuilder()
+                ->where('status', 'PAST_DUE')
+                ->where('attempts', '<', $maxAttempts)
+                ->where('sent_to_collection', 0)
+                ->whereNotNull('initial_transaction_id')
+                ->startGroup('OR')
+                    ->whereNull('scheduled_at')
+                    ->where('scheduled_at', '<=', $now)
+                ->endGroup()
+                ->startGroup('OR')
+                    ->whereNull('processing_at')
+                    ->where('processing_at', '<', $lockTimeout)
+                ->endGroup()
+                ->order('scheduled_at', 'ASC')
+                ->first();
+
+            if (isEmpty($payment)) {
+                $worker?->log("No more payments to retry.");
+                break;
+            }
+
+            // Acquire lock
+            $lockAcquired = $this->acquirePaymentLock($payment->uid, $lockTimeout);
+            if (!$lockAcquired) {
+                $worker?->log("Payment {$payment->uid} already locked, skipping.");
+                $stats['skipped']++;
+                usleep(100000);
+                continue;
+            }
+
+            $stats['checked']++;
+
+            // Process retry
+            $result = $this->processPaymentRetry($payment->uid, $retryIntervalDays, $worker);
+
+            if ($result['success']) {
+                $stats['success']++;
+            } else {
+                $stats['failed']++;
+            }
+
+            // Release lock
+            $this->releasePaymentLock($payment->uid);
+
+            usleep(200000); // 200ms delay
+
+            // Check worker timeout
+            if ($worker !== null && !$worker->canRun()) {
+                $worker?->log("Worker timeout reached, stopping.");
+                break;
+            }
+        }
+
+        $worker?->log("retryPayments completed. Checked: {$stats['checked']}, Success: {$stats['success']}, Failed: {$stats['failed']}, Skipped: {$stats['skipped']}");
+    }
+
+    /**
+     * Process a single payment retry - includes rykker fees like payNow
+     *
+     * @param string $paymentUid
+     * @param int $retryIntervalDays Days until next retry on failure
+     * @param CronWorker|null $worker
+     * @return array{success: bool, error?: string}
+     */
+    private function processPaymentRetry(string $paymentUid, int $retryIntervalDays, ?CronWorker $worker = null): array {
+        $paymentsHandler = Methods::payments();
+        $ordersHandler = Methods::orders();
+
+        // Get payment with resolved FKs
+        $payment = $paymentsHandler->includeForeignKeys()->get($paymentUid);
+        if (isEmpty($payment)) {
+            $worker?->log("Payment $paymentUid not found.");
+            return ['success' => false, 'error' => 'Payment not found'];
+        }
+
+        // Double-check status
+        if ($payment->status !== 'PAST_DUE') {
+            $worker?->log("Payment $paymentUid status is {$payment->status}, skipping.");
+            return ['success' => false, 'error' => 'Payment status changed'];
+        }
+
+        // Get organisation for merchant_prid
+        $organisationUid = is_object($payment->organisation) ? $payment->organisation->uid : $payment->organisation;
+        $organisation = Methods::organisations()->get($organisationUid);
+
+        if (isEmpty($organisation) || isEmpty($organisation->merchant_prid)) {
+            $worker?->log("Payment $paymentUid: Missing merchant_prid");
+            return $this->handleRetryFailure($payment, 'Missing merchant_prid', $retryIntervalDays, $worker);
+        }
+
+        if (isEmpty($payment->initial_transaction_id)) {
+            $worker?->log("Payment $paymentUid: Missing initial_transaction_id");
+            return $this->handleRetryFailure($payment, 'Missing initial_transaction_id', $retryIntervalDays, $worker);
+        }
+
+        // Get order for fee percentage
+        $order = is_object($payment->order) ? $payment->order : $ordersHandler->get($payment->order);
+        $orderUid = is_object($payment->order) ? $payment->order->uid : $payment->order;
+
+        // Calculate total charge including rykker fees (same as payNow)
+        $originalAmount = (float)$payment->amount;
+        $rykkerFee = (float)($payment->rykker_fee ?? 0);
+        $totalChargeAmount = $originalAmount + $rykkerFee;
+
+        // Recalculate ISV amount based on total charge
+        $feePercent = (float)($order->fee ?? 0);
+        $originalIsvAmount = (float)($payment->isv_amount ?? 0);
+        $newIsvAmount = round($totalChargeAmount * $feePercent / 100, 2);
+
+        $currentAttempts = ($payment->attempts ?? 0) + 1;
+
+        debugLog([
+            'payment_uid' => $paymentUid,
+            'original_amount' => $originalAmount,
+            'rykker_fee' => $rykkerFee,
+            'total_charge' => $totalChargeAmount,
+            'attempt' => $currentAttempts,
+        ], 'CRON_RETRY_PAYMENT_START');
+
+        $worker?->log("Retrying payment $paymentUid: {$totalChargeAmount} {$payment->currency} (attempt $currentAttempts)");
+
+        // Attempt charge
+        $isTestPayment = (bool)($payment->test ?? false);
+        $chargeResult = CardValidationService::chargeWithStoredCard(
+            $organisation->merchant_prid,
+            $payment->initial_transaction_id,
+            $totalChargeAmount,
+            $payment->currency,
+            "Betaling af forsinket rate" . ($rykkerFee > 0 ? " inkl. rykkergebyr" : ""),
+            $isTestPayment,
+            $newIsvAmount > 0 ? $newIsvAmount : null
+        );
+
+        debugLog([
+            'payment_uid' => $paymentUid,
+            'result' => $chargeResult,
+        ], 'CRON_RETRY_PAYMENT_RESULT');
+
+        if ($chargeResult['success']) {
+            // SUCCESS - Update payment amounts BEFORE notification (so notification has correct values)
+            $paymentsHandler->update([
+                'amount' => $totalChargeAmount,
+                'isv_amount' => $newIsvAmount,
+                'sent_to_collection' => 0,
+                'scheduled_at' => null,
+            ], ['uid' => $paymentUid]);
+
+            // Mark as completed
+            $paymentsHandler->markAsCompleted($paymentUid, $chargeResult['transaction_id'] ?? null);
+
+            // Update order totals if there was a rykker fee
+            if ($rykkerFee > 0) {
+                $newOrderAmount = (float)$order->amount + $rykkerFee;
+                $isvDifference = $newIsvAmount - $originalIsvAmount;
+                $newOrderFeeAmount = (float)($order->fee_amount ?? 0) + $isvDifference;
+
+                $ordersHandler->update([
+                    'amount' => $newOrderAmount,
+                    'fee_amount' => $newOrderFeeAmount,
+                ], ['uid' => $orderUid]);
+            }
+
+            $worker?->log("Payment $paymentUid charged successfully.");
+
+            // Trigger notification with updated payment data
+            try {
+                $updatedPayment = $paymentsHandler->get($paymentUid);
+                $user = is_object($payment->uuid) ? $payment->uuid : Methods::users()->get($payment->uuid);
+                NotificationTriggers::paymentSuccessful($updatedPayment, $user, $order);
+            } catch (\Throwable $e) {
+                errorLog(['error' => $e->getMessage()], 'retry-payment-notification-error');
+            }
+
+            return ['success' => true];
+        }
+
+        // FAILURE
+        $failureReason = $chargeResult['error'] ?? 'Charge failed';
+        return $this->handleRetryFailure($payment, $failureReason, $retryIntervalDays, $worker);
+    }
+
+    /**
+     * Handle retry failure - increment attempts, schedule next retry
+     * Always sets scheduled_at (even after max attempts) for rykker system
+     */
+    private function handleRetryFailure(object $payment, string $failureReason, int $retryIntervalDays, ?CronWorker $worker = null): array {
+        $paymentsHandler = Methods::payments();
+        $currentAttempts = ($payment->attempts ?? 0) + 1;
+
+        // Always set scheduled_at for next check (used by both retry and rykker systems)
+        $nextScheduledAt = date('Y-m-d H:i:s', strtotime("+{$retryIntervalDays} days"));
+
+        $paymentsHandler->update([
+            'attempts' => $currentAttempts,
+            'failure_reason' => $failureReason,
+            'scheduled_at' => $nextScheduledAt,
+        ], ['uid' => $payment->uid]);
+
+        $worker?->log("Payment {$payment->uid} retry failed: $failureReason (attempt $currentAttempts, next scheduled: $nextScheduledAt)");
+
+        debugLog([
+            'payment_uid' => $payment->uid,
+            'failure_reason' => $failureReason,
+            'attempts' => $currentAttempts,
+            'next_scheduled' => $nextScheduledAt,
+        ], 'CRON_RETRY_PAYMENT_FAILURE');
+
+        return ['success' => false, 'error' => $failureReason];
+    }
 }

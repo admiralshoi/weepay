@@ -699,14 +699,14 @@ Routes::group(['requiresApiLogout'], function() {
  *  ============= CRON JOB START ============
  *  =========================================
  */
-Routes::group(['requiresApiLogout', "cronJobAuth"], function() {
-    Routes::post("cron/take-payments", "api.CronjobController::takePayments");
-    Routes::post("cron/retry-payments", "api.CronjobController::retryPayments");
-    Routes::post("cron/cleanup-logs", "api.CronjobController::cleanupLogs");
-    Routes::post("cron/payment-notifications", "api.CronjobController::paymentNotifications");
-    Routes::post("cron/notification-queue", "api.CronjobController::notificationQueue");
-    Routes::post("cron/rykker-checks", "api.CronjobController::rykkerChecks");
-    Routes::post("cron/weekly-reports", "api.CronjobController::weeklyReports");
+Routes::group(['requiresApiLogout'], function() {
+    Routes::post("cron/{token}/take-payments", "api.CronjobController::takePayments");
+    Routes::post("cron/{token}/retry-payments", "api.CronjobController::retryPayments");
+    Routes::post("cron/{token}/cleanup-logs", "api.CronjobController::cleanupLogs");
+    Routes::post("cron/{token}/payment-notifications", "api.CronjobController::paymentNotifications");
+    Routes::post("cron/{token}/notification-queue", "api.CronjobController::notificationQueue");
+    Routes::post("cron/{token}/rykker-checks", "api.CronjobController::rykkerChecks");
+    Routes::post("cron/{token}/weekly-reports", "api.CronjobController::weeklyReports");
 });
 /**
  *  =========================================

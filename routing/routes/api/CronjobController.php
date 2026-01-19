@@ -10,12 +10,24 @@ use JetBrains\PhpStorm\NoReturn;
 
 class CronjobController {
 
+    /**
+     * Validate the cronjob token from route parameter
+     */
+    private static function validateToken(array $args): bool {
+        $token = $args['token'] ?? null;
+        return $token === CRONJOB_TOKEN;
+    }
+
 
     /**
      * Take scheduled payments (BNPL installments, deferred payments)
      */
     #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
-    public static function takePayments(): array {
+    public static function takePayments(array $args): array {
+        if (!self::validateToken($args)) {
+            return self::returnJsonResponse("Invalid token", 401);
+        }
+
         $worker = self::init("take_payments");
         if($worker === null) return self::returnJsonResponse("Cronjob may not be initiated.", 202);
 
@@ -30,7 +42,11 @@ class CronjobController {
      * Retry failed payments
      */
     #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
-    public static function retryPayments(): array {
+    public static function retryPayments(array $args): array {
+        if (!self::validateToken($args)) {
+            return self::returnJsonResponse("Invalid token", 401);
+        }
+
         $worker = self::init("retry_payments");
         if($worker === null) return self::returnJsonResponse("Cronjob may not be initiated.", 202);
 
@@ -45,7 +61,11 @@ class CronjobController {
      * Clean up old log files
      */
     #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
-    public static function cleanupLogs(): array {
+    public static function cleanupLogs(array $args): array {
+        if (!self::validateToken($args)) {
+            return self::returnJsonResponse("Invalid token", 401);
+        }
+
         $worker = self::init("cleanup_logs");
         if($worker === null) return self::returnJsonResponse("Cronjob may not be initiated.", 202);
 
@@ -60,7 +80,11 @@ class CronjobController {
      * Send payment notification reminders before due dates
      */
     #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
-    public static function paymentNotifications(): array {
+    public static function paymentNotifications(array $args): array {
+        if (!self::validateToken($args)) {
+            return self::returnJsonResponse("Invalid token", 401);
+        }
+
         $worker = self::init("payment_notifications");
         if($worker === null) return self::returnJsonResponse("Cronjob may not be initiated.", 202);
 
@@ -75,7 +99,11 @@ class CronjobController {
      * Process notification queue - send scheduled/delayed notifications
      */
     #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
-    public static function notificationQueue(): array {
+    public static function notificationQueue(array $args): array {
+        if (!self::validateToken($args)) {
+            return self::returnJsonResponse("Invalid token", 401);
+        }
+
         $worker = self::init("notification_queue");
         if($worker === null) return self::returnJsonResponse("Cronjob may not be initiated.", 202);
 
@@ -90,7 +118,11 @@ class CronjobController {
      * Check overdue payments and trigger rykker notifications
      */
     #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
-    public static function rykkerChecks(): array {
+    public static function rykkerChecks(array $args): array {
+        if (!self::validateToken($args)) {
+            return self::returnJsonResponse("Invalid token", 401);
+        }
+
         $worker = self::init("rykker_checks");
         if($worker === null) return self::returnJsonResponse("Cronjob may not be initiated.", 202);
 
@@ -105,7 +137,11 @@ class CronjobController {
      * Generate and send weekly reports to organisations
      */
     #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
-    public static function weeklyReports(): array {
+    public static function weeklyReports(array $args): array {
+        if (!self::validateToken($args)) {
+            return self::returnJsonResponse("Invalid token", 401);
+        }
+
         $worker = self::init("weekly_reports");
         if($worker === null) return self::returnJsonResponse("Cronjob may not be initiated.", 202);
 
