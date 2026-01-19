@@ -522,7 +522,7 @@ HTML;
     private function generateLineItemsHtml(): string {
         // If no basket items, show order total as single line
         if(isEmpty($this->basketItems) || $this->basketItems->count() === 0) {
-            $orderAmount = $this->order ? number_format($this->order->amount, 2, ',', '.') : number_format($this->payment->amount, 2, ',', '.');
+            $orderAmount = $this->order ? number_format(orderAmount($this->order), 2, ',', '.') : number_format($this->payment->amount, 2, ',', '.');
             $caption = $this->order->caption ?? 'Betaling';
             $currencySymbol = $this->getCurrencySymbol();
 

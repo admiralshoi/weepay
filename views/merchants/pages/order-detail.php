@@ -276,7 +276,7 @@ if(!isEmpty($payments)) {
                     <div class="flex-col-start" style="row-gap: .75rem;">
                         <div class="flex-row-between-center pb-3 border-bottom-card">
                             <p class="mb-0 font-14 color-gray">Total Beløb</p>
-                            <p class="mb-0 font-16 font-weight-bold"><?=number_format($order->amount, 2) . ' ' . currencySymbol($order->currency)?></p>
+                            <p class="mb-0 font-16 font-weight-bold"><?=number_format(orderAmount($order), 2) . ' ' . currencySymbol($order->currency)?></p>
                         </div>
 
                         <div class="flex-row-between-center">

@@ -210,7 +210,7 @@ $orderUid = is_object($order) ? $order->uid : ($payment->order ?? null);
 
                                 <div class="col-6 col-md-4 mb-3">
                                     <p class="mb-1 font-12 color-gray">Total Beløb</p>
-                                    <p class="mb-0 font-14 font-weight-bold"><?=number_format($order->amount ?? 0, 2, ',', '.')?> <?=htmlspecialchars($order->currency ?? 'DKK')?></p>
+                                    <p class="mb-0 font-14 font-weight-bold"><?=number_format(orderAmount($order), 2, ',', '.')?> <?=htmlspecialchars($order->currency ?? 'DKK')?></p>
                                 </div>
 
                                 <div class="col-6 col-md-4 mb-3">

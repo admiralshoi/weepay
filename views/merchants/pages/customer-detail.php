@@ -186,8 +186,8 @@ $pageTitle = "Kunde Detaljer - {$customer->full_name}";
                                         <td>
                                             <p class="mb-0 font-12"><?=$order->location->name ?? 'N/A'?></p>
                                         </td>
-                                        <td data-order="<?=$order->amount?>">
-                                            <p class="mb-0 font-12 font-weight-medium"><?=number_format($order->amount, 2) . ' ' . currencySymbol($order->currency)?></p>
+                                        <td data-order="<?=orderAmount($order)?>">
+                                            <p class="mb-0 font-12 font-weight-medium"><?=number_format(orderAmount($order), 2) . ' ' . currencySymbol($order->currency)?></p>
                                         </td>
                                         <td>
                                             <?php if($order->status === 'COMPLETED'): ?>

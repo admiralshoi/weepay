@@ -46,9 +46,9 @@ class PageController {
         $worldCountries = Methods::misc()::getCountriesLib(WORLD_COUNTRIES);
         $locationHandler = Methods::locations();
         $locations = $locationHandler->getMyLocations()->map(function ($location) {
-            $orders = Methods::orders()->getByX(['location' => $location['uid'], 'status' => 'COMPLETED'], ['amount', 'uuid']);
+            $orders = Methods::orders()->getByX(['location' => $location['uid'], 'status' => 'COMPLETED'], ['amount', 'amount_refunded', 'uuid']);
             $location['order_count'] = $orders->count();
-            $location['net_sales'] = $orders->reduce(function ($carry, $item) { return $carry + $item['amount']; }, 0);
+            $location['net_sales'] = $orders->reduce(function ($carry, $item) { return $carry + ($item['amount'] - $item['amount_refunded']); }, 0);
 
             // Calculate unique customer count
             $customerIds = [];
@@ -248,7 +248,7 @@ class PageController {
         });
 
         $totalSpent = $completedOrders->reduce(function($carry, $order) {
-            return $carry + $order['amount'];
+            return $carry + ($order['amount'] - $order['amount_refunded']);
         }, 0);
 
         $orderCount = $completedOrders->count();
@@ -325,9 +325,9 @@ class PageController {
 
 
         $orderHandler = Methods::orders();
-        $orders = $orderHandler->getByX(['location' => $location->uid, 'status' => 'COMPLETED'], ['amount', 'uuid', 'created_at']);
+        $orders = $orderHandler->getByX(['location' => $location->uid, 'status' => 'COMPLETED'], ['amount', 'amount_refunded', 'uuid', 'created_at']);
         $orderCount = $orders->count();
-        $netSales = $orders->reduce(function ($carry, $item) { return $carry + $item['amount']; }, 0);
+        $netSales = $orders->reduce(function ($carry, $item) { return $carry + ($item['amount'] - $item['amount_refunded']); }, 0);
         $ordersToday = $orders->filter(function ($item) { return date("Y-m-d", strtotime($item['created_at'])) === date('Y-m-d'); });
         $ordersTodayCount = $ordersToday->count();
         $orderAverage = Calculate::average($netSales, $orderCount);
@@ -400,9 +400,9 @@ class PageController {
 
 
         $orderHandler = Methods::orders();
-        $orders = $orderHandler->getByX(['location' => $location->uid, 'status' => 'COMPLETED'], ['amount', 'uuid', 'created_at']);
+        $orders = $orderHandler->getByX(['location' => $location->uid, 'status' => 'COMPLETED'], ['amount', 'amount_refunded', 'uuid', 'created_at']);
         $orderCount = $orders->count();
-        $netSales = $orders->reduce(function ($carry, $item) { return $carry + $item['amount']; }, 0);
+        $netSales = $orders->reduce(function ($carry, $item) { return $carry + ($item['amount'] - $item['amount_refunded']); }, 0);
         $ordersToday = $orders->filter(function ($item) { return date("Y-m-d", strtotime($item['created_at'])) === date('Y-m-d'); });
         $ordersTodayCount = $ordersToday->count();
         $orderAverage = Calculate::average($netSales, $orderCount);
@@ -606,14 +606,14 @@ class PageController {
 
         // Calculate order metrics
         $orderCount = $orders->count();
-        $grossRevenue = $orders->reduce(function ($carry, $item) { return $carry + $item['amount']; }, 0);
+        $grossRevenue = $orders->reduce(function ($carry, $item) { return $carry + ($item['amount'] - $item['amount_refunded']); }, 0);
         $totalFees = $orders->reduce(function ($carry, $item) { return $carry + $item['fee_amount']; }, 0);
         $netRevenue = $grossRevenue - $totalFees;
         $orderAverage = Calculate::average($grossRevenue, $orderCount);
 
         // Calculate previous period metrics
         $previousOrderCount = $previousOrders->count();
-        $previousGrossRevenue = $previousOrders->reduce(function ($carry, $item) { return $carry + $item['amount']; }, 0);
+        $previousGrossRevenue = $previousOrders->reduce(function ($carry, $item) { return $carry + ($item['amount'] - $item['amount_refunded']); }, 0);
         $previousOrderAverage = Calculate::average($previousGrossRevenue, $previousOrderCount);
 
         // Get unique customers count
@@ -682,7 +682,7 @@ class PageController {
         foreach ($orders->list() as $order) {
             $dateKey = date('Y-m-d', strtotime($order->created_at));
             if (isset($chartData[$dateKey])) {
-                $chartData[$dateKey]['revenue'] += $order->amount;
+                $chartData[$dateKey]['revenue'] += orderAmount($order);
                 $chartData[$dateKey]['orders']++;
             }
         }
@@ -749,7 +749,7 @@ class PageController {
 
         // Calculate KPIs
         $orderCount = $orders->count();
-        $grossRevenue = $orders->reduce(fn($c, $i) => $c + $i['amount'], 0);
+        $grossRevenue = $orders->reduce(fn($c, $i) => $c + ($i['amount'] - $i['amount_refunded']), 0);
         $totalFees = $orders->reduce(fn($c, $i) => $c + $i['fee_amount'], 0);
         $netRevenue = $grossRevenue - $totalFees;
         $orderAverage = $orderCount > 0 ? $grossRevenue / $orderCount : 0;
@@ -767,8 +767,8 @@ class PageController {
         $fullPaymentOrders = $orders->filter(fn($o) => empty($o['payment_plan']) || $o['payment_plan'] === 'full');
         $bnplCount = $bnplOrders->count();
         $fullPaymentCount = $fullPaymentOrders->count();
-        $bnplRevenue = $bnplOrders->reduce(fn($c, $i) => $c + $i['amount'], 0);
-        $fullPaymentRevenue = $fullPaymentOrders->reduce(fn($c, $i) => $c + $i['amount'], 0);
+        $bnplRevenue = $bnplOrders->reduce(fn($c, $i) => $c + ($i['amount'] - $i['amount_refunded']), 0);
+        $fullPaymentRevenue = $fullPaymentOrders->reduce(fn($c, $i) => $c + ($i['amount'] - $i['amount_refunded']), 0);
 
         // Payment status breakdown
         $allPayments = $paymentsHandler->getByX(['organisation' => __oUuid()], ['amount', 'status'], ['location' => $locationIds]);
@@ -794,7 +794,7 @@ class PageController {
             if (!isset($revenueByLocation[$locUid])) {
                 $revenueByLocation[$locUid] = ['name' => $locName, 'revenue' => 0, 'orders' => 0];
             }
-            $revenueByLocation[$locUid]['revenue'] += $order->amount;
+            $revenueByLocation[$locUid]['revenue'] += orderAmount($order);
             $revenueByLocation[$locUid]['orders']++;
         }
         usort($revenueByLocation, fn($a, $b) => $b['revenue'] <=> $a['revenue']);
@@ -811,7 +811,7 @@ class PageController {
         foreach ($orders->list() as $order) {
             $dateKey = date('Y-m-d', strtotime($order->created_at));
             if (isset($dailyData[$dateKey])) {
-                $dailyData[$dateKey]['revenue'] += $order->amount;
+                $dailyData[$dateKey]['revenue'] += orderAmount($order);
                 $dailyData[$dateKey]['orders']++;
             }
         }
@@ -824,7 +824,7 @@ class PageController {
             if (!isset($weeklyData[$weekKey])) {
                 $weeklyData[$weekKey] = ['date' => $weekLabel, 'revenue' => 0, 'orders' => 0];
             }
-            $weeklyData[$weekKey]['revenue'] += $order->amount;
+            $weeklyData[$weekKey]['revenue'] += orderAmount($order);
             $weeklyData[$weekKey]['orders']++;
         }
         ksort($weeklyData);

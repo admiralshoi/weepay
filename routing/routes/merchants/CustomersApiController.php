@@ -35,7 +35,7 @@ class CustomersApiController {
 
         // Build query to get customer stats from completed orders
         $query = $orderHandler->queryBuilder()
-            ->rawSelect('uuid, COUNT(*) as order_count, SUM(amount) as total_spent, MIN(created_at) as first_order_date, MAX(created_at) as last_order_date')
+            ->rawSelect('uuid, COUNT(*) as order_count, SUM(amount - amount_refunded) as total_spent, MIN(created_at) as first_order_date, MAX(created_at) as last_order_date')
             ->where('organisation', $organisationUid)
             ->where('status', 'COMPLETED')
             ->whereColumnIsNotNull('uuid');

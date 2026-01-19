@@ -747,7 +747,7 @@ class ApiController {
                 'organisation_uid' => $order->organisation,
                 'organisation_name' => $orgName,
                 'caption' => $order->caption,
-                'amount' => $order->amount,
+                'amount' => orderAmount($order),
                 'currency' => $order->currency,
                 'status' => $order->status,
                 'created_at' => $order->created_at,

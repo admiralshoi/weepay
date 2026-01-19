@@ -157,7 +157,7 @@ if(!isEmpty($orderPayments)) {
 
                         <div class="col-6 col-md-4 mb-3">
                             <p class="mb-1 font-13 color-gray font-weight-medium">Total Beløb</p>
-                            <p class="mb-0 font-14 font-weight-bold"><?=number_format($order->amount, 2) . ' ' . currencySymbol($order->currency)?></p>
+                            <p class="mb-0 font-14 font-weight-bold"><?=number_format(orderAmount($order), 2) . ' ' . currencySymbol($order->currency)?></p>
                         </div>
 
                         <div class="col-6 col-md-4 mb-3">

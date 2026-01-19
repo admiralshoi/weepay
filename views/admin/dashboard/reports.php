@@ -80,7 +80,7 @@ $revenueByLocation = toArray($args->revenueByLocation);
                     <div class="card-body">
                         <div class="flex-col-start">
                             <p class="color-gray font-12 font-weight-medium mb-1">Realiseret omsætning</p>
-                            <p class="font-18 font-weight-700 mb-0" id="kpi-revenue"><?=number_format($args->grossRevenue, 0, ',', '.')?> kr</p>
+                            <p class="font-18 font-weight-700 mb-0" id="kpi-revenue"><?=number_format($args->grossRevenue, 2, ',', '.')?> kr</p>
                         </div>
                     </div>
                 </div>
@@ -92,7 +92,7 @@ $revenueByLocation = toArray($args->revenueByLocation);
                     <div class="card-body">
                         <div class="flex-col-start">
                             <p class="color-gray font-12 font-weight-medium mb-1">Realiseret profit</p>
-                            <p class="font-18 font-weight-700 mb-0 color-success" id="kpi-isv"><?=number_format($args->isvAmount, 0, ',', '.')?> kr</p>
+                            <p class="font-18 font-weight-700 mb-0 color-success" id="kpi-isv"><?=number_format($args->isvAmount, 2, ',', '.')?> kr</p>
                         </div>
                     </div>
                 </div>
@@ -104,7 +104,7 @@ $revenueByLocation = toArray($args->revenueByLocation);
                     <div class="card-body">
                         <div class="flex-col-start">
                             <p class="color-gray font-12 font-weight-medium mb-1">Ordre omsætning</p>
-                            <p class="font-18 font-weight-700 mb-0" id="kpi-order-revenue"><?=number_format($args->orderRevenue ?? 0, 0, ',', '.')?> kr</p>
+                            <p class="font-18 font-weight-700 mb-0" id="kpi-order-revenue"><?=number_format($args->orderRevenue ?? 0, 2, ',', '.')?> kr</p>
                         </div>
                     </div>
                 </div>
@@ -116,7 +116,7 @@ $revenueByLocation = toArray($args->revenueByLocation);
                     <div class="card-body">
                         <div class="flex-col-start">
                             <p class="color-gray font-12 font-weight-medium mb-1">Ordre profit</p>
-                            <p class="font-18 font-weight-700 mb-0 color-success" id="kpi-order-isv"><?=number_format($args->orderIsv ?? 0, 0, ',', '.')?> kr</p>
+                            <p class="font-18 font-weight-700 mb-0 color-success" id="kpi-order-isv"><?=number_format($args->orderIsv ?? 0, 2, ',', '.')?> kr</p>
                         </div>
                     </div>
                 </div>
@@ -155,7 +155,7 @@ $revenueByLocation = toArray($args->revenueByLocation);
                     <div class="card-body">
                         <div class="flex-col-start">
                             <p class="color-gray font-12 font-weight-medium mb-1">Gns. ordre</p>
-                            <p class="font-18 font-weight-700 mb-0" id="kpi-average"><?=number_format($args->orderAverage, 0, ',', '.')?> kr</p>
+                            <p class="font-18 font-weight-700 mb-0" id="kpi-average"><?=number_format($args->orderAverage, 2, ',', '.')?> kr</p>
                         </div>
                     </div>
                 </div>
@@ -257,7 +257,7 @@ $revenueByLocation = toArray($args->revenueByLocation);
                                                 </span>
                                             </td>
                                             <td class="text-end font-weight-bold"><?=$paymentsByStatus['COMPLETED']['count'] ?? 0?></td>
-                                            <td class="text-end font-weight-bold"><?=number_format($paymentsByStatus['COMPLETED']['amount'] ?? 0, 0, ',', '.')?> kr</td>
+                                            <td class="text-end font-weight-bold"><?=number_format($paymentsByStatus['COMPLETED']['amount'] ?? 0, 2, ',', '.')?> kr</td>
                                         </tr>
                                         <tr>
                                             <td>
@@ -267,7 +267,7 @@ $revenueByLocation = toArray($args->revenueByLocation);
                                                 </span>
                                             </td>
                                             <td class="text-end font-weight-bold"><?=$paymentsByStatus['SCHEDULED']['count'] ?? 0?></td>
-                                            <td class="text-end font-weight-bold"><?=number_format($paymentsByStatus['SCHEDULED']['amount'] ?? 0, 0, ',', '.')?> kr</td>
+                                            <td class="text-end font-weight-bold"><?=number_format($paymentsByStatus['SCHEDULED']['amount'] ?? 0, 2, ',', '.')?> kr</td>
                                         </tr>
                                         <tr>
                                             <td>
@@ -277,7 +277,7 @@ $revenueByLocation = toArray($args->revenueByLocation);
                                                 </span>
                                             </td>
                                             <td class="text-end font-weight-bold"><?=$paymentsByStatus['PENDING']['count'] ?? 0?></td>
-                                            <td class="text-end font-weight-bold"><?=number_format($paymentsByStatus['PENDING']['amount'] ?? 0, 0, ',', '.')?> kr</td>
+                                            <td class="text-end font-weight-bold"><?=number_format($paymentsByStatus['PENDING']['amount'] ?? 0, 2, ',', '.')?> kr</td>
                                         </tr>
                                         <tr>
                                             <td>
@@ -287,7 +287,7 @@ $revenueByLocation = toArray($args->revenueByLocation);
                                                 </span>
                                             </td>
                                             <td class="text-end font-weight-bold"><?=$paymentsByStatus['PAST_DUE']['count'] ?? 0?></td>
-                                            <td class="text-end font-weight-bold"><?=number_format($paymentsByStatus['PAST_DUE']['amount'] ?? 0, 0, ',', '.')?> kr</td>
+                                            <td class="text-end font-weight-bold"><?=number_format($paymentsByStatus['PAST_DUE']['amount'] ?? 0, 2, ',', '.')?> kr</td>
                                         </tr>
                                         <tr>
                                             <td>
@@ -297,7 +297,7 @@ $revenueByLocation = toArray($args->revenueByLocation);
                                                 </span>
                                             </td>
                                             <td class="text-end font-weight-bold"><?=$paymentsByStatus['FAILED']['count'] ?? 0?></td>
-                                            <td class="text-end font-weight-bold"><?=number_format($paymentsByStatus['FAILED']['amount'] ?? 0, 0, ',', '.')?> kr</td>
+                                            <td class="text-end font-weight-bold"><?=number_format($paymentsByStatus['FAILED']['amount'] ?? 0, 2, ',', '.')?> kr</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -351,8 +351,8 @@ $revenueByLocation = toArray($args->revenueByLocation);
                                                     <a href="<?=__url(Links::$admin->organisationDetail($org->uid))?>" class="color-blue text-decoration-none" title="<?=htmlspecialchars($org->name)?>"><?=htmlspecialchars(mb_substr($org->name, 0, 25, 'UTF-8'))?></a>
                                                 </td>
                                                 <td class="text-end"><?=$org->payments?></td>
-                                                <td class="text-end font-weight-bold"><?=number_format($org->revenue, 0, ',', '.')?> kr</td>
-                                                <td class="text-end color-success"><?=number_format($org->isv, 0, ',', '.')?> kr</td>
+                                                <td class="text-end font-weight-bold"><?=number_format($org->revenue, 2, ',', '.')?> kr</td>
+                                                <td class="text-end color-success"><?=number_format($org->isv, 2, ',', '.')?> kr</td>
                                             </tr>
                                             <?php endforeach; ?>
                                         </tbody>
@@ -408,8 +408,8 @@ $revenueByLocation = toArray($args->revenueByLocation);
                                                     <a href="<?=__url(Links::$admin->locationDetail($loc->uid))?>" class="color-blue text-decoration-none" title="<?=htmlspecialchars($loc->name)?>"><?=htmlspecialchars(mb_substr($loc->name, 0, 25, 'UTF-8'))?></a>
                                                 </td>
                                                 <td class="text-end"><?=$loc->payments?></td>
-                                                <td class="text-end font-weight-bold"><?=number_format($loc->revenue, 0, ',', '.')?> kr</td>
-                                                <td class="text-end color-success"><?=number_format($loc->isv, 0, ',', '.')?> kr</td>
+                                                <td class="text-end font-weight-bold"><?=number_format($loc->revenue, 2, ',', '.')?> kr</td>
+                                                <td class="text-end color-success"><?=number_format($loc->isv, 2, ',', '.')?> kr</td>
                                             </tr>
                                             <?php endforeach; ?>
                                         </tbody>
@@ -452,12 +452,14 @@ $revenueByLocation = toArray($args->revenueByLocation);
     // Date range picker
     var $dateRange = $('#reports-daterange');
     var $dateRangeClear = $('#reports-daterange-clear');
-    var startDate = '<?=$args->startDate?>';
-    var endDate = '<?=$args->endDate?>';
+    var startDate = '<?=$args->queryStart?>';
+    var endDate = '<?=$args->queryEnd?>';
+    var displayStart = '<?=$args->startDate?>';
+    var displayEnd = '<?=$args->endDate?>';
 
-    // Set initial value if dates are set
+    // Set initial value from controller dates
+    $dateRange.val(moment(displayStart).format('DD/MM/YYYY') + ' - ' + moment(displayEnd).format('DD/MM/YYYY'));
     if (startDate && endDate) {
-        $dateRange.val(moment(startDate).format('DD/MM/YYYY') + ' - ' + moment(endDate).format('DD/MM/YYYY'));
         $dateRangeClear.removeClass('d-none');
     }
 

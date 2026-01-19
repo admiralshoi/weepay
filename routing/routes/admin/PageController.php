@@ -261,13 +261,13 @@ class PageController {
 
         // Get order statistics
         $totalOrders = Methods::orders()->count(['uuid' => $userId]);
-        $totalSpent = Methods::orders()->queryBuilder()->where('uuid', $userId)->where('status', 'COMPLETED')->sum('amount') ?? 0;
+        $totalSpent = Methods::orders()->queryBuilder()->where('uuid', $userId)->where('status', 'COMPLETED')->rawSelect('SUM(amount - amount_refunded) as total')->first()->total ?? 0;
 
         // Get top 3 locations for consumers (by order count)
         $topLocations = [];
         if ((int)$user->access_level === 1) { // Consumer
             $topLocationsRaw = Orders::queryBuilder()
-                ->rawSelect('location, COUNT(*) as order_count, SUM(amount) as total_amount')
+                ->rawSelect('location, COUNT(*) as order_count, SUM(amount - amount_refunded) as total_amount')
                 ->where('uuid', $userId)
                 ->groupBy('location')
                 ->order('order_count', 'DESC')
@@ -594,7 +594,7 @@ class PageController {
             ->whereTimeAfter('created_at', $startTimestamp, '>=')
             ->whereTimeBefore('created_at', $endTimestamp, '<=');
 
-        $orderRevenue = (clone $orderQuery)->sum('amount') ?? 0;
+        $orderRevenue = (clone $orderQuery)->rawSelect('SUM(amount - amount_refunded) as total')->first()->total ?? 0;
         $orderIsv = (clone $orderQuery)->sum('fee_amount') ?? 0;
         $totalOrders = (clone $orderQuery)->count();
 
@@ -723,7 +723,7 @@ class PageController {
             ->whereTimeAfter('created_at', $startTimestamp, '>=')
             ->whereTimeBefore('created_at', $endTimestamp, '<=');
 
-        $orderRevenue = (clone $orderQuery)->sum('amount') ?? 0;
+        $orderRevenue = (clone $orderQuery)->rawSelect('SUM(amount - amount_refunded) as total')->first()->total ?? 0;
         $orderIsv = (clone $orderQuery)->sum('fee_amount') ?? 0;
         $totalOrders = (clone $orderQuery)->count();
 
@@ -1184,7 +1184,7 @@ class PageController {
             ->whereTimeAfter('created_at', $startTimestamp, '>=')
             ->whereTimeBefore('created_at', $endTimestamp, '<=');
 
-        $totalOrderRevenue = (clone $orderQuery)->sum('amount') ?? 0;
+        $totalOrderRevenue = (clone $orderQuery)->rawSelect('SUM(amount - amount_refunded) as total')->first()->total ?? 0;
         $totalOrderIsv = (clone $orderQuery)->sum('fee_amount') ?? 0;
         $totalOrdersCount = (clone $orderQuery)->count();
         $completedOrdersCount = (clone $orderQuery)->where('status', 'COMPLETED')->count();
@@ -1342,7 +1342,7 @@ class PageController {
             if (!isset($ordersByOrg[$orgId])) {
                 $ordersByOrg[$orgId] = ['uid' => $orgId, 'name' => $orgName, 'revenue' => 0, 'orders' => 0];
             }
-            $ordersByOrg[$orgId]['revenue'] += $order->amount;
+            $ordersByOrg[$orgId]['revenue'] += orderAmount($order);
             $ordersByOrg[$orgId]['orders']++;
         }
         usort($ordersByOrg, fn($a, $b) => $b['orders'] <=> $a['orders']);
@@ -1372,7 +1372,7 @@ class PageController {
             if (!isset($ordersByLoc[$locId])) {
                 $ordersByLoc[$locId] = ['uid' => $locId, 'name' => $locName, 'revenue' => 0, 'orders' => 0];
             }
-            $ordersByLoc[$locId]['revenue'] += $order->amount;
+            $ordersByLoc[$locId]['revenue'] += orderAmount($order);
             $ordersByLoc[$locId]['orders']++;
         }
         usort($ordersByLoc, fn($a, $b) => $b['orders'] <=> $a['orders']);
@@ -1402,7 +1402,7 @@ class PageController {
             if (!isset($ordersByCustomer[$userId])) {
                 $ordersByCustomer[$userId] = ['uid' => $userId, 'name' => $userName, 'spent' => 0, 'orders' => 0];
             }
-            $ordersByCustomer[$userId]['spent'] += $order->amount;
+            $ordersByCustomer[$userId]['spent'] += orderAmount($order);
             $ordersByCustomer[$userId]['orders']++;
         }
         usort($ordersByCustomer, fn($a, $b) => $b['orders'] <=> $a['orders']);
@@ -1460,14 +1460,14 @@ class PageController {
 
     public static function reports(array $args): mixed {
         // Date range from query params (default: last 30 days)
-        $startDate = $args['GET']['start'] ?? date('Y-m-d', strtotime('-30 days'));
-        $endDate = $args['GET']['end'] ?? date('Y-m-d');
+        $startDate = $args['start'] ?? date('Y-m-d', strtotime('-30 days'));
+        $endDate = $args['end'] ?? date('Y-m-d');
         $startTimestamp = strtotime($startDate . ' 00:00:00');
         $endTimestamp = strtotime($endDate . ' 23:59:59');
 
         // Get filter options (treat 'all' as no filter)
-        $organisationId = (!empty($args['GET']['organisation']) && $args['GET']['organisation'] !== 'all') ? $args['GET']['organisation'] : null;
-        $locationId = (!empty($args['GET']['location']) && $args['GET']['location'] !== 'all') ? $args['GET']['location'] : null;
+        $organisationId = (!empty($args['organisation']) && $args['organisation'] !== 'all') ? $args['organisation'] : null;
+        $locationId = (!empty($args['location']) && $args['location'] !== 'all') ? $args['location'] : null;
 
         // Build base queries
         $paymentQuery = Methods::payments()->queryBuilder()
@@ -1497,8 +1497,8 @@ class PageController {
         $orderAverage = $orderCount > 0 ? $grossRevenue / $orderCount : 0;
 
         // Order-specific KPIs (total order amounts and ISV from orders table)
-        $orderRevenue = (clone $orderQuery)->sum('amount') ?? 0;
-        $orderIsv = (clone $orderQuery)->sum('isv_amount') ?? 0;
+        $orderRevenue = (clone $orderQuery)->rawSelect('SUM(amount - amount_refunded) as total')->first()->total ?? 0;
+        $orderIsv = (clone $orderQuery)->sum('fee_amount') ?? 0;
 
         // Get unique customers
         $payments = Methods::payments()->queryGetAll($paymentQuery->select(['uuid']));
@@ -1651,6 +1651,8 @@ class PageController {
 
         $args['startDate'] = $startDate;
         $args['endDate'] = $endDate;
+        $args['queryStart'] = $args['start'] ?? '';
+        $args['queryEnd'] = $args['end'] ?? '';
         $args['grossRevenue'] = $grossRevenue;
         $args['isvAmount'] = $isvAmount;
         $args['netRevenue'] = $grossRevenue - $isvAmount; // For merchants this is net, for admin ISV is net

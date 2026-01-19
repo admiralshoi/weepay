@@ -146,7 +146,7 @@ class OrdersApiController {
         $transformedOrders = [];
         foreach($orders->list() as $order) {
             $paidAmount = $paidAmounts[$order->uid] ?? 0;
-            $outstanding = $order->amount - $paidAmount;
+            $outstanding = orderAmount($order) - $paidAmount;
 
             // Get customer info - uuid is already resolved to object via foreign key
             $customerName = 'Ukendt';
@@ -166,7 +166,7 @@ class OrdersApiController {
                 'customer_name' => $customerName,
                 'customer_email' => $customerEmail,
                 'customer_uid' => $customerUid,
-                'amount' => (float)$order->amount,
+                'amount' => orderAmount($order),
                 'paid_amount' => $paidAmount,
                 'outstanding' => $outstanding,
                 'currency' => $order->currency,
@@ -319,7 +319,7 @@ class OrdersApiController {
         $transformedOrders = [];
         foreach($orders->list() as $order) {
             $paidAmount = $paidAmounts[$order->uid] ?? 0;
-            $outstanding = $order->amount - $paidAmount;
+            $outstanding = orderAmount($order) - $paidAmount;
 
             $customerName = 'Ukendt';
             $customerEmail = '';
@@ -339,7 +339,7 @@ class OrdersApiController {
                 'customer_name' => $customerName,
                 'customer_email' => $customerEmail,
                 'customer_uid' => $customerUid,
-                'amount' => (float)$order->amount,
+                'amount' => orderAmount($order),
                 'paid_amount' => $paidAmount,
                 'outstanding' => $outstanding,
                 'currency' => $order->currency,

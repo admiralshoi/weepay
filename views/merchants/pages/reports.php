@@ -62,7 +62,7 @@ $paymentsByStatus = toArray($args->paymentsByStatus);
                     <div class="flex-row-between-center flex-nowrap g-075">
                         <div class="flex-col-start rg-025 flex-1 min-width-0">
                             <p class="color-gray font-12 font-weight-medium text-truncate">Omsætning</p>
-                            <p class="font-18 font-weight-700"><?=number_format($args->grossRevenue, 0, ',', '.')?> kr</p>
+                            <p class="font-18 font-weight-700"><?=number_format($args->grossRevenue, 2, ',', '.')?> kr</p>
                         </div>
                         <div style="width: 40px; height: 40px; min-width: 40px;" class="bg-blue border-radius-10px flex-row-center-center">
                             <i class="mdi mdi-currency-usd color-white font-22"></i>
@@ -79,7 +79,7 @@ $paymentsByStatus = toArray($args->paymentsByStatus);
                     <div class="flex-row-between-center flex-nowrap g-075">
                         <div class="flex-col-start rg-025 flex-1 min-width-0">
                             <p class="color-gray font-12 font-weight-medium text-truncate">Netto</p>
-                            <p class="font-18 font-weight-700"><?=number_format($args->netRevenue, 0, ',', '.')?> kr</p>
+                            <p class="font-18 font-weight-700"><?=number_format($args->netRevenue, 2, ',', '.')?> kr</p>
                         </div>
                         <div style="width: 40px; height: 40px; min-width: 40px;" class="bg-green border-radius-10px flex-row-center-center">
                             <i class="mdi mdi-chart-line color-white font-22"></i>
@@ -113,7 +113,7 @@ $paymentsByStatus = toArray($args->paymentsByStatus);
                     <div class="flex-row-between-center flex-nowrap g-075">
                         <div class="flex-col-start rg-025 flex-1 min-width-0">
                             <p class="color-gray font-12 font-weight-medium text-truncate">Gns. ordre</p>
-                            <p class="font-18 font-weight-700"><?=number_format($args->orderAverage, 0, ',', '.')?> kr</p>
+                            <p class="font-18 font-weight-700"><?=number_format($args->orderAverage, 2, ',', '.')?> kr</p>
                         </div>
                         <div style="width: 40px; height: 40px; min-width: 40px;" class="bg-pee-yellow border-radius-10px flex-row-center-center">
                             <i class="mdi mdi-trending-up color-white font-22"></i>
@@ -261,7 +261,7 @@ $paymentsByStatus = toArray($args->paymentsByStatus);
                                             </span>
                                         </td>
                                         <td class="text-end font-weight-bold"><?=$paymentsByStatus['COMPLETED']['count'] ?? 0?></td>
-                                        <td class="text-end font-weight-bold"><?=number_format($paymentsByStatus['COMPLETED']['amount'] ?? 0, 0, ',', '.')?> kr</td>
+                                        <td class="text-end font-weight-bold"><?=number_format($paymentsByStatus['COMPLETED']['amount'] ?? 0, 2, ',', '.')?> kr</td>
                                     </tr>
                                     <tr>
                                         <td>
@@ -271,7 +271,7 @@ $paymentsByStatus = toArray($args->paymentsByStatus);
                                             </span>
                                         </td>
                                         <td class="text-end font-weight-bold"><?=$paymentsByStatus['SCHEDULED']['count'] ?? 0?></td>
-                                        <td class="text-end font-weight-bold"><?=number_format($paymentsByStatus['SCHEDULED']['amount'] ?? 0, 0, ',', '.')?> kr</td>
+                                        <td class="text-end font-weight-bold"><?=number_format($paymentsByStatus['SCHEDULED']['amount'] ?? 0, 2, ',', '.')?> kr</td>
                                     </tr>
                                     <tr>
                                         <td>
@@ -281,7 +281,7 @@ $paymentsByStatus = toArray($args->paymentsByStatus);
                                             </span>
                                         </td>
                                         <td class="text-end font-weight-bold"><?=$paymentsByStatus['PAST_DUE']['count'] ?? 0?></td>
-                                        <td class="text-end font-weight-bold"><?=number_format($paymentsByStatus['PAST_DUE']['amount'] ?? 0, 0, ',', '.')?> kr</td>
+                                        <td class="text-end font-weight-bold"><?=number_format($paymentsByStatus['PAST_DUE']['amount'] ?? 0, 2, ',', '.')?> kr</td>
                                     </tr>
                                     <tr>
                                         <td>
@@ -291,7 +291,7 @@ $paymentsByStatus = toArray($args->paymentsByStatus);
                                             </span>
                                         </td>
                                         <td class="text-end font-weight-bold"><?=$paymentsByStatus['FAILED']['count'] ?? 0?></td>
-                                        <td class="text-end font-weight-bold"><?=number_format($paymentsByStatus['FAILED']['amount'] ?? 0, 0, ',', '.')?> kr</td>
+                                        <td class="text-end font-weight-bold"><?=number_format($paymentsByStatus['FAILED']['amount'] ?? 0, 2, ',', '.')?> kr</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -342,7 +342,7 @@ $paymentsByStatus = toArray($args->paymentsByStatus);
                                         <tr>
                                             <td class="font-weight-medium"><?=htmlspecialchars($location->name)?></td>
                                             <td class="text-end"><?=$location->orders?></td>
-                                            <td class="text-end font-weight-bold"><?=number_format($location->revenue, 0, ',', '.')?> kr</td>
+                                            <td class="text-end font-weight-bold"><?=number_format($location->revenue, 2, ',', '.')?> kr</td>
                                         </tr>
                                         <?php endforeach; ?>
                                     </tbody>

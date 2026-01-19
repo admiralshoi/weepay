@@ -97,7 +97,7 @@ class ReportExporter {
             $customerEmail = is_object($order->uuid) ? ($order->uuid->email ?? '') : '';
             $locationName = is_object($order->location) ? $order->location->name : 'Ukendt';
             $feeAmount = $order->fee_amount ?? 0;
-            $netAmount = $order->amount - $feeAmount;
+            $netAmount = orderAmount($order) - $feeAmount;
 
             fputcsv($handle, [
                 $order->uid,
@@ -105,7 +105,7 @@ class ReportExporter {
                 $customerName,
                 $customerEmail,
                 $locationName,
-                number_format($order->amount, 2, ',', '.'),
+                number_format(orderAmount($order), 2, ',', '.'),
                 number_format($feeAmount, 2, ',', '.'),
                 number_format($netAmount, 2, ',', '.'),
                 $order->currency ?? 'DKK',
@@ -187,7 +187,7 @@ class ReportExporter {
         fputcsv($handle, [], ';');
         fputcsv($handle, ["'=== OPSUMMERING ==="], ';');
 
-        $totalOrderAmount = $orders->reduce(fn($c, $i) => $c + $i['amount'], 0);
+        $totalOrderAmount = $orders->reduce(fn($c, $i) => $c + ($i['amount'] - $i['amount_refunded']), 0);
         $totalOrderIsv = $orders->reduce(fn($c, $i) => $c + ($i['fee_amount'] ?? 0), 0);
         $totalPaid = $payments->reduce(fn($c, $i) => $c + $i['amount'], 0);
         $totalPaymentIsv = $payments->reduce(fn($c, $i) => $c + ($i['isv_amount'] ?? 0), 0);
@@ -222,7 +222,7 @@ class ReportExporter {
 
         // Calculate KPIs
         $orderCount = $orders->count();
-        $grossRevenue = $orders->reduce(fn($c, $i) => $c + $i['amount'], 0);
+        $grossRevenue = $orders->reduce(fn($c, $i) => $c + ($i['amount'] - $i['amount_refunded']), 0);
         $totalFees = $orders->reduce(fn($c, $i) => $c + ($i['fee_amount'] ?? 0), 0);
         $netRevenue = $grossRevenue - $totalFees;
         $orderAverage = $orderCount > 0 ? $grossRevenue / $orderCount : 0;
@@ -264,7 +264,7 @@ class ReportExporter {
             if (!isset($revenueByLocation[$locUid])) {
                 $revenueByLocation[$locUid] = ['name' => $locName, 'revenue' => 0, 'orders' => 0, 'fees' => 0];
             }
-            $revenueByLocation[$locUid]['revenue'] += $order->amount;
+            $revenueByLocation[$locUid]['revenue'] += orderAmount($order);
             $revenueByLocation[$locUid]['orders']++;
             $revenueByLocation[$locUid]['fees'] += $order->fee_amount ?? 0;
         }
@@ -376,7 +376,7 @@ class ReportExporter {
                 ];
             }
 
-            $customers[$customerId]['total_order_amount'] += $order->amount;
+            $customers[$customerId]['total_order_amount'] += orderAmount($order);
             $customers[$customerId]['total_order_isv'] += $order->fee_amount ?? 0;
             $customers[$customerId]['order_count']++;
         }

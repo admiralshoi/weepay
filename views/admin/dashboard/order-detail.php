@@ -102,7 +102,7 @@ $providerName = is_object($order->provider) ? ($order->provider->name ?? '-') : 
                         <h1 class="mb-0 font-24 font-weight-bold"><?=htmlspecialchars($order->uid ?? 'Unavngivet')?></h1>
                         <div class="flex-row-start flex-align-center" style="gap: .5rem;">
                             <span class="<?=$statusInfo['class']?> font-11"><?=$statusInfo['label']?></span>
-                            <span class="font-12 color-gray"><?=number_format($order->amount, 2, ',', '.')?> <?=htmlspecialchars($order->currency ?? 'DKK')?></span>
+                            <span class="font-12 color-gray"><?=number_format(orderAmount($order), 2, ',', '.')?> <?=htmlspecialchars($order->currency ?? 'DKK')?></span>
                         </div>
                     </div>
                 </div>
@@ -132,7 +132,7 @@ $providerName = is_object($order->provider) ? ($order->provider->name ?? '-') : 
                             <div class="flex-row-between-center flex-nowrap g-075">
                                 <div class="flex-col-start rg-025 flex-1 min-width-0">
                                     <p class="mb-0 font-12 color-gray text-wrap">Total beløb</p>
-                                    <p class="mb-0 font-18 font-weight-bold"><?=number_format($order->amount, 2, ',', '.')?> kr</p>
+                                    <p class="mb-0 font-18 font-weight-bold"><?=number_format(orderAmount($order), 2, ',', '.')?> kr</p>
                                 </div>
                                 <div style="width: 40px; height: 40px; min-width: 40px;" class="bg-blue border-radius-10px flex-row-center-center">
                                     <i class="mdi mdi-cash-multiple color-white font-22"></i>

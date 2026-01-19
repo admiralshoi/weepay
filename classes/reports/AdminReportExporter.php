@@ -132,7 +132,7 @@ class AdminReportExporter {
         $totalPayments = $payments->count();
 
         // Order stats (expected/generated)
-        $totalOrderRevenue = $orders->reduce(fn($c, $i) => $c + $i['amount'], 0);
+        $totalOrderRevenue = $orders->reduce(fn($c, $i) => $c + ($i['amount'] - $i['amount_refunded']), 0);
         $totalOrderIsv = $orders->reduce(fn($c, $i) => $c + ($i['fee_amount'] ?? 0), 0);
         $totalOrders = $orders->count();
 
@@ -280,7 +280,7 @@ class AdminReportExporter {
         $paymentCount = $payments->count();
 
         // Order KPIs (expected/generated)
-        $orderRevenue = $orders->reduce(fn($c, $i) => $c + $i['amount'], 0);
+        $orderRevenue = $orders->reduce(fn($c, $i) => $c + ($i['amount'] - $i['amount_refunded']), 0);
         $orderIsv = $orders->reduce(fn($c, $i) => $c + ($i['fee_amount'] ?? 0), 0);
         $orderCount = $orders->count();
         $orderAverage = $orderCount > 0 ? $orderRevenue / $orderCount : 0;
