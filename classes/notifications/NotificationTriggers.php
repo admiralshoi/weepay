@@ -2,6 +2,7 @@
 
 namespace classes\notifications;
 
+use classes\enumerations\Links;
 use classes\Methods;
 use Database\model\Users;
 use Database\model\Orders;
@@ -31,7 +32,7 @@ class NotificationTriggers {
         return NotificationService::trigger('user.registered', [
             'user' => $userData,
             'app' => self::getAppContext(),
-            'dashboard_link' => HOST . 'dashboard',
+            'dashboard_link' => __url(Links::$consumer->dashboard),
             'email_title' => 'Velkommen',
         ]);
     }
@@ -45,7 +46,7 @@ class NotificationTriggers {
         return NotificationService::trigger('user.email_verified', [
             'user' => $userData,
             'app' => self::getAppContext(),
-            'dashboard_link' => HOST . 'dashboard',
+            'dashboard_link' => __url(Links::$consumer->dashboard),
             'email_title' => 'Email bekræftet',
         ]);
     }
@@ -124,6 +125,21 @@ class NotificationTriggers {
     }
 
     /**
+     * Trigger when a payment becomes past due (after max retry attempts)
+     *
+     * @param object|array $payment The payment that is past due
+     * @param object|null $user The customer
+     * @param object|null $order The order
+     * @param string|null $reason The reason for failure
+     */
+    public static function paymentPastDue(object|array $payment, ?object $user = null, ?object $order = null, ?string $reason = null): bool {
+        $context = self::buildPaymentContext($payment, $user, $order);
+        $context['failure_reason'] = $reason ?? 'Betalingen kunne ikke gennemføres';
+        $context['email_title'] = 'Betaling forsinket';
+        return NotificationService::trigger('payment.past_due', $context);
+    }
+
+    /**
      * Trigger when a payment is refunded
      *
      * @param object|array $payment The payment being refunded
@@ -172,7 +188,7 @@ class NotificationTriggers {
                 if (is_object($orgValue)) {
                     $context['organisation'] = self::normalizeData($orgValue);
                 } else {
-                    $org = Organisations::where('uid', $orgValue)->first();
+                    $org = Methods::organisations()->get($orgValue);
                     if ($org) $context['organisation'] = self::normalizeData($org);
                 }
             }
@@ -188,7 +204,7 @@ class NotificationTriggers {
                 if (is_object($locValue)) {
                     $context['location'] = self::normalizeData($locValue);
                 } else {
-                    $loc = Locations::where('uid', $locValue)->first();
+                    $loc = Methods::locations()->get($locValue);
                     if ($loc) $context['location'] = self::normalizeData($loc);
                 }
             }
@@ -280,7 +296,7 @@ class NotificationTriggers {
             if (is_object($orgValue)) {
                 $context['organisation'] = self::normalizeData($orgValue);
             } else {
-                $org = Organisations::where('uid', $orgValue)->first();
+                $org = Methods::organisations()->get($orgValue);
                 if ($org) $context['organisation'] = self::normalizeData($org);
             }
         }
@@ -294,7 +310,7 @@ class NotificationTriggers {
             if (is_object($locValue)) {
                 $locationData = self::normalizeData($locValue);
             } else {
-                $loc = Locations::where('uid', $locValue)->first();
+                $loc = Methods::locations()->get($locValue);
                 if ($loc) $locationData = self::normalizeData($loc);
             }
         }
@@ -310,9 +326,9 @@ class NotificationTriggers {
         $context['refund_datetime'] = date('d.m.Y H:i');
 
         // Add links
-        $context['order_link'] = HOST . 'orders/' . ($orderData['uid'] ?? '');
-        $context['receipt_link'] = HOST . 'receipt/' . ($orderData['uid'] ?? '');
-        $context['dashboard_link'] = HOST . 'dashboard';
+        $context['order_link'] = __url(Links::$consumer->orderDetail($orderData['uid'] ?? ''));
+        $context['receipt_link'] = __url(Links::$consumer->orderDetail($orderData['uid'] ?? ''));
+        $context['dashboard_link'] = __url(Links::$consumer->dashboard);
 
         // Build payments list HTML for BNPL orders
         if ($payments && count($payments) > 0) {
@@ -410,6 +426,106 @@ class NotificationTriggers {
         return NotificationService::trigger('payment.overdue_reminder', $context);
     }
 
+    /**
+     * Trigger rykker (dunning notice) for overdue payment
+     *
+     * @param object|array $payment Payment data
+     * @param int $rykkerLevel Rykker level (1, 2, or 3)
+     * @param float $fee Fee amount for this rykker
+     * @param object|null $user User object (resolved from payment if not provided)
+     * @return bool Success status
+     */
+    public static function paymentRykker(object|array $payment, int $rykkerLevel, float $fee = 0, ?object $user = null): bool {
+        $paymentData = self::normalizeData($payment);
+
+        debugLog([
+            'payment_uid' => $paymentData['uid'] ?? null,
+            'rykker_level' => $rykkerLevel,
+            'fee' => $fee,
+            'user_provided' => !isEmpty($user),
+        ], 'NOTIFICATION_RYKKER_START');
+
+        // Build context using existing helper
+        $daysOverdue = 0;
+        if (!empty($paymentData['due_date'])) {
+            $dueTimestamp = is_numeric($paymentData['due_date']) ? $paymentData['due_date'] : strtotime($paymentData['due_date']);
+            $daysOverdue = max(0, (int) floor((time() - $dueTimestamp) / 86400));
+        }
+
+        $context = self::buildPaymentReminderContext($payment, $user, 0, $daysOverdue);
+
+        // Add rykker-specific context
+        $context['rykker'] = [
+            'level' => $rykkerLevel,
+            'fee' => $fee,
+            'formatted_fee' => number_format($fee, 2, ',', '.') . ' ' . ($paymentData['currency'] ?? 'DKK'),
+            'total_fees' => (float)($paymentData['rykker_fee'] ?? 0) + $fee,
+            'formatted_total_fees' => number_format((float)($paymentData['rykker_fee'] ?? 0) + $fee, 2, ',', '.') . ' ' . ($paymentData['currency'] ?? 'DKK'),
+        ];
+
+        // Calculate total due (payment amount + rykker fees)
+        $paymentAmount = (float)($paymentData['amount'] ?? 0);
+        $totalRykkerFees = (float)($paymentData['rykker_fee'] ?? 0) + $fee;
+        $totalDue = $paymentAmount + $totalRykkerFees;
+        $context['payment']['total_due'] = $totalDue;
+        $context['payment']['formatted_total_due'] = number_format($totalDue, 2, ',', '.') . ' ' . ($paymentData['currency'] ?? 'DKK');
+
+        // Override payment_link to point to consumer payments page
+        $context['payment_link'] = __url(Links::$consumer->payments);
+
+        // Set appropriate email title and breakpoint based on level
+        $breakpoint = match($rykkerLevel) {
+            1 => 'payment.rykker_1',
+            2 => 'payment.rykker_2',
+            default => 'payment.rykker_final',
+        };
+
+        $context['email_title'] = match($rykkerLevel) {
+            1 => '1. rykker - Forfalden betaling',
+            2 => '2. rykker - Forfalden betaling',
+            default => 'Sidste rykker - Inkassovarsel',
+        };
+
+        debugLog([
+            'payment_uid' => $paymentData['uid'] ?? null,
+            'breakpoint' => $breakpoint,
+            'email_title' => $context['email_title'],
+            'days_overdue' => $daysOverdue,
+            'payment_amount' => $paymentAmount,
+            'total_rykker_fees' => $totalRykkerFees,
+            'total_due' => $totalDue,
+            'user_email' => $context['user']['email'] ?? null,
+            'user_name' => $context['user']['full_name'] ?? null,
+        ], 'NOTIFICATION_RYKKER_CONTEXT');
+
+        $result = NotificationService::trigger($breakpoint, $context);
+
+        debugLog([
+            'payment_uid' => $paymentData['uid'] ?? null,
+            'breakpoint' => $breakpoint,
+            'trigger_result' => $result,
+        ], 'NOTIFICATION_RYKKER_RESULT');
+
+        return $result;
+    }
+
+    /**
+     * Trigger notification when rykker is cancelled/reset by merchant or admin
+     */
+    public static function paymentRykkerCancelled(object|array $payment, ?object $user = null): bool {
+        $paymentData = self::normalizeData($payment);
+
+        // Build context using existing helper
+        $context = self::buildPaymentReminderContext($payment, $user, 0, 0);
+
+        $context['email_title'] = 'Rykker annulleret';
+
+        // Override payment_link to point to consumer payments page
+        $context['payment_link'] = __url(Links::$consumer->payments);
+
+        return NotificationService::trigger('payment.rykker_cancelled', $context);
+    }
+
     // =====================================================
     // ORGANISATION EVENTS
     // =====================================================
@@ -428,7 +544,7 @@ class NotificationTriggers {
             'organisation' => $orgData,
             'invitee_email' => $inviteeEmail,
             'recipient_email' => $inviteeEmail,
-            'invite_link' => $inviteLink ?? HOST . 'invite',
+            'invite_link' => $inviteLink ?? __url(Links::$app->auth->merchantLogin),
             'app' => self::getAppContext(),
             'email_title' => 'Invitation',
         ];
@@ -452,7 +568,7 @@ class NotificationTriggers {
             'user' => $memberData,
             'member' => $memberData,
             'app' => self::getAppContext(),
-            'dashboard_link' => HOST . 'dashboard',
+            'dashboard_link' => __url(Links::$consumer->dashboard),
             'email_title' => 'Velkommen til teamet',
         ]);
     }
@@ -512,7 +628,7 @@ class NotificationTriggers {
         $orgData = self::normalizeData($organisation);
         $context = [
             'organisation' => $orgData,
-            'dashboard_link' => HOST . 'dashboard',
+            'dashboard_link' => __url(Links::$consumer->dashboard),
             'app' => self::getAppContext(),
             'email_title' => 'Din konto er klar',
         ];
@@ -531,7 +647,7 @@ class NotificationTriggers {
         $orgData = self::normalizeData($organisation);
         $context = [
             'organisation' => $orgData,
-            'dashboard_link' => HOST . 'dashboard',
+            'dashboard_link' => __url(Links::$consumer->dashboard),
             'app' => self::getAppContext(),
             'email_title' => 'Viva godkendelse',
         ];
@@ -595,7 +711,7 @@ class NotificationTriggers {
             'total_revenue_formatted' => $reportData['total_revenue_formatted'] ?? '0,00 DKK',
             'pending_payments' => $reportData['pending_payments'] ?? 0,
             'completed_payments' => $reportData['completed_payments'] ?? 0,
-            'dashboard_link' => HOST . 'dashboard',
+            'dashboard_link' => __url(Links::$consumer->dashboard),
             'app' => self::getAppContext(),
             'email_title' => 'Ugentlig rapport',
         ]);
@@ -625,7 +741,7 @@ class NotificationTriggers {
             'total_revenue_formatted' => $reportData['total_revenue_formatted'] ?? '0,00 DKK',
             'pending_payments' => $reportData['pending_payments'] ?? 0,
             'completed_payments' => $reportData['completed_payments'] ?? 0,
-            'dashboard_link' => HOST . 'dashboard',
+            'dashboard_link' => __url(Links::$consumer->dashboard),
             'app' => self::getAppContext(),
             'email_title' => 'Ugentlig rapport',
         ]);
@@ -678,7 +794,7 @@ class NotificationTriggers {
         // Resolve user
         if (!$user && !empty($paymentData['user'])) {
             $userValue = $paymentData['user'];
-            $user = is_object($userValue) ? $userValue : Users::where('uid', $userValue)->first();
+            $user = is_object($userValue) ? $userValue : Methods::users()->get($userValue);
         }
         if ($user) {
             $context['user'] = self::normalizeData($user);
@@ -687,7 +803,7 @@ class NotificationTriggers {
         // Resolve order
         if (!$order && !empty($paymentData['order'])) {
             $orderValue = $paymentData['order'];
-            $order = is_object($orderValue) ? $orderValue : Orders::where('uid', $orderValue)->first();
+            $order = is_object($orderValue) ? $orderValue : Methods::orders()->get($orderValue);
         }
         if ($order) {
             $orderData = self::normalizeData($order);
@@ -699,7 +815,7 @@ class NotificationTriggers {
                 if (is_object($orgValue)) {
                     $context['organisation'] = self::normalizeData($orgValue);
                 } else {
-                    $org = Organisations::where('uid', $orgValue)->first();
+                    $org = Methods::organisations()->get($orgValue);
                     if ($org) $context['organisation'] = self::normalizeData($org);
                 }
             }
@@ -711,7 +827,7 @@ class NotificationTriggers {
                 if (is_object($locValue)) {
                     $locationData = self::normalizeData($locValue);
                 } else {
-                    $loc = Locations::where('uid', $locValue)->first();
+                    $loc = Methods::locations()->get($locValue);
                     if ($loc) $locationData = self::normalizeData($loc);
                 }
                 if ($locationData) {
@@ -727,14 +843,19 @@ class NotificationTriggers {
             // Add links
             $orderUid = $orderData['uid'] ?? null;
             if ($orderUid) {
-                $context['order_link'] = HOST . 'order/' . $orderUid;
-                $context['payment_link'] = HOST . 'pay/' . $orderUid;
-                $context['receipt_link'] = HOST . 'receipt/' . $orderUid;
-                $context['retry_link'] = HOST . 'pay/' . $orderUid . '?retry=1';
+                $context['order_link'] = __url(Links::$consumer->orderDetail($orderUid));
+                $context['payment_link'] = __url(Links::$consumer->payments);
+                $context['retry_link'] = __url(Links::$consumer->payments);
             }
         }
 
-        $context['dashboard_link'] = HOST . 'dashboard';
+        // Payment detail link
+        $paymentUid = $paymentData['uid'] ?? null;
+        if ($paymentUid) {
+            $context['receipt_link'] = __url(Links::$consumer->paymentDetail($paymentUid));
+        }
+
+        $context['dashboard_link'] = __url(Links::$consumer->dashboard);
 
         // Reference for deduplication
         $context['reference_id'] = $paymentData['uid'] ?? null;
@@ -780,12 +901,13 @@ class NotificationTriggers {
         ];
 
         // Resolve user if not provided
-        if (!$user && !empty($paymentData['user'])) {
-            $userValue = $paymentData['user'];
-            if (is_object($userValue)) {
-                $user = $userValue;
+        // Payment model uses 'uuid' for user field, but other sources may use 'user'
+        $userField = !empty($paymentData['uuid']) ? $paymentData['uuid'] : ($paymentData['user'] ?? null);
+        if (!$user && !empty($userField)) {
+            if (is_object($userField)) {
+                $user = $userField;
             } else {
-                $user = Users::where('uid', $userValue)->first();
+                $user = Methods::users()->get($userField);
             }
         }
 
@@ -800,7 +922,7 @@ class NotificationTriggers {
             if (is_object($orderValue)) {
                 $order = $orderValue;
             } else {
-                $order = Orders::where('uid', $orderValue)->first();
+                $order = Methods::orders()->get($orderValue);
             }
         }
 
@@ -814,7 +936,7 @@ class NotificationTriggers {
                 if (is_object($orgValue)) {
                     $context['organisation'] = self::normalizeData($orgValue);
                 } else {
-                    $org = Organisations::where('uid', $orgValue)->first();
+                    $org = Methods::organisations()->get($orgValue);
                     if ($org) {
                         $context['organisation'] = self::normalizeData($org);
                     }
@@ -828,7 +950,7 @@ class NotificationTriggers {
                 if (is_object($locValue)) {
                     $locationData = self::normalizeData($locValue);
                 } else {
-                    $loc = Locations::where('uid', $locValue)->first();
+                    $loc = Methods::locations()->get($locValue);
                     if ($loc) {
                         $locationData = self::normalizeData($loc);
                     }
@@ -847,12 +969,15 @@ class NotificationTriggers {
         // Add links
         if (!empty($paymentData['order'])) {
             $orderUid = is_object($paymentData['order']) ? $paymentData['order']->uid : $paymentData['order'];
-            $context['payment_link'] = HOST . 'pay/' . $orderUid;
-            $context['retry_link'] = HOST . 'pay/' . $orderUid . '?retry=1';
-            $context['receipt_link'] = HOST . 'receipt/' . $orderUid;
-            $context['order_link'] = HOST . 'order/' . $orderUid;
+            $context['payment_link'] = __url(Links::$consumer->payments);
+            $context['retry_link'] = __url(Links::$consumer->payments);
+            $context['order_link'] = __url(Links::$consumer->orderDetail($orderUid));
         }
-        $context['dashboard_link'] = HOST . 'dashboard';
+        // Payment detail link
+        if (!empty($paymentData['uid'])) {
+            $context['receipt_link'] = __url(Links::$consumer->paymentDetail($paymentData['uid']));
+        }
+        $context['dashboard_link'] = __url(Links::$consumer->dashboard);
 
         // Reference for deduplication
         $context['reference_id'] = $paymentData['uid'] ?? null;
@@ -896,7 +1021,7 @@ class NotificationTriggers {
             if (is_object($userValue)) {
                 $user = $userValue;
             } else {
-                $user = Users::where('uid', $userValue)->first();
+                $user = Methods::users()->get($userValue);
             }
         }
 
@@ -911,7 +1036,7 @@ class NotificationTriggers {
             if (is_object($orgValue)) {
                 $organisation = $orgValue;
             } else {
-                $organisation = Organisations::where('uid', $orgValue)->first();
+                $organisation = Methods::organisations()->get($orgValue);
             }
         }
 
@@ -926,7 +1051,7 @@ class NotificationTriggers {
             if (is_object($locValue)) {
                 $location = $locValue;
             } else {
-                $location = Locations::where('uid', $locValue)->first();
+                $location = Methods::locations()->get($locValue);
             }
         }
 
@@ -947,13 +1072,13 @@ class NotificationTriggers {
         // Add links
         $orderUid = $orderData['uid'] ?? null;
         if ($orderUid) {
-            $context['order_link'] = HOST . 'order/' . $orderUid;
-            $context['payment_link'] = HOST . 'pay/' . $orderUid;
-            $context['receipt_link'] = HOST . 'receipt/' . $orderUid;
-            $context['agreement_link'] = HOST . 'agreement/' . $orderUid;
-            $context['retry_link'] = HOST . 'pay/' . $orderUid . '?retry=1';
+            $context['order_link'] = __url(Links::$consumer->orderDetail($orderUid));
+            $context['payment_link'] = __url(Links::$consumer->payments);
+            $context['receipt_link'] = __url(Links::$consumer->orderDetail($orderUid));
+            $context['agreement_link'] = __url(Links::$consumer->orderDetail($orderUid));
+            $context['retry_link'] = __url(Links::$consumer->payments);
         }
-        $context['dashboard_link'] = HOST . 'dashboard';
+        $context['dashboard_link'] = __url(Links::$consumer->dashboard);
 
         return $context;
     }
@@ -995,7 +1120,9 @@ class NotificationTriggers {
             $i = 0;
             foreach ($payments ? $payments->list() : [] as $payment) {
                 $paymentAmount = (float) $payment->amount;
-                $isPaid = in_array($payment->status ?? '', ['COMPLETED', 'PAID']);
+                $status = $payment->status ?? '';
+                $isPaid = in_array($status, ['COMPLETED', 'PAID']);
+                $isRefundedOrCancelled = in_array($status, ['REFUNDED', 'VOIDED', 'CANCELLED']);
 
                 if ($payment->installment_number === 1) {
                     $firstAmount = $paymentAmount;
@@ -1004,11 +1131,15 @@ class NotificationTriggers {
                     if ($installmentAmount === 0) {
                         $installmentAmount = $paymentAmount;
                     }
+                }
+
+                // Only add to remaining if not paid and not refunded/cancelled
+                if (!$isPaid && !$isRefundedOrCancelled) {
                     $remainingAmount += $paymentAmount;
                 }
 
                 // Build schedule summary line
-                $statusText = $isPaid ? '✓' : '';
+                $statusText = $isPaid ? '✓' : ($isRefundedOrCancelled ? '✗' : '');
                 $dueDate = $payment->due_date ?? null;
                 $dueDateFormatted = $dueDate ? date('d.m.Y', strtotime($dueDate)) : '-';
                 $amountFormatted = number_format($paymentAmount, 2, ',', '.') . ' ' . $currency;

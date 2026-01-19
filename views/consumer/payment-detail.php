@@ -56,6 +56,8 @@ $orderUid = is_object($order) ? $order->uid : ($order ?? null);
     var paymentUid = <?=json_encode($payment->uid)?>;
     var paymentStatus = <?=json_encode($payment->status)?>;
     var paymentOrderUid = <?=json_encode($orderUid)?>;
+    var consumerPayNowUrl = <?=json_encode(__url(str_replace('{uid}', $payment->uid, Links::$api->consumer->payNow)))?>;
+    var consumerReceiptUrl = <?=json_encode(__url(Links::$api->consumer->paymentReceipt($payment->uid)))?>;
 </script>
 
 
@@ -293,10 +295,10 @@ $orderUid = is_object($order) ? $order->uid : ($order ?? null);
 
                     <div class="flex-col-start" style="row-gap: .75rem;">
                         <?php if($payment->status === 'COMPLETED'): ?>
-                        <a href="<?=__url(Links::$api->orders->payments->receipt($payment->uid))?>" class="btn-v2 action-btn w-100 flex-row-center flex-align-center" style="gap: .5rem; text-decoration: none;">
+                        <button type="button" class="btn-v2 action-btn w-100 flex-row-center flex-align-center" style="gap: .5rem;" id="download-receipt-btn" data-uid="<?=$payment->uid?>">
                             <i class="mdi mdi-download font-16"></i>
                             <span class="font-14">Download Kvittering</span>
-                        </a>
+                        </button>
                         <?php endif; ?>
 
                         <?php if($payment->status === 'PAST_DUE'): ?>
@@ -358,6 +360,99 @@ $orderUid = is_object($order) ? $order->uid : ($order ?? null);
                     </div>
                 </div>
             </div>
+
+            <!-- Rykker Information (only for PAST_DUE or payments with rykker_level > 0) -->
+            <?php
+            $rykkerLevel = (int)($payment->rykker_level ?? 0);
+            $rykkerFee = (float)($payment->rykker_fee ?? 0);
+            $sentToCollection = (bool)($payment->sent_to_collection ?? false);
+            $isCompleted = in_array($payment->status, ['COMPLETED', 'PAID']);
+            $showRykkerSection = $payment->status === 'PAST_DUE' || $rykkerLevel > 0 || $sentToCollection;
+
+            // For completed payments, the rykker_fee is already included in amount
+            // So we calculate original amount by subtracting the fee
+            $originalAmount = $isCompleted && $rykkerFee > 0 ? (float)$payment->amount - $rykkerFee : (float)$payment->amount;
+            ?>
+            <?php if($showRykkerSection): ?>
+            <div class="card border-radius-10px mb-4">
+                <div class="card-body">
+                    <div class="flex-row-start flex-align-center flex-nowrap mb-3" style="column-gap: .5rem;">
+                        <?php if($isCompleted): ?>
+                        <i class="mdi mdi-information-outline font-18 color-gray"></i>
+                        <p class="mb-0 font-20 font-weight-bold">Rykkerhistorik</p>
+                        <?php else: ?>
+                        <i class="mdi mdi-alert-circle-outline font-18 color-danger"></i>
+                        <p class="mb-0 font-20 font-weight-bold">Betalingspåmindelse</p>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="flex-col-start" style="row-gap: .75rem;">
+                        <?php if($sentToCollection && !$isCompleted): ?>
+                        <!-- Collection Notice (only show if not yet paid) -->
+                        <div class="danger-info-box px-3 py-3">
+                            <div class="flex-col-start" style="gap: .5rem;">
+                                <p class="mb-0 font-14 font-weight-bold color-danger">Sendt til inkasso</p>
+                                <p class="mb-0 font-13 color-dark">Denne betaling er blevet overdraget til inkasso. Kontakt venligst butikken for at løse sagen.</p>
+                            </div>
+                        </div>
+                        <?php else: ?>
+                        <!-- Rykker Level Info -->
+                        <div class="flex-row-between-center">
+                            <p class="mb-0 font-14 color-gray">Påmindelsesstatus</p>
+                            <?php if($rykkerLevel === 0): ?>
+                                <span class="mute-box font-12">Ingen påmindelse sendt</span>
+                            <?php elseif($rykkerLevel === 1): ?>
+                                <span class="<?=$isCompleted ? 'mute-box' : 'warning-box'?> font-12">Påmindelse 1</span>
+                            <?php elseif($rykkerLevel === 2): ?>
+                                <span class="<?=$isCompleted ? 'mute-box' : 'warning-box'?> font-12">Påmindelse 2</span>
+                            <?php else: ?>
+                                <span class="<?=$isCompleted ? 'mute-box' : 'danger-box'?> font-12">Sidste påmindelse</span>
+                            <?php endif; ?>
+                        </div>
+                        <?php endif; ?>
+
+                        <!-- Rykker Fee -->
+                        <?php if($rykkerFee > 0): ?>
+                        <?php if($isCompleted): ?>
+                        <!-- Completed payment: show breakdown (fee already included in amount) -->
+                        <div class="flex-row-between-center">
+                            <p class="mb-0 font-14 color-gray">Oprindeligt beløb</p>
+                            <p class="mb-0 font-14"><?=number_format($originalAmount, 2, ',', '.')?> <?=currencySymbol($payment->currency)?></p>
+                        </div>
+                        <div class="flex-row-between-center">
+                            <p class="mb-0 font-14 color-gray">Rykkergebyr</p>
+                            <p class="mb-0 font-14"><?=number_format($rykkerFee, 2, ',', '.')?> <?=currencySymbol($payment->currency)?></p>
+                        </div>
+                        <div class="flex-row-between-center pb-3 border-bottom-card">
+                            <p class="mb-0 font-14 font-weight-bold">Total betalt</p>
+                            <p class="mb-0 font-18 font-weight-bold color-dark"><?=number_format($payment->amount, 2, ',', '.')?> <?=currencySymbol($payment->currency)?></p>
+                        </div>
+                        <?php else: ?>
+                        <!-- Past due payment: show amount + fee = total due -->
+                        <div class="flex-row-between-center">
+                            <p class="mb-0 font-14 color-gray">Rykkergebyr</p>
+                            <p class="mb-0 font-14 font-weight-bold color-danger"><?=number_format($rykkerFee, 2, ',', '.')?> <?=currencySymbol($payment->currency)?></p>
+                        </div>
+                        <div class="flex-row-between-center pb-3 border-bottom-card">
+                            <p class="mb-0 font-14 font-weight-bold">Total skyldig beløb</p>
+                            <p class="mb-0 font-18 font-weight-bold color-danger"><?=number_format(paymentTotalDue($payment), 2, ',', '.')?> <?=currencySymbol($payment->currency)?></p>
+                        </div>
+                        <?php endif; ?>
+                        <?php endif; ?>
+
+                        <!-- Info message (only for unpaid) -->
+                        <?php if(!$sentToCollection && !$isCompleted): ?>
+                        <div class="p-2 bg-light-gray border-radius-5px">
+                            <p class="mb-0 font-12 color-dark">
+                                <i class="mdi mdi-information-outline mr-1"></i>
+                                Betal venligst snarest for at undgå yderligere gebyrer.
+                            </p>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
 
             <!-- Installment Progress (if multiple payments) -->
             <?php if(!isEmpty($orderPayments) && $orderPayments->count() > 1): ?>

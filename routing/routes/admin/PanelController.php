@@ -61,6 +61,14 @@ class PanelController {
         $args['minOrgFee'] = $cardFee + $paymentProviderFee;
         $args['orgFees'] = $orgFees;
 
+        // Get rykker settings
+        $args['rykker_1_days'] = (int)(Methods::appMeta()->get('rykker_1_days') ?? 7);
+        $args['rykker_2_days'] = (int)(Methods::appMeta()->get('rykker_2_days') ?? 14);
+        $args['rykker_3_days'] = (int)(Methods::appMeta()->get('rykker_3_days') ?? 21);
+        $args['rykker_1_fee'] = (float)(Methods::appMeta()->get('rykker_1_fee') ?? 0);
+        $args['rykker_2_fee'] = (float)(Methods::appMeta()->get('rykker_2_fee') ?? 100);
+        $args['rykker_3_fee'] = (float)(Methods::appMeta()->get('rykker_3_fee') ?? 100);
+
         return Views("ADMIN_PANEL_FEES", $args);
     }
 

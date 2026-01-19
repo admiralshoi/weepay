@@ -537,8 +537,10 @@ const ConsumerPaymentActions = (function() {
 
     function init() {
         bindPayNowButton();
+        bindPayAllOutstandingButton();
         bindChangeCardButton();
         bindGlobalChangeCardButton();
+        bindDownloadReceiptButton();
     }
 
     /**
@@ -558,24 +560,63 @@ const ConsumerPaymentActions = (function() {
                 ? consumerPayNowUrl
                 : `api/consumer/payments/${paymentUid}/pay-now`;
 
-            const originalHtml = $btn.html();
-            $btn.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin font-16 mr-1"></i> Behandler...');
+            screenLoader.show('Behandler betaling...');
 
             try {
                 const result = await post(url);
+                screenLoader.hide();
 
                 if (result.status === 'success') {
-                    showToast('success', 'Betaling gennemført!');
-                    setTimeout(() => location.reload(), 1500);
+                    queueNotificationOnLoad('Gennemført', 'Betaling gennemført!', 'success');
+                    location.reload();
                 } else {
                     const errorMsg = result.error?.message || result.message || 'Betaling fejlede';
-                    showToast('error', errorMsg);
-                    $btn.prop('disabled', false).html(originalHtml);
+                    showErrorNotification('Fejl', errorMsg);
                 }
             } catch (error) {
+                screenLoader.hide();
                 console.error('Pay now error:', error);
-                showToast('error', 'Der opstod en netværksfejl');
-                $btn.prop('disabled', false).html(originalHtml);
+                showErrorNotification('Fejl', 'Der opstod en netværksfejl');
+            }
+        });
+    }
+
+    /**
+     * Pay All Outstanding button handler (for orders with PAST_DUE payments)
+     * Located on order-detail.php
+     */
+    function bindPayAllOutstandingButton() {
+        const $btn = $('#pay-all-outstanding-btn');
+        if (!$btn.length) return;
+
+        $btn.on('click', async function() {
+            // URL is set via JS variable from view (using Links class)
+            const url = typeof payOrderOutstandingUrl !== 'undefined'
+                ? payOrderOutstandingUrl
+                : null;
+
+            if (!url) {
+                showErrorNotification('Fejl', 'Mangler API URL');
+                return;
+            }
+
+            screenLoader.show('Behandler betalinger...');
+
+            try {
+                const result = await post(url);
+                screenLoader.hide();
+
+                if (result.status === 'success') {
+                    queueNotificationOnLoad('Gennemført', result.message || 'Betalinger gennemført!', 'success');
+                    location.reload();
+                } else {
+                    const errorMsg = result.error?.message || result.message || 'Betaling fejlede';
+                    showErrorNotification('Fejl', errorMsg);
+                }
+            } catch (error) {
+                screenLoader.hide();
+                console.error('Pay all outstanding error:', error);
+                showErrorNotification('Fejl', 'Der opstod en netværksfejl');
             }
         });
     }
@@ -597,8 +638,7 @@ const ConsumerPaymentActions = (function() {
                 ? consumerChangeCardOrderUrl
                 : `api/consumer/change-card/order/${orderUid}`;
 
-            const originalHtml = $btn.html();
-            $btn.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin font-16 mr-1"></i> Starter kortskift...');
+            screenLoader.show('Starter kortskift...');
 
             try {
                 const result = await post(url);
@@ -607,14 +647,14 @@ const ConsumerPaymentActions = (function() {
                     // Redirect to Viva checkout
                     window.location.href = result.data.checkoutUrl;
                 } else {
+                    screenLoader.hide();
                     const errorMsg = result.error?.message || result.message || 'Kunne ikke starte kortskift';
-                    showToast('error', errorMsg);
-                    $btn.prop('disabled', false).html(originalHtml);
+                    showErrorNotification('Fejl', errorMsg);
                 }
             } catch (error) {
+                screenLoader.hide();
                 console.error('Change card error:', error);
-                showToast('error', 'Der opstod en netværksfejl');
-                $btn.prop('disabled', false).html(originalHtml);
+                showErrorNotification('Fejl', 'Der opstod en netværksfejl');
             }
         });
     }
@@ -633,8 +673,7 @@ const ConsumerPaymentActions = (function() {
                 ? consumerChangeCardUrl
                 : 'api/consumer/change-card';
 
-            const originalHtml = $btn.html();
-            $btn.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin font-16 mr-1"></i> Starter kortskift...');
+            screenLoader.show('Starter kortskift...');
 
             try {
                 const result = await post(url);
@@ -643,33 +682,71 @@ const ConsumerPaymentActions = (function() {
                     // Redirect to Viva checkout
                     window.location.href = result.data.checkoutUrl;
                 } else {
+                    screenLoader.hide();
                     const errorMsg = result.error?.message || result.message || 'Kunne ikke starte kortskift';
-                    showToast('error', errorMsg);
-                    $btn.prop('disabled', false).html(originalHtml);
+                    showErrorNotification('Fejl', errorMsg);
                 }
             } catch (error) {
+                screenLoader.hide();
                 console.error('Global change card error:', error);
-                showToast('error', 'Der opstod en netværksfejl');
-                $btn.prop('disabled', false).html(originalHtml);
+                showErrorNotification('Fejl', 'Der opstod en netværksfejl');
             }
         });
     }
 
     /**
-     * Simple toast notification
+     * Download Receipt button handler
+     * Located on payment-detail.php for completed payments
      */
-    function showToast(type, message) {
-        // Check if global toast function exists
-        if (typeof window.showToast === 'function') {
-            window.showToast(type, message);
-            return;
-        }
+    function bindDownloadReceiptButton() {
+        const $btn = $('#download-receipt-btn');
+        if (!$btn.length) return;
 
-        // Fallback to simple alert
-        const prefix = type === 'success' ? '✓' : '✗';
-        if (type === 'error') {
-            alert(`${prefix} ${message}`);
-        }
+        $btn.on('click', async function() {
+            const paymentUid = $(this).data('uid');
+            if (!paymentUid) return;
+
+            // Build URL for receipt download (consumerReceiptUrl is set via __url() so it's absolute)
+            let url = typeof consumerReceiptUrl !== 'undefined'
+                ? consumerReceiptUrl
+                : `api/consumer/payments/${paymentUid}/receipt`;
+
+            // Ensure absolute URL
+            if (!url.includes('https://')) url = serverHost + url;
+
+            screenLoader.show('Henter kvittering...');
+
+            try {
+                const response = await fetch(url, { credentials: 'same-origin' });
+                const contentType = response.headers.get('content-type');
+
+                // Check if response is JSON (error) or PDF (success)
+                if (contentType && contentType.includes('application/json')) {
+                    const result = await response.json();
+                    screenLoader.hide();
+                    const errorMsg = result.error?.message || result.message || 'Kunne ikke hente kvittering';
+                    showErrorNotification('Fejl', errorMsg);
+                    return;
+                }
+
+                // Success - download the PDF
+                const blob = await response.blob();
+                const downloadUrl = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = `kvittering-${paymentUid}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(downloadUrl);
+
+                screenLoader.hide();
+            } catch (error) {
+                screenLoader.hide();
+                console.error('Download receipt error:', error);
+                showErrorNotification('Fejl', 'Der opstod en netværksfejl');
+            }
+        });
     }
 
     return {

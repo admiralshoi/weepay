@@ -4,6 +4,7 @@ namespace routing\routes\consumer;
 use classes\enumerations\Links;
 use classes\Methods;
 use classes\payments\CardValidationService;
+use classes\payments\PaymentReceipt;
 use JetBrains\PhpStorm\NoReturn;
 
 class ApiController {
@@ -574,6 +575,7 @@ class ApiController {
         }
 
         $paymentsHandler = Methods::payments();
+        $ordersHandler = Methods::orders();
 
         // Get payment with FKs resolved for organisation access
         $payment = $paymentsHandler->includeForeignKeys()->get($paymentUid);
@@ -610,28 +612,46 @@ class ApiController {
             errorLog([
                 'payment_uid' => $paymentUid,
             ], 'pay-now-missing-initial-transaction-id');
-            Response()->jsonError('Kan ikke betale - mangler kortoplysniger. Kontakt butikken.', [], 400);
+            Response()->jsonError('Kan ikke betale - mangler kortoplysninger. Kontakt butikken.', [], 400);
         }
+
+        // Get order for fee percentage
+        $order = is_object($payment->order) ? $payment->order : $ordersHandler->get($payment->order);
+        $orderUid = is_object($payment->order) ? $payment->order->uid : $payment->order;
+
+        // Calculate total charge including rykker fees
+        $originalAmount = (float)$payment->amount;
+        $rykkerFee = (float)($payment->rykker_fee ?? 0);
+        $totalChargeAmount = $originalAmount + $rykkerFee;
+
+        // Recalculate ISV amount based on total charge and order fee percentage
+        $feePercent = (float)($order->fee ?? 0);
+        $originalIsvAmount = (float)($payment->isv_amount ?? 0);
+        $newIsvAmount = round($totalChargeAmount * $feePercent / 100, 2);
 
         debugLog([
             'payment_uid' => $paymentUid,
-            'amount' => $payment->amount,
+            'original_amount' => $originalAmount,
+            'rykker_fee' => $rykkerFee,
+            'total_charge' => $totalChargeAmount,
+            'fee_percent' => $feePercent,
+            'original_isv' => $originalIsvAmount,
+            'new_isv' => $newIsvAmount,
             'currency' => $payment->currency,
             'merchant_prid' => $organisation->merchant_prid,
         ], 'CONSUMER_PAY_NOW_START');
 
         // Attempt to charge using stored card
         $isTestPayment = (bool)($payment->test ?? false);
-        $isvAmount = !isEmpty($payment->isv_amount) ? (float)$payment->isv_amount : null;
 
         $chargeResult = CardValidationService::chargeWithStoredCard(
             $organisation->merchant_prid,
             $payment->initial_transaction_id,
-            (float)$payment->amount,
+            $totalChargeAmount,
             $payment->currency,
-            "Betaling af forsinket rate",
+            "Betaling af forsinket rate" . ($rykkerFee > 0 ? " inkl. rykkergebyr" : ""),
             $isTestPayment,
-            $isvAmount
+            $newIsvAmount > 0 ? $newIsvAmount : null
         );
 
         debugLog([
@@ -640,14 +660,36 @@ class ApiController {
         ], 'CONSUMER_PAY_NOW_RESULT');
 
         if ($chargeResult['success']) {
+            // Update payment: include rykker fee in amount, update ISV
+            // Keep rykker history (level, sent_at dates, fee) for record-keeping
+            $paymentsHandler->update([
+                'amount' => $totalChargeAmount,
+                'isv_amount' => $newIsvAmount,
+                'sent_to_collection' => 0,
+                'scheduled_at' => null,
+            ], ['uid' => $paymentUid]);
+
             // Mark payment as completed
             $paymentsHandler->markAsCompleted($paymentUid, $chargeResult['transaction_id'] ?? null);
 
-            // Trigger notification
+            // Update order: add rykker fee to amount and update fee_amount
+            if ($rykkerFee > 0) {
+                $newOrderAmount = (float)$order->amount + $rykkerFee;
+                $isvDifference = $newIsvAmount - $originalIsvAmount;
+                $newOrderFeeAmount = (float)($order->fee_amount ?? 0) + $isvDifference;
+
+                $ordersHandler->update([
+                    'amount' => $newOrderAmount,
+                    'fee_amount' => $newOrderFeeAmount,
+                ], ['uid' => $orderUid]);
+            }
+
+            // Trigger notification with updated payment data
             try {
+                // Re-fetch payment to get updated values for notification
+                $updatedPayment = $paymentsHandler->get($paymentUid);
                 $user = Methods::users()->get($userId);
-                $order = is_object($payment->order) ? $payment->order : Methods::orders()->get($payment->order);
-                \classes\notifications\NotificationTriggers::paymentSuccessful($payment, $user, $order);
+                \classes\notifications\NotificationTriggers::paymentSuccessful($updatedPayment, $user, $order);
             } catch (\Throwable $e) {
                 errorLog(['error' => $e->getMessage()], 'pay-now-notification-error');
             }
@@ -658,6 +700,182 @@ class ApiController {
         // Payment failed
         $errorMessage = $chargeResult['error'] ?? 'Betaling fejlede';
         Response()->jsonError($errorMessage, [], 400);
+    }
+
+
+    /**
+     * Pay all outstanding (PAST_DUE) payments for an order
+     *
+     * POST /api/consumer/orders/{uid}/pay-outstanding
+     * Charges all PAST_DUE payments for the order using stored card
+     * Includes rykker fees in the charge and updates amounts accordingly
+     */
+    #[NoReturn] public static function payOrderOutstanding(array $args): void {
+        $orderUid = $args['uid'] ?? null;
+        $userId = __uuid();
+
+        if (isEmpty($orderUid)) {
+            Response()->jsonError('Ordre-ID mangler', [], 400);
+        }
+
+        if (isEmpty($userId)) {
+            Response()->jsonError('Du skal være logget ind', [], 401);
+        }
+
+        $ordersHandler = Methods::orders();
+        $paymentsHandler = Methods::payments();
+
+        // Get order and verify ownership
+        $order = $ordersHandler->includeForeignKeys()->get($orderUid);
+
+        if (isEmpty($order)) {
+            Response()->jsonError('Ordre ikke fundet', [], 404);
+        }
+
+        // Verify order belongs to current user
+        $orderUserId = is_object($order->uuid) ? $order->uuid->uid : $order->uuid;
+        if ($orderUserId !== $userId) {
+            Response()->jsonError('Du har ikke adgang til denne ordre', [], 403);
+        }
+
+        // Get all PAST_DUE payments for this order
+        $outstandingPayments = $paymentsHandler->includeForeignKeys()->getByX([
+            'order' => $orderUid,
+            'status' => 'PAST_DUE',
+        ]);
+
+        if ($outstandingPayments->count() === 0) {
+            Response()->jsonError('Ingen udestående betalinger på denne ordre', [], 400);
+        }
+
+        // Get organisation for merchant_prid
+        $organisationUid = is_object($order->organisation) ? $order->organisation->uid : $order->organisation;
+        $organisation = Methods::organisations()->get($organisationUid);
+
+        if (isEmpty($organisation) || isEmpty($organisation->merchant_prid)) {
+            errorLog([
+                'order_uid' => $orderUid,
+                'organisation_uid' => $organisationUid,
+            ], 'pay-order-outstanding-missing-merchant-prid');
+            Response()->jsonError('Kan ikke behandle betaling - butikken mangler opsætning', [], 500);
+        }
+
+        // Get order fee percentage for ISV calculation
+        $feePercent = (float)($order->fee ?? 0);
+
+        debugLog([
+            'order_uid' => $orderUid,
+            'outstanding_count' => $outstandingPayments->count(),
+            'fee_percent' => $feePercent,
+            'merchant_prid' => $organisation->merchant_prid,
+        ], 'CONSUMER_PAY_ORDER_OUTSTANDING_START');
+
+        $results = [
+            'success' => 0,
+            'failed' => 0,
+            'errors' => [],
+        ];
+
+        // Track totals for order update
+        $totalRykkerFeesCharged = 0;
+        $totalIsvDifference = 0;
+
+        // Process each outstanding payment
+        foreach ($outstandingPayments->list() as $payment) {
+            // Check for initial_transaction_id
+            if (isEmpty($payment->initial_transaction_id)) {
+                $results['failed']++;
+                $results['errors'][] = "Betaling {$payment->uid}: mangler kortoplysninger";
+                continue;
+            }
+
+            // Calculate total charge including rykker fees
+            $originalAmount = (float)$payment->amount;
+            $rykkerFee = (float)($payment->rykker_fee ?? 0);
+            $totalChargeAmount = $originalAmount + $rykkerFee;
+
+            // Recalculate ISV amount based on total charge
+            $originalIsvAmount = (float)($payment->isv_amount ?? 0);
+            $newIsvAmount = round($totalChargeAmount * $feePercent / 100, 2);
+
+            // Attempt to charge using stored card
+            $isTestPayment = (bool)($payment->test ?? false);
+
+            $chargeResult = CardValidationService::chargeWithStoredCard(
+                $organisation->merchant_prid,
+                $payment->initial_transaction_id,
+                $totalChargeAmount,
+                $payment->currency,
+                "Betaling af forsinket rate" . ($rykkerFee > 0 ? " inkl. rykkergebyr" : ""),
+                $isTestPayment,
+                $newIsvAmount > 0 ? $newIsvAmount : null
+            );
+
+            if ($chargeResult['success']) {
+                // Update payment: include rykker fee in amount, update ISV
+                // Keep rykker history (level, sent_at dates, fee) for record-keeping
+                $paymentsHandler->update([
+                    'amount' => $totalChargeAmount,
+                    'isv_amount' => $newIsvAmount,
+                    'sent_to_collection' => 0,
+                    'scheduled_at' => null,
+                ], ['uid' => $payment->uid]);
+
+                // Mark payment as completed
+                $paymentsHandler->markAsCompleted($payment->uid, $chargeResult['transaction_id'] ?? null);
+                $results['success']++;
+
+                // Track totals for order update
+                $totalRykkerFeesCharged += $rykkerFee;
+                $totalIsvDifference += ($newIsvAmount - $originalIsvAmount);
+
+                // Trigger notification with updated payment data
+                try {
+                    $updatedPayment = $paymentsHandler->get($payment->uid);
+                    $user = Methods::users()->get($userId);
+                    \classes\notifications\NotificationTriggers::paymentSuccessful($updatedPayment, $user, $order);
+                } catch (\Throwable $e) {
+                    errorLog(['error' => $e->getMessage()], 'pay-order-outstanding-notification-error');
+                }
+            } else {
+                $results['failed']++;
+                $results['errors'][] = $chargeResult['error'] ?? 'Betaling fejlede';
+            }
+        }
+
+        // Update order totals if any rykker fees were charged
+        if ($totalRykkerFeesCharged > 0) {
+            $newOrderAmount = (float)$order->amount + $totalRykkerFeesCharged;
+            $newOrderFeeAmount = (float)($order->fee_amount ?? 0) + $totalIsvDifference;
+
+            $ordersHandler->update([
+                'amount' => $newOrderAmount,
+                'fee_amount' => $newOrderFeeAmount,
+            ], ['uid' => $orderUid]);
+        }
+
+        debugLog([
+            'order_uid' => $orderUid,
+            'results' => $results,
+            'total_rykker_fees' => $totalRykkerFeesCharged,
+            'total_isv_difference' => $totalIsvDifference,
+        ], 'CONSUMER_PAY_ORDER_OUTSTANDING_RESULT');
+
+        // Return appropriate response
+        if ($results['failed'] === 0) {
+            Response()->jsonSuccess("Alle {$results['success']} betalinger gennemført");
+        } elseif ($results['success'] > 0) {
+            Response()->jsonSuccess(
+                "{$results['success']} betaling(er) gennemført, {$results['failed']} fejlede",
+                ['errors' => $results['errors']]
+            );
+        } else {
+            Response()->jsonError(
+                'Ingen betalinger kunne gennemføres',
+                ['errors' => $results['errors']],
+                400
+            );
+        }
     }
 
 
@@ -1100,5 +1318,50 @@ class ApiController {
         $checkoutUrl = $viva->checkoutUrl($orderCode);
 
         Response()->jsonSuccess('', ['redirectUrl' => $checkoutUrl]);
+    }
+
+    /**
+     * Download payment receipt as PDF
+     * Consumer version - verifies the payment belongs to the current user
+     */
+    #[NoReturn] public static function downloadReceipt(array $args): void {
+        $paymentId = $args['id'] ?? null;
+        $userId = __uuid();
+
+        if (isEmpty($userId)) {
+            Response()->jsonError("Du skal være logget ind.");
+        }
+
+        if (isEmpty($paymentId)) {
+            Response()->jsonError("Betalings ID mangler.");
+        }
+
+        // Get the payment (order is auto-resolved via foreign key)
+        $paymentHandler = Methods::payments();
+        $payment = $paymentHandler->get($paymentId);
+
+        if (isEmpty($payment)) {
+            Response()->jsonError("Betaling ikke fundet.");
+        }
+
+        // $payment->order is the resolved Order object via foreign key
+        if (isEmpty($payment->order)) {
+            Response()->jsonError("Ordre ikke fundet.");
+        }
+
+        // Verify the order belongs to the current user
+        // Note: $payment->order->uuid is a User object (foreign key), so access ->uid
+        if ($payment->order->uuid->uid !== $userId) {
+            Response()->jsonError("Du har ikke adgang til denne betaling.");
+        }
+
+        // Only allow receipts for completed payments
+        if ($payment->status !== 'COMPLETED') {
+            Response()->jsonError("Kvittering kan kun downloades for gennemførte betalinger.");
+        }
+
+        // Generate and download the receipt
+        $receipt = new PaymentReceipt($payment);
+        $receipt->download();
     }
 }

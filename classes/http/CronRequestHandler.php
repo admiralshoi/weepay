@@ -234,7 +234,7 @@ class CronRequestHandler {
     }
 
     /**
-     * Handle a failed payment attempt - either reschedule or mark as permanently failed
+     * Handle a failed payment attempt - mark as PAST_DUE and schedule first rykker
      *
      * @param object $payment Payment object with resolved FKs
      * @param string $failureReason
@@ -243,46 +243,31 @@ class CronRequestHandler {
      */
     private function handlePaymentAttemptFailure(object $payment, string $failureReason, ?CronWorker $worker = null): array {
         $paymentsHandler = Methods::payments();
-        $maxAttempts = (int)(Settings::$app->payment_max_attempts ?? 3);
-        $retryDayInterval = (int)(Settings::$app->payment_retry_day_interval ?? 1);
-
         $currentAttempts = ($payment->attempts ?? 0) + 1;
 
         debugLog([
             'payment_uid' => $payment->uid,
             'failure_reason' => $failureReason,
             'current_attempts' => $currentAttempts,
-            'max_attempts' => $maxAttempts,
         ], 'CRON_PAYMENT_ATTEMPT_FAILURE');
 
-        if ($currentAttempts >= $maxAttempts) {
-            // Max attempts reached - mark as FAILED permanently
-            $paymentsHandler->update([
-                'status' => 'FAILED',
-                'failure_reason' => $failureReason,
-                'attempts' => $currentAttempts,
-            ], ['uid' => $payment->uid]);
+        // Get days until first rykker from settings
+        $rykker1Days = (int)(Settings::$app->rykker_1_days ?? 7);
 
-            $worker?->log("Payment {$payment->uid} permanently FAILED after $currentAttempts attempts: $failureReason");
+        // Mark as PAST_DUE and schedule first rykker check
+        $paymentsHandler->update([
+            'status' => 'PAST_DUE',
+            'failure_reason' => $failureReason,
+            'attempts' => $currentAttempts,
+            'scheduled_at' => date('Y-m-d H:i:s', strtotime("+{$rykker1Days} days")),
+        ], ['uid' => $payment->uid]);
 
-            // Trigger failure notification only on permanent failure
-            $this->triggerPaymentNotification($payment, 'failed', $failureReason);
+        $worker?->log("Payment {$payment->uid} marked as PAST_DUE, first rykker scheduled in {$rykker1Days} days");
 
-            return ['success' => false, 'error' => $failureReason];
-        } else {
-            // Reschedule for retry
-            $nextAttemptDate = date('Y-m-d H:i:s', strtotime("+{$retryDayInterval} days"));
+        // Trigger payment past due notification
+        $this->triggerPaymentNotification($payment, 'past_due', $failureReason);
 
-            $paymentsHandler->update([
-                'scheduled_at' => $nextAttemptDate,
-                'failure_reason' => $failureReason,
-                'attempts' => $currentAttempts,
-            ], ['uid' => $payment->uid]);
-
-            $worker?->log("Payment {$payment->uid} rescheduled for $nextAttemptDate (attempt $currentAttempts of $maxAttempts): $failureReason");
-
-            return ['success' => false, 'error' => $failureReason];
-        }
+        return ['success' => false, 'error' => $failureReason];
     }
 
     /**
@@ -300,6 +285,8 @@ class CronRequestHandler {
 
             if ($type === 'success') {
                 NotificationTriggers::paymentSuccessful($payment, $user, $order);
+            } elseif ($type === 'past_due') {
+                NotificationTriggers::paymentPastDue($payment, $user, $order, $failureReason);
             } else {
                 NotificationTriggers::paymentFailed($payment, $user, $order, $failureReason);
             }
@@ -429,21 +416,187 @@ class CronRequestHandler {
 
     /**
      * Check overdue payments and trigger rykker (collection reminder) notifications
-     * Escalates through rykker levels: 1 (7+ days), 2 (14+ days), final (21+ days)
+     * Uses scheduled_at to control timing - payments are only processed when scheduled_at <= now
+     * Escalates through rykker levels: 1, 2, 3 (final/collection)
      */
     public function rykkerChecks(?CronWorker $worker = null): void {
         $worker?->log("Running rykkerChecks...");
 
-        // TODO: Implement rykker logic
-        // 1. Get all payments WHERE status = 'PAST_DUE'
-        // 2. Calculate days_overdue for each
-        // 3. Trigger appropriate rykker breakpoint:
-        //    - 7+ days: payment.rykker_1 (if not already sent - use dedup_hash)
-        //    - 14+ days: payment.rykker_2
-        //    - 21+ days: payment.rykker_final
-        // 4. Log results
+        // Get rykker settings from AppMeta
+        $rykker1Days = (int)(Settings::$app->rykker_1_days ?? 7);
+        $rykker2Days = (int)(Settings::$app->rykker_2_days ?? 14);
+        $rykker3Days = (int)(Settings::$app->rykker_3_days ?? 21);
+        $rykker1Fee = (float)(Settings::$app->rykker_1_fee ?? 0);
+        $rykker2Fee = (float)(Settings::$app->rykker_2_fee ?? 100);
+        $rykker3Fee = (float)(Settings::$app->rykker_3_fee ?? 100);
 
-        $worker?->log("rykkerChecks completed.");
+        $worker?->log("Rykker settings loaded:");
+        $worker?->log("  - Days: R1={$rykker1Days}d, R2={$rykker2Days}d, R3={$rykker3Days}d");
+        $worker?->log("  - Fees: R1={$rykker1Fee}kr, R2={$rykker2Fee}kr, R3={$rykker3Fee}kr");
+
+        // Debug log settings
+        debugLog([
+            'rykker_1_days' => $rykker1Days,
+            'rykker_2_days' => $rykker2Days,
+            'rykker_3_days' => $rykker3Days,
+            'rykker_1_fee' => $rykker1Fee,
+            'rykker_2_fee' => $rykker2Fee,
+            'rykker_3_fee' => $rykker3Fee,
+            'current_time' => date('Y-m-d H:i:s'),
+        ], 'RYKKER_CRON_SETTINGS');
+
+        $paymentHandler = Methods::payments();
+
+        // getPastDueForRykker only returns payments where scheduled_at <= now
+        $scheduledPayments = $paymentHandler->getPastDueForRykker();
+
+        $worker?->log("Found {$scheduledPayments->count()} payments scheduled for rykker (scheduled_at <= now)");
+
+        // Debug log the query results
+        debugLog([
+            'payments_found' => $scheduledPayments->count(),
+            'current_time' => date('Y-m-d H:i:s'),
+        ], 'RYKKER_CRON_QUERY');
+
+        $stats = [
+            'checked' => 0,
+            'rykker_1_sent' => 0,
+            'rykker_2_sent' => 0,
+            'rykker_3_sent' => 0,
+            'notifications_triggered' => 0,
+            'errors' => 0,
+        ];
+
+        foreach ($scheduledPayments->list() as $payment) {
+            $stats['checked']++;
+
+            // Get user info for logging
+            $userUid = is_object($payment->uuid) ? $payment->uuid->uid : $payment->uuid;
+            $userName = is_object($payment->uuid) ? ($payment->uuid->full_name ?? $payment->uuid->email ?? 'Unknown') : 'Unknown';
+
+            try {
+                $currentLevel = (int)($payment->rykker_level ?? 0);
+                $newLevel = $currentLevel + 1;
+                $currentFee = (float)($payment->rykker_fee ?? 0);
+
+                $worker?->log("Processing payment {$payment->uid}:");
+                $worker?->log("  - User: {$userName} ({$userUid})");
+                $worker?->log("  - Amount: {$payment->amount} {$payment->currency}");
+                $worker?->log("  - Due date: {$payment->due_date}");
+                $worker?->log("  - Scheduled at: {$payment->scheduled_at}");
+                $worker?->log("  - Current rykker level: {$currentLevel}");
+                $worker?->log("  - Current rykker fee: {$currentFee}kr");
+
+                // Debug log payment details
+                debugLog([
+                    'payment_uid' => $payment->uid,
+                    'user_uid' => $userUid,
+                    'user_name' => $userName,
+                    'amount' => $payment->amount,
+                    'currency' => $payment->currency,
+                    'due_date' => $payment->due_date,
+                    'scheduled_at' => $payment->scheduled_at,
+                    'current_rykker_level' => $currentLevel,
+                    'current_rykker_fee' => $currentFee,
+                    'status' => $payment->status,
+                ], 'RYKKER_CRON_PAYMENT_PROCESSING');
+
+                // Max level is 3
+                if ($newLevel > 3) {
+                    $worker?->log("  - SKIP: Already at max rykker level (3)");
+                    debugLog([
+                        'payment_uid' => $payment->uid,
+                        'reason' => 'max_level_reached',
+                        'current_level' => $currentLevel,
+                    ], 'RYKKER_CRON_PAYMENT_SKIPPED');
+                    continue;
+                }
+
+                // Get fee for this rykker level
+                $fee = match($newLevel) {
+                    1 => $rykker1Fee,
+                    2 => $rykker2Fee,
+                    3 => $rykker3Fee,
+                    default => 0,
+                };
+
+                $worker?->log("  - New rykker level: {$newLevel}");
+                $worker?->log("  - Fee to add: {$fee}kr");
+                $worker?->log("  - Total fee after: " . ($currentFee + $fee) . "kr");
+
+                // Update payment with new rykker level, fee, and next scheduled_at
+                $worker?->log("  - Calling sendRykker()...");
+                $updateSuccess = $paymentHandler->sendRykker($payment->uid, $newLevel, $fee);
+
+                debugLog([
+                    'payment_uid' => $payment->uid,
+                    'new_level' => $newLevel,
+                    'fee_added' => $fee,
+                    'update_success' => $updateSuccess,
+                ], 'RYKKER_CRON_SEND_RYKKER');
+
+                if ($updateSuccess) {
+                    $worker?->log("  - sendRykker() SUCCESS");
+
+                    // Trigger notification
+                    $worker?->log("  - Triggering notification (payment.rykker_{$newLevel})...");
+
+                    try {
+                        $notificationResult = NotificationTriggers::paymentRykker($payment, $newLevel, $fee);
+                        $stats['notifications_triggered']++;
+
+                        debugLog([
+                            'payment_uid' => $payment->uid,
+                            'rykker_level' => $newLevel,
+                            'notification_result' => $notificationResult,
+                        ], 'RYKKER_CRON_NOTIFICATION_TRIGGERED');
+
+                        $worker?->log("  - Notification triggered successfully");
+                    } catch (\Throwable $e) {
+                        $worker?->log("  - WARNING: Notification trigger failed: " . $e->getMessage());
+                        debugLog([
+                            'payment_uid' => $payment->uid,
+                            'rykker_level' => $newLevel,
+                            'error' => $e->getMessage(),
+                        ], 'RYKKER_CRON_NOTIFICATION_ERROR');
+                    }
+
+                    $stats["rykker_{$newLevel}_sent"]++;
+                    $worker?->log("  - Rykker {$newLevel} completed for {$payment->uid}");
+                } else {
+                    $stats['errors']++;
+                    $worker?->log("  - ERROR: sendRykker() failed for {$payment->uid}");
+                    debugLog([
+                        'payment_uid' => $payment->uid,
+                        'new_level' => $newLevel,
+                        'error' => 'sendRykker returned false',
+                    ], 'RYKKER_CRON_SEND_RYKKER_FAILED');
+                }
+
+            } catch (\Exception $e) {
+                $stats['errors']++;
+                $worker?->log("  - EXCEPTION: " . $e->getMessage());
+                debugLog([
+                    'payment_uid' => $payment->uid,
+                    'exception' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ], 'RYKKER_CRON_EXCEPTION');
+            }
+
+            $worker?->log(""); // Empty line between payments
+        }
+
+        $worker?->log("==========================================");
+        $worker?->log("rykkerChecks COMPLETED");
+        $worker?->log("  - Payments checked: {$stats['checked']}");
+        $worker?->log("  - Rykker 1 sent: {$stats['rykker_1_sent']}");
+        $worker?->log("  - Rykker 2 sent: {$stats['rykker_2_sent']}");
+        $worker?->log("  - Rykker 3 sent: {$stats['rykker_3_sent']}");
+        $worker?->log("  - Notifications triggered: {$stats['notifications_triggered']}");
+        $worker?->log("  - Errors: {$stats['errors']}");
+        $worker?->log("==========================================");
+
+        debugLog($stats, 'RYKKER_CRON_COMPLETED');
     }
 
 

@@ -15,6 +15,14 @@ $paymentProviderFee = $args->paymentProviderFee ?? 0.39;
 $minOrgFee = $args->minOrgFee ?? 0.78;
 $orgFees = $args->orgFees ?? new \Database\Collection();
 
+// Rykker settings
+$rykker1Days = $args->rykker_1_days ?? 7;
+$rykker2Days = $args->rykker_2_days ?? 14;
+$rykker3Days = $args->rykker_3_days ?? 21;
+$rykker1Fee = $args->rykker_1_fee ?? 0;
+$rykker2Fee = $args->rykker_2_fee ?? 100;
+$rykker3Fee = $args->rykker_3_fee ?? 100;
+
 ?>
 <script>
     var pageTitle = <?=json_encode($pageTitle)?>;
@@ -102,6 +110,83 @@ $orgFees = $args->orgFees ?? new \Database\Collection();
                         <i class="mdi mdi-information-outline font-16 color-blue mr-2"></i>
                         <p class="mb-0 font-12 color-dark">
                             Minimum organisationsgebyr: <strong><?=number_format($minOrgFee, 2, ',', '.')?> %</strong> (kortgebyr + betalingsudbyder gebyr)
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rykker Settings Card -->
+            <div class="card border-radius-10px">
+                <div class="card-body">
+                    <div class="flex-row-start flex-align-center mb-3" style="gap: .75rem;">
+                        <div class="square-40 bg-danger border-radius-8px flex-row-center-center">
+                            <i class="mdi mdi-email-alert-outline color-white font-20"></i>
+                        </div>
+                        <div class="flex-col-start">
+                            <p class="mb-0 font-16 font-weight-bold">Rykker Indstillinger</p>
+                            <p class="mb-0 font-12 color-gray">Automatiske betalingspåmindelser for forfaldne betalinger</p>
+                        </div>
+                    </div>
+
+                    <div class="row" style="row-gap: 1rem;">
+                        <!-- Rykker 1 -->
+                        <div class="col-12 col-md-4">
+                            <div class="p-3 bg-light-gray border-radius-8px h-100">
+                                <div class="flex-col-start">
+                                    <div class="flex-row-start flex-align-center mb-2" style="gap: .5rem;">
+                                        <span class="warning-box font-11">Rykker 1</span>
+                                    </div>
+                                    <p class="mb-0 font-12 color-gray">Dage efter forfalden</p>
+                                    <p class="mb-0 font-20 font-weight-bold color-dark"><?=$rykker1Days?> dage</p>
+                                    <p class="mb-0 font-12 color-gray mt-2">Gebyr</p>
+                                    <p class="mb-0 font-20 font-weight-bold color-pee-yellow"><?=number_format($rykker1Fee, 2, ',', '.')?> kr</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rykker 2 -->
+                        <div class="col-12 col-md-4">
+                            <div class="p-3 bg-light-gray border-radius-8px h-100">
+                                <div class="flex-col-start">
+                                    <div class="flex-row-start flex-align-center mb-2" style="gap: .5rem;">
+                                        <span class="warning-box font-11">Rykker 2</span>
+                                    </div>
+                                    <p class="mb-0 font-12 color-gray">Dage efter forfalden</p>
+                                    <p class="mb-0 font-20 font-weight-bold color-dark"><?=$rykker2Days?> dage</p>
+                                    <p class="mb-0 font-12 color-gray mt-2">Gebyr</p>
+                                    <p class="mb-0 font-20 font-weight-bold color-pee-yellow"><?=number_format($rykker2Fee, 2, ',', '.')?> kr</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rykker 3 (Final) -->
+                        <div class="col-12 col-md-4">
+                            <div class="p-3 bg-light-gray border-radius-8px h-100">
+                                <div class="flex-col-start">
+                                    <div class="flex-row-start flex-align-center mb-2" style="gap: .5rem;">
+                                        <span class="danger-box font-11">Rykker 3 (Final)</span>
+                                    </div>
+                                    <p class="mb-0 font-12 color-gray">Dage efter forfalden</p>
+                                    <p class="mb-0 font-20 font-weight-bold color-dark"><?=$rykker3Days?> dage</p>
+                                    <p class="mb-0 font-12 color-gray mt-2">Gebyr</p>
+                                    <p class="mb-0 font-20 font-weight-bold color-pee-yellow"><?=number_format($rykker3Fee, 2, ',', '.')?> kr</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Edit Button -->
+                    <div class="flex-row-end mt-3">
+                        <button class="btn-v2 action-btn" onclick="editRykkerSettings()">
+                            <i class="mdi mdi-pencil-outline mr-1"></i> Rediger rykker indstillinger
+                        </button>
+                    </div>
+
+                    <!-- Info -->
+                    <div class="flex-row-start flex-align-center mt-3 p-2 bg-lightest-blue border-radius-8px">
+                        <i class="mdi mdi-information-outline font-16 color-blue mr-2"></i>
+                        <p class="mb-0 font-12 color-dark">
+                            Efter Rykker 3 markeres betalingen automatisk til inkasso. Rykkere sendes via e-mail og SMS.
                         </p>
                     </div>
                 </div>
@@ -369,6 +454,103 @@ $orgFees = $args->orgFees ?? new \Database\Collection();
             <div class="modal-footer border-0">
                 <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Annuller</button>
                 <button type="button" class="btn-v2 action-btn" onclick="saveOrgFee()">
+                    <i class="mdi mdi-content-save-outline mr-1"></i> Gem
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Rykker Settings Modal -->
+<div class="modal fade" id="editRykkerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-radius-10px">
+            <div class="modal-header border-0">
+                <h5 class="modal-title font-weight-bold">Rediger rykker indstillinger</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="flex-col-start" style="gap: 1.5rem;">
+                    <!-- Rykker 1 -->
+                    <div class="p-3 bg-light-gray border-radius-8px">
+                        <div class="flex-row-start flex-align-center mb-3" style="gap: .5rem;">
+                            <span class="warning-box font-12">Rykker 1</span>
+                            <span class="font-12 color-gray">Første påmindelse</span>
+                        </div>
+                        <div class="row" style="row-gap: 1rem;">
+                            <div class="col-12 col-md-6">
+                                <div class="flex-col-start">
+                                    <label class="font-12 color-gray mb-1">Dage efter forfalden</label>
+                                    <input type="number" min="1" max="365" class="form-field-v2" id="rykker1DaysInput" value="<?=$rykker1Days?>">
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="flex-col-start">
+                                    <label class="font-12 color-gray mb-1">Gebyr (kr)</label>
+                                    <input type="number" step="0.01" min="0" max="1000" class="form-field-v2" id="rykker1FeeInput" value="<?=$rykker1Fee?>">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rykker 2 -->
+                    <div class="p-3 bg-light-gray border-radius-8px">
+                        <div class="flex-row-start flex-align-center mb-3" style="gap: .5rem;">
+                            <span class="warning-box font-12">Rykker 2</span>
+                            <span class="font-12 color-gray">Anden påmindelse</span>
+                        </div>
+                        <div class="row" style="row-gap: 1rem;">
+                            <div class="col-12 col-md-6">
+                                <div class="flex-col-start">
+                                    <label class="font-12 color-gray mb-1">Dage efter forfalden</label>
+                                    <input type="number" min="1" max="365" class="form-field-v2" id="rykker2DaysInput" value="<?=$rykker2Days?>">
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="flex-col-start">
+                                    <label class="font-12 color-gray mb-1">Gebyr (kr)</label>
+                                    <input type="number" step="0.01" min="0" max="1000" class="form-field-v2" id="rykker2FeeInput" value="<?=$rykker2Fee?>">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rykker 3 -->
+                    <div class="p-3 bg-light-gray border-radius-8px">
+                        <div class="flex-row-start flex-align-center mb-3" style="gap: .5rem;">
+                            <span class="danger-box font-12">Rykker 3 (Final)</span>
+                            <span class="font-12 color-gray">Sidste påmindelse før inkasso</span>
+                        </div>
+                        <div class="row" style="row-gap: 1rem;">
+                            <div class="col-12 col-md-6">
+                                <div class="flex-col-start">
+                                    <label class="font-12 color-gray mb-1">Dage efter forfalden</label>
+                                    <input type="number" min="1" max="365" class="form-field-v2" id="rykker3DaysInput" value="<?=$rykker3Days?>">
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="flex-col-start">
+                                    <label class="font-12 color-gray mb-1">Gebyr (kr)</label>
+                                    <input type="number" step="0.01" min="0" max="1000" class="form-field-v2" id="rykker3FeeInput" value="<?=$rykker3Fee?>">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Validation Info -->
+                    <div class="flex-row-start flex-align-center p-2 bg-lightest-blue border-radius-8px">
+                        <i class="mdi mdi-information-outline font-16 color-blue mr-2"></i>
+                        <p class="mb-0 font-12 color-dark">
+                            Dagene skal være i stigende rækkefølge (Rykker 1 &lt; Rykker 2 &lt; Rykker 3)
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Annuller</button>
+                <button type="button" class="btn-v2 action-btn" onclick="saveRykkerSettings()">
                     <i class="mdi mdi-content-save-outline mr-1"></i> Gem
                 </button>
             </div>

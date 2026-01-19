@@ -54,7 +54,9 @@ Routes::group(['requiresLogin', 'consumer'], function() {
     Routes::post(Links::$api->consumer->paymentsByCard, "consumer.ApiController::getPaymentsByCard", ['consumerProfileComplete']);
 
     // Consumer payment actions
-    Routes::post("api/consumer/payments/{uid}/pay-now", "consumer.ApiController::payNow", ['consumerProfileComplete']);
+    Routes::post(Links::$api->consumer->payNow, "consumer.ApiController::payNow", ['consumerProfileComplete']);
+    Routes::post(Links::$api->consumer->payOrderOutstanding, "consumer.ApiController::payOrderOutstanding", ['consumerProfileComplete']);
+    Routes::get("api/consumer/payments/{id}/receipt", "consumer.ApiController::downloadReceipt", ['consumerProfileComplete']);
     // More specific routes must come before less specific ones
     Routes::post("api/consumer/change-card/payment-method/{paymentMethodUid}", "consumer.ApiController::initiatePaymentMethodCardChange", ['consumerProfileComplete']);
     Routes::post("api/consumer/change-card/order/{orderUid}", "consumer.ApiController::initiateOrderCardChange", ['consumerProfileComplete']);
@@ -226,6 +228,7 @@ Routes::group(['api','requiresApiLogin'], function() {
         Routes::get("api/payments/{id}/receipt", "merchants.PaymentsApiController::downloadReceipt");
         Routes::post("api/merchant/orders/{id}/refund", "merchants.OrdersApiController::refundOrder");
         Routes::post("api/merchant/payments/{id}/refund", "merchants.OrdersApiController::refundPayment");
+        Routes::post("api/merchant/payments/{id}/reset-rykker", "merchants.PaymentsApiController::resetPaymentRykker");
         Routes::post(Links::$api->orders->customers->list, "merchants.CustomersApiController::getCustomers");
 
         Routes::post(Links::$api->forms->createOrganisation, "merchants.ApiController::createOrganisation");
@@ -610,11 +613,14 @@ Routes::group(['requiresApiLogin', "admin", "api"], function() {
     Routes::post("api/admin/panel/create-user", "admin.ApiController::panelCreateUser");
     Routes::post("api/admin/panel/create-role", "admin.ApiController::panelCreateRole");
     Routes::post("api/admin/panel/update-role", "admin.ApiController::panelUpdateRole");
+    Routes::post(Links::$api->admin->panel->rykkerSettings, "admin.ApiController::panelRykkerSettings");
     Routes::post("api/admin/payments/list", "admin.ApiController::paymentsList");
     Routes::post("api/admin/users/list", "admin.ApiController::usersList");
     Routes::post("api/admin/orders/list", "admin.ApiController::ordersList");
     Routes::post("api/admin/orders/{id}/refund", "admin.ApiController::refundOrder");
     Routes::post("api/admin/payments/{id}/refund", "admin.ApiController::refundPayment");
+    Routes::post("api/admin/payments/{id}/reset-rykker", "admin.ApiController::resetPaymentRykker");
+    Routes::post("api/admin/payments/{id}/mark-collection", "admin.ApiController::markPaymentForCollection");
     Routes::post("api/admin/organisations/list", "admin.ApiController::organisationsList");
     Routes::post("api/admin/locations/list", "admin.ApiController::locationsList");
     Routes::post("api/admin/dashboard/stats", "admin.ApiController::dashboardStats");

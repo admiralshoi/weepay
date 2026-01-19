@@ -8,6 +8,7 @@ const AdminPaymentsPastDuePagination = (function() {
     let perPage = 25;
     let searchTerm = '';
     let filterOrg = '';
+    let filterRykker = '';
     let sortColumn = 'due_date';
     let sortDirection = 'ASC';
     let isLoading = false;
@@ -15,7 +16,7 @@ const AdminPaymentsPastDuePagination = (function() {
     let totalPagesCount = 1;
 
     // DOM elements
-    let $tbody, $search, $filterOrg, $sort, $perPage;
+    let $tbody, $search, $filterOrg, $filterRykker, $sort, $perPage;
     let $showingStart, $showingEnd, $total, $totalCount, $pagination, $noResults, $paginationFooter, $table;
 
     function init() {
@@ -23,6 +24,7 @@ const AdminPaymentsPastDuePagination = (function() {
         $table = $('#payments-table');
         $search = $('#payments-search');
         $filterOrg = $('#payments-filter-org');
+        $filterRykker = $('#payments-filter-rykker');
         $sort = $('#payments-sort');
         $perPage = $('#payments-per-page');
         $showingStart = $('#payments-showing-start');
@@ -57,6 +59,13 @@ const AdminPaymentsPastDuePagination = (function() {
             fetchPayments();
         });
 
+        $filterRykker.on('change', function() {
+            const val = $(this).val();
+            filterRykker = val === 'all' ? '' : val;
+            currentPage = 1;
+            fetchPayments();
+        });
+
         $sort.on('change', function() {
             const val = $(this).val().split('-');
             sortColumn = val[0];
@@ -87,6 +96,13 @@ const AdminPaymentsPastDuePagination = (function() {
 
             if (searchTerm) params.search = searchTerm;
             if (filterOrg) params.organisation = filterOrg;
+            if (filterRykker) {
+                if (filterRykker === 'collection') {
+                    params.sent_to_collection = 1;
+                } else {
+                    params.rykker_level = filterRykker;
+                }
+            }
 
             const result = await post(adminPaymentsApiUrl, params);
 
@@ -115,7 +131,7 @@ const AdminPaymentsPastDuePagination = (function() {
     function showLoading() {
         $tbody.html(`
             <tr id="payments-loading-row">
-                <td colspan="7" class="text-center py-4">
+                <td colspan="9" class="text-center py-4">
                     <div class="flex-col-center flex-align-center">
                         <span class="spinner-border color-primary-cta square-30" role="status" style="border-width: 3px;">
                             <span class="sr-only">Indlæser...</span>
@@ -132,7 +148,7 @@ const AdminPaymentsPastDuePagination = (function() {
     function showError(message) {
         $tbody.html(`
             <tr>
-                <td colspan="7" class="text-center py-4">
+                <td colspan="9" class="text-center py-4">
                     <div class="flex-col-center flex-align-center">
                         <i class="mdi mdi-alert-circle font-40 color-red"></i>
                         <p class="color-red mt-2 mb-0">${message}</p>
@@ -192,6 +208,28 @@ const AdminPaymentsPastDuePagination = (function() {
 
         const truncatedPaymentId = payment.uid.substring(0, 10);
 
+        // Rykker level display
+        const rykkerLevel = parseInt(payment.rykker_level) || 0;
+        const sentToCollection = payment.sent_to_collection == 1;
+        let rykkerBadge;
+        if (sentToCollection) {
+            rykkerBadge = `<span class="danger-box font-11">Inkasso</span>`;
+        } else if (rykkerLevel === 0) {
+            rykkerBadge = `<span class="mute-box font-11">-</span>`;
+        } else if (rykkerLevel === 1) {
+            rykkerBadge = `<span class="warning-box font-11">Rykker 1</span>`;
+        } else if (rykkerLevel === 2) {
+            rykkerBadge = `<span class="warning-box font-11">Rykker 2</span>`;
+        } else {
+            rykkerBadge = `<span class="danger-box font-11">Rykker 3</span>`;
+        }
+
+        // Rykker fee display
+        const rykkerFee = parseFloat(payment.rykker_fee) || 0;
+        const rykkerFeeHtml = rykkerFee > 0
+            ? `<span class="font-13 color-danger">${formatNumber(rykkerFee, 2)} ${escapeHtml(payment.currency || 'DKK')}</span>`
+            : `<span class="font-13 color-gray">-</span>`;
+
         return `
             <tr>
                 <td>
@@ -209,7 +247,9 @@ const AdminPaymentsPastDuePagination = (function() {
                 <td>${customerHtml}</td>
                 <td><span class="font-13">${escapeHtml(payment.organisation_name || '-')}</span></td>
                 <td><p class="mb-0 font-14 font-weight-bold color-danger">${formatNumber(payment.amount, 2)} ${escapeHtml(payment.currency || 'DKK')}</p></td>
+                <td>${rykkerFeeHtml}</td>
                 <td><p class="mb-0 font-13 color-danger">${formatDate(payment.due_date)}</p></td>
+                <td>${rykkerBadge}</td>
                 <td><span class="danger-box font-11">${daysOverdue} dage</span></td>
             </tr>
         `;

@@ -546,6 +546,8 @@ Vi har endnu ikke modtaget din betaling, som forfaldt den {{payment.due_date_for
 BETALINGSDETALJER
 -----------------
 Beløb: {{payment.formatted_amount}}
+Rykkergebyr: {{rykker.formatted_fee}}
+Total at betale: {{payment.formatted_total_due}}
 Forfaldsdato: {{payment.due_date_formatted}}
 Dage forsinket: {{days_overdue}}
 Ordrenummer: {{order.uid}}
@@ -573,6 +575,8 @@ Med venlig hilsen,
     <h3 style="margin: 0 0 15px 0; color: #333; font-size: 16px;">Betalingsdetaljer</h3>
     <table style="width: 100%; font-size: 14px;">
         <tr><td style="padding: 5px 0; color: #666;">Beløb:</td><td style="padding: 5px 0; text-align: right;"><strong>{{payment.formatted_amount}}</strong></td></tr>
+        <tr><td style="padding: 5px 0; color: #666;">Rykkergebyr:</td><td style="padding: 5px 0; text-align: right;"><strong style="color: #e65100;">{{rykker.formatted_fee}}</strong></td></tr>
+        <tr style="border-top: 2px solid #ddd;"><td style="padding: 10px 0 5px 0; color: #333; font-weight: bold;">Total at betale:</td><td style="padding: 10px 0 5px 0; text-align: right; font-size: 16px;"><strong style="color: #e65100;">{{payment.formatted_total_due}}</strong></td></tr>
         <tr><td style="padding: 5px 0; color: #666;">Forfaldsdato:</td><td style="padding: 5px 0; text-align: right;">{{payment.due_date_formatted}}</td></tr>
         <tr><td style="padding: 5px 0; color: #666;">Dage forsinket:</td><td style="padding: 5px 0; text-align: right;"><strong style="color: #e65100;">{{days_overdue}}</strong></td></tr>
         <tr><td style="padding: 5px 0; color: #666;">Ordrenummer:</td><td style="padding: 5px 0; text-align: right;">{{order.uid}}</td></tr>
@@ -599,7 +603,7 @@ Med venlig hilsen,
             "type" => "sms",
             "category" => "template",
             "subject" => null,
-            "content" => "1. RYKKER: Din betaling på {{payment.formatted_amount}} mangler. Betal venligst hurtigst muligt: {{payment_link}}",
+            "content" => "1. RYKKER: Din betaling mangler. Total at betale: {{payment.formatted_total_due}} (inkl. gebyr {{rykker.formatted_fee}}). Betal nu: {{payment_link}}",
             "html_content" => null,
             "status" => "active",
             "created_by" => null,
@@ -636,6 +640,9 @@ Trods tidligere påmindelse har vi stadig ikke modtaget din betaling.
 BETALINGSDETALJER
 -----------------
 Beløb: {{payment.formatted_amount}}
+Rykkergebyr: {{rykker.formatted_fee}}
+Samlede rykkergebyrer: {{rykker.formatted_total_fees}}
+Total at betale: {{payment.formatted_total_due}}
 Forfaldsdato: {{payment.due_date_formatted}}
 Dage forsinket: {{days_overdue}}
 Ordrenummer: {{order.uid}}
@@ -663,6 +670,9 @@ Med venlig hilsen,
     <h3 style="margin: 0 0 15px 0; color: #333; font-size: 16px;">Betalingsdetaljer</h3>
     <table style="width: 100%; font-size: 14px;">
         <tr><td style="padding: 5px 0; color: #666;">Beløb:</td><td style="padding: 5px 0; text-align: right;"><strong>{{payment.formatted_amount}}</strong></td></tr>
+        <tr><td style="padding: 5px 0; color: #666;">Rykkergebyr:</td><td style="padding: 5px 0; text-align: right;"><strong style="color: #c62828;">{{rykker.formatted_fee}}</strong></td></tr>
+        <tr><td style="padding: 5px 0; color: #666;">Samlede rykkergebyrer:</td><td style="padding: 5px 0; text-align: right;"><strong style="color: #c62828;">{{rykker.formatted_total_fees}}</strong></td></tr>
+        <tr style="border-top: 2px solid #ddd;"><td style="padding: 10px 0 5px 0; color: #333; font-weight: bold;">Total at betale:</td><td style="padding: 10px 0 5px 0; text-align: right; font-size: 16px;"><strong style="color: #c62828;">{{payment.formatted_total_due}}</strong></td></tr>
         <tr><td style="padding: 5px 0; color: #666;">Forfaldsdato:</td><td style="padding: 5px 0; text-align: right;">{{payment.due_date_formatted}}</td></tr>
         <tr><td style="padding: 5px 0; color: #666;">Dage forsinket:</td><td style="padding: 5px 0; text-align: right;"><strong style="color: #c62828;">{{days_overdue}}</strong></td></tr>
         <tr><td style="padding: 5px 0; color: #666;">Ordrenummer:</td><td style="padding: 5px 0; text-align: right;">{{order.uid}}</td></tr>
@@ -689,7 +699,7 @@ Med venlig hilsen,
             "type" => "sms",
             "category" => "template",
             "subject" => null,
-            "content" => "2. RYKKER: {{payment.formatted_amount}} mangler stadig. Betal omgående for at undgå inkasso: {{payment_link}}",
+            "content" => "2. RYKKER: Total at betale: {{payment.formatted_total_due}} (inkl. gebyrer {{rykker.formatted_total_fees}}). Betal omgående: {{payment_link}}",
             "html_content" => null,
             "status" => "active",
             "created_by" => null,
@@ -726,6 +736,9 @@ Dette er din sidste mulighed for at betale din udestående gæld, før sagen ove
 BETALINGSDETALJER
 -----------------
 Beløb: {{payment.formatted_amount}}
+Rykkergebyr: {{rykker.formatted_fee}}
+Samlede rykkergebyrer: {{rykker.formatted_total_fees}}
+TOTAL AT BETALE: {{payment.formatted_total_due}}
 Forfaldsdato: {{payment.due_date_formatted}}
 Dage forsinket: {{days_overdue}}
 Ordrenummer: {{order.uid}}
@@ -752,7 +765,10 @@ Med venlig hilsen,
 <div style="background: #ffebee; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #b71c1c;">
     <h3 style="margin: 0 0 15px 0; color: #b71c1c; font-size: 16px;">Betalingsdetaljer</h3>
     <table style="width: 100%; font-size: 14px;">
-        <tr><td style="padding: 5px 0; color: #666;">Beløb:</td><td style="padding: 5px 0; text-align: right;"><strong style="font-size: 18px;">{{payment.formatted_amount}}</strong></td></tr>
+        <tr><td style="padding: 5px 0; color: #666;">Beløb:</td><td style="padding: 5px 0; text-align: right;"><strong>{{payment.formatted_amount}}</strong></td></tr>
+        <tr><td style="padding: 5px 0; color: #666;">Rykkergebyr:</td><td style="padding: 5px 0; text-align: right;"><strong style="color: #b71c1c;">{{rykker.formatted_fee}}</strong></td></tr>
+        <tr><td style="padding: 5px 0; color: #666;">Samlede rykkergebyrer:</td><td style="padding: 5px 0; text-align: right;"><strong style="color: #b71c1c;">{{rykker.formatted_total_fees}}</strong></td></tr>
+        <tr style="border-top: 2px solid #b71c1c; background: #ffcdd2;"><td style="padding: 10px 0 5px 0; color: #b71c1c; font-weight: bold;">TOTAL AT BETALE:</td><td style="padding: 10px 0 5px 0; text-align: right; font-size: 18px;"><strong style="color: #b71c1c;">{{payment.formatted_total_due}}</strong></td></tr>
         <tr><td style="padding: 5px 0; color: #666;">Forfaldsdato:</td><td style="padding: 5px 0; text-align: right;">{{payment.due_date_formatted}}</td></tr>
         <tr><td style="padding: 5px 0; color: #666;">Dage forsinket:</td><td style="padding: 5px 0; text-align: right;"><strong style="color: #b71c1c;">{{days_overdue}}</strong></td></tr>
         <tr><td style="padding: 5px 0; color: #666;">Ordrenummer:</td><td style="padding: 5px 0; text-align: right;">{{order.uid}}</td></tr>
@@ -781,7 +797,7 @@ Med venlig hilsen,
             "type" => "sms",
             "category" => "template",
             "subject" => null,
-            "content" => "INKASSOVARSEL: {{payment.formatted_amount}} skal betales NU for at undgå inkasso. Sidste chance: {{payment_link}}",
+            "content" => "INKASSOVARSEL: Total {{payment.formatted_total_due}} (inkl. gebyrer {{rykker.formatted_total_fees}}) skal betales NU. Sidste chance: {{payment_link}}",
             "html_content" => null,
             "status" => "active",
             "created_by" => null,
@@ -795,6 +811,62 @@ Med venlig hilsen,
             "subject" => "INKASSOVARSEL",
             "content" => "Sidste chance: Betal {{payment.formatted_amount}} nu for at undgå inkasso.",
             "html_content" => null,
+            "status" => "active",
+            "created_by" => null,
+        ],
+
+        // =====================================================
+        // RYKKER CANCELLED
+        // =====================================================
+        [
+            "uid" => "ntpl_rykker_cancelled_email",
+            "name" => "Rykker annulleret (email)",
+            "slug" => "rykker_cancelled_email",
+            "type" => "email",
+            "category" => "template",
+            "subject" => "Din rykker er blevet annulleret",
+            "content" => "Kære {{user.full_name}},
+
+RYKKER ANNULLERET
+
+Vi skriver for at bekræfte, at rykkeren på din betaling er blevet annulleret.
+
+BETALINGSDETALJER
+-----------------
+Beløb: {{payment.formatted_amount}}
+Forfaldsdato: {{payment.due_date_formatted}}
+Ordrenummer: {{order.uid}}
+Forretning: {{location.name}}
+
+Hvis du har spørgsmål, er du velkommen til at kontakte forretningen.
+
+Med venlig hilsen,
+{{location.name}}",
+            "html_content" => '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%); padding: 30px; border-radius: 10px 10px 0 0;">
+        <h1 style="color: white; margin: 0; font-size: 24px;">Rykker Annulleret</h1>
+    </div>
+    <div style="background: #ffffff; padding: 30px; border: 1px solid #e0e0e0; border-top: none;">
+        <p style="font-size: 16px; color: #333; margin-bottom: 20px;">Kære {{user.full_name}},</p>
+        <div style="background: #e8f5e9; border-left: 4px solid #43a047; padding: 15px; margin-bottom: 20px;">
+            <p style="margin: 0; color: #2e7d32; font-weight: bold;">Din rykker er blevet annulleret</p>
+        </div>
+        <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="margin: 0 0 15px 0; color: #333;">Betalingsdetaljer</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr><td style="padding: 8px 0; color: #666;">Beløb:</td><td style="padding: 8px 0; color: #333; font-weight: bold;">{{payment.formatted_amount}}</td></tr>
+                <tr><td style="padding: 8px 0; color: #666;">Forfaldsdato:</td><td style="padding: 8px 0; color: #333;">{{payment.due_date_formatted}}</td></tr>
+                <tr><td style="padding: 8px 0; color: #666;">Ordrenummer:</td><td style="padding: 8px 0; color: #333;">{{order.uid}}</td></tr>
+                <tr><td style="padding: 8px 0; color: #666;">Forretning:</td><td style="padding: 8px 0; color: #333;">{{location.name}}</td></tr>
+            </table>
+        </div>
+        <p style="font-size: 14px; color: #666;">Hvis du har spørgsmål, er du velkommen til at kontakte forretningen.</p>
+        <p style="font-size: 14px; color: #333; margin-top: 30px;">Med venlig hilsen,<br><strong>{{location.name}}</strong></p>
+    </div>
+    <div style="background: #f5f5f5; padding: 20px; border-radius: 0 0 10px 10px; text-align: center;">
+        <p style="margin: 0; font-size: 12px; color: #999;">{{viva_note}}</p>
+    </div>
+</div>',
             "status" => "active",
             "created_by" => null,
         ],
@@ -1248,7 +1320,7 @@ Med venlig hilsen,
 
 {{inviter.full_name}} har inviteret dig til at blive en del af {{organisation.name}} på {{brand.name}}.
 
-Accepter invitationen her: {{invite_link}}
+Log ind eller opret en konto for at se og acceptere invitationen: {{invite_link}}
 
 Med venlig hilsen,
 {{brand.name}}",
@@ -1259,11 +1331,11 @@ Med venlig hilsen,
 
 <div style="background: #e3f2fd; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
     <p style="margin: 0 0 15px 0; font-size: 18px; color: #1976d2;">Du er inviteret!</p>
-    <p style="margin: 0; color: #666;">Klik på knappen nedenfor for at acceptere invitationen og komme i gang.</p>
+    <p style="margin: 0; color: #666;">Log ind eller opret en konto for at se og acceptere invitationen.</p>
 </div>
 
 <p style="text-align: center; margin: 25px 0;">
-    <a href="{{invite_link}}" style="display: inline-block; padding: 15px 40px; background: #FE5722; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">Accepter invitation</a>
+    <a href="{{invite_link}}" style="display: inline-block; padding: 15px 40px; background: #FE5722; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">Log ind</a>
 </p>
 
 <p style="font-size: 13px; color: #666;">Hvis du ikke kender afsenderen, kan du ignorere denne email.</p>
@@ -1279,7 +1351,7 @@ Med venlig hilsen,
             "type" => "sms",
             "category" => "template",
             "subject" => null,
-            "content" => "{{inviter.full_name}} har inviteret dig til {{organisation.name}}. Accepter her: {{invite_link}}",
+            "content" => "{{inviter.full_name}} har inviteret dig til {{organisation.name}}. Log ind for at acceptere: {{invite_link}}",
             "html_content" => null,
             "status" => "active",
             "created_by" => null,

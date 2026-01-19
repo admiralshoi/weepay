@@ -22,6 +22,7 @@ class Orders {
 
 class Payments {
     public string $list = "api/payments/list";
+    public string $resetRykker = "api/merchant/payments/{id}/reset-rykker";
 
     public function receipt(string $paymentId): string {
         return "api/payments/{$paymentId}/receipt";

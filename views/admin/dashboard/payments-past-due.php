@@ -41,6 +41,14 @@ $organisations = $args->organisations ?? new \Database\Collection();
                                 <option value="<?=$org->uid?>"><?=htmlspecialchars($org->name)?></option>
                                 <?php endforeach; ?>
                             </select>
+                            <select class="form-select-v2 h-45px" id="payments-filter-rykker" style="min-width: 150px;">
+                                <option value="all" selected>Alle rykker</option>
+                                <option value="0">Ingen rykker</option>
+                                <option value="1">Rykker 1</option>
+                                <option value="2">Rykker 2</option>
+                                <option value="3">Rykker 3</option>
+                                <option value="collection">Sendt til inkasso</option>
+                            </select>
                         </div>
                         <div class="flex-row-end flex-align-center flex-wrap" style="gap: .5rem;">
                             <select class="form-select-v2 h-45px" id="payments-sort" style="min-width: 150px;">
@@ -71,14 +79,16 @@ $organisations = $args->organisations ?? new \Database\Collection();
                                     <th class="font-12 font-weight-medium color-gray text-uppercase">Kunde</th>
                                     <th class="font-12 font-weight-medium color-gray text-uppercase"><?=Translate::word("Organisation")?></th>
                                     <th class="font-12 font-weight-medium color-gray text-uppercase">Beløb</th>
+                                    <th class="font-12 font-weight-medium color-gray text-uppercase">Rykkergebyr</th>
                                     <th class="font-12 font-weight-medium color-gray text-uppercase">Forfaldsdato</th>
+                                    <th class="font-12 font-weight-medium color-gray text-uppercase">Rykker</th>
                                     <th class="font-12 font-weight-medium color-gray text-uppercase">Dage forsinket</th>
                                 </tr>
                             </thead>
                             <tbody id="payments-tbody">
                                 <!-- Loading state -->
                                 <tr id="payments-loading-row">
-                                    <td colspan="7" class="text-center py-4">
+                                    <td colspan="9" class="text-center py-4">
                                         <div class="flex-col-center flex-align-center">
                                             <span class="spinner-border color-primary-cta square-30" role="status" style="border-width: 3px;">
                                                 <span class="sr-only">Indlæser...</span>

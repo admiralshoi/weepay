@@ -392,6 +392,7 @@ class Admin extends \routing\paths\Paths {
             ],
             "custom" => [
                 "js.includes.SweetPrompt.js",
+                "js.rykker.js",
             ],
         ],
     ];

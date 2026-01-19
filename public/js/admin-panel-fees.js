@@ -241,3 +241,48 @@ function deleteOrgFee(uid) {
         }
     });
 }
+
+// Rykker Settings
+function editRykkerSettings() {
+    $('#editRykkerModal').modal('show');
+}
+
+async function saveRykkerSettings() {
+    var rykker1Days = parseInt($('#rykker1DaysInput').val()) || 7;
+    var rykker2Days = parseInt($('#rykker2DaysInput').val()) || 14;
+    var rykker3Days = parseInt($('#rykker3DaysInput').val()) || 21;
+    var rykker1Fee = parseFloat($('#rykker1FeeInput').val()) || 0;
+    var rykker2Fee = parseFloat($('#rykker2FeeInput').val()) || 0;
+    var rykker3Fee = parseFloat($('#rykker3FeeInput').val()) || 0;
+
+    // Validate days are in ascending order
+    if (rykker1Days >= rykker2Days || rykker2Days >= rykker3Days) {
+        showErrorNotification('Ugyldig rækkefølge', 'Dagene skal være i stigende rækkefølge (Rykker 1 < Rykker 2 < Rykker 3)');
+        return;
+    }
+
+    // Validate minimum days
+    if (rykker1Days < 1) {
+        showErrorNotification('Ugyldigt antal dage', 'Rykker 1 skal være mindst 1 dag efter forfalden');
+        return;
+    }
+
+    screenLoader.show('Gemmer rykker indstillinger...');
+    var result = await post(platformLinks.api.admin.panel.rykkerSettings, {
+        rykker_1_days: rykker1Days,
+        rykker_2_days: rykker2Days,
+        rykker_3_days: rykker3Days,
+        rykker_1_fee: rykker1Fee,
+        rykker_2_fee: rykker2Fee,
+        rykker_3_fee: rykker3Fee
+    });
+    screenLoader.hide();
+
+    if (result.status === 'success') {
+        $('#editRykkerModal').modal('hide');
+        queueNotificationOnLoad('Gemt', 'Rykker indstillinger er opdateret', 'success');
+        window.location.reload();
+    } else {
+        showErrorNotification('Fejl', result.error?.message || result.message || 'Der opstod en fejl');
+    }
+}

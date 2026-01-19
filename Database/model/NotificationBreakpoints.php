@@ -225,6 +225,17 @@ class NotificationBreakpoints extends \Database\Model {
             "is_system" => 1,
             "status" => "active"
         ],
+        [
+            "uid" => "nbp_payment_rykker_cancelled",
+            "key" => "payment.rykker_cancelled",
+            "name" => "Rykker annulleret",
+            "description" => "Udløses når en rykker annulleres/nulstilles",
+            "category" => "payment",
+            "available_placeholders" => '["user.full_name","user.email","payment.uid","payment.amount","payment.formatted_amount","payment.due_date","payment.due_date_formatted","order.uid","order.caption","organisation.name","location.name","payment_link","app.name"]',
+            "trigger_type" => "instant",
+            "is_system" => 1,
+            "status" => "active"
+        ],
         // Merchant breakpoints
         [
             "uid" => "nbp_merchant_order_received",

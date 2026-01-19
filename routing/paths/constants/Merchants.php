@@ -212,6 +212,7 @@ class Merchants extends \routing\paths\Paths {
             "custom" => [
                 "js.includes.SweetPrompt.js",
                 "js.merchant-refunds.js",
+                "js.rykker.js",
             ],
         ],
     ];

@@ -31,6 +31,8 @@ class Admin {
 
 class Payments {
     public string $list = "api/admin/payments/list";
+    public string $resetRykker = "api/admin/payments/{id}/reset-rykker";
+    public string $markCollection = "api/admin/payments/{id}/mark-collection";
 }
 
 class Users {
@@ -77,4 +79,5 @@ class Panel {
     public string $createUser = "api/admin/panel/create-user";
     public string $createRole = "api/admin/panel/create-role";
     public string $updateRole = "api/admin/panel/update-role";
+    public string $rykkerSettings = "api/admin/panel/rykker-settings";
 }

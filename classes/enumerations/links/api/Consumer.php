@@ -14,10 +14,8 @@ class Consumer {
     // Payment actions
     public string $changeCard = "api/consumer/change-card";
     public string $paymentsByCard = "api/consumer/payments-by-card";
-
-    public function payNow(string $paymentUid): string {
-        return "api/consumer/payments/{$paymentUid}/pay-now";
-    }
+    public string $payNow = "api/consumer/payments/{uid}/pay-now";
+    public string $payOrderOutstanding = "api/consumer/orders/{uid}/pay-outstanding";
 
     public function changeCardForOrder(string $orderUid): string {
         return "api/consumer/change-card/order/{$orderUid}";
@@ -25,6 +23,10 @@ class Consumer {
 
     public function changeCardForPaymentMethod(string $paymentMethodUid): string {
         return "api/consumer/change-card/payment-method/{$paymentMethodUid}";
+    }
+
+    public function paymentReceipt(string $paymentUid): string {
+        return "api/consumer/payments/{$paymentUid}/receipt";
     }
 
 }

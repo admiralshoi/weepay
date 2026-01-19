@@ -86,11 +86,15 @@ foreach ($cronConfig as $type => $config) {
                                         // Determine status
                                         $isRunning = (int)$job->is_running === 1;
                                         $canRun = (int)$job->can_run === 1;
+                                        $startedAtTs = (int)$job->started_at;
+                                        $timeSinceStart = time() - $startedAtTs;
+                                        $intervalPassed = $startedAtTs > 0 && $timeSinceStart >= $timeGap;
+                                        $isReady = !$isRunning && ($canRun || $intervalPassed);
 
                                         if ($isRunning) {
                                             $statusClass = 'warning-box';
                                             $statusLabel = 'Kører';
-                                        } elseif ($canRun) {
+                                        } elseif ($isReady) {
                                             $statusClass = 'success-box';
                                             $statusLabel = 'Klar';
                                         } else {

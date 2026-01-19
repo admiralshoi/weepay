@@ -251,6 +251,21 @@ class NotificationFlows extends \Database\Model {
             "recipient_email" => null,
             "created_by" => null,
         ],
+        [
+            "uid" => "nflw_rykker_cancelled",
+            "name" => "Rykker annulleret",
+            "description" => "Sendes når en rykker annulleres af forretning eller admin",
+            "breakpoint" => "nbp_payment_rykker_cancelled",
+            "status" => "active",
+            "priority" => 100,
+            "starts_at" => null,
+            "ends_at" => null,
+            "conditions" => null,
+            "schedule_offset_days" => 0,
+            "recipient_type" => "user",
+            "recipient_email" => null,
+            "created_by" => null,
+        ],
 
         // =====================================================
         // ORGANISATION FLOWS

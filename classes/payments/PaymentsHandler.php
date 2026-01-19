@@ -4,6 +4,7 @@ namespace classes\payments;
 
 use classes\Methods;
 use classes\utility\Crud;
+use classes\notifications\NotificationTriggers;
 use Database\Collection;
 use Database\model\Organisations;
 use Database\model\Payments;
@@ -346,6 +347,247 @@ class PaymentsHandler extends Crud {
             'max_amount' => $maxAmount,
             'platform_max' => $platformMaxAmount,
             'is_org_specific' => $isOrgSpecific,
+        ];
+    }
+
+
+    // ==========================================
+    // RYKKER (DUNNING) METHODS
+    // ==========================================
+
+    /**
+     * Get all PAST_DUE payments that are scheduled for rykker check
+     * Only returns payments where scheduled_at <= now (ready for next rykker)
+     *
+     * @return Collection
+     */
+    public function getPastDueForRykker(): Collection {
+        return $this->queryGetAll(
+            $this->queryBuilder()
+                ->where('status', 'PAST_DUE')
+                ->where('sent_to_collection', 0)
+                ->where('scheduled_at', '<=', date('Y-m-d H:i:s'))
+        );
+    }
+
+    /**
+     * Calculate days overdue for a payment
+     *
+     * @param object $payment Payment object with due_date
+     * @return int Days overdue (0 if not overdue)
+     */
+    public function getDaysOverdue(object $payment): int {
+        if (isEmpty($payment->due_date)) return 0;
+
+        $dueTimestamp = is_numeric($payment->due_date) ? $payment->due_date : strtotime($payment->due_date);
+        $now = time();
+
+        if ($now <= $dueTimestamp) return 0;
+
+        return (int) floor(($now - $dueTimestamp) / 86400);
+    }
+
+    /**
+     * Send a rykker for a payment and update its status
+     * Sets scheduled_at for the next rykker check
+     *
+     * @param string $paymentId Payment UID
+     * @param int $rykkerLevel Rykker level (1, 2, or 3)
+     * @param float $fee Fee amount for this rykker
+     * @return bool Success status
+     */
+    public function sendRykker(string $paymentId, int $rykkerLevel, float $fee = 0): bool {
+        debugLog([
+            'payment_id' => $paymentId,
+            'rykker_level' => $rykkerLevel,
+            'fee' => $fee,
+        ], 'SEND_RYKKER_START');
+
+        $payment = $this->get($paymentId);
+        if (isEmpty($payment)) {
+            debugLog([
+                'payment_id' => $paymentId,
+                'error' => 'Payment not found',
+            ], 'SEND_RYKKER_PAYMENT_NOT_FOUND');
+            return false;
+        }
+
+        $currentFee = (float)($payment->rykker_fee ?? 0);
+        $newFee = $currentFee + $fee;
+
+        $updateData = [
+            'rykker_level' => $rykkerLevel,
+            'rykker_fee' => $newFee,
+            "rykker_{$rykkerLevel}_sent_at" => date('Y-m-d H:i:s'),
+        ];
+
+        // If this is rykker 3, mark for collection (no more scheduling needed)
+        if ($rykkerLevel >= 3) {
+            $updateData['sent_to_collection'] = 1;
+            $updateData['scheduled_at'] = null;
+            debugLog([
+                'payment_id' => $paymentId,
+                'action' => 'marked_for_collection',
+            ], 'SEND_RYKKER_COLLECTION');
+        } else {
+            // Schedule next rykker check
+            $nextScheduledAt = $this->calculateNextRykkerDate($rykkerLevel);
+            $updateData['scheduled_at'] = $nextScheduledAt;
+            debugLog([
+                'payment_id' => $paymentId,
+                'current_level' => $rykkerLevel,
+                'next_scheduled_at' => $nextScheduledAt,
+            ], 'SEND_RYKKER_NEXT_SCHEDULED');
+        }
+
+        debugLog([
+            'payment_id' => $paymentId,
+            'update_data' => $updateData,
+        ], 'SEND_RYKKER_UPDATE_DATA');
+
+        $result = $this->update($updateData, ['uid' => $paymentId]);
+
+        debugLog([
+            'payment_id' => $paymentId,
+            'update_success' => $result,
+        ], 'SEND_RYKKER_RESULT');
+
+        return $result;
+    }
+
+    /**
+     * Calculate the next rykker scheduled date based on current level
+     *
+     * @param int $currentRykkerLevel The rykker level just sent (1 or 2)
+     * @return string Next scheduled date
+     */
+    private function calculateNextRykkerDate(int $currentRykkerLevel): string {
+        $rykker1Days = (int)(Settings::$app->rykker_1_days ?? 7);
+        $rykker2Days = (int)(Settings::$app->rykker_2_days ?? 14);
+        $rykker3Days = (int)(Settings::$app->rykker_3_days ?? 21);
+
+        // Calculate interval to next rykker
+        if ($currentRykkerLevel === 1) {
+            $daysToNext = $rykker2Days - $rykker1Days;
+        } else {
+            $daysToNext = $rykker3Days - $rykker2Days;
+        }
+
+        // Minimum 1 day interval
+        $daysToNext = max(1, $daysToNext);
+
+        debugLog([
+            'current_level' => $currentRykkerLevel,
+            'rykker_1_days' => $rykker1Days,
+            'rykker_2_days' => $rykker2Days,
+            'rykker_3_days' => $rykker3Days,
+            'days_to_next' => $daysToNext,
+        ], 'CALCULATE_NEXT_RYKKER_DATE');
+
+        return date('Y-m-d H:i:s', strtotime("+{$daysToNext} days"));
+    }
+
+    /**
+     * Reset rykker status for a payment (for disputes/goodwill)
+     * Sets a fresh grace period before the next rykker
+     *
+     * @param string $paymentId Payment UID
+     * @param bool $clearFees Whether to also clear accumulated fees
+     * @return bool Success status
+     */
+    public function resetRykker(string $paymentId, bool $clearFees = true, bool $sendNotification = true): bool {
+        // Fetch payment before reset (for notification)
+        $payment = $sendNotification ? $this->get($paymentId) : null;
+
+        // Get grace period from settings (days until first rykker)
+        $rykker1Days = (int)(Settings::$app->rykker_1_days ?? 7);
+
+        $updateData = [
+            'rykker_level' => 0,
+            'rykker_1_sent_at' => null,
+            'rykker_2_sent_at' => null,
+            'rykker_3_sent_at' => null,
+            'sent_to_collection' => 0,
+            'scheduled_at' => date('Y-m-d H:i:s', strtotime("+{$rykker1Days} days")),
+        ];
+
+        if ($clearFees) {
+            $updateData['rykker_fee'] = 0;
+        }
+
+        $result = $this->update($updateData, ['uid' => $paymentId]);
+
+        // Trigger notification if successful and payment had a rykker
+        if ($result && $sendNotification && $payment && (int)($payment->rykker_level ?? 0) > 0) {
+            NotificationTriggers::paymentRykkerCancelled($payment);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Clear rykker fees when payment is refunded/voided
+     *
+     * @param string $paymentId Payment UID
+     * @return bool Success status
+     */
+    public function clearRykkerOnRefund(string $paymentId): bool {
+        return $this->update([
+            'rykker_fee' => 0,
+        ], ['uid' => $paymentId]);
+    }
+
+    /**
+     * Mark a payment for collection manually
+     *
+     * @param string $paymentId Payment UID
+     * @return bool Success status
+     */
+    public function markForCollection(string $paymentId): bool {
+        return $this->update([
+            'sent_to_collection' => 1,
+        ], ['uid' => $paymentId]);
+    }
+
+    /**
+     * Get payments marked for collection
+     *
+     * @param string|null $organisationId Optional organisation filter
+     * @return Collection
+     */
+    public function getCollectionPayments(?string $organisationId = null): Collection {
+        $query = $this->queryBuilder()
+            ->where('sent_to_collection', 1);
+
+        if (!isEmpty($organisationId)) {
+            $query->where('organisation', $organisationId);
+        }
+
+        return $this->queryGetAll($query);
+    }
+
+    /**
+     * Get rykker statistics for admin/reports
+     *
+     * @return object Statistics object
+     */
+    public function getRykkerStats(): object {
+        $rykker1 = $this->queryBuilder()->where('rykker_level', 1)->where('sent_to_collection', 0)->count();
+        $rykker2 = $this->queryBuilder()->where('rykker_level', 2)->where('sent_to_collection', 0)->count();
+        $rykker3 = $this->queryBuilder()->where('rykker_level', 3)->where('sent_to_collection', 0)->count();
+        $collection = $this->queryBuilder()->where('sent_to_collection', 1)->count();
+
+        $totalFees = $this->queryBuilder()
+            ->where('rykker_fee', '>', 0)
+            ->rawSelect('SUM(rykker_fee) as total')
+            ->first()->total ?? 0;
+
+        return (object)[
+            'rykker_1_count' => $rykker1,
+            'rykker_2_count' => $rykker2,
+            'rykker_3_count' => $rykker3,
+            'collection_count' => $collection,
+            'total_fees' => (float)$totalFees,
         ];
     }
 

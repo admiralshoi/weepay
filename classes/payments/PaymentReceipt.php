@@ -20,10 +20,27 @@ class PaymentReceipt {
     public function __construct(object $payment) {
         $this->payment = $payment;
         $this->order = is_object($payment->order) ? $payment->order : null;
-        $this->customer = is_object($payment->uuid) ? $payment->uuid : null;
         $this->organisation = is_object($payment->organisation) ? $payment->organisation : null;
-        $this->location = is_object($payment->location) ? $payment->location : null;
         $this->currency = $payment->currency ?? 'DKK';
+
+        // Customer and location may not be resolved due to foreign key table tracking
+        // (if order->uuid was resolved first, payment->uuid gets skipped)
+        if (is_object($payment->uuid)) {
+            $this->customer = $payment->uuid;
+        } elseif (!isEmpty($payment->uuid)) {
+            $this->customer = Methods::users()->get($payment->uuid);
+        } else {
+            $this->customer = null;
+        }
+
+        if (is_object($payment->location)) {
+            $this->location = $payment->location;
+        } elseif (!isEmpty($payment->location)) {
+            $this->location = Methods::locations()->excludeForeignKeys()->get($payment->location);
+        } else {
+            $this->location = null;
+        }
+
         $this->basketItems = $this->fetchBasketItems();
     }
 
@@ -84,7 +101,7 @@ class PaymentReceipt {
     /**
      * Generate the PDF and stream directly to browser for download
      */
-    public function download(string $filename = null): void {
+    public function download(?string $filename = null): void {
         $filename = $filename ?? $this->getDefaultFilename();
 
         $dompdf = $this->createDompdf();
@@ -165,12 +182,12 @@ class PaymentReceipt {
         }
         $orgCvr = $organisation->cvr ?? '';
 
-        // Customer info
-        $customerName = $customer->full_name ?? 'Ukendt';
-        $customerEmail = $customer->email ?? '';
+        // Customer info (use nullsafe operator for potentially null objects)
+        $customerName = $customer?->full_name ?? 'Ukendt';
+        $customerEmail = $customer?->email ?? '';
 
         // Location info
-        $locationName = $location->name ?? '';
+        $locationName = $location?->name ?? '';
 
         // Order info
         $orderUid = $order->uid ?? '';
@@ -178,6 +195,12 @@ class PaymentReceipt {
 
         // Status
         $statusLabel = $this->getStatusLabel($payment->status);
+
+        // Rykker info
+        $rykkerLevel = (int)($payment->rykker_level ?? 0);
+        $rykkerFee = (float)($payment->rykker_fee ?? 0);
+        $hasRykker = $rykkerLevel > 0 || $rykkerFee > 0;
+        $rykkerHtml = $hasRykker ? $this->generateRykkerHtml($payment, $currencySymbol) : '';
 
         // Line items HTML
         $lineItemsHtml = $this->generateLineItemsHtml();
@@ -406,6 +429,7 @@ class PaymentReceipt {
 
     <div class="amount-box">
         {$lineItemsHtml}
+        {$rykkerHtml}
         <table style="width: 100%;">
             <tr>
                 <td colspan="2" style="border-top: 2px solid #dee2e6; padding-top: 15px;"></td>
@@ -585,6 +609,60 @@ HTML;
                     <td>{$totalFormatted} {$currencySymbol}</td>
                 </tr>
             </tbody>
+        </table>
+HTML;
+    }
+
+    /**
+     * Generate HTML for rykker/dunning information
+     */
+    private function generateRykkerHtml(object $payment, string $currencySymbol): string {
+        $rykkerLevel = (int)($payment->rykker_level ?? 0);
+        $rykkerFee = (float)($payment->rykker_fee ?? 0);
+
+        if ($rykkerLevel === 0 && $rykkerFee <= 0) {
+            return '';
+        }
+
+        $rykkerFeeFormatted = number_format($rykkerFee, 2, ',', '.');
+
+        // Rykker level label
+        $rykkerLabel = match($rykkerLevel) {
+            1 => 'Påmindelse 1',
+            2 => 'Påmindelse 2',
+            3 => 'Sidste påmindelse',
+            default => 'Påmindelse'
+        };
+
+        // Rykker dates
+        $rykkerDates = [];
+        if (!isEmpty($payment->rykker_1_sent_at)) {
+            $rykkerDates[] = 'Påmindelse 1: ' . date('d/m-Y', strtotime($payment->rykker_1_sent_at));
+        }
+        if (!isEmpty($payment->rykker_2_sent_at)) {
+            $rykkerDates[] = 'Påmindelse 2: ' . date('d/m-Y', strtotime($payment->rykker_2_sent_at));
+        }
+        if (!isEmpty($payment->rykker_3_sent_at)) {
+            $rykkerDates[] = 'Sidste påmindelse: ' . date('d/m-Y', strtotime($payment->rykker_3_sent_at));
+        }
+
+        $rykkerDatesHtml = '';
+        if (!empty($rykkerDates)) {
+            $rykkerDatesHtml = '<div style="font-size: 10px; color: #666; margin-top: 5px;">' . implode(' | ', $rykkerDates) . '</div>';
+        }
+
+        return <<<HTML
+        <table style="width: 100%; margin-top: 10px; background: #fff8e6; border: 1px solid #ffc107; border-radius: 4px; padding: 10px;">
+            <tr>
+                <td style="padding: 8px;">
+                    <div style="font-weight: bold; color: #856404; margin-bottom: 5px;">Rykkergebyr</div>
+                    <div style="font-size: 11px; color: #666;">Status: {$rykkerLabel}</div>
+                    {$rykkerDatesHtml}
+                </td>
+                <td style="text-align: right; padding: 8px; font-weight: bold; color: #856404;">
+                    {$rykkerFeeFormatted} {$currencySymbol}
+                </td>
+            </tr>
         </table>
 HTML;
     }

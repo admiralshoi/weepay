@@ -396,6 +396,18 @@ class NotificationFlowActions extends \Database\Model {
         ],
 
         // =====================================================
+        // RYKKER CANCELLED ACTIONS
+        // =====================================================
+        [
+            "uid" => "nfla_rykker_cancelled_email",
+            "flow" => "nflw_rykker_cancelled",
+            "template" => "ntpl_rykker_cancelled_email",
+            "channel" => "email",
+            "delay_minutes" => 0,
+            "status" => "active",
+        ],
+
+        // =====================================================
         // ORG INVITE ACTIONS
         // =====================================================
         [

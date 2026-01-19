@@ -23,10 +23,23 @@ $orderStatusMap = [
 $orderStatusInfo = $orderStatusMap[$order->status] ?? null;
 ?>
 
+<?php
+// Count PAST_DUE payments for this order
+$pastDuePayments = $payments->filter(fn($p) => $p->status === 'PAST_DUE');
+$pastDueCount = $pastDuePayments->count();
+$pastDueTotal = 0;
+$pastDueFees = 0;
+foreach ($pastDuePayments->list() as $p) {
+    $pastDueTotal += (float)$p->amount;
+    $pastDueFees += (float)($p->rykker_fee ?? 0);
+}
+?>
+
 <script>
     var pageTitle = <?=json_encode($pageTitle)?>;
     activePage = "orders";
     var orderUid = <?=json_encode($order->uid)?>;
+    var payOrderOutstandingUrl = <?=json_encode(__url(str_replace('{uid}', $order->uid, Links::$api->consumer->payOrderOutstanding)))?>;
 </script>
 
 <div class="page-content">
@@ -236,6 +249,13 @@ $orderStatusInfo = $orderStatusMap[$order->status] ?? null;
                     </div>
 
                     <div class="flex-col-start" style="row-gap: .75rem;">
+                        <?php if($pastDueCount > 0): ?>
+                        <button type="button" id="pay-all-outstanding-btn" class="btn-v2 danger-btn w-100 flex-row-center flex-align-center" style="gap: .5rem;">
+                            <i class="mdi mdi-cash-fast font-16"></i>
+                            <span class="font-14">Betal alle udestående (<?=$pastDueCount?>)</span>
+                        </button>
+                        <?php endif; ?>
+
                         <?php if($hasUnpaidPayments): ?>
                         <a href="<?=__url(Links::$consumer->changeCard)?>" class="btn-v2 action-btn w-100 flex-row-center flex-align-center" style="gap: .5rem;">
                             <i class="mdi mdi-credit-card-refresh-outline font-16"></i>
@@ -250,6 +270,39 @@ $orderStatusInfo = $orderStatusMap[$order->status] ?? null;
                     </div>
                 </div>
             </div>
+
+            <!-- Outstanding Payments Warning -->
+            <?php if($pastDueCount > 0): ?>
+            <div class="card border-radius-10px mb-4 border-danger">
+                <div class="card-body">
+                    <div class="flex-row-start flex-align-center flex-nowrap mb-3" style="column-gap: .5rem;">
+                        <i class="mdi mdi-alert-circle-outline font-18 color-danger"></i>
+                        <p class="mb-0 font-20 font-weight-bold color-danger">Udestående</p>
+                    </div>
+
+                    <div class="flex-col-start" style="row-gap: .5rem;">
+                        <div class="flex-row-between-center">
+                            <p class="mb-0 font-14 color-gray">Antal betalinger</p>
+                            <p class="mb-0 font-14 font-weight-bold"><?=$pastDueCount?></p>
+                        </div>
+                        <div class="flex-row-between-center">
+                            <p class="mb-0 font-14 color-gray">Beløb</p>
+                            <p class="mb-0 font-14 font-weight-bold"><?=number_format($pastDueTotal, 2)?> <?=currencySymbol($order->currency)?></p>
+                        </div>
+                        <?php if($pastDueFees > 0): ?>
+                        <div class="flex-row-between-center">
+                            <p class="mb-0 font-14 color-gray">Rykkergebyrer</p>
+                            <p class="mb-0 font-14 font-weight-bold color-danger"><?=number_format($pastDueFees, 2)?> <?=currencySymbol($order->currency)?></p>
+                        </div>
+                        <div class="flex-row-between-center pt-2 border-top-card">
+                            <p class="mb-0 font-16 font-weight-bold">Total skyldig</p>
+                            <p class="mb-0 font-18 font-weight-bold color-danger"><?=number_format($pastDueTotal + $pastDueFees, 2)?> <?=currencySymbol($order->currency)?></p>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
 
             <!-- Payment Summary -->
             <div class="card border-radius-10px mb-4">

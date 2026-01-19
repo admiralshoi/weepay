@@ -30,6 +30,13 @@ class Payments extends \Database\Model {
         "processing_at"     => ["type" => "timestamp", "nullable" => true, "default" => null],
         "scheduled_at"      => ["type" => "timestamp", "nullable" => true, "default" => null],
         "attempts"          => ["type" => "integer", "default" => 0],
+        // Rykker (Dunning) fields
+        "rykker_level"      => ["type" => "integer", "default" => 0],
+        "rykker_fee"        => ["type" => "decimal", "nullable" => false, "default" => 0, "precision" => 10, "scale" => 2],
+        "rykker_1_sent_at"  => ["type" => "timestamp", "nullable" => true, "default" => null],
+        "rykker_2_sent_at"  => ["type" => "timestamp", "nullable" => true, "default" => null],
+        "rykker_3_sent_at"  => ["type" => "timestamp", "nullable" => true, "default" => null],
+        "sent_to_collection" => ["type" => "tinyInteger", "default" => 0],
     ];
 
     public static array $indexes = ["order", "uuid", "organisation", "location", "status", "due_date"];

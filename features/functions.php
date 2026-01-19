@@ -739,7 +739,15 @@ function calculateTax(int|float $amount, null|string|float|int $taxPercentage): 
  */
 function orderAmount(?object $order): int|float {
     if(isEmpty($order)) return 0;
-    return $order->amount - $order->amount_refunded;
+    return $order->amount - ($order->amount_refunded ?? 0);
+}
+
+/**
+ * Get the total amount due for a payment (amount + rykker fees)
+ */
+function paymentTotalDue(?object $payment): float {
+    if(isEmpty($payment)) return 0;
+    return (float)$payment->amount + (float)($payment->rykker_fee ?? 0);
 }
 
 function currencySymbol(?string $currency): string {

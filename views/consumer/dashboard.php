@@ -7,7 +7,6 @@ use classes\enumerations\Links;
 
 $pageTitle = "Oversigt";
 
-\features\DbMigration::_migrate_db();
 ?>
 
 <script>

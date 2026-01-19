@@ -253,6 +253,67 @@ $fixedLocationRoles = LocationRolePermissions::getFixedRoles();
                 </div>
             </div>
 
+            <!-- Payment Retry Settings -->
+            <div class="card border-radius-10px">
+                <div class="card-body">
+                    <div class="flex-row-start flex-align-center mb-4" style="gap: .75rem;">
+                        <div class="square-40 bg-orange border-radius-8px flex-row-center-center">
+                            <i class="mdi mdi-refresh color-white font-20"></i>
+                        </div>
+                        <div class="flex-col-start">
+                            <p class="mb-0 font-16 font-weight-bold">Betalingsforsøg</p>
+                            <p class="mb-0 font-12 color-gray">Indstillinger for automatiske genbetalingsforsøg</p>
+                        </div>
+                    </div>
+
+                    <div class="row" style="row-gap: 1.5rem;">
+                        <div class="col-12 col-md-6">
+                            <div class="flex-col-start">
+                                <label class="font-13 color-dark mb-2">Maksimale forsøg</label>
+                                <p class="font-11 color-gray mb-2">Antal gange systemet forsøger at trække en betaling før den markeres som forsinket</p>
+                                <div class="flex-row-start flex-align-center" style="gap: .5rem;">
+                                    <input type="number"
+                                           class="form-field-v2"
+                                           id="setting_payment_max_attempts"
+                                           value="<?=getSetting($settingsArray, 'payment_max_attempts', 3)?>"
+                                           min="1"
+                                           max="10"
+                                           style="max-width: 100px;">
+                                    <button class="btn-v2 action-btn" onclick="saveSingleSetting('payment_max_attempts', document.getElementById('setting_payment_max_attempts').value)">
+                                        <i class="mdi mdi-check"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="flex-col-start">
+                                <label class="font-13 color-dark mb-2">Dage mellem forsøg</label>
+                                <p class="font-11 color-gray mb-2">Antal dage mellem hvert automatisk genbetalingsforsøg</p>
+                                <div class="flex-row-start flex-align-center" style="gap: .5rem;">
+                                    <input type="number"
+                                           class="form-field-v2"
+                                           id="setting_payment_retry_day_interval"
+                                           value="<?=getSetting($settingsArray, 'payment_retry_day_interval', 1)?>"
+                                           min="1"
+                                           max="30"
+                                           style="max-width: 100px;">
+                                    <button class="btn-v2 action-btn" onclick="saveSingleSetting('payment_retry_day_interval', document.getElementById('setting_payment_retry_day_interval').value)">
+                                        <i class="mdi mdi-check"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-row-start flex-align-center mt-4 p-2 bg-lightest-blue border-radius-8px">
+                        <i class="mdi mdi-information-outline font-16 color-blue mr-2"></i>
+                        <p class="mb-0 font-12 color-dark">
+                            Efter alle forsøg er brugt, markeres betalingen som <strong>FORSINKET</strong> og rykker-processen starter automatisk.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Organisation Roles -->
             <div class="card border-radius-10px">
                 <div class="card-body">
@@ -329,11 +390,11 @@ $fixedLocationRoles = LocationRolePermissions::getFixedRoles();
                         <div class="flex-col-start">
                             <p class="mb-0 font-14 font-weight-medium color-dark">Flere indstillinger</p>
                             <p class="mb-0 font-13 color-gray mt-1">
-                                For at konfigurere gebyrer, betalingsplaner og BNPL grænser, besøg de dedikerede sider:
+                                For at konfigurere gebyrer, rykker-indstillinger, betalingsplaner og BNPL grænser, besøg de dedikerede sider:
                             </p>
                             <div class="flex-row-start flex-wrap mt-2" style="gap: .5rem;">
                                 <a href="<?=__url(Links::$admin->panelFees)?>" class="btn-v2 trans-btn font-12">
-                                    <i class="mdi mdi-cash-multiple mr-1"></i> Gebyrer
+                                    <i class="mdi mdi-cash-multiple mr-1"></i> Gebyrer & Rykker
                                 </a>
                                 <a href="<?=__url(Links::$admin->panelPaymentPlans)?>" class="btn-v2 trans-btn font-12">
                                     <i class="mdi mdi-credit-card-settings-outline mr-1"></i> Betalingsplaner

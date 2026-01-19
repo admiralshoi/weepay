@@ -249,4 +249,65 @@ class PaymentsApiController {
         $receipt->download();
         exit;
     }
+
+    /**
+     * Reset rykker status for a payment (merchant goodwill)
+     */
+    #[NoReturn] public static function resetPaymentRykker(array $args): void {
+        $paymentId = $args['id'] ?? null;
+
+        if (isEmpty($paymentId)) {
+            Response()->jsonError("Betalings ID mangler.");
+        }
+
+        // Validate organisation
+        if (isEmpty(Settings::$organisation)) {
+            Response()->jsonError("Du er ikke medlem af nogen aktiv organisation.");
+        }
+
+        // Check permissions
+        if (!OrganisationPermissions::__oModify('orders', 'payments')) {
+            Response()->jsonError("Du har ikke tilladelse til at ændre betalinger.");
+        }
+
+        // Get the payment
+        $paymentHandler = Methods::payments();
+        $payment = $paymentHandler->get($paymentId);
+
+        if (isEmpty($payment)) {
+            Response()->jsonError("Betaling ikke fundet.");
+        }
+
+        // Verify the payment belongs to the current organisation
+        $paymentOrgUid = is_object($payment->organisation) ? $payment->organisation->uid : $payment->organisation;
+        if ($paymentOrgUid !== Settings::$organisation->organisation->uid) {
+            Response()->jsonError("Du har ikke adgang til denne betaling.");
+        }
+
+        // Only allow reset for PAST_DUE payments
+        if ($payment->status !== 'PAST_DUE') {
+            Response()->jsonError("Rykker kan kun nulstilles for forsinkede betalinger.");
+        }
+
+        // Don't allow reset if already sent to collection
+        if ($payment->sent_to_collection) {
+            Response()->jsonError("Betalingen er allerede sendt til inkasso og kan ikke nulstilles.");
+        }
+
+        // Reset rykker (clear fees)
+        $success = $paymentHandler->resetRykker($paymentId, true);
+
+        if ($success) {
+            debugLog([
+                'merchant' => __uuid(),
+                'organisation' => Settings::$organisation->organisation->uid,
+                'paymentId' => $paymentId,
+                'action' => 'merchant_reset_rykker'
+            ], 'MERCHANT_RESET_RYKKER');
+
+            Response()->jsonSuccess('Rykker status er blevet nulstillet');
+        } else {
+            Response()->jsonError('Kunne ikke nulstille rykker status');
+        }
+    }
 }

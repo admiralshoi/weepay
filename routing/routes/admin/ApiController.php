@@ -485,23 +485,26 @@ class ApiController {
         $search = $args['search'] ?? '';
         $orgFilter = $args['organisation'] ?? '';
         $statusFilter = $args['status'] ?? '';
+        $rykkerLevelFilter = $args['rykker_level'] ?? '';
+        $sentToCollectionFilter = $args['sent_to_collection'] ?? '';
         $sortColumn = $args['sort_column'] ?? 'created_at';
         $sortDirection = strtoupper($args['sort_direction'] ?? 'DESC');
 
         // Validate sort column
-        $allowedSortColumns = ['created_at', 'due_date', 'amount', 'status'];
+        $allowedSortColumns = ['created_at', 'due_date', 'amount', 'status', 'rykker_level'];
         if (!in_array($sortColumn, $allowedSortColumns)) {
             $sortColumn = 'created_at';
         }
 
-        // Build query
-        $query = Payments::queryBuilder()
-            ->select(['uid', 'order', 'uuid', 'organisation', 'location', 'amount', 'currency', 'installment_number', 'due_date', 'paid_at', 'status', 'created_at']);
+        // Build query - exclude foreign keys to get raw UIDs
+        $paymentsHandler = Methods::payments()->excludeForeignKeys();
+        $query = $paymentsHandler->queryBuilder();
 
         // Apply search filter
         if (!empty($search)) {
             // Get organisation UIDs matching the search term by name
-            $matchingOrgs = Organisations::queryBuilder()
+            $orgHandler = Methods::organisations();
+            $matchingOrgs = $orgHandler->queryBuilder()
                 ->select(['uid'])
                 ->whereLike('name', $search)
                 ->all();
@@ -530,6 +533,16 @@ class ApiController {
             $query->where('status', $statuses);
         }
 
+        // Apply rykker level filter
+        if ($rykkerLevelFilter !== '' && $rykkerLevelFilter !== null) {
+            $query->where('rykker_level', (int)$rykkerLevelFilter);
+        }
+
+        // Apply sent to collection filter
+        if ($sentToCollectionFilter !== '' && $sentToCollectionFilter !== null) {
+            $query->where('sent_to_collection', (int)$sentToCollectionFilter);
+        }
+
         // Get total count
         $totalCount = (clone $query)->count();
         $totalPages = max(1, (int)ceil($totalCount / $perPage));
@@ -537,10 +550,11 @@ class ApiController {
         $offset = ($page - 1) * $perPage;
 
         // Apply sorting and pagination
-        $payments = $query->order($sortColumn, $sortDirection)
-            ->limit($perPage)
-            ->offset($offset)
-            ->all();
+        $payments = $paymentsHandler->queryGetAll(
+            $query->order($sortColumn, $sortDirection)
+                ->limit($perPage)
+                ->offset($offset)
+        );
 
         // Format payments data with related info
         $formattedPayments = [];
@@ -548,16 +562,16 @@ class ApiController {
             // Get organisation name
             $orgName = null;
             if (!empty($payment->organisation)) {
-                $org = Organisations::where('uid', $payment->organisation)->first();
+                $org = Methods::organisations()->get($payment->organisation);
                 $orgName = $org ? $org->name : null;
             }
 
-            // Get user info from order
+            // Get user info from payment
             $userName = null;
             $userEmail = null;
             $userUid = null;
             if (!empty($payment->uuid)) {
-                $user = Users::where('uid', $payment->uuid)->first();
+                $user = Methods::users()->get($payment->uuid);
                 if ($user) {
                     $userName = $user->full_name;
                     $userEmail = $user->email;
@@ -579,6 +593,9 @@ class ApiController {
                 'paid_at' => $payment->paid_at,
                 'status' => $payment->status,
                 'created_at' => $payment->created_at,
+                'rykker_level' => $payment->rykker_level ?? 0,
+                'rykker_fee' => $payment->rykker_fee ?? 0,
+                'sent_to_collection' => $payment->sent_to_collection ?? 0,
             ];
         }
 
@@ -1702,6 +1719,56 @@ class ApiController {
 
 
     /**
+     * Update rykker (dunning) settings
+     * POST api/admin/panel/rykker-settings
+     */
+    #[NoReturn] public static function panelRykkerSettings(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', 403);
+        }
+
+        $rykker1Days = isset($args['rykker_1_days']) ? (int)$args['rykker_1_days'] : 7;
+        $rykker2Days = isset($args['rykker_2_days']) ? (int)$args['rykker_2_days'] : 14;
+        $rykker3Days = isset($args['rykker_3_days']) ? (int)$args['rykker_3_days'] : 21;
+        $rykker1Fee = isset($args['rykker_1_fee']) ? (float)$args['rykker_1_fee'] : 0;
+        $rykker2Fee = isset($args['rykker_2_fee']) ? (float)$args['rykker_2_fee'] : 100;
+        $rykker3Fee = isset($args['rykker_3_fee']) ? (float)$args['rykker_3_fee'] : 100;
+
+        // Validate days are in ascending order
+        if ($rykker1Days >= $rykker2Days || $rykker2Days >= $rykker3Days) {
+            Response()->jsonError('Dagene skal være i stigende rækkefølge (Rykker 1 < Rykker 2 < Rykker 3)');
+        }
+
+        // Validate minimum days
+        if ($rykker1Days < 1) {
+            Response()->jsonError('Rykker 1 skal være mindst 1 dag efter forfalden');
+        }
+
+        // Update all rykker settings
+        $appMeta = Methods::appMeta();
+        $appMeta->update($rykker1Days, 'rykker_1_days');
+        $appMeta->update($rykker2Days, 'rykker_2_days');
+        $appMeta->update($rykker3Days, 'rykker_3_days');
+        $appMeta->update($rykker1Fee, 'rykker_1_fee');
+        $appMeta->update($rykker2Fee, 'rykker_2_fee');
+        $appMeta->update($rykker3Fee, 'rykker_3_fee');
+
+        debugLog([
+            'admin' => __uuid(),
+            'rykker_1_days' => $rykker1Days,
+            'rykker_2_days' => $rykker2Days,
+            'rykker_3_days' => $rykker3Days,
+            'rykker_1_fee' => $rykker1Fee,
+            'rykker_2_fee' => $rykker2Fee,
+            'rykker_3_fee' => $rykker3Fee,
+            'action' => 'update_rykker_settings'
+        ], 'ADMIN_PANEL_RYKKER_SETTINGS');
+
+        Response()->jsonSuccess('Rykker indstillinger er opdateret');
+    }
+
+
+    /**
      * Refund an entire order - refunds all completed payments and voids pending ones
      * POST api/admin/orders/{id}/refund
      */
@@ -2152,6 +2219,82 @@ class ApiController {
             'refunded_amount' => (float)$payment->amount,
             'currency' => $payment->currency,
         ]);
+    }
+
+
+    /**
+     * Reset rykker status for a payment
+     * POST api/admin/payments/{id}/reset-rykker
+     */
+    #[NoReturn] public static function resetPaymentRykker(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', 403);
+        }
+
+        $paymentId = $args['id'] ?? null;
+        if (isEmpty($paymentId)) {
+            Response()->jsonError("Betalings ID mangler.");
+        }
+
+        $paymentHandler = Methods::payments();
+        $payment = $paymentHandler->get($paymentId);
+
+        if (isEmpty($payment)) {
+            Response()->jsonError("Betaling ikke fundet.");
+        }
+
+        // Reset rykker (clear fees by default)
+        $success = $paymentHandler->resetRykker($paymentId, true);
+
+        if ($success) {
+            debugLog([
+                'admin' => __uuid(),
+                'paymentId' => $paymentId,
+                'action' => 'reset_rykker'
+            ], 'ADMIN_RESET_RYKKER');
+
+            Response()->jsonSuccess('Rykker status er blevet nulstillet');
+        } else {
+            Response()->jsonError('Kunne ikke nulstille rykker status');
+        }
+    }
+
+
+    /**
+     * Mark a payment for collection
+     * POST api/admin/payments/{id}/mark-collection
+     */
+    #[NoReturn] public static function markPaymentForCollection(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', 403);
+        }
+
+        $paymentId = $args['id'] ?? null;
+        if (isEmpty($paymentId)) {
+            Response()->jsonError("Betalings ID mangler.");
+        }
+
+        $paymentHandler = Methods::payments();
+        $payment = $paymentHandler->get($paymentId);
+
+        if (isEmpty($payment)) {
+            Response()->jsonError("Betaling ikke fundet.");
+        }
+
+        // Mark for collection
+        $success = $paymentHandler->markForCollection($paymentId);
+
+        if ($success) {
+            debugLog([
+                'admin' => __uuid(),
+                'paymentId' => $paymentId,
+                'action' => 'mark_for_collection'
+            ], 'ADMIN_MARK_COLLECTION');
+
+            Response()->jsonSuccess('Betalingen er markeret til inkasso');
+        } else {
+            Response()->jsonError('Kunne ikke markere betalingen til inkasso');
+        }
     }
 
 

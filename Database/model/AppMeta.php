@@ -118,6 +118,37 @@ class AppMeta extends \Database\Model {
             "value" => '1',
             "type" => "int",
         ],
+        // Rykker (Dunning) Settings
+        [
+            "name" => "rykker_1_days",
+            "value" => '7',
+            "type" => "int",
+        ],
+        [
+            "name" => "rykker_2_days",
+            "value" => '14',
+            "type" => "int",
+        ],
+        [
+            "name" => "rykker_3_days",
+            "value" => '21',
+            "type" => "int",
+        ],
+        [
+            "name" => "rykker_1_fee",
+            "value" => '0',
+            "type" => "float",
+        ],
+        [
+            "name" => "rykker_2_fee",
+            "value" => '100',
+            "type" => "float",
+        ],
+        [
+            "name" => "rykker_3_fee",
+            "value" => '100',
+            "type" => "float",
+        ],
     ];
     protected static array $requiredRowsTesting = [];
 

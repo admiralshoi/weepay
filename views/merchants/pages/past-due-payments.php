@@ -60,10 +60,11 @@ $pageTitle = "Forsinkede Betalinger";
                                 <th>Ordre ID</th>
                                 <th>Kunde</th>
                                 <th>Beløb</th>
+                                <th>Rykkergebyr</th>
                                 <th>Rate</th>
                                 <th>Forfald Dato</th>
+                                <th>Rykker</th>
                                 <th>Dage Forsinket</th>
-                                <th>Status</th>
                                 <th>Handlinger</th>
                             </thead>
                             <tbody>
@@ -75,13 +76,17 @@ $pageTitle = "Forsinkede Betalinger";
                                         $dueDate = strtotime($payment->due_date);
                                         $today = time();
                                         $daysOverdue = floor(($today - $dueDate) / (60 * 60 * 24));
+
+                                        $rykkerLevel = (int)($payment->rykker_level ?? 0);
+                                        $rykkerFee = (float)($payment->rykker_fee ?? 0);
+                                        $sentToCollection = (bool)($payment->sent_to_collection ?? false);
                                     ?>
                                     <tr>
                                         <td>
-                                            <p class="mb-0 font-12 font-monospace"><?=$payment->uid?></p>
+                                            <a href="<?=__url(Links::$merchant->paymentDetail($payment->uid))?>" class="mb-0 font-12 font-monospace color-blue hover-underline"><?=substr($payment->uid, 0, 10)?></a>
                                         </td>
                                         <td>
-                                            <p class="mb-0 font-12 font-monospace"><?=$order->uid ?? 'N/A'?></p>
+                                            <p class="mb-0 font-12 font-monospace"><?=substr($order->uid ?? 'N/A', 0, 10)?></p>
                                         </td>
                                         <td>
                                             <?php if(!isEmpty($customer)): ?>
@@ -95,28 +100,45 @@ $pageTitle = "Forsinkede Betalinger";
                                             <p class="mb-0 font-12 font-weight-bold color-red"><?=number_format($payment->amount, 2)?> <?=currencySymbol($payment->currency)?></p>
                                         </td>
                                         <td>
+                                            <?php if($rykkerFee > 0): ?>
+                                                <p class="mb-0 font-12 color-red"><?=number_format($rykkerFee, 2)?> <?=currencySymbol($payment->currency)?></p>
+                                            <?php else: ?>
+                                                <p class="mb-0 font-12 color-gray">-</p>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
                                             <p class="mb-0 font-12"><?=$payment->installment_number?></p>
                                         </td>
                                         <td>
                                             <p class="mb-0 font-12 font-weight-medium"><?=date("d/m-Y", strtotime($payment->due_date))?></p>
                                         </td>
                                         <td>
+                                            <?php if($sentToCollection): ?>
+                                                <span class="danger-box font-11">Inkasso</span>
+                                            <?php elseif($rykkerLevel === 0): ?>
+                                                <span class="mute-box font-11">-</span>
+                                            <?php elseif($rykkerLevel === 1): ?>
+                                                <span class="warning-box font-11">Rykker 1</span>
+                                            <?php elseif($rykkerLevel === 2): ?>
+                                                <span class="warning-box font-11">Rykker 2</span>
+                                            <?php else: ?>
+                                                <span class="danger-box font-11">Rykker 3</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
                                             <p class="mb-0 font-12 font-weight-bold color-red"><?=$daysOverdue?> dage</p>
                                         </td>
                                         <td>
-                                            <span class="danger-box font-12">Forsinket</span>
-                                        </td>
-                                        <td>
-                                            <a href="<?=__url(Links::$merchant->orderDetail($order->uid))?>" class="btn-v2 trans-btn flex-row-start flex-align-center flex-nowrap" style="gap: .5rem;">
+                                            <a href="<?=__url(Links::$merchant->paymentDetail($payment->uid))?>" class="btn-v2 trans-btn flex-row-start flex-align-center flex-nowrap" style="gap: .5rem;">
                                                 <i class="mdi mdi-eye-outline font-16"></i>
-                                                <span class="font-14">Se ordre</span>
+                                                <span class="font-14">Se</span>
                                             </a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="9" class="text-center">
+                                    <td colspan="10" class="text-center">
                                         <p class="mb-0 color-gray font-14 py-3">Ingen forsinkede betalinger fundet</p>
                                     </td>
                                 </tr>
