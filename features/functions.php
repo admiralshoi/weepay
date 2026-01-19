@@ -734,6 +734,14 @@ function calculateTax(int|float $amount, null|string|float|int $taxPercentage): 
     return $amountInclTax - $amount;
 }
 
+/**
+ * Get the true order amount after subtracting refunds
+ */
+function orderAmount(?object $order): int|float {
+    if(isEmpty($order)) return 0;
+    return $order->amount - $order->amount_refunded;
+}
+
 function currencySymbol(?string $currency): string {
     if(empty($currency)) return "";
     $currency = strtoupper($currency);

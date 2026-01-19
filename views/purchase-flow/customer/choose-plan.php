@@ -131,10 +131,15 @@ $pageTitle = "Vælg betalingsplan";
                         <p class="mb-0 info-title">Samtykke</p>
                     </div>
                     <div class="info-content">
-                        <div class="flex-row-start flex-align-center flex-nowrap mt-1" style="gap: .5rem">
-                            <input type="checkbox" name="accept_terms" class="square-20">
+                        <div class="flex-row-start flex-align-start flex-nowrap mt-1" style="gap: .5rem">
+                            <input type="checkbox" name="accept_terms" class="square-20 mt-1">
                             <span>
-                                Jeg bekræfter at jeg har læst og accepterer
+                                <span id="consent-bnpl" style="display: none;">
+                                    Jeg er indforstået med, at jeg indgår en betalingsaftale direkte med <strong><?=$terminal->location->name ?? 'butikken'?></strong>, og ikke <?=BRAND_NAME?>, og jeg bekræfter, at jeg har læst og accepterer
+                                </span>
+                                <span id="consent-direct">
+                                    Jeg bekræfter, at jeg har læst og accepterer
+                                </span>
                                 <a href="<?=__url(Links::$policies->consumer->termsOfUse)?>" target="_blank">handelsbetingelserne</a> og
                                 <a href="<?=__url(Links::$policies->consumer->privacy)?>" target="_blank">privatlivspolitikken.</a>
                             </span>

@@ -111,11 +111,11 @@ class OrderHandler extends Crud {
             return false;
         }
 
+        $orderId = $this->recentUid;
+        $paymentsHandler = Methods::payments();
+
         // Create payment installments for installments or pushed plans
         if (in_array($plan, ['installments', 'pushed']) && !isEmpty($planObject)) {
-            $orderId = $this->recentUid;
-
-            $paymentsHandler = Methods::payments();
             $success = $paymentsHandler->createInstallments(
                 orderId: $orderId,
                 customerId: $customerId,
@@ -134,9 +134,95 @@ class OrderHandler extends Crud {
                 $this->delete(['uid' => $orderId]);
                 return false;
             }
+        } elseif ($plan === 'direct') {
+            // Create a single payment for direct plans
+            $success = $paymentsHandler->create([
+                'order' => $orderId,
+                'uuid' => $customerId,
+                'organisation' => $organisation,
+                'location' => $location,
+                'provider' => $provider,
+                'currency' => $currency,
+                'amount' => $amount,
+                'status' => 'PENDING',
+                'due_date' => date('Y-m-d'),
+                'test' => $isTest,
+            ]);
+
+            if (!$success) {
+                // Rollback order creation if payment creation fails
+                $this->delete(['uid' => $orderId]);
+                return false;
+            }
         }
 
         return true;
+    }
+
+    /**
+     * Create a temporary card change order for 1 unit validation
+     *
+     * @param string $organisation Organisation UID
+     * @param string $location Location UID
+     * @param string $customerId Customer UID
+     * @param string $provider Provider UID
+     * @param string $currency Currency code
+     * @param string $prid Viva order code
+     * @param bool $isTest Whether this is a test transaction
+     * @param array $metadata Additional metadata to store
+     * @return string|null Order UID if created, null on failure
+     */
+    public function createCardChangeOrder(
+        string $organisation,
+        string $location,
+        string $customerId,
+        string $provider,
+        string $currency,
+        string $prid,
+        bool $isTest = false,
+        array $metadata = []
+    ): ?string {
+        $user = Methods::users()->get($customerId);
+
+        $success = $this->create([
+            "organisation" => $organisation,
+            "location" => $location,
+            "uuid" => $customerId,
+            "provider" => $provider,
+            "type" => "card_change",
+            "payment_plan" => null,
+            "currency" => $currency,
+            "amount" => 1, // 1 unit validation
+            "fee_amount" => 0,
+            "fee" => 0,
+            "cardFee" => 0,
+            "paymentProviderFee" => 0,
+            "source_code" => null,
+            "caption" => "Kortskift",
+            "prid" => $prid,
+            "credit_score" => 0,
+            "terminal_session" => null,
+            "billing_details" => array_merge([
+                "customer_name" => $user?->full_name,
+            ], $metadata),
+            "test" => (int)$isTest
+        ]);
+
+        return $success ? $this->recentUid : null;
+    }
+
+    /**
+     * Delete a card change order by UID
+     *
+     * @param string $orderUid Order UID
+     * @return bool Success
+     */
+    public function deleteCardChangeOrder(string $orderUid): bool {
+        $order = $this->get($orderUid);
+        if (isEmpty($order) || $order->type !== 'card_change') {
+            return false;
+        }
+        return $this->delete(['uid' => $orderUid]);
     }
 
 

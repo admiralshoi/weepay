@@ -23,6 +23,7 @@ class Payments extends \Database\Model {
         "status"            => ["type" => "enum", "default" => "PENDING", "values" => ["PENDING", "PAST_DUE", "SCHEDULED", "COMPLETED", "FAILED", "CANCELLED", "REFUNDED", "VOIDED"]],
         "prid"              => ["type" => "string", "nullable" => true, "default" => null],
         "initial_transaction_id" => ["type" => "string", "nullable" => true, "default" => null],
+        "payment_method"    => ["type" => "string", "nullable" => true, "default" => null],
         "failure_reason"    => ["type" => "string", "nullable" => true, "default" => null],
         "metadata"          => ["type" => "text", "nullable" => true, "default" => null],
         "test"              => "tinyInteger",
@@ -48,6 +49,7 @@ class Payments extends \Database\Model {
             "organisation" => [Organisations::tableColumn('uid'), Organisations::newStatic()],
             "location" => [Locations::tableColumn('uid'), Locations::newStatic()],
             "provider" => [PaymentProviders::tableColumn('uid'), PaymentProviders::newStatic()],
+            "payment_method" => [PaymentMethods::tableColumn('uid'), PaymentMethods::newStatic()],
         ];
     }
 

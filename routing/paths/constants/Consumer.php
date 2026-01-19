@@ -88,6 +88,31 @@ class Consumer extends \routing\paths\Paths {
         ],
     ];
 
+    const CONSUMER_CHANGE_CARD = [
+        "template" => "CONSUMER_INNER_HTML",
+        "view" => "consumer.change-card",
+        "custom_scripts" => "templates.scripts",
+        "title" => null,
+        "head" => "templates.head",
+        "assets" => [
+            "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.features.js",
+                "js.initializer.js",
+                "js.consumer-change-card.js",
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+            ],
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
+
     const CONSUMER_RECEIPTS = [
         "template" => "CONSUMER_INNER_HTML",
         "view" => "consumer.receipts",
@@ -173,6 +198,7 @@ class Consumer extends \routing\paths\Paths {
                 "js.utility.js",
                 "js.features.js",
                 "js.initializer.js",
+                "js.consumer-payments.js",
                 "css.main.css",
                 "css.styles2.css",
                 "css.styles3.css",
@@ -197,6 +223,7 @@ class Consumer extends \routing\paths\Paths {
                 "js.utility.js",
                 "js.features.js",
                 "js.initializer.js",
+                "js.consumer-payments.js",
                 "css.main.css",
                 "css.styles2.css",
                 "css.styles3.css",
@@ -236,6 +263,54 @@ class Consumer extends \routing\paths\Paths {
     const CONSUMER_LOCATION_DETAIL = [
         "template" => "CONSUMER_INNER_HTML",
         "view" => "consumer.location-detail",
+        "custom_scripts" => "templates.scripts",
+        "title" => null,
+        "head" => "templates.head",
+        "assets" => [
+            "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.features.js",
+                "js.initializer.js",
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+            ],
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
+
+    const CONSUMER_CARD_CHANGE_SUCCESS = [
+        "template" => "CONSUMER_INNER_HTML",
+        "view" => "consumer.card-change-success",
+        "custom_scripts" => "templates.scripts",
+        "title" => null,
+        "head" => "templates.head",
+        "assets" => [
+            "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.features.js",
+                "js.initializer.js",
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+            ],
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
+
+    const CONSUMER_CARD_CHANGE_FAILED = [
+        "template" => "CONSUMER_INNER_HTML",
+        "view" => "consumer.card-change-failed",
         "custom_scripts" => "templates.scripts",
         "title" => null,
         "head" => "templates.head",

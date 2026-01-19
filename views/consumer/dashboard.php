@@ -7,6 +7,7 @@ use classes\enumerations\Links;
 
 $pageTitle = "Oversigt";
 
+//\features\DbMigration::_migrate_db();
 ?>
 
 <script>
@@ -25,6 +26,11 @@ $pageTitle = "Oversigt";
     <div class="mt-4">
         <?=\features\DomMethods::bnplCreditCard($args->bnplLimit ?? [], $args->pastDueCount > 0)?>
     </div>
+
+    <?php
+
+    //prettyPrint(\classes\Methods::paymentMethods()->backfillAllPayments());
+    ?>
 
     <?php if($args->pastDueCount > 0): ?>
     <!-- Past Due Alert -->
@@ -53,18 +59,18 @@ $pageTitle = "Oversigt";
 
     <!-- KPI Cards -->
     <div class="row flex-align-stretch rg-15 mt-4">
-        <!-- Total Outstanding -->
+        <!-- Upcoming Payments -->
         <div class="col-12 col-md-6 col-lg-3 d-flex">
             <div class="card border-radius-10px w-100">
                 <div class="card-body">
                     <div class="flex-row-between-center flex-nowrap g-075">
                         <div class="flex-col-start rg-025">
-                            <p class="color-gray font-13 font-weight-medium">Udestående betalinger</p>
-                            <p class="font-22 font-weight-700"><?=number_format($args->totalOutstanding, 2) . currencySymbol("DKK")?></p>
-                            <?php if($args->totalOutstanding > 0): ?>
-                                <a href="<?=__url(Links::$consumer->outstandingPayments)?>" class="color-blue font-12">Se detaljer</a>
+                            <p class="color-gray font-13 font-weight-medium">Kommende betalinger</p>
+                            <p class="font-22 font-weight-700"><?=number_format($args->totalUpcoming, 2) . currencySymbol("DKK")?></p>
+                            <?php if($args->totalUpcoming > 0): ?>
+                                <a href="<?=__url(Links::$consumer->payments)?>" class="color-blue font-12">Se detaljer</a>
                             <?php else: ?>
-                                <p class="color-gray font-12">Ingen udestående</p>
+                                <p class="color-gray font-12">Ingen kommende</p>
                             <?php endif; ?>
                         </div>
 

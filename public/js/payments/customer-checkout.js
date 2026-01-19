@@ -130,6 +130,8 @@ const CustomerCheckout = {
         paymentCards: null,
         paymentButtonLoader: null,
         acceptTerms: null,
+        consentBnpl: null,
+        consentDirect: null,
     },
     init(selectedPlanName, tsId) {
         this.plans = paymentPlans;
@@ -142,6 +144,8 @@ const CustomerCheckout = {
         this.elements.toPayNow = document.getElementById('to-pay-now');
         this.elements.paymentButtonLoader = document.getElementById('paymentButtonLoader');
         this.elements.paymentCards = document.querySelectorAll('.payment-card');
+        this.elements.consentBnpl = document.getElementById('consent-bnpl');
+        this.elements.consentDirect = document.getElementById('consent-direct');
 
         this.updateSelectedPlan(selectedPlanName);
         this.bindEvents();
@@ -187,7 +191,12 @@ const CustomerCheckout = {
         for(let plan of this.plans) {
             if(plan.name === planName) {
                 this.selectedPlan = plan;
-                this.elements.toPayNow.innerText = phpNumberFormat(this.selectedPlan.to_pay_now)
+                // For pushed plan, show 1 unit validation amount
+                if(plan.name === 'pushed') {
+                    this.elements.toPayNow.innerText = '1,00';
+                } else {
+                    this.elements.toPayNow.innerText = phpNumberFormat(this.selectedPlan.to_pay_now);
+                }
                 this.updatePayButtonText();
                 break;
             }
@@ -195,11 +204,19 @@ const CustomerCheckout = {
     },
     updatePayButtonText() {
         if(!this.elements.payButtonText) return;
-        // For pushed plan, show "Bekræft kort" (Validate card) instead of payment amount
+        const isBnpl = this.selectedPlan && (this.selectedPlan.name === 'pushed' || this.selectedPlan.name === 'installments');
+
+        // For pushed plan, show "Bekræft kort" and note about refund
         if(this.selectedPlan && this.selectedPlan.name === 'pushed') {
-            this.elements.payButtonText.innerText = 'Bekræft kort';
+            this.elements.payButtonText.innerHTML = 'Bekræft kort <span class="font-12 font-weight-normal">(refunderes)</span>';
         } else {
             this.elements.payButtonText.innerText = 'Betal nu';
+        }
+
+        // Toggle consent text based on plan type
+        if(this.elements.consentBnpl && this.elements.consentDirect) {
+            this.elements.consentBnpl.style.display = isBnpl ? 'inline' : 'none';
+            this.elements.consentDirect.style.display = isBnpl ? 'none' : 'inline';
         }
     },
     updateSelection() {

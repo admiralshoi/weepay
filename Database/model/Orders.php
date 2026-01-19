@@ -29,6 +29,7 @@ class Orders extends \Database\Model {
         "credit_score"       => ["type" => "float", "default" => 0],
         "prid"       => ["type" => "string", "nullable" => true, "default" => null],
         "terminal_session"       => ["type" => "string", "nullable" => true, "default" => null],
+        "type"       => ["type" => "enum", "default" => "purchase", "values" => ["purchase", "card_change"]],
         "test" => "tinyInteger",
     ];
 

@@ -9,6 +9,7 @@ class Consumer {
     public string $orders = "orders";
     public string $orderDetail = "order";
     public string $payments = "payments";
+    public string $changeCard = "payments/change-card";
     public string $receipts = "receipts";
     public string $upcomingPayments = "upcoming-payments";
     public string $outstandingPayments = "outstanding-payments";

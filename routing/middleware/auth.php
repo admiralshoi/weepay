@@ -95,3 +95,7 @@ function isImpersonating(): bool {
     return !empty($_SESSION["admin_impersonating_uid"]) &&
            (!empty($_SESSION["admin_impersonating_org"]) || !empty($_SESSION["admin_impersonating_user"]));
 }
+
+function localOnly(): bool {
+    return !LIVE;
+}

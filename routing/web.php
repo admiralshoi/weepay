@@ -43,6 +43,7 @@ Routes::group(['requiresLogin', 'consumer'], function() {
     Routes::get(Links::$consumer->orders, "consumer.PageController::orders", ['consumerProfileComplete']);
     Routes::get(Links::$consumer->orderDetail . '/{id}', "consumer.PageController::orderDetail", ['consumerProfileComplete']);
     Routes::get(Links::$consumer->payments, "consumer.PageController::payments", ['consumerProfileComplete']);
+    Routes::get(Links::$consumer->changeCard, "consumer.PageController::changeCard", ['consumerProfileComplete']);
     Routes::get("payments/{id}", "consumer.PageController::paymentDetail", ['consumerProfileComplete']);
     Routes::get("location/{id}", "consumer.PageController::locationDetail", ['consumerProfileComplete']);
     Routes::get(Links::$consumer->settings, "consumer.PageController::settings", ['consumerProfileComplete']);
@@ -50,6 +51,17 @@ Routes::group(['requiresLogin', 'consumer'], function() {
     // Consumer API routes
     Routes::post(Links::$api->consumer->orders, "consumer.ApiController::getOrders", ['consumerProfileComplete']);
     Routes::post(Links::$api->consumer->payments, "consumer.ApiController::getPayments", ['consumerProfileComplete']);
+    Routes::post(Links::$api->consumer->paymentsByCard, "consumer.ApiController::getPaymentsByCard", ['consumerProfileComplete']);
+
+    // Consumer payment actions
+    Routes::post("api/consumer/payments/{uid}/pay-now", "consumer.ApiController::payNow", ['consumerProfileComplete']);
+    // More specific routes must come before less specific ones
+    Routes::post("api/consumer/change-card/payment-method/{paymentMethodUid}", "consumer.ApiController::initiatePaymentMethodCardChange", ['consumerProfileComplete']);
+    Routes::post("api/consumer/change-card/order/{orderUid}", "consumer.ApiController::initiateOrderCardChange", ['consumerProfileComplete']);
+    Routes::post("api/consumer/change-card", "consumer.ApiController::initiateCardChange", ['consumerProfileComplete']);
+
+    // Card change callback (page route, not API)
+    Routes::get("consumer/card-change/callback", "consumer.PageController::cardChangeCallback", ['consumerProfileComplete']);
 });
 /**
  *  =========================================

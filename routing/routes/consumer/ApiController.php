@@ -3,6 +3,7 @@ namespace routing\routes\consumer;
 
 use classes\enumerations\Links;
 use classes\Methods;
+use classes\payments\CardValidationService;
 use JetBrains\PhpStorm\NoReturn;
 
 class ApiController {
@@ -86,7 +87,8 @@ class ApiController {
         $filteredOrderUids = [];
         foreach($allOrders->list() as $order) {
             $paidAmount = $paidAmounts[$order->uid] ?? 0;
-            $isFullyPaid = $paidAmount >= (float)$order->amount;
+            $netAmount = orderAmount($order);
+            $isFullyPaid = $paidAmount >= $netAmount;
 
             if($paymentFilter === 'fully_paid' && $isFullyPaid) {
                 $filteredOrderUids[] = $order->uid;
@@ -166,14 +168,15 @@ class ApiController {
             };
 
             $paidAmount = $paidAmounts[$order->uid] ?? 0;
-            $outstanding = (float)$order->amount - $paidAmount;
+            $netAmount = orderAmount($order);
+            $outstanding = $netAmount - $paidAmount;
             $statusInfo = $statusMap[$order->status] ?? ['label' => $order->status, 'class' => 'mute-box'];
 
             $transformedOrders[] = [
                 'uid' => $order->uid,
                 'created_at' => date("d/m/Y H:i", strtotime($order->created_at)),
                 'location_name' => $locationName,
-                'amount' => (float)$order->amount,
+                'amount' => $netAmount,
                 'paid_amount' => $paidAmount,
                 'outstanding' => $outstanding,
                 'currency' => $order->currency,
@@ -550,5 +553,552 @@ class ApiController {
         // 4. Marking phone as verified in database
 
         Response()->jsonError('Telefon verifikation er ikke implementeret endnu', [], 501);
+    }
+
+
+    /**
+     * Pay Now - Attempt to charge a PAST_DUE payment using the stored card
+     *
+     * POST /api/consumer/payments/{uid}/pay-now
+     */
+    #[NoReturn] public static function payNow(array $args): void {
+        $paymentUid = $args['uid'] ?? null;
+        $userId = __uuid();
+
+        if (isEmpty($paymentUid)) {
+            Response()->jsonError('Betalings-ID mangler', [], 400);
+        }
+
+        if (isEmpty($userId)) {
+            Response()->jsonError('Du skal være logget ind', [], 401);
+        }
+
+        $paymentsHandler = Methods::payments();
+
+        // Get payment with FKs resolved for organisation access
+        $payment = $paymentsHandler->includeForeignKeys()->get($paymentUid);
+
+        if (isEmpty($payment)) {
+            Response()->jsonError('Betaling ikke fundet', [], 404);
+        }
+
+        // Verify payment belongs to current user
+        $paymentUserId = is_object($payment->uuid) ? $payment->uuid->uid : $payment->uuid;
+        if ($paymentUserId !== $userId) {
+            Response()->jsonError('Du har ikke adgang til denne betaling', [], 403);
+        }
+
+        // Verify payment is PAST_DUE
+        if ($payment->status !== 'PAST_DUE') {
+            Response()->jsonError('Kun forsinkede betalinger kan betales nu', [], 400);
+        }
+
+        // Get organisation for merchant_prid
+        $organisationUid = is_object($payment->organisation) ? $payment->organisation->uid : $payment->organisation;
+        $organisation = Methods::organisations()->get($organisationUid);
+
+        if (isEmpty($organisation) || isEmpty($organisation->merchant_prid)) {
+            errorLog([
+                'payment_uid' => $paymentUid,
+                'organisation_uid' => $organisationUid,
+            ], 'pay-now-missing-merchant-prid');
+            Response()->jsonError('Kan ikke behandle betaling - butikken mangler opsætning', [], 500);
+        }
+
+        // Check for initial_transaction_id
+        if (isEmpty($payment->initial_transaction_id)) {
+            errorLog([
+                'payment_uid' => $paymentUid,
+            ], 'pay-now-missing-initial-transaction-id');
+            Response()->jsonError('Kan ikke betale - mangler kortoplysniger. Kontakt butikken.', [], 400);
+        }
+
+        debugLog([
+            'payment_uid' => $paymentUid,
+            'amount' => $payment->amount,
+            'currency' => $payment->currency,
+            'merchant_prid' => $organisation->merchant_prid,
+        ], 'CONSUMER_PAY_NOW_START');
+
+        // Attempt to charge using stored card
+        $isTestPayment = (bool)($payment->test ?? false);
+        $isvAmount = !isEmpty($payment->isv_amount) ? (float)$payment->isv_amount : null;
+
+        $chargeResult = CardValidationService::chargeWithStoredCard(
+            $organisation->merchant_prid,
+            $payment->initial_transaction_id,
+            (float)$payment->amount,
+            $payment->currency,
+            "Betaling af forsinket rate",
+            $isTestPayment,
+            $isvAmount
+        );
+
+        debugLog([
+            'payment_uid' => $paymentUid,
+            'result' => $chargeResult,
+        ], 'CONSUMER_PAY_NOW_RESULT');
+
+        if ($chargeResult['success']) {
+            // Mark payment as completed
+            $paymentsHandler->markAsCompleted($paymentUid, $chargeResult['transaction_id'] ?? null);
+
+            // Trigger notification
+            try {
+                $user = Methods::users()->get($userId);
+                $order = is_object($payment->order) ? $payment->order : Methods::orders()->get($payment->order);
+                \classes\notifications\NotificationTriggers::paymentSuccessful($payment, $user, $order);
+            } catch (\Throwable $e) {
+                errorLog(['error' => $e->getMessage()], 'pay-now-notification-error');
+            }
+
+            Response()->jsonSuccess('Betaling gennemført');
+        }
+
+        // Payment failed
+        $errorMessage = $chargeResult['error'] ?? 'Betaling fejlede';
+        Response()->jsonError($errorMessage, [], 400);
+    }
+
+
+    /**
+     * Initiate card change for ALL customer's scheduled payments
+     *
+     * POST /api/consumer/change-card
+     * Returns Viva checkout URL for 1-unit validation
+     */
+    #[NoReturn] public static function initiateCardChange(array $args): void {
+        $userId = __uuid();
+
+        if (isEmpty($userId)) {
+            Response()->jsonError('Du skal være logget ind', [], 401);
+        }
+
+        // Find customer's scheduled payments and determine organisation from them
+        $paymentsHandler = Methods::payments();
+        $scheduledPayment = $paymentsHandler->excludeForeignKeys()->getFirst([
+            'uuid' => $userId,
+            'status' => ['PENDING', 'SCHEDULED', 'PAST_DUE']
+        ]);
+
+        if (isEmpty($scheduledPayment)) {
+            Response()->jsonError('Du har ingen kommende betalinger', [], 400);
+        }
+
+        $orgUid = $scheduledPayment->organisation;
+
+        // Get organisation for merchant_prid
+        $organisation = Methods::organisations()->get($orgUid);
+        if (isEmpty($organisation) || isEmpty($organisation->merchant_prid)) {
+            Response()->jsonError('Butikken mangler betalingsopsætning', [], 400);
+        }
+
+        // Get user info for Viva payment
+        $user = Methods::users()->get($userId);
+
+        // Get a location for source code (use first location with source)
+        $location = Methods::locations()->excludeForeignKeys()->getFirst(['organisation' => $orgUid]);
+        if (isEmpty($location) || isEmpty($location->source_prid)) {
+            Response()->jsonError('Butikken mangler opsætning - kontakt butikken', [], 400);
+        }
+
+        // Create 1-unit validation payment
+        $viva = Methods::viva()->live();
+
+        // Check if we should use sandbox based on any test payments
+        $testPayment = $paymentsHandler->excludeForeignKeys()->getFirst([
+            'uuid' => $userId,
+            'test' => 1
+        ]);
+        if ($testPayment) {
+            $viva = Methods::viva()->sandbox();
+        }
+
+        $paymentResult = $viva->createPayment(
+            $organisation->merchant_prid,
+            1, // 1 unit of currency
+            $location->source_prid,
+            $user,
+            "Kortskift - " . $organisation->name,
+            "Kortvalidering",
+            "Kortskift",
+            'DKK', // TODO: Get from settings
+            true, // allowRecurring - REQUIRED for card change
+            false, // preAuth
+            ['type' => 'card_change', 'scope' => 'global', 'user_uid' => $userId],
+            null, // resellerSourceCode
+            0 // No ISV fee for validation
+        );
+
+        if (isEmpty($paymentResult) || isEmpty($paymentResult['orderCode'])) {
+            errorLog(['result' => $paymentResult], 'card-change-create-payment-failed');
+            Response()->jsonError('Kunne ikke starte kortskift', [], 500);
+        }
+
+        // Store pending card change info in session for callback
+        $_SESSION['pending_card_change'] = [
+            'type' => 'global',
+            'user_uid' => $userId,
+            'org_uid' => $orgUid,
+            'order_code' => $paymentResult['orderCode'],
+            'is_test' => !isEmpty($testPayment),
+            'created_at' => time(),
+        ];
+
+        $checkoutUrl = $viva->checkoutUrl($paymentResult['orderCode']);
+
+        Response()->jsonSuccess('', ['checkoutUrl' => $checkoutUrl]);
+    }
+
+
+    /**
+     * Initiate card change for a single order's remaining payments
+     *
+     * POST /api/consumer/change-card/order/{orderUid}
+     * Returns Viva checkout URL for 1-unit validation
+     */
+    #[NoReturn] public static function initiateOrderCardChange(array $args): void {
+        $orderUid = $args['orderUid'] ?? null;
+        $userId = __uuid();
+
+        if (isEmpty($orderUid)) {
+            Response()->jsonError('Ordre-ID mangler', [], 400);
+        }
+
+        if (isEmpty($userId)) {
+            Response()->jsonError('Du skal være logget ind', [], 401);
+        }
+
+        // Get order with FKs
+        $order = Methods::orders()->includeForeignKeys()->get($orderUid);
+        if (isEmpty($order)) {
+            Response()->jsonError('Ordre ikke fundet', [], 404);
+        }
+
+        // Verify order belongs to current user
+        $orderUserId = is_object($order->uuid) ? $order->uuid->uid : $order->uuid;
+        if ($orderUserId !== $userId) {
+            Response()->jsonError('Du har ikke adgang til denne ordre', [], 403);
+        }
+
+        // Get organisation
+        $organisationUid = is_object($order->organisation) ? $order->organisation->uid : $order->organisation;
+        $organisation = Methods::organisations()->get($organisationUid);
+
+        if (isEmpty($organisation) || isEmpty($organisation->merchant_prid)) {
+            Response()->jsonError('Butikken mangler betalingsopsætning', [], 400);
+        }
+
+        // Verify order has unpaid payments
+        $paymentsHandler = Methods::payments();
+        $unpaidPayments = $paymentsHandler->queryBuilder()
+            ->where('order', $orderUid)
+            ->where('status', ['PENDING', 'SCHEDULED', 'PAST_DUE'])
+            ->count();
+
+        if ($unpaidPayments === 0) {
+            Response()->jsonError('Denne ordre har ingen kommende betalinger', [], 400);
+        }
+
+        // Get user info for Viva payment
+        $user = Methods::users()->get($userId);
+
+        // Get location
+        $locationUid = is_object($order->location) ? $order->location->uid : $order->location;
+        $location = Methods::locations()->get($locationUid);
+        if (isEmpty($location) || isEmpty($location->source_prid)) {
+            Response()->jsonError('Butikken mangler opsætning - kontakt butikken', [], 400);
+        }
+
+        // Check if test transaction
+        $isTest = (bool)($order->test ?? false);
+
+        // Create 1-unit validation payment
+        $viva = $isTest ? Methods::viva()->sandbox() : Methods::viva()->live();
+
+        $paymentResult = $viva->createPayment(
+            $organisation->merchant_prid,
+            1, // 1 unit of currency
+            $location->source_prid,
+            $user,
+            "Kortskift - " . ($location->name ?? $organisation->name),
+            "Kortvalidering",
+            "Kortskift ordre " . $orderUid,
+            $order->currency ?? 'DKK',
+            true, // allowRecurring - REQUIRED for card change
+            false, // preAuth
+            ['type' => 'card_change', 'scope' => 'order', 'order_uid' => $orderUid, 'user_uid' => $userId],
+            null, // resellerSourceCode
+            0 // No ISV fee for validation
+        );
+
+        if (isEmpty($paymentResult) || isEmpty($paymentResult['orderCode'])) {
+            errorLog(['result' => $paymentResult], 'card-change-order-create-payment-failed');
+            Response()->jsonError('Kunne ikke starte kortskift', [], 500);
+        }
+
+        // Store pending card change info in session for callback
+        $_SESSION['pending_card_change'] = [
+            'type' => 'order',
+            'order_uid' => $orderUid,
+            'org_uid' => $organisationUid,
+            'user_uid' => $userId,
+            'order_code' => $paymentResult['orderCode'],
+            'is_test' => $isTest,
+            'created_at' => time(),
+        ];
+
+        $checkoutUrl = $viva->checkoutUrl($paymentResult['orderCode']);
+
+        Response()->jsonSuccess('', ['checkoutUrl' => $checkoutUrl]);
+    }
+
+
+    /**
+     * Get payments grouped by payment method (card) for card change page
+     *
+     * POST /api/consumer/payments-by-card
+     * Returns payments grouped by their payment_method, filtered to changeable statuses only
+     */
+    #[NoReturn] public static function getPaymentsByCard(array $args): void {
+        $userId = __uuid();
+
+        if (isEmpty($userId)) {
+            Response()->jsonError('Du skal være logget ind', [], 401);
+        }
+
+        $paymentsHandler = Methods::payments();
+
+        // Only get payments with statuses that can have their card changed
+        // Exclude: COMPLETED, CANCELLED, REFUNDED, VOIDED
+        $changeableStatuses = ['PENDING', 'SCHEDULED', 'PAST_DUE', 'FAILED', 'DRAFT'];
+
+        $payments = $paymentsHandler->queryGetAll(
+            $paymentsHandler->queryBuilder()
+                ->where('uuid', $userId)
+                ->where('status', $changeableStatuses)
+                ->order('due_date', 'ASC')
+        );
+
+        if ($payments->count() === 0) {
+            Response()->jsonSuccess('', [
+                'groups' => [],
+                'totalPayments' => 0,
+            ]);
+        }
+
+        // Group payments by payment_method (each payment_method is unique per card per organisation)
+        $groups = [];
+
+        foreach ($payments->list() as $payment) {
+            $paymentMethodUid = is_object($payment->payment_method)
+                ? $payment->payment_method->uid
+                : $payment->payment_method;
+
+            // Get location name - handle both resolved and unresolved FK
+            $locationName = null;
+            if (is_object($payment->location)) {
+                $locationName = $payment->location->name;
+            } elseif (!isEmpty($payment->location)) {
+                $loc = Methods::locations()->get($payment->location);
+                $locationName = $loc->name ?? null;
+            }
+
+            // Build payment data
+            $paymentData = [
+                'uid' => $payment->uid,
+                'amount' => (float)$payment->amount,
+                'currency' => $payment->currency,
+                'status' => $payment->status,
+                'due_date' => $payment->due_date,
+                'order_uid' => is_object($payment->order) ? $payment->order->uid : $payment->order,
+                'location_name' => $locationName,
+            ];
+
+            // Get organisation info for display
+            $orgUid = is_object($payment->organisation) ? $payment->organisation->uid : $payment->organisation;
+            $organisationName = is_object($payment->organisation)
+                ? $payment->organisation->name
+                : null;
+
+            if (isEmpty($paymentMethodUid)) {
+                // Group no-card payments by organisation
+                $noCardKey = 'no_card_' . $orgUid;
+
+                if (!isset($groups[$noCardKey])) {
+                    $groups[$noCardKey] = [
+                        'payment_method' => null,
+                        'organisation_uid' => $orgUid,
+                        'title' => 'Intet kort tilknyttet',
+                        'brand' => null,
+                        'last4' => null,
+                        'exp_month' => null,
+                        'exp_year' => null,
+                        'organisation' => $organisationName,
+                        'payments' => [],
+                    ];
+                }
+                $groups[$noCardKey]['payments'][] = $paymentData;
+            } else {
+                if (!isset($groups[$paymentMethodUid])) {
+                    $paymentMethod = is_object($payment->payment_method)
+                        ? $payment->payment_method
+                        : Methods::paymentMethods()->get($paymentMethodUid);
+
+                    $groups[$paymentMethodUid] = [
+                        'payment_method' => $paymentMethodUid,
+                        'title' => $paymentMethod->title ?? 'Ukendt kort',
+                        'brand' => $paymentMethod->brand ?? null,
+                        'last4' => $paymentMethod->last4 ?? null,
+                        'exp_month' => $paymentMethod->exp_month ?? null,
+                        'exp_year' => $paymentMethod->exp_year ?? null,
+                        'organisation' => $organisationName,
+                        'payments' => [],
+                    ];
+                }
+                $groups[$paymentMethodUid]['payments'][] = $paymentData;
+            }
+        }
+
+        // Convert to indexed array
+        $result = array_values($groups);
+
+        // Add summary to each group
+        foreach ($result as &$group) {
+            $group['payment_count'] = count($group['payments']);
+            $group['total_amount'] = array_sum(array_column($group['payments'], 'amount'));
+            $group['currency'] = $group['payments'][0]['currency'] ?? 'DKK';
+        }
+
+        Response()->jsonSuccess('', [
+            'groups' => $result,
+            'totalPayments' => $payments->count(),
+        ]);
+    }
+
+
+    /**
+     * Initiate card change for all payments using a specific payment method
+     *
+     * POST /api/consumer/change-card/payment-method/{paymentMethodUid}
+     * Creates a temporary card_change order, returns Viva checkout URL for redirect
+     */
+    #[NoReturn] public static function initiatePaymentMethodCardChange(array $args): void {
+        // Route params are lowercased by the router
+        $paymentMethodUid = $args['paymentmethoduid'] ?? $args['paymentMethodUid'] ?? null;
+        $organisationUidParam = $args['organisation_uid'] ?? null; // For no-card groups
+        $userId = __uuid();
+
+        if (isEmpty($userId)) {
+            Response()->jsonError('Du skal være logget ind', [], 401);
+        }
+
+        // Payment method can be empty string or 'null' for payments without a card
+        $isNoCardGroup = isEmpty($paymentMethodUid) || $paymentMethodUid === 'null';
+
+        $paymentsHandler = Methods::payments();
+        $changeableStatuses = ['PENDING', 'SCHEDULED', 'PAST_DUE', 'FAILED', 'DRAFT'];
+
+        // Build query for payments to update
+        $query = $paymentsHandler->queryBuilder()
+            ->where('uuid', $userId)
+            ->where('status', $changeableStatuses);
+
+        if ($isNoCardGroup) {
+            $query->whereNull('payment_method');
+            // For no-card groups, also filter by organisation if provided
+            if (!isEmpty($organisationUidParam)) {
+                $query->where('organisation', $organisationUidParam);
+            }
+        } else {
+            $query->where('payment_method', $paymentMethodUid);
+        }
+
+        // Get first payment to determine organisation
+        $firstPayment = $paymentsHandler->queryGetFirst($query);
+
+        if (isEmpty($firstPayment)) {
+            Response()->jsonError('Ingen betalinger fundet for dette kort', [], 404);
+        }
+
+        // Get organisation from payment
+        $organisationUid = is_object($firstPayment->organisation)
+            ? $firstPayment->organisation->uid
+            : $firstPayment->organisation;
+
+        $organisation = Methods::organisations()->get($organisationUid);
+        if (isEmpty($organisation) || isEmpty($organisation->merchant_prid)) {
+            Response()->jsonError('Butikken mangler betalingsopsætning', [], 400);
+        }
+
+        // Get location for source code
+        $locationUid = is_object($firstPayment->location)
+            ? $firstPayment->location->uid
+            : $firstPayment->location;
+
+        $location = Methods::locations()->get($locationUid);
+        if (isEmpty($location) || isEmpty($location->source_prid)) {
+            Response()->jsonError('Butikken mangler opsætning - kontakt butikken', [], 400);
+        }
+
+        // Get user info for Viva payment
+        $user = Methods::users()->get($userId);
+
+        // Check if test transaction
+        $isTest = (bool)($firstPayment->test ?? false);
+
+        // Create 1-unit validation payment via Viva
+        $viva = $isTest ? Methods::viva()->sandbox() : Methods::viva()->live();
+
+        $currency = $firstPayment->currency ?? 'DKK';
+
+        $paymentResult = $viva->createPayment(
+            $organisation->merchant_prid,
+            1, // 1 unit of currency
+            $location->source_prid,
+            $user,
+            "Kortskift - " . ($location->name ?? $organisation->name),
+            "Kortvalidering",
+            "Kortskift",
+            $currency,
+            true, // allowRecurring - REQUIRED for card change
+            false, // preAuth
+            [$location->name ?? $organisation->name, 'Kortskift', $user->full_name],
+            null, // resellerSourceCode
+            0 // No ISV fee for validation
+        );
+
+        if (isEmpty($paymentResult) || isEmpty($paymentResult['orderCode'])) {
+            errorLog(['result' => $paymentResult], 'card-change-payment-method-create-failed');
+            Response()->jsonError('Kunne ikke starte kortskift', [], 500);
+        }
+
+        $orderCode = $paymentResult['orderCode'];
+
+        // Create temporary card_change order in database
+        $orderHandler = Methods::orders();
+        $orderUid = $orderHandler->createCardChangeOrder(
+            organisation: $organisationUid,
+            location: $locationUid,
+            customerId: $userId,
+            provider: "ppr_fheioflje98f", // Default provider
+            currency: $currency,
+            prid: $orderCode,
+            isTest: $isTest,
+            metadata: [
+                'scope' => 'payment_method',
+                'payment_method_uid' => $isNoCardGroup ? null : $paymentMethodUid,
+                'organisation_uid' => $isNoCardGroup ? $organisationUidParam : null,
+            ]
+        );
+
+        if (isEmpty($orderUid)) {
+            errorLog(['orderCode' => $orderCode], 'card-change-order-create-failed');
+            Response()->jsonError('Kunne ikke oprette kortskift ordre', [], 500);
+        }
+
+        $checkoutUrl = $viva->checkoutUrl($orderCode);
+
+        Response()->jsonSuccess('', ['redirectUrl' => $checkoutUrl]);
     }
 }

@@ -526,4 +526,153 @@ const ConsumerPaymentsPagination = (function() {
 // Initialize on document ready
 $(document).ready(function() {
     ConsumerPaymentsPagination.init();
+    ConsumerPaymentActions.init();
 });
+
+
+/**
+ * Consumer Payment Actions - Pay Now & Change Card
+ */
+const ConsumerPaymentActions = (function() {
+
+    function init() {
+        bindPayNowButton();
+        bindChangeCardButton();
+        bindGlobalChangeCardButton();
+    }
+
+    /**
+     * Pay Now button handler (for PAST_DUE payments)
+     * Located on payment-detail.php
+     */
+    function bindPayNowButton() {
+        const $btn = $('#pay-now-btn');
+        if (!$btn.length) return;
+
+        $btn.on('click', async function() {
+            const paymentUid = $(this).data('uid');
+            if (!paymentUid) return;
+
+            // URL is set via JS variable from view (using Links class)
+            const url = typeof consumerPayNowUrl !== 'undefined'
+                ? consumerPayNowUrl
+                : `api/consumer/payments/${paymentUid}/pay-now`;
+
+            const originalHtml = $btn.html();
+            $btn.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin font-16 mr-1"></i> Behandler...');
+
+            try {
+                const result = await post(url);
+
+                if (result.status === 'success') {
+                    showToast('success', 'Betaling gennemført!');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    const errorMsg = result.error?.message || result.message || 'Betaling fejlede';
+                    showToast('error', errorMsg);
+                    $btn.prop('disabled', false).html(originalHtml);
+                }
+            } catch (error) {
+                console.error('Pay now error:', error);
+                showToast('error', 'Der opstod en netværksfejl');
+                $btn.prop('disabled', false).html(originalHtml);
+            }
+        });
+    }
+
+    /**
+     * Change Card button handler (order-specific)
+     * Located on payment-detail.php and order-detail.php
+     */
+    function bindChangeCardButton() {
+        const $btn = $('#change-card-btn');
+        if (!$btn.length) return;
+
+        $btn.on('click', async function() {
+            const orderUid = $(this).data('order');
+            if (!orderUid) return;
+
+            // URL is set via JS variable from view (using Links class)
+            const url = typeof consumerChangeCardOrderUrl !== 'undefined'
+                ? consumerChangeCardOrderUrl
+                : `api/consumer/change-card/order/${orderUid}`;
+
+            const originalHtml = $btn.html();
+            $btn.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin font-16 mr-1"></i> Starter kortskift...');
+
+            try {
+                const result = await post(url);
+
+                if (result.status === 'success' && result.data?.checkoutUrl) {
+                    // Redirect to Viva checkout
+                    window.location.href = result.data.checkoutUrl;
+                } else {
+                    const errorMsg = result.error?.message || result.message || 'Kunne ikke starte kortskift';
+                    showToast('error', errorMsg);
+                    $btn.prop('disabled', false).html(originalHtml);
+                }
+            } catch (error) {
+                console.error('Change card error:', error);
+                showToast('error', 'Der opstod en netværksfejl');
+                $btn.prop('disabled', false).html(originalHtml);
+            }
+        });
+    }
+
+    /**
+     * Global Change Card button handler
+     * Located on payments.php (list page)
+     */
+    function bindGlobalChangeCardButton() {
+        const $btn = $('#global-change-card-btn');
+        if (!$btn.length) return;
+
+        $btn.on('click', async function() {
+            // URL is set via JS variable from view (using Links class)
+            const url = typeof consumerChangeCardUrl !== 'undefined'
+                ? consumerChangeCardUrl
+                : 'api/consumer/change-card';
+
+            const originalHtml = $btn.html();
+            $btn.prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin font-16 mr-1"></i> Starter kortskift...');
+
+            try {
+                const result = await post(url);
+
+                if (result.status === 'success' && result.data?.checkoutUrl) {
+                    // Redirect to Viva checkout
+                    window.location.href = result.data.checkoutUrl;
+                } else {
+                    const errorMsg = result.error?.message || result.message || 'Kunne ikke starte kortskift';
+                    showToast('error', errorMsg);
+                    $btn.prop('disabled', false).html(originalHtml);
+                }
+            } catch (error) {
+                console.error('Global change card error:', error);
+                showToast('error', 'Der opstod en netværksfejl');
+                $btn.prop('disabled', false).html(originalHtml);
+            }
+        });
+    }
+
+    /**
+     * Simple toast notification
+     */
+    function showToast(type, message) {
+        // Check if global toast function exists
+        if (typeof window.showToast === 'function') {
+            window.showToast(type, message);
+            return;
+        }
+
+        // Fallback to simple alert
+        const prefix = type === 'success' ? '✓' : '✗';
+        if (type === 'error') {
+            alert(`${prefix} ${message}`);
+        }
+    }
+
+    return {
+        init: init
+    };
+})();

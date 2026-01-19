@@ -11,4 +11,20 @@ class Consumer {
     public string $updatePassword = "api/consumer/update-password";
     public string $verifyPhone = "api/consumer/verify-phone";
 
+    // Payment actions
+    public string $changeCard = "api/consumer/change-card";
+    public string $paymentsByCard = "api/consumer/payments-by-card";
+
+    public function payNow(string $paymentUid): string {
+        return "api/consumer/payments/{$paymentUid}/pay-now";
+    }
+
+    public function changeCardForOrder(string $orderUid): string {
+        return "api/consumer/change-card/order/{$orderUid}";
+    }
+
+    public function changeCardForPaymentMethod(string $paymentMethodUid): string {
+        return "api/consumer/change-card/payment-method/{$paymentMethodUid}";
+    }
+
 }

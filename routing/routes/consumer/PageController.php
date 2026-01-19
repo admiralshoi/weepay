@@ -2,7 +2,9 @@
 namespace routing\routes\consumer;
 
 use classes\data\Calculate;
+use classes\enumerations\Links;
 use classes\Methods;
+use classes\payments\CardValidationService;
 use features\Settings;
 
 class PageController {
@@ -19,21 +21,22 @@ class PageController {
             'status' => 'COMPLETED'
         ]);
 
-        // Calculate total spent
+        // Calculate total spent (subtract refunds)
         $totalSpent = $orders->reduce(function ($carry, $item) {
-            return $carry + $item['amount'];
+            return $carry + orderAmount((object)$item);
         }, 0);
 
         // Get order count
         $orderCount = $orders->count();
 
-        // Get outstanding payments (SCHEDULED + PAST_DUE)
-        $outstandingPayments = $paymentsHandler->getByX([
+        // Get upcoming payments (all non-completed statuses)
+        $upcomingStatuses = ['PENDING', 'SCHEDULED', 'PAST_DUE', 'FAILED', 'DRAFT'];
+        $upcomingPaymentsAll = $paymentsHandler->getByX([
             'uuid' => __uuid(),
-            'status' => ['SCHEDULED', 'PAST_DUE']
+            'status' => $upcomingStatuses
         ], ['amount', 'due_date', 'status']);
 
-        $totalOutstanding = $outstandingPayments->reduce(function ($carry, $item) {
+        $totalUpcoming = $upcomingPaymentsAll->reduce(function ($carry, $item) {
             return $carry + $item['amount'];
         }, 0);
 
@@ -83,7 +86,7 @@ class PageController {
             $activities[] = [
                 'type' => 'order',
                 'date' => $order->created_at,
-                'amount' => $order->amount,
+                'amount' => orderAmount($order),
                 'data' => $order,
                 'currency' => $order->currency,
                 'location_name' => $locationName,
@@ -142,7 +145,7 @@ class PageController {
                     'order_count' => 0,
                 ];
             }
-            $locationPurchases[$locationUid]['total_spent'] += (float)$order->amount;
+            $locationPurchases[$locationUid]['total_spent'] += orderAmount($order);
             $locationPurchases[$locationUid]['order_count']++;
         }
 
@@ -185,7 +188,7 @@ class PageController {
             'user',
             'totalSpent',
             'orderCount',
-            'totalOutstanding',
+            'totalUpcoming',
             'availableCredit',
             'bnplLimit',
             'activities',
@@ -220,10 +223,11 @@ class PageController {
                 $paidAmounts[$payment->order] = (float)$payment->total_paid;
             }
 
-            // Check if any order is not fully paid
+            // Check if any order is not fully paid (subtract refunds)
             foreach($allOrders->list() as $order) {
                 $paidAmount = $paidAmounts[$order->uid] ?? 0;
-                if($paidAmount < (float)$order->amount) {
+                $netAmount = orderAmount($order);
+                if($paidAmount < $netAmount) {
                     $hasNotFullyPaid = true;
                     break;
                 }
@@ -238,7 +242,31 @@ class PageController {
         $paymentsHandler = Methods::payments();
         $hasPastDue = $paymentsHandler->exists(['uuid' => __uuid(), 'status' => 'PAST_DUE']);
 
-        return Views("CONSUMER_PAYMENTS", compact('hasPastDue'));
+        // Check if user has any scheduled payments for card change button
+        $hasScheduledPayments = $paymentsHandler->exists([
+            'uuid' => __uuid(),
+            'status' => ['PENDING', 'SCHEDULED', 'PAST_DUE']
+        ]);
+
+        return Views("CONSUMER_PAYMENTS", compact('hasPastDue', 'hasScheduledPayments'));
+    }
+
+    public static function changeCard(array $args): mixed  {
+        // Check if user has any changeable payments
+        $paymentsHandler = Methods::payments();
+        $changeableStatuses = ['PENDING', 'SCHEDULED', 'PAST_DUE', 'FAILED', 'DRAFT'];
+
+        $hasChangeablePayments = $paymentsHandler->queryBuilder()
+            ->where('uuid', __uuid())
+            ->where('status', $changeableStatuses)
+            ->count() > 0;
+
+        if (!$hasChangeablePayments) {
+            // Redirect to payments page if no changeable payments
+            Response()->redirect(__url(Links::$consumer->payments));
+        }
+
+        return Views("CONSUMER_CHANGE_CARD", []);
     }
 
     public static function receipts(array $args): mixed  {
@@ -398,11 +426,11 @@ class PageController {
             ->order('created_at', 'DESC');
         $ordersList = $orderHandler->queryGetAll($orders);
 
-        // Calculate totals
+        // Calculate totals (subtract refunds)
         $totalSpent = 0;
         $orderCount = $ordersList->count();
         foreach($ordersList->list() as $order) {
-            $totalSpent += (float)$order->amount;
+            $totalSpent += orderAmount($order);
         }
 
         // Get location's public page URL
@@ -417,5 +445,171 @@ class PageController {
             ->first();
 
         return Views("CONSUMER_LOCATION_DETAIL", compact('location', 'ordersList', 'totalSpent', 'orderCount', 'publicPageUrl', 'locationPage'));
+    }
+
+
+    /**
+     * Handle Viva callback after card validation for card change
+     *
+     * GET /consumer/card-change/callback?s={orderCode}&t={transactionId}&...
+     *
+     * Uses the card_change order stored in DB instead of session for reliability
+     */
+    public static function cardChangeCallback(array $args): mixed {
+        $orderCode = $args['s'] ?? null;
+
+        $retryUrl = __url(Links::$consumer->changeCard);
+
+        if (isEmpty($orderCode)) {
+            errorLog(['args' => $args], 'card-change-callback-no-order-code');
+            return Views("CONSUMER_CARD_CHANGE_FAILED", [
+                'error' => 'Mangler ordre kode',
+                'retryUrl' => $retryUrl,
+            ]);
+        }
+
+        // Find the card_change order by prid (orderCode)
+        $orderHandler = Methods::orders();
+        $order = $orderHandler->getFirst(['prid' => $orderCode, 'type' => 'card_change']);
+
+        if (isEmpty($order)) {
+            errorLog(['orderCode' => $orderCode], 'card-change-callback-order-not-found');
+            return Views("CONSUMER_CARD_CHANGE_FAILED", [
+                'error' => 'Kortskift ordre ikke fundet',
+                'retryUrl' => $retryUrl,
+            ]);
+        }
+
+        // Verify order belongs to current user
+        $userId = __uuid();
+        $orderUserId = is_object($order->uuid) ? $order->uuid->uid : $order->uuid;
+        if ($orderUserId !== $userId) {
+            errorLog(['orderUserId' => $orderUserId, 'currentUserId' => $userId], 'card-change-callback-user-mismatch');
+            return Views("CONSUMER_CARD_CHANGE_FAILED", [
+                'error' => 'Denne ordre tilhører ikke dig',
+                'retryUrl' => $retryUrl,
+            ]);
+        }
+
+        // Get metadata from billing_details (stored as object)
+        $billingDetails = $order->billing_details ?? (object)[];
+        $scope = $billingDetails->scope ?? 'payment_method';
+        $oldPaymentMethodUid = $billingDetails->payment_method_uid ?? null;
+        $organisationUidForNoCard = $billingDetails->organisation_uid ?? null;
+
+        // Get organisation for merchant_prid
+        $organisationUid = is_object($order->organisation) ? $order->organisation->uid : $order->organisation;
+        $organisation = Methods::organisations()->get($organisationUid);
+
+        if (isEmpty($organisation) || isEmpty($organisation->merchant_prid)) {
+            return Views("CONSUMER_CARD_CHANGE_FAILED", [
+                'error' => 'Butik ikke fundet',
+                'retryUrl' => $retryUrl,
+            ]);
+        }
+
+        $isTest = (bool)($order->test ?? false);
+        $currency = $order->currency ?? 'DKK';
+
+        // Process the validation payment (verify + refund + get transaction ID)
+        $validationResult = CardValidationService::processValidationPayment(
+            $organisation->merchant_prid,
+            $orderCode,
+            $currency,
+            $isTest
+        );
+
+        debugLog([
+            'orderUid' => $order->uid,
+            'orderCode' => $orderCode,
+            'scope' => $scope,
+            'oldPaymentMethodUid' => $oldPaymentMethodUid,
+            'validationResult' => $validationResult,
+        ], 'CARD_CHANGE_CALLBACK_VALIDATION');
+
+        if (!$validationResult['success']) {
+            // Delete the failed card_change order
+            $orderHandler->deleteCardChangeOrder($order->uid);
+
+            return Views("CONSUMER_CARD_CHANGE_FAILED", [
+                'error' => $validationResult['error'] ?? 'Kortvalidering fejlede',
+                'retryUrl' => $retryUrl,
+            ]);
+        }
+
+        $newTransactionId = $validationResult['transaction_id'];
+
+        // Get card details from Viva and create/find payment method
+        $viva = Methods::viva();
+        if ($isTest) {
+            $viva->sandbox();
+        } else {
+            $viva->live();
+        }
+
+        $paymentInfo = $viva->getPayment($organisation->merchant_prid, $newTransactionId);
+        $newPaymentMethodUid = null;
+
+        if (!isEmpty($paymentInfo)) {
+            $paymentMethod = Methods::paymentMethods()->createFromVivaTransaction(
+                $userId,
+                $paymentInfo,
+                $isTest
+            );
+            $newPaymentMethodUid = $paymentMethod?->uid;
+        }
+
+        // Update payments with new transaction ID and payment method
+        $paymentsHandler = Methods::payments();
+        $changeableStatuses = ['PENDING', 'SCHEDULED', 'PAST_DUE', 'FAILED', 'DRAFT'];
+        $updateCount = 0;
+
+        $query = $paymentsHandler->queryBuilder()
+            ->where('uuid', $userId)
+            ->where('status', $changeableStatuses);
+
+        if (isEmpty($oldPaymentMethodUid)) {
+            // No-card group - filter by null payment_method and organisation
+            $query->whereNull('payment_method');
+            if (!isEmpty($organisationUidForNoCard)) {
+                $query->where('organisation', $organisationUidForNoCard);
+            } elseif (!isEmpty($organisationUid)) {
+                $query->where('organisation', $organisationUid);
+            }
+        } else {
+            // Specific payment method
+            $query->where('payment_method', $oldPaymentMethodUid);
+        }
+
+        $paymentsToUpdate = $query->all();
+
+        foreach ($paymentsToUpdate->list() as $payment) {
+            $paymentsHandler->excludeForeignKeys()->update(
+                [
+                    'initial_transaction_id' => $newTransactionId,
+                    'payment_method' => $newPaymentMethodUid,
+                ],
+                ['uid' => $payment->uid]
+            );
+            $updateCount++;
+        }
+
+        debugLog([
+            'scope' => $scope,
+            'old_payment_method_uid' => $oldPaymentMethodUid,
+            'new_payment_method_uid' => $newPaymentMethodUid,
+            'user_uid' => $userId,
+            'updateCount' => $updateCount,
+            'newTransactionId' => $newTransactionId,
+        ], 'CARD_CHANGE_SUCCESS');
+
+        // Delete the temporary card_change order
+        $orderHandler->deleteCardChangeOrder($order->uid);
+
+        return Views("CONSUMER_CARD_CHANGE_SUCCESS", [
+            'message' => "Dit kort er opdateret for {$updateCount} betalinger",
+            'updateCount' => $updateCount,
+            'returnUrl' => $retryUrl,
+        ]);
     }
 }

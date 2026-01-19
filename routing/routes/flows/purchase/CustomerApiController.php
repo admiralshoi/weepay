@@ -179,10 +179,36 @@ class CustomerApiController {
                     );
 
                     if ($validationResult['success'] && !empty($validationResult['transaction_id'])) {
-                        // Store the transaction ID on all payments for this order
-                        Methods::payments()->storeInitialTransactionId(
-                            $order->uid,
-                            $validationResult['transaction_id']
+                        $transactionId = $validationResult['transaction_id'];
+
+                        // Get card details from Viva and store payment method
+                        $viva = Methods::viva();
+                        if ($isTestOrder) {
+                            $viva->sandbox();
+                        } else {
+                            $viva->live();
+                        }
+
+                        $paymentInfo = $viva->getPayment($merchantId, $transactionId);
+                        $paymentMethodUid = null;
+
+                        if (!isEmpty($paymentInfo)) {
+                            $customerUid = is_object($order->uuid) ? $order->uuid->uid : $order->uuid;
+                            $paymentMethod = Methods::paymentMethods()->createFromVivaTransaction(
+                                $customerUid,
+                                $paymentInfo,
+                                $isTestOrder
+                            );
+                            $paymentMethodUid = $paymentMethod?->uid;
+                        }
+
+                        // Store the transaction ID and payment method on all payments for this order
+                        Methods::payments()->update(
+                            [
+                                'initial_transaction_id' => $transactionId,
+                                'payment_method' => $paymentMethodUid,
+                            ],
+                            ['order' => $order->uid]
                         );
                     } else {
                         // Log error but don't fail - order is created, we can retry later
@@ -196,7 +222,9 @@ class CustomerApiController {
                 // For installments plan: get transaction ID from first payment and store on all payments
                 elseif ($order->payment_plan === 'installments') {
                     $viva = Methods::viva();
-                    if (!$isTestOrder) {
+                    if ($isTestOrder) {
+                        $viva->sandbox();
+                    } else {
                         $viva->live();
                     }
 
@@ -213,15 +241,33 @@ class CustomerApiController {
                     }
 
                     if (!empty($transactionId)) {
-                        // Store the transaction ID on all SCHEDULED payments for future recurring charges
-                        Methods::payments()->storeInitialTransactionId(
-                            $order->uid,
-                            $transactionId
+                        // Get card details from Viva and store payment method
+                        $paymentInfo = $viva->getPayment($merchantId, $transactionId);
+                        $paymentMethodUid = null;
+
+                        if (!isEmpty($paymentInfo)) {
+                            $customerUid = is_object($order->uuid) ? $order->uuid->uid : $order->uuid;
+                            $paymentMethod = Methods::paymentMethods()->createFromVivaTransaction(
+                                $customerUid,
+                                $paymentInfo,
+                                $isTestOrder
+                            );
+                            $paymentMethodUid = $paymentMethod?->uid;
+                        }
+
+                        // Store the transaction ID and payment method on all SCHEDULED payments
+                        Methods::payments()->update(
+                            [
+                                'initial_transaction_id' => $transactionId,
+                                'payment_method' => $paymentMethodUid,
+                            ],
+                            ['order' => $order->uid]
                         );
 
                         debugLog([
                             'orderUid' => $order->uid,
                             'transactionId' => $transactionId,
+                            'paymentMethodUid' => $paymentMethodUid,
                         ], 'INSTALLMENTS_TRANSACTION_ID_STORED');
                     } else {
                         errorLog([

@@ -45,9 +45,17 @@ if(!isEmpty($orderPayments)) {
 
 
 
+<?php
+// Get order UID for card change
+$orderUid = is_object($order) ? $order->uid : ($order ?? null);
+?>
+
 <script>
     var pageTitle = <?=json_encode($pageTitle)?>;
     activePage = "payments";
+    var paymentUid = <?=json_encode($payment->uid)?>;
+    var paymentStatus = <?=json_encode($payment->status)?>;
+    var paymentOrderUid = <?=json_encode($orderUid)?>;
 </script>
 
 
@@ -291,11 +299,18 @@ if(!isEmpty($orderPayments)) {
                         </a>
                         <?php endif; ?>
 
-                        <?php if(in_array($payment->status, ['PAST_DUE', 'SCHEDULED', 'PENDING'])): ?>
-                        <button type="button" class="btn-v2 action-btn w-100 flex-row-center flex-align-center" style="gap: .5rem;" id="update-payment-method-btn">
-                            <i class="mdi mdi-credit-card-refresh-outline font-16"></i>
-                            <span class="font-14">Opdater betalingsmetode</span>
+                        <?php if($payment->status === 'PAST_DUE'): ?>
+                        <button type="button" class="btn-v2 danger-btn w-100 flex-row-center flex-align-center" style="gap: .5rem;" id="pay-now-btn" data-uid="<?=$payment->uid?>">
+                            <i class="mdi mdi-cash-fast font-16"></i>
+                            <span class="font-14">Betal nu</span>
                         </button>
+                        <?php endif; ?>
+
+                        <?php if(in_array($payment->status, ['PAST_DUE', 'SCHEDULED', 'PENDING', 'FAILED', 'DRAFT'])): ?>
+                        <a href="<?=__url(Links::$consumer->changeCard)?>" class="btn-v2 action-btn w-100 flex-row-center flex-align-center" style="gap: .5rem;">
+                            <i class="mdi mdi-credit-card-refresh-outline font-16"></i>
+                            <span class="font-14">Skift betalingskort</span>
+                        </a>
                         <?php endif; ?>
 
                         <?php if(!isEmpty($order)): ?>

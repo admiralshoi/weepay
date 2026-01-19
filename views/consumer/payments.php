@@ -6,6 +6,7 @@
 use classes\enumerations\Links;
 
 $pageTitle = "Betalinger";
+$hasScheduledPayments = $args->hasScheduledPayments ?? false;
 ?>
 
 
@@ -14,16 +15,26 @@ $pageTitle = "Betalinger";
 <script>
     var pageTitle = <?=json_encode($pageTitle)?>;
     activePage = "payments";
-    var consumerPaymentsApiUrl = <?=json_encode(Links::$api->consumer->payments)?>;
+    var consumerPaymentsApiUrl = <?=json_encode(__url(Links::$api->consumer->payments))?>;
     var consumerHasPastDue = <?=json_encode($args->hasPastDue ?? false)?>;
+    var consumerHasScheduledPayments = <?=json_encode($hasScheduledPayments)?>;
+    var consumerChangeCardUrl = <?=json_encode(__url(Links::$api->consumer->changeCard))?>;
 </script>
 
 
 <div class="page-content">
 
-    <div class="flex-col-start">
-        <p class="mb-0 font-30 font-weight-bold">Betalinger</p>
-        <p class="mb-0 font-16 font-weight-medium color-gray">Oversigt over alle dine betalinger</p>
+    <div class="flex-row-between flex-align-start flex-wrap" style="gap: 1rem;">
+        <div class="flex-col-start">
+            <p class="mb-0 font-30 font-weight-bold">Betalinger</p>
+            <p class="mb-0 font-16 font-weight-medium color-gray">Oversigt over alle dine betalinger</p>
+        </div>
+        <?php if($hasScheduledPayments): ?>
+        <a href="<?=__url(Links::$consumer->changeCard)?>" class="btn-v2 mute-btn">
+            <i class="mdi mdi-credit-card-refresh-outline mr-1"></i>
+            Skift betalingskort
+        </a>
+        <?php endif; ?>
     </div>
 
     <div class="card border-radius-10px mt-4">

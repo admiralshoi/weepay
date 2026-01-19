@@ -303,6 +303,13 @@ class CustomerPageController {
         if(!isEmpty($orderCode)) {
             $orderHandler = Methods::orders();
             $order = $orderHandler->getByPrid($orderCode);
+
+            // Check if this is a card_change order - redirect to consumer card change handler
+            if(!isEmpty($order) && $order->type === 'card_change') {
+                $queryParams = http_build_query($args);
+                Response()->redirect(__url("consumer/card-change/callback?{$queryParams}"));
+            }
+
             if(!isEmpty($order)) {
                 $terminalSession = $order->terminal_session;
             }
@@ -409,7 +416,43 @@ class CustomerPageController {
                 );
 
                 if ($validationResult['success'] && !empty($validationResult['transaction_id'])) {
-                    $paymentsHandler->storeInitialTransactionId($order->uid, $validationResult['transaction_id']);
+                    $storedTransactionId = $validationResult['transaction_id'];
+
+                    // Get card details from Viva and store payment method
+                    $viva = Methods::viva();
+                    if ($isTestOrder) {
+                        $viva->sandbox();
+                    } else {
+                        $viva->live();
+                    }
+
+                    $paymentInfo = $viva->getPayment($merchantId, $storedTransactionId);
+                    $paymentMethodUid = null;
+
+                    if (!isEmpty($paymentInfo)) {
+                        $customerUid = is_object($order->uuid) ? $order->uuid->uid : $order->uuid;
+                        $paymentMethod = Methods::paymentMethods()->createFromVivaTransaction(
+                            $customerUid,
+                            $paymentInfo,
+                            $isTestOrder
+                        );
+                        $paymentMethodUid = $paymentMethod?->uid;
+                    }
+
+                    // Store the transaction ID and payment method on all payments for this order
+                    $paymentsHandler->excludeForeignKeys()->update(
+                        [
+                            'initial_transaction_id' => $storedTransactionId,
+                            'payment_method' => $paymentMethodUid,
+                        ],
+                        ['order' => $order->uid]
+                    );
+
+                    debugLog([
+                        'orderUid' => $order->uid,
+                        'transactionId' => $storedTransactionId,
+                        'paymentMethodUid' => $paymentMethodUid,
+                    ], 'PUSHED_PAYMENT_METHOD_STORED_CALLBACK');
                 } else {
                     errorLog([
                         'orderUid' => $order->uid,
@@ -420,11 +463,79 @@ class CustomerPageController {
             } elseif ($order->payment_plan === 'installments') {
                 // For installments: store the transaction ID from first payment
                 if (!empty($transactionId)) {
-                    $paymentsHandler->storeInitialTransactionId($order->uid, $transactionId);
+                    // Get card details from Viva and store payment method
+                    $viva = Methods::viva();
+                    if ($isTestOrder) {
+                        $viva->sandbox();
+                    } else {
+                        $viva->live();
+                    }
+
+                    $paymentInfo = $viva->getPayment($merchantId, $transactionId);
+                    $paymentMethodUid = null;
+
+                    if (!isEmpty($paymentInfo)) {
+                        $customerUid = is_object($order->uuid) ? $order->uuid->uid : $order->uuid;
+                        $paymentMethod = Methods::paymentMethods()->createFromVivaTransaction(
+                            $customerUid,
+                            $paymentInfo,
+                            $isTestOrder
+                        );
+                        $paymentMethodUid = $paymentMethod?->uid;
+                    }
+
+                    // Store the transaction ID and payment method on all payments for this order
+                    $paymentsHandler->excludeForeignKeys()->update(
+                        [
+                            'initial_transaction_id' => $transactionId,
+                            'payment_method' => $paymentMethodUid,
+                        ],
+                        ['order' => $order->uid]
+                    );
+
                     debugLog([
                         'orderUid' => $order->uid,
                         'transactionId' => $transactionId,
-                    ], 'INSTALLMENTS_TRANSACTION_ID_STORED_CALLBACK');
+                        'paymentMethodUid' => $paymentMethodUid,
+                    ], 'INSTALLMENTS_PAYMENT_METHOD_STORED_CALLBACK');
+                }
+            } elseif ($order->payment_plan === 'direct') {
+                // For direct plan: store the transaction ID and payment method
+                if (!empty($transactionId)) {
+                    $viva = Methods::viva();
+                    if ($isTestOrder) {
+                        $viva->sandbox();
+                    } else {
+                        $viva->live();
+                    }
+
+                    $paymentInfo = $viva->getPayment($merchantId, $transactionId);
+                    $paymentMethodUid = null;
+
+                    if (!isEmpty($paymentInfo)) {
+                        $customerUid = is_object($order->uuid) ? $order->uuid->uid : $order->uuid;
+                        $paymentMethod = Methods::paymentMethods()->createFromVivaTransaction(
+                            $customerUid,
+                            $paymentInfo,
+                            $isTestOrder
+                        );
+                        $paymentMethodUid = $paymentMethod?->uid;
+                    }
+
+                    // Store the transaction ID and payment method on the payment for this order
+                    $paymentsHandler->excludeForeignKeys()->update(
+                        [
+                            'initial_transaction_id' => $transactionId,
+                            'payment_method' => $paymentMethodUid,
+                        ],
+                        ['order' => $order->uid]
+                    );
+
+                    debugLog([
+                        'orderUid' => $order->uid,
+                        'transactionId' => $transactionId,
+                        'paymentMethodUid' => $paymentMethodUid,
+                    ], 'DIRECT_PAYMENT_METHOD_STORED_CALLBACK');
                 }
             }
 

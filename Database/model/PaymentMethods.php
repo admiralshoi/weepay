@@ -12,14 +12,14 @@ class PaymentMethods extends \Database\Model {
         "last4" => ["type" => "integer", "nullable" => true, "default" => null],
         "exp_month" => ["type" => "string", "nullable" => true, "default" => null],
         "exp_year" => ["type" => "string", "nullable" => true, "default" => null],
-        "is_default" => ["type" => "tinyInteger", "default" => 0],
         "prid" => ["type" => "string", "nullable" => true, "default" => null],
-        "customer" => ["type" => "string", "nullable" => true, "default" => null],
+        "uuid" => ["type" => "string", "nullable" => true, "default" => null],
+        "title" => ["type" => "string", "nullable" => true, "default" => null],
         "test" => "tinyInteger",
         "deleted" => ["type" => "tinyInteger", "default" => 0],
     ];
-    public static array $indexes = ["customer"];
-    public static array $uniques = ["prid", "uid"];
+    public static array $indexes = ["uuid", "prid"];
+    public static array $uniques = ["uid"];
 
 
     protected static array $requiredRows = [];
@@ -29,7 +29,7 @@ class PaymentMethods extends \Database\Model {
 
     public static function foreignkeys(): array {
         return [
-            "customer" => [Customers::tableColumn('uid'), Customers::newStatic()],
+            "uuid" => [Users::tableColumn('uid'), Users::newStatic()],
         ];
     }
 }

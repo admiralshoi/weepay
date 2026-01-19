@@ -24,6 +24,8 @@ class DA {
         ],
         "order" => [
             "installments" => "betalingsrater",
+            "pushed" => "Udskudt",
+            "direct" => "Direkte"
         ],
         // Location-specific terminology (employees instead of members)
         "location" => [
@@ -181,6 +183,13 @@ class DA {
         "Role_permissions" => "Rolletilladelser",
         "advertisement" => "markedsføring",
         "Advertisement" => "Markedsføring",
+
+
+
+        "pushed" => "udskudt",
+        "direct" => "direkte",
+        "Pushed" => "Udskudt",
+        "Direct" => "Direkte",
     ];
 
 

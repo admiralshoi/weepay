@@ -26,6 +26,7 @@ $orderStatusInfo = $orderStatusMap[$order->status] ?? null;
 <script>
     var pageTitle = <?=json_encode($pageTitle)?>;
     activePage = "orders";
+    var orderUid = <?=json_encode($order->uid)?>;
 </script>
 
 <div class="page-content">
@@ -215,10 +216,11 @@ $orderStatusInfo = $orderStatusMap[$order->status] ?? null;
         <!-- Sidebar -->
         <div class="col-12 col-lg-4">
             <?php
-            // Check if there are any unpaid payments
+            // Check if there are any payments that can have their card changed
             $hasUnpaidPayments = false;
+            $changeableStatuses = ['PAST_DUE', 'SCHEDULED', 'PENDING', 'FAILED', 'DRAFT'];
             foreach($payments->list() as $p) {
-                if(in_array($p->status, ['PAST_DUE', 'SCHEDULED', 'PENDING'])) {
+                if(in_array($p->status, $changeableStatuses)) {
                     $hasUnpaidPayments = true;
                     break;
                 }
@@ -235,10 +237,10 @@ $orderStatusInfo = $orderStatusMap[$order->status] ?? null;
 
                     <div class="flex-col-start" style="row-gap: .75rem;">
                         <?php if($hasUnpaidPayments): ?>
-                        <button type="button" class="btn-v2 action-btn w-100 flex-row-center flex-align-center" style="gap: .5rem;" id="update-payment-method-btn">
+                        <a href="<?=__url(Links::$consumer->changeCard)?>" class="btn-v2 action-btn w-100 flex-row-center flex-align-center" style="gap: .5rem;">
                             <i class="mdi mdi-credit-card-refresh-outline font-16"></i>
-                            <span class="font-14">Opdater betalingsmetode</span>
-                        </button>
+                            <span class="font-14">Skift betalingskort</span>
+                        </a>
                         <?php endif; ?>
 
                         <a href="<?=__url(Links::$consumer->orders)?>" class="btn-v2 <?=$hasUnpaidPayments ? 'mute-btn' : 'action-btn'?> w-100 flex-row-center flex-align-center" style="gap: .5rem;">
