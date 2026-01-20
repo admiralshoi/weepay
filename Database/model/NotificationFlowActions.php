@@ -594,6 +594,34 @@ class NotificationFlowActions extends \Database\Model {
             "delay_minutes" => 0,
             "status" => "active",
         ],
+
+        // =====================================================
+        // SUPPORT TICKET ACTIONS
+        // =====================================================
+        [
+            "uid" => "nfla_support_new_ticket_admin_bell",
+            "flow" => "nflw_support_ticket_created",
+            "template" => "ntpl_support_new_ticket_admin_bell",
+            "channel" => "bell",
+            "delay_minutes" => 0,
+            "status" => "active",
+        ],
+        [
+            "uid" => "nfla_support_reply_user_email",
+            "flow" => "nflw_support_ticket_replied",
+            "template" => "ntpl_support_reply_user_email",
+            "channel" => "email",
+            "delay_minutes" => 0,
+            "status" => "active",
+        ],
+        [
+            "uid" => "nfla_support_reply_user_bell",
+            "flow" => "nflw_support_ticket_replied",
+            "template" => "ntpl_support_reply_user_bell",
+            "channel" => "bell",
+            "delay_minutes" => 0,
+            "status" => "active",
+        ],
     ];
     protected static array $requiredRowsTesting = [];
 

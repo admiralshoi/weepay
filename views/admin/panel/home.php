@@ -239,6 +239,23 @@ $pageTitle = "Panel";
                             </div>
                         </a>
                     </div>
+
+                    <!-- FAQs -->
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <a href="<?=__url(Links::$admin->panelFaqs)?>" class="card border-radius-10px h-100 hover-shadow-card" style="text-decoration: none;">
+                            <div class="card-body">
+                                <div class="flex-row-start flex-align-center" style="gap: 1rem;">
+                                    <div class="square-50 bg-info border-radius-10px flex-row-center-center">
+                                        <i class="mdi mdi-frequently-asked-questions color-white font-24"></i>
+                                    </div>
+                                    <div class="flex-col-start">
+                                        <p class="mb-0 font-16 font-weight-bold color-dark">FAQ'er</p>
+                                        <p class="mb-0 font-12 color-gray">Ofte stillede spørgsmål</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
                 </div>
             </div>
 

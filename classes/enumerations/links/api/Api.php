@@ -18,6 +18,7 @@ class Api {
     public Oidc $oidc;
     public Checkout $checkout;
     public Consumer $consumer;
+    public Merchant $merchant;
     public User $user;
     public Admin $admin;
 

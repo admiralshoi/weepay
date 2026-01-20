@@ -519,14 +519,50 @@ class Admin extends \routing\paths\Paths {
                 "js.main.js",
                 "js.utility.js",
                 "js.features.js",
+                "js.admin-support.js",
                 "js.initializer.js",
                 "css.main.css",
                 "css.styles2.css",
                 "css.styles3.css",
                 "css.responsiveness.css",
+                "css.support.css",
             ],
             "base" => null,
-            "vendor" => [],
+            "vendor" => [
+                "vendor.sweetalert.sweetalert2.min.css",
+                "vendor.sweetalert.sweetalert2.min.js",
+                "js.includes.SweetPrompt.js",
+            ],
+            "custom" => [],
+        ],
+    ];
+
+    const ADMIN_DASHBOARD_SUPPORT_DETAIL = [
+        "template" => "ADMIN_INNER_HTML",
+        "view" => "admin.dashboard.support-detail",
+        "custom_scripts" => "templates.scripts",
+        "title" => "Support Ticket",
+        "head" => "templates.head",
+        "assets" => [
+            "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.features.js",
+                "js.admin-support.js",
+                "js.initializer.js",
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+                "css.support.css",
+            ],
+            "base" => null,
+            "vendor" => [
+                "vendor.sweetalert.sweetalert2.min.css",
+                "vendor.sweetalert.sweetalert2.min.js",
+                "js.includes.SweetPrompt.js",
+            ],
             "custom" => [],
         ],
     ];
@@ -811,6 +847,27 @@ class Admin extends \routing\paths\Paths {
             ],
             "custom" => [
                 "js.includes.SweetPrompt.js",
+            ],
+        ],
+    ];
+
+    const ADMIN_PANEL_FAQS = [
+        "template" => "ADMIN_HOME_INNER_HTML",
+        "view" => "admin.panel.faqs",
+        "custom_scripts" => null,
+        "head" => null,
+        "title" => "FAQ Administration",
+        "assets" => [
+            "main" => null,
+            "base" => null,
+            "vendor" => [
+                "vendor.sweetalert.sweetalert2.min.js",
+                "vendor.sweetalert.sweetalert2.min.css",
+            ],
+            "custom" => [
+                "js.includes.SweetPrompt.js",
+                "js.admin-panel-faqs.js",
+                "css.faq.css",
             ],
         ],
     ];

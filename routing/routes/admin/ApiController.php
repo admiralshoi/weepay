@@ -2298,4 +2298,422 @@ class ApiController {
     }
 
 
+    // =====================================================
+    // FAQ MANAGEMENT API
+    // =====================================================
+
+    /**
+     * Get all FAQs
+     */
+    #[NoReturn] public static function faqsList(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', 403);
+        }
+
+        $type = $args['type'] ?? null;
+        $faqHandler = Methods::faqs();
+
+        if ($type) {
+            $faqs = $faqHandler->getGroupedByCategory($type, false);
+        } else {
+            $faqs = [
+                'consumer' => $faqHandler->getGroupedByCategory('consumer', false),
+                'merchant' => $faqHandler->getGroupedByCategory('merchant', false)
+            ];
+        }
+
+        Response()->jsonSuccess('FAQs hentet', ['faqs' => $faqs]);
+    }
+
+    /**
+     * Create a new FAQ
+     */
+    #[NoReturn] public static function faqCreate(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', 403);
+        }
+
+        $type = $args['type'] ?? null;
+        $category = $args['category'] ?? null;
+        $title = $args['title'] ?? null;
+        $content = $args['content'] ?? null;
+
+        if (isEmpty($type) || isEmpty($category) || isEmpty($title) || isEmpty($content)) {
+            Response()->jsonError('Alle felter er påkrævede');
+        }
+
+        if (!in_array($type, ['consumer', 'merchant'])) {
+            Response()->jsonError('Ugyldig type. Skal være consumer eller merchant');
+        }
+
+        $faqHandler = Methods::faqs();
+        $uid = $faqHandler->createFaq([
+            'type' => $type,
+            'category' => trim($category),
+            'title' => trim($title),
+            'content' => $content,
+            'is_active' => 1
+        ]);
+
+        if ($uid) {
+            $faq = $faqHandler->get($uid);
+            Response()->jsonSuccess('FAQ oprettet', ['faq' => $faq]);
+        } else {
+            Response()->jsonError('Kunne ikke oprette FAQ');
+        }
+    }
+
+    /**
+     * Update an existing FAQ
+     */
+    #[NoReturn] public static function faqUpdate(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', 403);
+        }
+
+        $uid = $args['uid'] ?? null;
+        if (isEmpty($uid)) {
+            Response()->jsonError('FAQ ID er påkrævet');
+        }
+
+        $faqHandler = Methods::faqs();
+        $existingFaq = $faqHandler->get($uid);
+
+        if (!$existingFaq) {
+            Response()->jsonError('FAQ ikke fundet');
+        }
+
+        $updateData = [];
+
+        if (isset($args['category'])) {
+            $updateData['category'] = trim($args['category']);
+        }
+        if (isset($args['title'])) {
+            $updateData['title'] = trim($args['title']);
+        }
+        if (isset($args['content'])) {
+            $updateData['content'] = $args['content'];
+        }
+        if (isset($args['sort_order'])) {
+            $updateData['sort_order'] = (int)$args['sort_order'];
+        }
+        if (isset($args['is_active'])) {
+            $updateData['is_active'] = (int)$args['is_active'];
+        }
+
+        if (empty($updateData)) {
+            Response()->jsonError('Ingen data at opdatere');
+        }
+
+        $success = $faqHandler->updateFaq($uid, $updateData);
+
+        if ($success) {
+            $updatedFaq = $faqHandler->get($uid);
+            Response()->jsonSuccess('FAQ opdateret', ['faq' => $updatedFaq]);
+        } else {
+            Response()->jsonError('Kunne ikke opdatere FAQ');
+        }
+    }
+
+    /**
+     * Delete a FAQ
+     */
+    #[NoReturn] public static function faqDelete(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', 403);
+        }
+
+        $uid = $args['uid'] ?? null;
+        if (isEmpty($uid)) {
+            Response()->jsonError('FAQ ID er påkrævet');
+        }
+
+        $faqHandler = Methods::faqs();
+        $success = $faqHandler->deleteFaq($uid);
+
+        if ($success) {
+            Response()->jsonSuccess('FAQ slettet');
+        } else {
+            Response()->jsonError('Kunne ikke slette FAQ');
+        }
+    }
+
+    /**
+     * Toggle FAQ active status
+     */
+    #[NoReturn] public static function faqToggleActive(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', 403);
+        }
+
+        $uid = $args['uid'] ?? null;
+        if (isEmpty($uid)) {
+            Response()->jsonError('FAQ ID er påkrævet');
+        }
+
+        $faqHandler = Methods::faqs();
+        $success = $faqHandler->toggleActive($uid);
+
+        if ($success) {
+            $faq = $faqHandler->get($uid);
+            Response()->jsonSuccess('FAQ status opdateret', ['faq' => $faq]);
+        } else {
+            Response()->jsonError('Kunne ikke opdatere FAQ status');
+        }
+    }
+
+    /**
+     * Reorder FAQs within a category
+     */
+    #[NoReturn] public static function faqReorder(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', 403);
+        }
+
+        $type = $args['type'] ?? null;
+        $category = $args['category'] ?? null;
+        $order = $args['order'] ?? null;
+
+        if (isEmpty($type) || isEmpty($category) || !is_array($order)) {
+            Response()->jsonError('Type, kategori og rækkefølge er påkrævet');
+        }
+
+        $faqHandler = Methods::faqs();
+        $success = $faqHandler->reorder($type, $category, $order);
+
+        if ($success) {
+            Response()->jsonSuccess('Rækkefølge opdateret');
+        } else {
+            Response()->jsonError('Kunne ikke opdatere rækkefølge');
+        }
+    }
+
+
+    // =====================================================
+    // SUPPORT TICKET METHODS
+    // =====================================================
+
+    /**
+     * List support tickets with filtering and pagination
+     */
+    #[NoReturn] public static function supportList(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', [], 403);
+        }
+
+        $page = (int)($args['page'] ?? 1);
+        $perPage = (int)($args['per_page'] ?? 20);
+        $status = $args['status'] ?? null;
+        $type = $args['type'] ?? null;
+        $search = trim($args['search'] ?? '');
+
+        $ticketHandler = Methods::supportTickets();
+
+        // Build filters
+        $filters = [];
+        if (!isEmpty($status) && $status !== 'all') {
+            $filters['status'] = $status;
+        }
+        if (!isEmpty($type) && $type !== 'all') {
+            $filters['type'] = $type;
+        }
+
+        // Get filtered tickets with pagination
+        $result = $ticketHandler->getFiltered($filters, $page, $perPage, $search);
+
+        // Transform for frontend
+        $transformedTickets = [];
+        foreach ($result['tickets']->list() as $ticket) {
+            $userName = 'Ukendt';
+            $userEmail = '';
+            if (is_object($ticket->user)) {
+                $userName = $ticket->user->full_name ?? 'Ukendt';
+                $userEmail = $ticket->user->email ?? '';
+            }
+
+            // Get reply count
+            $replyCount = Methods::supportTicketReplies()->countByTicket($ticket->uid);
+
+            // Get organisation name if ticket is on behalf of organisation
+            $orgName = null;
+            $onBehalfOf = $ticket->on_behalf_of ?? 'personal';
+            if ($onBehalfOf === 'organisation' && is_object($ticket->organisation)) {
+                $orgName = $ticket->organisation->name ?? null;
+            }
+
+            $transformedTickets[] = [
+                'uid' => $ticket->uid,
+                'user_name' => $userName,
+                'user_email' => $userEmail,
+                'type' => $ticket->type,
+                'type_label' => $ticket->type === 'consumer' ? 'Forbruger' : 'Forhandler',
+                'on_behalf_of' => $onBehalfOf,
+                'organisation_name' => $orgName,
+                'category' => $ticket->category,
+                'subject' => $ticket->subject,
+                'status' => $ticket->status,
+                'status_label' => $ticket->status === 'open' ? 'Åben' : 'Lukket',
+                'reply_count' => $replyCount,
+                'created_at' => date('d/m/Y H:i', strtotime($ticket->created_at)),
+                'detail_url' => __url(Links::$admin->supportDetail($ticket->uid)),
+            ];
+        }
+
+        Response()->jsonSuccess('', [
+            'tickets' => $transformedTickets,
+            'pagination' => $result['pagination'],
+            'counts' => $ticketHandler->getCounts(),
+        ]);
+    }
+
+    /**
+     * Admin reply to a support ticket
+     */
+    #[NoReturn] public static function supportReply(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', [], 403);
+        }
+
+        $ticketUid = trim($args['ticket_uid'] ?? '');
+        $message = trim($args['message'] ?? '');
+
+        if (isEmpty($ticketUid)) {
+            Response()->jsonError('Ticket ID mangler', [], 400);
+        }
+
+        if (isEmpty($message)) {
+            Response()->jsonError('Besked er påkrævet', [], 400);
+        }
+
+        if (strlen($message) > 5000) {
+            Response()->jsonError('Besked må max være 5000 tegn', [], 400);
+        }
+
+        $ticketHandler = Methods::supportTickets();
+        $ticket = $ticketHandler->get($ticketUid);
+
+        if (isEmpty($ticket)) {
+            Response()->jsonError('Henvendelse ikke fundet', [], 404);
+        }
+
+        $replyHandler = Methods::supportTicketReplies();
+        $replyUid = $replyHandler->addReply($ticketUid, __uuid(), $message, true);
+
+        if (isEmpty($replyUid)) {
+            Response()->jsonError('Kunne ikke tilføje svar', [], 500);
+        }
+
+        // Trigger notification to user
+        try {
+            $reply = $replyHandler->get($replyUid);
+            $user = is_object($ticket->user) ? $ticket->user : Methods::users()->get($ticket->user);
+            \classes\notifications\NotificationTriggers::supportTicketReplied($ticket, $user, $reply);
+        } catch (\Throwable $e) {
+            errorLog(['error' => $e->getMessage()], 'support-reply-notification-error');
+        }
+
+        Response()->jsonSuccess('Svar sendt');
+    }
+
+    /**
+     * Close a support ticket
+     */
+    #[NoReturn] public static function supportClose(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', [], 403);
+        }
+
+        $ticketUid = trim($args['ticket_uid'] ?? '');
+
+        if (isEmpty($ticketUid)) {
+            Response()->jsonError('Ticket ID mangler', [], 400);
+        }
+
+        $ticketHandler = Methods::supportTickets();
+        $ticket = $ticketHandler->get($ticketUid);
+
+        if (isEmpty($ticket)) {
+            Response()->jsonError('Henvendelse ikke fundet', [], 404);
+        }
+
+        $success = $ticketHandler->closeTicket($ticketUid, __uuid());
+
+        if (!$success) {
+            Response()->jsonError('Kunne ikke lukke henvendelse', [], 500);
+        }
+
+        Response()->jsonSuccess('Henvendelse lukket');
+    }
+
+    /**
+     * Reopen a closed support ticket
+     */
+    #[NoReturn] public static function supportReopen(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', [], 403);
+        }
+
+        $ticketUid = trim($args['ticket_uid'] ?? '');
+
+        if (isEmpty($ticketUid)) {
+            Response()->jsonError('Ticket ID mangler', [], 400);
+        }
+
+        $ticketHandler = Methods::supportTickets();
+        $ticket = $ticketHandler->get($ticketUid);
+
+        if (isEmpty($ticket)) {
+            Response()->jsonError('Henvendelse ikke fundet', [], 404);
+        }
+
+        $success = $ticketHandler->reopenTicket($ticketUid);
+
+        if (!$success) {
+            Response()->jsonError('Kunne ikke genåbne henvendelse', [], 500);
+        }
+
+        Response()->jsonSuccess('Henvendelse genåbnet');
+    }
+
+    /**
+     * Delete a support ticket
+     */
+    #[NoReturn] public static function supportDelete(array $args): void {
+        debugLog("supportDelete called with args: " . json_encode($args), "ADMIN_SUPPORT_DELETE");
+
+        if (!Methods::isAdmin()) {
+            debugLog("Access denied - not admin", "ADMIN_SUPPORT_DELETE");
+            Response()->jsonError('Adgang nægtet', [], 403);
+        }
+
+        $ticketUid = trim($args['ticket_uid'] ?? '');
+        debugLog("Ticket UID: $ticketUid", "ADMIN_SUPPORT_DELETE");
+
+        if (isEmpty($ticketUid)) {
+            debugLog("Ticket ID is empty", "ADMIN_SUPPORT_DELETE");
+            Response()->jsonError('Ticket ID mangler', [], 400);
+        }
+
+        $ticketHandler = Methods::supportTickets();
+        $ticket = $ticketHandler->get($ticketUid);
+        debugLog("Ticket found: " . json_encode($ticket ? true : false), "ADMIN_SUPPORT_DELETE");
+
+        if (isEmpty($ticket)) {
+            debugLog("Ticket not found", "ADMIN_SUPPORT_DELETE");
+            Response()->jsonError('Henvendelse ikke fundet', [], 404);
+        }
+
+        debugLog("Calling deleteTicket...", "ADMIN_SUPPORT_DELETE");
+        $success = $ticketHandler->deleteTicket($ticketUid);
+        debugLog("Delete result: " . json_encode($success), "ADMIN_SUPPORT_DELETE");
+
+        if (!$success) {
+            debugLog("Delete failed", "ADMIN_SUPPORT_DELETE");
+            Response()->jsonError('Kunne ikke slette henvendelse', [], 500);
+        }
+
+        debugLog("Delete successful", "ADMIN_SUPPORT_DELETE");
+        Response()->jsonSuccess('Henvendelse slettet');
+    }
+
 }

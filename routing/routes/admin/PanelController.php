@@ -140,4 +140,16 @@ class PanelController {
         return Views("ADMIN_PANEL_NOTIFICATIONS", $args);
     }
 
+    public static function faqs(array $args): mixed {
+        // Get all FAQs grouped by type
+        $faqHandler = Methods::faqs();
+
+        $args['consumerFaqs'] = $faqHandler->getGroupedByCategory('consumer', false);
+        $args['merchantFaqs'] = $faqHandler->getGroupedByCategory('merchant', false);
+        $args['consumerCategories'] = $faqHandler->getCategories('consumer');
+        $args['merchantCategories'] = $faqHandler->getCategories('merchant');
+
+        return Views("ADMIN_PANEL_FAQS", $args);
+    }
+
 }

@@ -1676,17 +1676,40 @@ class PageController {
     }
 
     public static function support(array $args): mixed {
-        // Placeholder for support ticket system
-        // In a real implementation, this would fetch from a SupportTickets model
-        $args['stats'] = (object)[
-            'openTickets' => 0,
-            'pendingTickets' => 0,
-            'resolvedTickets' => 0,
-            'totalTickets' => 0,
-        ];
-        $args['tickets'] = new \Database\Collection();
+        $ticketHandler = Methods::supportTickets();
 
+        // Get counts
+        $counts = $ticketHandler->getCounts();
+
+        $args['stats'] = (object)[
+            'openTickets' => $counts['open'],
+            'closedTickets' => $counts['closed'],
+            'totalTickets' => $counts['total'],
+        ];
+
+        // Tickets are loaded via API for filtering/pagination
         return Views("ADMIN_DASHBOARD_SUPPORT", $args);
+    }
+
+    public static function supportDetail(array $args): mixed {
+        $ticketId = $args['id'] ?? null;
+
+        if (isEmpty($ticketId)) {
+            return null;
+        }
+
+        $ticketHandler = Methods::supportTickets();
+        $ticket = $ticketHandler->get($ticketId);
+
+        if (isEmpty($ticket)) {
+            return null;
+        }
+
+        // Get replies
+        $replyHandler = Methods::supportTicketReplies();
+        $replies = $replyHandler->getByTicket($ticketId);
+
+        return Views("ADMIN_DASHBOARD_SUPPORT_DETAIL", compact('ticket', 'replies'));
     }
 
 }

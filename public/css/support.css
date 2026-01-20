@@ -1,0 +1,292 @@
+/* Support Page Styles */
+
+/* Status Toggle */
+.support-toggle {
+    display: inline-flex;
+    background: #f0f0f0;
+    border-radius: 10px;
+    padding: 4px;
+    gap: 4px;
+}
+
+.support-toggle-btn {
+    padding: 8px 20px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.support-toggle-btn:hover {
+    color: #333;
+}
+
+.support-toggle-btn.active {
+    background: #fff;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.support-toggle-btn .count {
+    background: #e0e0e0;
+    color: #666;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.support-toggle-btn.active .count {
+    background: var(--color-blue, #0066cc);
+    color: #fff;
+}
+
+/* Ticket Card */
+.ticket-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+}
+
+.ticket-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.ticket-header {
+    padding: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.ticket-header:hover {
+    background-color: #f9fafb;
+}
+
+.ticket-chevron {
+    transition: transform 0.2s ease;
+}
+
+.ticket-card.expanded .ticket-chevron {
+    transform: rotate(180deg);
+}
+
+.ticket-body {
+    padding: 0 1rem 1rem 1rem;
+    border-top: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+}
+
+/* Ticket Messages */
+.ticket-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-top: 1rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.ticket-message {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    max-width: 90%;
+}
+
+.ticket-message.user-message {
+    background-color: #fff;
+    border: 1px solid #e5e7eb;
+    align-self: flex-start;
+}
+
+.ticket-message.admin-message {
+    background-color: #eff6ff;
+    border: 1px solid #bfdbfe;
+    align-self: flex-end;
+}
+
+.ticket-message .message-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.125rem;
+    margin-bottom: 0.5rem;
+}
+
+.ticket-message .message-content {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #374151;
+    word-wrap: break-word;
+}
+
+/* Admin Ticket Messages */
+.ticket-messages-admin {
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.ticket-messages-admin .ticket-message {
+    max-width: 85%;
+}
+
+.ticket-messages-admin .ticket-message.user-message {
+    margin-right: auto;
+}
+
+.ticket-messages-admin .ticket-message.admin-message {
+    margin-left: auto;
+}
+
+/* Reply Form */
+.ticket-reply-form {
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.ticket-admin-reply-form textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Stat Cards */
+.stat-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card.active {
+    border: 2px solid #3b82f6;
+}
+
+/* Status Boxes */
+.warning-box {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 12px;
+    font-weight: 500;
+    color: #92400e;
+    background-color: #fef3c7;
+    border-radius: 4px;
+}
+
+.success-box {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 12px;
+    font-weight: 500;
+    color: #065f46;
+    background-color: #d1fae5;
+    border-radius: 4px;
+}
+
+.info-box {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 12px;
+    font-weight: 500;
+    color: #1e40af;
+    background-color: #dbeafe;
+    border-radius: 4px;
+}
+
+.action-box {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 12px;
+    font-weight: 500;
+    color: #6b21a8;
+    background-color: #f3e8ff;
+    border-radius: 4px;
+}
+
+/* Table Rows */
+.ticket-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.ticket-row:hover {
+    background-color: #f9fafb;
+}
+
+/* Subject truncation */
+.ticket-subject {
+    max-width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 1200px) {
+    .ticket-subject {
+        max-width: 180px;
+    }
+}
+
+@media (max-width: 992px) {
+    .ticket-subject {
+        max-width: 150px;
+    }
+}
+
+/* Pagination */
+.pagination-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 0.75rem;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    background-color: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background-color: #f3f4f6;
+    border-color: #d1d5db;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-btn.active {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: #fff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .ticket-message {
+        max-width: 100%;
+    }
+
+    .ticket-messages-admin .ticket-message {
+        max-width: 100%;
+    }
+
+    .ticket-header .flex-row-end {
+        flex-wrap: wrap;
+    }
+}

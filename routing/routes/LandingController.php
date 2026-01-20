@@ -96,4 +96,14 @@ class LandingController {
         return Views("MERCHANT_TERMS", $args);
     }
 
+    public static function faqConsumer(array $args): mixed  {
+        $args['faqs'] = Methods::faqs()->getGroupedByCategory('consumer', true);
+        return Views("FAQ_CONSUMER", $args);
+    }
+
+    public static function faqMerchant(array $args): mixed  {
+        $args['faqs'] = Methods::faqs()->getGroupedByCategory('merchant', true);
+        return Views("FAQ_MERCHANT", $args);
+    }
+
 }

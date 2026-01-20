@@ -447,6 +447,40 @@ class NotificationFlows extends \Database\Model {
             "recipient_email" => null,
             "created_by" => null,
         ],
+
+        // =====================================================
+        // SUPPORT FLOWS
+        // =====================================================
+        [
+            "uid" => "nflw_support_ticket_created",
+            "name" => "Support henvendelse oprettet",
+            "description" => "Notificerer admin når bruger opretter support henvendelse",
+            "breakpoint" => "nbp_support_ticket_created",
+            "status" => "active",
+            "priority" => 100,
+            "starts_at" => null,
+            "ends_at" => null,
+            "conditions" => null,
+            "schedule_offset_days" => 0,
+            "recipient_type" => "custom",
+            "recipient_email" => null,
+            "created_by" => null,
+        ],
+        [
+            "uid" => "nflw_support_ticket_replied",
+            "name" => "Support svar sendt",
+            "description" => "Notificerer bruger når admin svarer på henvendelse",
+            "breakpoint" => "nbp_support_ticket_replied",
+            "status" => "active",
+            "priority" => 100,
+            "starts_at" => null,
+            "ends_at" => null,
+            "conditions" => null,
+            "schedule_offset_days" => 0,
+            "recipient_type" => "user",
+            "recipient_email" => null,
+            "created_by" => null,
+        ],
     ];
     protected static array $requiredRowsTesting = [];
 

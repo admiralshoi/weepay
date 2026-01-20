@@ -8,6 +8,7 @@ use classes\enumerations\Links;
 use classes\lang\Translate;
 
 
+
 $pageTitle = "Dashboard";
 $kpis = $args->kpis ?? (object)[];
 $chartData = $args->chartData ?? [];

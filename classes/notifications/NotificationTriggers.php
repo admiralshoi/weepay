@@ -1215,4 +1215,53 @@ class NotificationTriggers {
 
         return ''; // No hero = text only
     }
+
+    // =====================================================
+    // SUPPORT TICKET EVENTS
+    // =====================================================
+
+    /**
+     * Trigger when a support ticket is created
+     * Notifies admin via bell notification
+     */
+    public static function supportTicketCreated(object|array $ticket, object|array $user): bool {
+        $ticketData = self::normalizeData($ticket);
+        $userData = self::normalizeData($user);
+
+        // Determine support link based on ticket type
+        $supportLink = $ticketData['type'] === 'merchant'
+            ? __url(Links::$merchant->support)
+            : __url(Links::$consumer->support);
+
+        return NotificationService::trigger('support.ticket_created', [
+            'ticket' => $ticketData,
+            'user' => $userData,
+            'support_link' => $supportLink,
+            'app' => self::getAppContext(),
+        ]);
+    }
+
+    /**
+     * Trigger when admin replies to a support ticket
+     * Notifies user via email and bell notification
+     */
+    public static function supportTicketReplied(object|array $ticket, object|array $user, object|array $reply): bool {
+        $ticketData = self::normalizeData($ticket);
+        $userData = self::normalizeData($user);
+        $replyData = self::normalizeData($reply);
+
+        // Determine support link based on ticket type
+        $supportLink = $ticketData['type'] === 'merchant'
+            ? __url(Links::$merchant->support)
+            : __url(Links::$consumer->support);
+
+        return NotificationService::trigger('support.ticket_replied', [
+            'ticket' => $ticketData,
+            'user' => $userData,
+            'reply' => $replyData,
+            'support_link' => $supportLink,
+            'app' => self::getAppContext(),
+            'email_title' => 'Svar på din henvendelse',
+        ]);
+    }
 }

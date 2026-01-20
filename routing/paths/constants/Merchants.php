@@ -656,4 +656,35 @@ class Merchants extends \routing\paths\Paths {
             "custom" => [],
         ],
     ];
+
+    const MERCHANT_SUPPORT = [
+        "template" => "MERCHANT_INNER_HTML",
+        "view" => "merchants.pages.support",
+        "custom_scripts" => "templates.scripts",
+        "title" => "Support",
+        "head" => "templates.head",
+        "assets" => [
+            "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.features.js",
+                "js.merchant.js",
+                "js.merchant-support.js",
+                "js.initializer.js",
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+                "css.support.css",
+            ],
+            "base" => null,
+            "vendor" => [
+                "vendor.sweetalert.sweetalert2.min.css",
+                "vendor.sweetalert.sweetalert2.min.js",
+                "js.includes.SweetPrompt.js",
+            ],
+            "custom" => [],
+        ],
+    ];
 }

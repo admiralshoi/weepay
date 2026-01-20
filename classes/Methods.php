@@ -104,6 +104,11 @@ class Methods {
     public static function notificationQueue(): \classes\notifications\NotificationQueueHandler { return new \classes\notifications\NotificationQueueHandler(); }
     public static function notificationLogs(): \classes\notifications\NotificationLogHandler { return new \classes\notifications\NotificationLogHandler(); }
     public static function userNotifications(): \classes\notifications\UserNotificationHandler { return new \classes\notifications\UserNotificationHandler(); }
+    public static function faqs(): \classes\app\FaqHandler { return new \classes\app\FaqHandler(); }
+
+    // Support Ticket Handlers
+    public static function supportTickets(): \classes\support\SupportTicketHandler { return new \classes\support\SupportTicketHandler(); }
+    public static function supportTicketReplies(): \classes\support\SupportTicketReplyHandler { return new \classes\support\SupportTicketReplyHandler(); }
     public static function sortByKey(&$arr,$key = "", $ascending = false, array $specialReplacement = array(), array $splitReplace = array(), $key2 = ""): void {
         (new SortByKey())->run($arr, $key, $ascending, $specialReplacement, $splitReplace, $key2); }
     public static function hasAccess(string $type, string $name, int $actionType, string|int $requestingLevel): bool {

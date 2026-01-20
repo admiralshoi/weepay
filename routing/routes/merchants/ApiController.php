@@ -665,7 +665,226 @@ class ApiController {
     }
 
 
+    // =====================================================
+    // SUPPORT TICKET METHODS
+    // =====================================================
 
+    /**
+     * Create a new support ticket
+     */
+    #[NoReturn] public static function supportCreate(array $args): void {
+        $userId = __uuid();
 
+        if (isEmpty($userId)) {
+            Response()->jsonError('Du skal være logget ind', [], 401);
+        }
+
+        // Validate required fields
+        $onBehalfOf = trim($args['on_behalf_of'] ?? 'personal');
+        $category = trim($args['category'] ?? '');
+        $subject = trim($args['subject'] ?? '');
+        $message = trim($args['message'] ?? '');
+
+        if (!in_array($onBehalfOf, ['personal', 'organisation'])) {
+            Response()->jsonError('Ugyldigt valg for "på vegne af"', [], 400);
+        }
+
+        if (isEmpty($category)) {
+            Response()->jsonError('Vælg venligst en kategori', [], 400);
+        }
+
+        if (isEmpty($subject)) {
+            Response()->jsonError('Emne er påkrævet', [], 400);
+        }
+
+        if (isEmpty($message)) {
+            Response()->jsonError('Besked er påkrævet', [], 400);
+        }
+
+        if (strlen($subject) > 200) {
+            Response()->jsonError('Emne må max være 200 tegn', [], 400);
+        }
+
+        if (strlen($message) > 5000) {
+            Response()->jsonError('Besked må max være 5000 tegn', [], 400);
+        }
+
+        // Get organisation if on behalf of organisation
+        $organisationUid = null;
+        if ($onBehalfOf === 'organisation') {
+            // Check if user has permission to act on behalf of organisation
+            if (!\classes\app\OrganisationPermissions::__oRead('organisation', 'settings')) {
+                Response()->jsonError('Du har ikke tilladelse til at oprette henvendelser på vegne af virksomheden', [], 403);
+            }
+
+            $chosenOrg = \features\Settings::$organisation;
+            if ($chosenOrg && !isEmpty($chosenOrg->organisation->uid ?? null)) {
+                $organisationUid = $chosenOrg->organisation->uid;
+            } else {
+                Response()->jsonError('Ingen aktiv virksomhed valgt', [], 400);
+            }
+        }
+
+        $ticketHandler = Methods::supportTickets();
+
+        $ticketUid = $ticketHandler->createTicket([
+            'user' => $userId,
+            'type' => 'merchant',
+            'on_behalf_of' => $onBehalfOf,
+            'organisation' => $organisationUid,
+            'category' => $category,
+            'subject' => $subject,
+            'message' => $message,
+            'status' => 'open',
+        ]);
+
+        if (isEmpty($ticketUid)) {
+            Response()->jsonError('Kunne ikke oprette henvendelse', [], 500);
+        }
+
+        // Trigger notification to admin
+        try {
+            $ticket = $ticketHandler->get($ticketUid);
+            $user = Methods::users()->get($userId);
+            \classes\notifications\NotificationTriggers::supportTicketCreated($ticket, $user);
+        } catch (\Throwable $e) {
+            errorLog(['error' => $e->getMessage()], 'support-ticket-notification-error');
+        }
+
+        Response()->jsonSuccess('Din henvendelse er oprettet', ['ticket_uid' => $ticketUid]);
+    }
+
+    /**
+     * Add a reply to an existing ticket
+     */
+    #[NoReturn] public static function supportReply(array $args): void {
+        $userId = __uuid();
+
+        if (isEmpty($userId)) {
+            Response()->jsonError('Du skal være logget ind', [], 401);
+        }
+
+        $ticketUid = trim($args['ticket_uid'] ?? '');
+        $message = trim($args['message'] ?? '');
+
+        if (isEmpty($ticketUid)) {
+            Response()->jsonError('Ticket ID mangler', [], 400);
+        }
+
+        if (isEmpty($message)) {
+            Response()->jsonError('Besked er påkrævet', [], 400);
+        }
+
+        if (strlen($message) > 5000) {
+            Response()->jsonError('Besked må max være 5000 tegn', [], 400);
+        }
+
+        $ticketHandler = Methods::supportTickets();
+        $ticket = $ticketHandler->excludeForeignKeys()->get($ticketUid);
+
+        if (isEmpty($ticket)) {
+            Response()->jsonError('Henvendelse ikke fundet', [], 404);
+        }
+
+        // Verify ticket belongs to user
+        if ($ticket->user !== $userId) {
+            Response()->jsonError('Du har ikke adgang til denne henvendelse', [], 403);
+        }
+
+        // Can only reply to open tickets
+        if ($ticket->status !== 'open') {
+            Response()->jsonError('Du kan ikke svare på en lukket henvendelse', [], 400);
+        }
+
+        $replyHandler = Methods::supportTicketReplies();
+        $replyUid = $replyHandler->addReply($ticketUid, $userId, $message, false);
+
+        if (isEmpty($replyUid)) {
+            Response()->jsonError('Kunne ikke tilføje svar', [], 500);
+        }
+
+        Response()->jsonSuccess('Svar tilføjet', [
+            'reply' => [
+                'uid' => $replyUid,
+                'message' => $message,
+                'is_admin' => false,
+                'created_at' => date('d/m/Y H:i'),
+            ]
+        ]);
+    }
+
+    /**
+     * Close a support ticket
+     */
+    #[NoReturn] public static function supportClose(array $args): void {
+        $userId = __uuid();
+
+        if (isEmpty($userId)) {
+            Response()->jsonError('Du skal være logget ind', [], 401);
+        }
+
+        $ticketUid = trim($args['ticket_uid'] ?? '');
+
+        if (isEmpty($ticketUid)) {
+            Response()->jsonError('Ticket ID mangler', [], 400);
+        }
+
+        $ticketHandler = Methods::supportTickets();
+        $ticket = $ticketHandler->excludeForeignKeys()->get($ticketUid);
+
+        if (isEmpty($ticket)) {
+            Response()->jsonError('Henvendelse ikke fundet', [], 404);
+        }
+
+        // Verify ticket belongs to user
+        if ($ticket->user !== $userId) {
+            Response()->jsonError('Du har ikke adgang til denne henvendelse', [], 403);
+        }
+
+        $success = $ticketHandler->closeTicket($ticketUid, $userId);
+
+        if (!$success) {
+            Response()->jsonError('Kunne ikke lukke henvendelse', [], 500);
+        }
+
+        Response()->jsonSuccess('Henvendelse lukket');
+    }
+
+    /**
+     * Reopen a closed support ticket
+     */
+    #[NoReturn] public static function supportReopen(array $args): void {
+        $userId = __uuid();
+
+        if (isEmpty($userId)) {
+            Response()->jsonError('Du skal være logget ind', [], 401);
+        }
+
+        $ticketUid = trim($args['ticket_uid'] ?? '');
+
+        if (isEmpty($ticketUid)) {
+            Response()->jsonError('Ticket ID mangler', [], 400);
+        }
+
+        $ticketHandler = Methods::supportTickets();
+        $ticket = $ticketHandler->excludeForeignKeys()->get($ticketUid);
+
+        if (isEmpty($ticket)) {
+            Response()->jsonError('Henvendelse ikke fundet', [], 404);
+        }
+
+        // Verify ticket belongs to user
+        if ($ticket->user !== $userId) {
+            Response()->jsonError('Du har ikke adgang til denne henvendelse', [], 403);
+        }
+
+        $success = $ticketHandler->reopenTicket($ticketUid);
+
+        if (!$success) {
+            Response()->jsonError('Kunne ikke genåbne henvendelse', [], 500);
+        }
+
+        Response()->jsonSuccess('Henvendelse genåbnet');
+    }
 
 }

@@ -153,6 +153,13 @@ class Sidebars {
                     "icon-class" => "mdi mdi-face-agent",
                     "access_level" => []
                 ),
+                "faq" => array(
+                    "link" => Links::$faq->consumer,
+                    "title" => "FAQ",
+                    "data-value" => "faq",
+                    "icon-class" => "mdi mdi-frequently-asked-questions",
+                    "access_level" => []
+                ),
             ),
             "merchant" => array(
                 "dashboard" => array(
@@ -237,6 +244,13 @@ class Sidebars {
                     "title" => "Support",
                     "data-value" => "support",
                     "icon-class" => "mdi mdi-face-agent",
+                    "access_level" => []
+                ),
+                "faq" => array(
+                    "link" => Links::$faq->merchant,
+                    "title" => "FAQ",
+                    "data-value" => "faq",
+                    "icon-class" => "mdi mdi-frequently-asked-questions",
                     "access_level" => []
                 ),
             ),
@@ -433,6 +447,13 @@ class Sidebars {
                     "title" => "Support",
                     "data-value" => "support",
                     "icon-class" => "mdi mdi-face-agent",
+                    "access_level" => []
+                ),
+                "faq" => array(
+                    "link" => Links::$faq->merchant,
+                    "title" => "FAQ",
+                    "data-value" => "faq",
+                    "icon-class" => "mdi mdi-frequently-asked-questions",
                     "access_level" => []
                 ),
             ),

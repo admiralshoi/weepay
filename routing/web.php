@@ -47,6 +47,7 @@ Routes::group(['requiresLogin', 'consumer'], function() {
     Routes::get("payments/{id}", "consumer.PageController::paymentDetail", ['consumerProfileComplete']);
     Routes::get("location/{id}", "consumer.PageController::locationDetail", ['consumerProfileComplete']);
     Routes::get(Links::$consumer->settings, "consumer.PageController::settings", ['consumerProfileComplete']);
+    Routes::get(Links::$consumer->support, "consumer.PageController::support", ['consumerProfileComplete']);
 
     // Consumer API routes
     Routes::post(Links::$api->consumer->orders, "consumer.ApiController::getOrders", ['consumerProfileComplete']);
@@ -64,6 +65,12 @@ Routes::group(['requiresLogin', 'consumer'], function() {
 
     // Card change callback (page route, not API)
     Routes::get("consumer/card-change/callback", "consumer.PageController::cardChangeCallback", ['consumerProfileComplete']);
+
+    // Consumer support routes
+    Routes::post(Links::$api->consumer->support->create, "consumer.ApiController::supportCreate", ['consumerProfileComplete']);
+    Routes::post(Links::$api->consumer->support->reply, "consumer.ApiController::supportReply", ['consumerProfileComplete']);
+    Routes::post(Links::$api->consumer->support->close, "consumer.ApiController::supportClose", ['consumerProfileComplete']);
+    Routes::post(Links::$api->consumer->support->reopen, "consumer.ApiController::supportReopen", ['consumerProfileComplete']);
 });
 /**
  *  =========================================
@@ -256,7 +263,11 @@ Routes::group(['api','requiresApiLogin'], function() {
         Routes::post(Links::$api->checkout->merchantVoidBasket, "flows.purchase.MerchantApiController::voidBasket");
         Routes::get(Links::$api->checkout->terminalSession, "flows.purchase.MerchantApiController::getTerminalSession");
 
-
+        // Merchant support routes
+        Routes::post(Links::$api->merchant->support->create, "merchants.ApiController::supportCreate");
+        Routes::post(Links::$api->merchant->support->reply, "merchants.ApiController::supportReply");
+        Routes::post(Links::$api->merchant->support->close, "merchants.ApiController::supportClose");
+        Routes::post(Links::$api->merchant->support->reopen, "merchants.ApiController::supportReopen");
 
     });
 
@@ -334,6 +345,7 @@ Routes::group(["requiresLogin"], function () {
 
         Routes::get(Links::$merchant->materials, "merchants.pages.PageController::materials");
         Routes::get(Links::$merchant->reports, "merchants.pages.PageController::reports");
+        Routes::get(Links::$merchant->support, "merchants.pages.PageController::support");
 
         Routes::get(Links::$merchant->terminals->terminalPosStart, "flows.purchase.MerchantPageController::posStart");
         Routes::get(Links::$merchant->terminals->terminalPosDetails, "flows.purchase.MerchantPageController::posDetails");
@@ -370,6 +382,10 @@ Routes::get(Links::$policies->consumer->privacy, "LandingController::consumerPri
 Routes::get(Links::$policies->consumer->termsOfUse, "LandingController::consumerTerms");
 Routes::get(Links::$policies->merchant->privacy, "LandingController::merchantPrivacyPolicy");
 Routes::get(Links::$policies->merchant->termsOfUse, "LandingController::merchantTerms");
+
+// FAQ pages
+Routes::get(Links::$faq->consumer, "LandingController::faqConsumer");
+Routes::get(Links::$faq->merchant, "LandingController::faqMerchant");
 
 /**
  *  =========================================
@@ -517,6 +533,7 @@ Routes::group(['requiresLogin', "admin"], function() {
     Routes::get(Links::$admin->kpi, "admin.PageController::kpi");
     Routes::get(Links::$admin->reports, "admin.PageController::reports");
     Routes::get(Links::$admin->support, "admin.PageController::support");
+    Routes::get(Links::$admin->support . "/{id}", "admin.PageController::supportDetail");
     /**
      *  =========================================
      *  ============ DASHBOARD END ==============
@@ -553,6 +570,7 @@ Routes::group(['requiresLogin', "admin"], function() {
     Routes::get(Links::$admin->panelPoliciesCookies, "admin.PanelController::policiesCookies");
     Routes::get(Links::$admin->panelContactForms, "admin.PanelController::contactForms");
     Routes::get(Links::$admin->panelNotifications, "admin.PanelController::notifications");
+    Routes::get(Links::$admin->panelFaqs, "admin.PanelController::faqs");
 
     // Notification System
     Routes::get(Links::$admin->panelNotificationTemplates, "admin.NotificationController::templates");
@@ -656,6 +674,21 @@ Routes::group(['requiresApiLogin', "admin", "api"], function() {
     Routes::post("api/admin/notifications/test/trigger", "admin.NotificationApiController::testTrigger");
     Routes::post("api/admin/notifications/test/process-queue", "admin.NotificationApiController::processQueue");
     Routes::post("api/admin/notifications/test/process-scheduled", "admin.NotificationApiController::processScheduled");
+
+    // FAQ System API
+    Routes::post("api/admin/faqs/list", "admin.ApiController::faqsList");
+    Routes::post("api/admin/faqs/create", "admin.ApiController::faqCreate");
+    Routes::post("api/admin/faqs/update", "admin.ApiController::faqUpdate");
+    Routes::post("api/admin/faqs/delete", "admin.ApiController::faqDelete");
+    Routes::post("api/admin/faqs/toggle-active", "admin.ApiController::faqToggleActive");
+    Routes::post("api/admin/faqs/reorder", "admin.ApiController::faqReorder");
+
+    // Support Ticket System API
+    Routes::post(Links::$api->admin->support->list, "admin.ApiController::supportList");
+    Routes::post(Links::$api->admin->support->reply, "admin.ApiController::supportReply");
+    Routes::post(Links::$api->admin->support->close, "admin.ApiController::supportClose");
+    Routes::post(Links::$api->admin->support->reopen, "admin.ApiController::supportReopen");
+    Routes::post(Links::$api->admin->support->delete, "admin.ApiController::supportDelete");
 
     // Cronjob Admin API
     Routes::post("api/admin/cronjobs/force-run", "api.CronjobController::forceRun");

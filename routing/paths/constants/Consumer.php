@@ -260,6 +260,36 @@ class Consumer extends \routing\paths\Paths {
         ],
     ];
 
+    const CONSUMER_SUPPORT = [
+        "template" => "CONSUMER_INNER_HTML",
+        "view" => "consumer.support",
+        "custom_scripts" => "templates.scripts",
+        "title" => "Support",
+        "head" => "templates.head",
+        "assets" => [
+            "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.features.js",
+                "js.initializer.js",
+                "js.includes.SweetPrompt.js",
+                "js.consumer-support.js",
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+                "css.support.css",
+            ],
+            "base" => null,
+            "vendor" => [
+                "vendor.sweetalert.sweetalert2.min.css",
+                "vendor.sweetalert.sweetalert2.min.js",
+            ],
+            "custom" => [],
+        ],
+    ];
+
     const CONSUMER_LOCATION_DETAIL = [
         "template" => "CONSUMER_INNER_HTML",
         "view" => "consumer.location-detail",

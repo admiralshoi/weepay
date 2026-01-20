@@ -11,7 +11,7 @@ class NotificationBreakpoints extends \Database\Model {
         "key" => "string",
         "name" => "string",
         "description" => ["type" => "text", "nullable" => true, "default" => null],
-        "category" => ["type" => "enum", "values" => ["order", "payment", "user", "subscription", "organisation", "system"], "default" => "system"],
+        "category" => ["type" => "enum", "values" => ["order", "payment", "user", "subscription", "organisation", "system", "support"], "default" => "system"],
         "available_placeholders" => ["type" => "text", "nullable" => true, "default" => null],
         "trigger_type" => ["type" => "enum", "values" => ["instant", "scheduled"], "default" => "instant"],
         "is_system" => ["type" => "tinyInteger", "default" => 0],
@@ -302,6 +302,29 @@ class NotificationBreakpoints extends \Database\Model {
             "category" => "organisation",
             "available_placeholders" => '["user.full_name","user.email","organisation.name","location.name","report_period_start","report_period_end","total_orders","total_revenue","total_revenue_formatted","pending_payments","completed_payments","dashboard_link","app.name"]',
             "trigger_type" => "scheduled",
+            "is_system" => 1,
+            "status" => "active"
+        ],
+        // Support breakpoints
+        [
+            "uid" => "nbp_support_ticket_created",
+            "key" => "support.ticket_created",
+            "name" => "Support henvendelse oprettet",
+            "description" => "Udløses når en bruger opretter en ny support henvendelse",
+            "category" => "support",
+            "available_placeholders" => '["user.full_name","user.email","ticket.uid","ticket.subject","ticket.category","ticket.message","ticket.type","support_link","app.name"]',
+            "trigger_type" => "instant",
+            "is_system" => 1,
+            "status" => "active"
+        ],
+        [
+            "uid" => "nbp_support_ticket_replied",
+            "key" => "support.ticket_replied",
+            "name" => "Support svar modtaget",
+            "description" => "Udløses når admin svarer på en support henvendelse",
+            "category" => "support",
+            "available_placeholders" => '["user.full_name","user.email","ticket.uid","ticket.subject","ticket.category","reply.message","support_link","app.name"]',
+            "trigger_type" => "instant",
             "is_system" => 1,
             "status" => "active"
         ],

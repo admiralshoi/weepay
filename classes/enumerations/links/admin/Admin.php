@@ -18,6 +18,7 @@ class Admin {
     public string $kpi = "dashboard/kpi";
     public string $reports = "dashboard/reports";
     public string $support = "dashboard/support";
+    public string $supportDetail = "dashboard/support/{id}";
 
     // Dashboard route aliases (for views using dashboardX naming)
     public string $dashboardUsers = "dashboard/users";
@@ -52,6 +53,7 @@ class Admin {
     public string $panelPoliciesPrivacy = "panel/policies/privacy";
     public string $panelPoliciesTerms = "panel/policies/terms";
     public string $panelPoliciesCookies = "panel/policies/cookies";
+    public string $panelFaqs = "panel/faqs";
 
     // Communication
     public string $panelContactForms = "panel/contact-forms";
@@ -104,6 +106,11 @@ class Admin {
 
     public function dashboardPaymentDetail(string $paymentId): string {
         return "dashboard/payments/{$paymentId}";
+    }
+
+    // Support System dynamic routes
+    public function supportDetail(string $ticketId): string {
+        return "dashboard/support/{$ticketId}";
     }
 
     // Notification System dynamic routes

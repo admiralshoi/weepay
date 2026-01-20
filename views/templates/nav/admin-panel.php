@@ -73,6 +73,12 @@ use classes\enumerations\Links;
                 </a>
 
                 <a class="sidebar-nav-link py-2 px-3 text-sm font-weight-medium m-0 flex-row-start flex-align-center"
+                   data-page="faqs" href="<?=__url(Links::$admin->panelFaqs)?>">
+                    <i class="mdi mdi-frequently-asked-questions"></i>
+                    <p class="ml-3 sidebar-text">FAQ</p>
+                </a>
+
+                <a class="sidebar-nav-link py-2 px-3 text-sm font-weight-medium m-0 flex-row-start flex-align-center"
                    data-page="contact-forms" href="<?=__url(Links::$admin->panelContactForms)?>">
                     <i class="mdi mdi-email-outline"></i>
                     <p class="ml-3 sidebar-text">Kontaktformularer</p>

@@ -1,3 +1,4 @@
+<?php use classes\enumerations\Links; ?>
 <div class="footer">
     <div class="flex-row-between flex-wrap h-100" style="column-gap: 1rem; row-gap: 1.5rem;">
         <div class="flex-col-start" >
@@ -15,6 +16,16 @@
                 <div class="flex-row-start flex-align-center " style="gap: .5rem;">
                     <img class="w-100px"  src="<?=__asset(PARTNER_BANK_LOGO)?>" />
                 </div>
+            </div>
+        </div>
+
+        <div class="flex-col-start " style="row-gap: .75rem;">
+            <p class="mb-0 font-14 font-weight-bold">Hjælp</p>
+            <div class="flex-col-start " style="row-gap: .25rem;">
+                <a href="<?=__url(Links::$faq->consumer)?>" class="font-14 color-gray text-decoration-none hover-color-blue">FAQ for forbrugere</a>
+                <a href="<?=__url(Links::$faq->merchant)?>" class="font-14 color-gray text-decoration-none hover-color-blue">FAQ for forhandlere</a>
+                <a href="<?=__url(Links::$policies->consumer->privacy)?>" class="font-14 color-gray text-decoration-none hover-color-blue">Privatlivspolitik</a>
+                <a href="<?=__url(Links::$policies->consumer->termsOfUse)?>" class="font-14 color-gray text-decoration-none hover-color-blue">Vilkår og betingelser</a>
             </div>
         </div>
 

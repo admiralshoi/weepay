@@ -448,6 +448,36 @@ class PageController {
     }
 
 
+    public static function support(array $args): mixed {
+        $ticketHandler = Methods::supportTickets();
+        $replyHandler = Methods::supportTicketReplies();
+
+        // Get user's tickets
+        $tickets = $ticketHandler->getByUser(__uuid());
+
+        // Get counts
+        $openCount = $tickets->filter(fn($t) => $t['status'] === 'open')->count();
+        $closedCount = $tickets->filter(fn($t) => $t['status'] === 'closed')->count();
+
+        // Get replies for each ticket
+        $ticketReplies = new \stdClass();
+        foreach ($tickets->list() as $ticket) {
+            $ticketUid = $ticket->uid;
+            $ticketReplies->$ticketUid = $replyHandler->getByTicket($ticketUid);
+        }
+
+        // Consumer categories
+        $categories = [
+            'Betaling & Rater',
+            'Ordrer',
+            'Min konto',
+            'Teknisk problem',
+            'Andet'
+        ];
+
+        return Views("CONSUMER_SUPPORT", compact('tickets', 'openCount', 'closedCount', 'categories', 'ticketReplies'));
+    }
+
     /**
      * Handle Viva callback after card validation for card change
      *

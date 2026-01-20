@@ -14,6 +14,7 @@ class Admin {
     public Reports $reports;
     public Impersonate $impersonate;
     public Panel $panel;
+    public Support $support;
 
     function __construct() {
         $this->payments = new Payments();
@@ -26,6 +27,7 @@ class Admin {
         $this->reports = new Reports();
         $this->impersonate = new Impersonate();
         $this->panel = new Panel();
+        $this->support = new Support();
     }
 }
 
@@ -80,4 +82,20 @@ class Panel {
     public string $createRole = "api/admin/panel/create-role";
     public string $updateRole = "api/admin/panel/update-role";
     public string $rykkerSettings = "api/admin/panel/rykker-settings";
+
+    // FAQ routes
+    public string $faqsList = "api/admin/faqs/list";
+    public string $faqsCreate = "api/admin/faqs/create";
+    public string $faqsUpdate = "api/admin/faqs/update";
+    public string $faqsDelete = "api/admin/faqs/delete";
+    public string $faqsToggleActive = "api/admin/faqs/toggle-active";
+    public string $faqsReorder = "api/admin/faqs/reorder";
+}
+
+class Support {
+    public string $list = "api/admin/support/list";
+    public string $reply = "api/admin/support/reply";
+    public string $close = "api/admin/support/close";
+    public string $reopen = "api/admin/support/reopen";
+    public string $delete = "api/admin/support/delete";
 }

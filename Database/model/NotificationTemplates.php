@@ -2022,6 +2022,74 @@ Med venlig hilsen,
             "status" => "active",
             "created_by" => null,
         ],
+
+        // =====================================================
+        // SUPPORT TICKET TEMPLATES
+        // =====================================================
+        [
+            "uid" => "ntpl_support_new_ticket_admin_bell",
+            "name" => "Support: Ny henvendelse (Admin Bell)",
+            "slug" => "support-new-ticket-admin-bell",
+            "type" => "bell",
+            "category" => "template",
+            "subject" => "Ny support henvendelse",
+            "content" => "{{user.full_name}} har oprettet en ny support henvendelse: {{ticket.subject}}",
+            "html_content" => null,
+            "status" => "active",
+            "created_by" => null,
+        ],
+        [
+            "uid" => "ntpl_support_reply_user_email",
+            "name" => "Support: Svar modtaget (Email)",
+            "slug" => "support-reply-user-email",
+            "type" => "email",
+            "category" => "template",
+            "subject" => "Svar på din henvendelse: {{ticket.subject}}",
+            "content" => "Hej {{user.full_name}},
+
+Du har modtaget et svar på din support henvendelse.
+
+Emne: {{ticket.subject}}
+Kategori: {{ticket.category}}
+
+Log ind for at se svaret og fortsætte samtalen.
+
+{{support_link}}
+
+Med venlig hilsen,
+{{brand.name}}",
+            "html_content" => '{{template.email_header}}
+{{template.email_content_start}}
+<p style="margin: 0 0 15px 0;">Hej {{user.full_name}},</p>
+<p style="margin: 0 0 15px 0;">Du har modtaget et svar på din support henvendelse.</p>
+
+<div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+    <table style="width: 100%; font-size: 14px;">
+        <tr><td style="padding: 5px 0; color: #666;">Emne:</td><td style="padding: 5px 0; text-align: right;"><strong>{{ticket.subject}}</strong></td></tr>
+        <tr><td style="padding: 5px 0; color: #666;">Kategori:</td><td style="padding: 5px 0; text-align: right;">{{ticket.category}}</td></tr>
+    </table>
+</div>
+
+<p style="text-align: center; margin: 25px 0;">
+    <a href="{{support_link}}" style="display: inline-block; padding: 12px 30px; background: #FE5722; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;">Se svar</a>
+</p>
+{{template.email_content_end}}
+{{template.email_footer}}',
+            "status" => "active",
+            "created_by" => null,
+        ],
+        [
+            "uid" => "ntpl_support_reply_user_bell",
+            "name" => "Support: Svar modtaget (Bell)",
+            "slug" => "support-reply-user-bell",
+            "type" => "bell",
+            "category" => "template",
+            "subject" => "Svar på din henvendelse",
+            "content" => "Du har modtaget et svar på: {{ticket.subject}}",
+            "html_content" => null,
+            "status" => "active",
+            "created_by" => null,
+        ],
     ];
     protected static array $requiredRowsTesting = [];
 

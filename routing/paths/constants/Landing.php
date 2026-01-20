@@ -169,4 +169,44 @@ class Landing extends \routing\paths\Paths {
         ],
     ];
 
+    const FAQ_CONSUMER = [
+        "template" => "LANDING_INNER_HTML",
+        "view" => "landing-page.faq.consumer",
+        "custom_scripts" => null,
+        "title" => 'FAQ - Forbrugere',
+        "head" => null,
+        "assets" => [
+            "main" => [
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+                "css.faq.css",
+            ],
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
+
+    const FAQ_MERCHANT = [
+        "template" => "LANDING_INNER_HTML",
+        "view" => "landing-page.faq.merchant",
+        "custom_scripts" => null,
+        "title" => 'FAQ - Forhandlere',
+        "head" => null,
+        "assets" => [
+            "main" => [
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+                "css.faq.css",
+            ],
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
+
 }

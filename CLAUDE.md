@@ -2,6 +2,63 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+> **🔄 CONTEXT RESET REMINDER:** If this conversation was continued from a previous session, RE-READ the "DO NOT" section below before writing any code. Best practices get lost during context compaction.
+
+---
+
+## ⛔ DO NOT - Read This First
+
+**These rules are non-negotiable. Violating them wastes time.**
+
+### Routes & URLs
+- ❌ **DO NOT** hardcode route strings like `'api/admin/faqs/create'`
+- ✅ **DO** use `Links` class in PHP: `Links::$admin->panelFaqs`
+- ✅ **DO** use `platformLinks` in JS: `platformLinks.api.admin.panel.faqsCreate`
+
+### CSS & Styling
+- ❌ **DO NOT** put `<style>` tags or inline CSS in view files
+- ❌ **DO NOT** write CSS in PHP files
+- ✅ **DO** create/edit CSS files in `public/css/`
+- ✅ **DO** add CSS to page via Path Constants in `routing/paths/constants/`
+
+### JavaScript
+- ❌ **DO NOT** put complex JS logic in view files (only variable declarations for passing PHP data)
+- ❌ **DO NOT** use `<script src="...">` directly in views
+- ✅ **DO** create JS files in `public/js/`
+- ✅ **DO** add JS to page via Path Constants in `routing/paths/constants/`
+
+### UI Components
+- ❌ **DO NOT** use Bootstrap button classes (`btn-primary`, `btn-danger`, etc.)
+- ✅ **DO** use `btn-v2` with modifiers: `btn-v2 action-btn`, `btn-v2 danger-btn`, `btn-v2 success-btn`
+- ❌ **DO NOT** use `form-control` for inputs
+- ✅ **DO** use `form-field-v2` for inputs, `form-select-v2` for selects
+- ✅ **DO** add `w-100` for full width, `h-45px` for select height consistency
+
+### AJAX & HTTP
+- ❌ **DO NOT** use native `fetch()` or `Server.post()`
+- ✅ **DO** use `post()`, `get()`, `del()` from `server.js`
+
+### Notifications
+- ❌ **DO NOT** use `alert()`, `swal()`, or raw SweetAlert
+- ✅ **DO** use `showSuccessNotification('Title', 'Message')`
+- ✅ **DO** use `showErrorNotification('Title', 'Message')`
+- ✅ **DO** use `showNeutralNotification('Title', 'Message')`
+- ✅ **DO** use `queueNotificationOnLoad('Title', 'Message', 'success')` for post-redirect
+
+### Confirmations
+- ❌ **DO NOT** use native `confirm()`
+- ✅ **DO** use `SweetPrompt.confirm('Title', 'Message', { onConfirm: async function() {...} })`
+
+### Dynamic Elements
+- ❌ **DO NOT** forget to initialize custom components on dynamically added elements
+- ✅ **DO** call `selectV2(element)` after inserting elements with `form-select-v2`
+
+### Crud/Handler Pattern
+- ❌ **DO NOT** assume `create()` returns a UID - it returns `bool`
+- ✅ **DO** use `$this->recentUid` after successful `create()` to get the new UID
+
+---
+
 ## Core Principle - Use Existing Patterns
 
 **CRITICAL: This codebase has established patterns for all core functionality. NEVER invent custom solutions when a system already exists.**
