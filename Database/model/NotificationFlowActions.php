@@ -514,6 +514,14 @@ class NotificationFlowActions extends \Database\Model {
             "delay_minutes" => 0,
             "status" => "active",
         ],
+        [
+            "uid" => "nfla_policy_update_bell",
+            "flow" => "nflw_policy_update",
+            "template" => "ntpl_policy_update_bell",
+            "channel" => "bell",
+            "delay_minutes" => 0,
+            "status" => "active",
+        ],
 
         // =====================================================
         // WEEKLY REPORT ORG ACTIONS

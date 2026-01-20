@@ -2,6 +2,11 @@ $(document).ready(function (){
 
     if(typeof pageTitle !== "undefined") document.querySelector("title").innerText = pageTitle;
 
+    // GDPR Cookie Consent Popup
+    if (typeof cookiesAccepted !== 'undefined' && !cookiesAccepted) {
+        showCookieConsentPopup();
+    }
+
     if(typeof setDateRangePicker == "function") {
         setDateRangePicker().then(() => {
 
@@ -311,6 +316,50 @@ document.addEventListener('input', function (event) {
         formatCurrencyInput(event.target);
     }
 });
+
+
+/**
+ * GDPR Cookie Consent Popup
+ */
+function showCookieConsentPopup() {
+    var popupHtml = '<div id="cookie-consent-popup" class="cookie-consent-popup">' +
+        '<div class="cookie-consent-content">' +
+            '<div class="cookie-consent-text">' +
+                '<i class="mdi mdi-cookie"></i>' +
+                '<p>Vi bruger cookies for at forbedre din oplevelse. ' +
+                '<a href="' + HOST + 'policies/cookies" target="_blank">Læs mere om vores cookiepolitik</a></p>' +
+            '</div>' +
+            '<button type="button" class="cookie-consent-accept" onclick="acceptCookieConsent()">Accepter</button>' +
+        '</div>' +
+    '</div>';
+
+    $('body').append(popupHtml);
+}
+
+function acceptCookieConsent() {
+    // Immediately set JS variable to prevent re-showing
+    window.cookiesAccepted = true;
+
+    // Also set localStorage as fallback (in case IP can't be captured)
+    try {
+        localStorage.setItem('cookiesAccepted', 'true');
+    } catch (e) {
+        // localStorage may be unavailable in some browsers/modes
+    }
+
+    // Hide popup with slide down animation
+    $('#cookie-consent-popup').addClass('hiding');
+    setTimeout(function() {
+        $('#cookie-consent-popup').remove();
+    }, 300);
+
+    // Async POST to save consent in database
+    post('api/cookies/accept', {}).then(function(response) {
+        // Silent success - no action needed
+    }).catch(function(error) {
+        console.error('Failed to save cookie consent:', error);
+    });
+}
 
 
 

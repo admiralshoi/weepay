@@ -1,0 +1,270 @@
+/**
+ * Admin Panel - Policy Editor Styles
+ */
+
+/* Editor Toolbar */
+.policy-editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px 8px 0 0;
+}
+
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+}
+
+.toolbar-divider {
+    width: 1px;
+    height: 24px;
+    background: #dee2e6;
+    margin: 0 0.5rem;
+}
+
+.toolbar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    color: #495057;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.toolbar-btn:hover {
+    background: #e9ecef;
+    color: #212529;
+}
+
+.toolbar-btn:active {
+    background: #dee2e6;
+}
+
+.toolbar-btn i {
+    font-size: 18px;
+}
+
+/* Editor Container */
+.policy-editor-container {
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    background: #fff;
+}
+
+.policy-editor {
+    min-height: 500px;
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 1.5rem;
+    outline: none;
+}
+
+.policy-editor:empty:before {
+    content: attr(placeholder);
+    color: #adb5bd;
+    pointer-events: none;
+}
+
+/* Editor Content Styles */
+.policy-editor h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+}
+
+.policy-editor h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    color: #2c3e50;
+}
+
+.policy-editor h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #34495e;
+}
+
+.policy-editor p {
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+    color: #4a4a4a;
+}
+
+.policy-editor ul,
+.policy-editor ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.policy-editor li {
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 0.5rem;
+    color: #4a4a4a;
+}
+
+.policy-editor table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+}
+
+.policy-editor th,
+.policy-editor td {
+    border: 1px solid #ddd;
+    padding: 0.75rem;
+    text-align: left;
+}
+
+.policy-editor th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.policy-editor hr {
+    border: none;
+    border-top: 2px solid #e9ecef;
+    margin: 2rem 0;
+}
+
+.policy-editor a {
+    color: #0066cc;
+    text-decoration: underline;
+}
+
+.policy-editor a:hover {
+    color: #004499;
+}
+
+/* Version History Modal */
+#history-content .list-group-item {
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+}
+
+#history-content .list-group-item:first-child {
+    border-top: none;
+}
+
+#history-content .list-group-item:last-child {
+    border-bottom: none;
+}
+
+/* View Version Modal */
+.policy-content-preview {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 1.5rem;
+    background: #fafafa;
+    border-radius: 8px;
+}
+
+.policy-content-preview h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+}
+
+.policy-content-preview h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    color: #2c3e50;
+}
+
+.policy-content-preview h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #34495e;
+}
+
+.policy-content-preview p {
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+    color: #4a4a4a;
+}
+
+.policy-content-preview ul,
+.policy-content-preview ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.policy-content-preview li {
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 0.5rem;
+    color: #4a4a4a;
+}
+
+.policy-content-preview table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+}
+
+.policy-content-preview th,
+.policy-content-preview td {
+    border: 1px solid #ddd;
+    padding: 0.75rem;
+    text-align: left;
+}
+
+.policy-content-preview th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.policy-content-preview hr {
+    border: none;
+    border-top: 2px solid #e9ecef;
+    margin: 2rem 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .policy-editor-toolbar {
+        gap: 0.125rem;
+    }
+
+    .toolbar-divider {
+        margin: 0 0.25rem;
+    }
+
+    .toolbar-btn {
+        width: 28px;
+        height: 28px;
+    }
+
+    .policy-editor {
+        min-height: 400px;
+        padding: 1rem;
+    }
+}

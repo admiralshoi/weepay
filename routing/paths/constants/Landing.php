@@ -95,12 +95,16 @@ class Landing extends \routing\paths\Paths {
 
     const CONSUMER_PRIVACY_POLICY = [
         "template" => "LANDING_INNER_HTML",
-        "view" => "policies.consumer-privacy",
+        "view" => "policies.policy-template",
         "custom_scripts" => null,
         "title" => 'Privatlivspolitik for forbrugere',
         "head" => null,
         "assets" => [
             "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.initializer.js",
                 "css.main.css",
                 "css.styles2.css",
                 "css.styles3.css",
@@ -114,12 +118,16 @@ class Landing extends \routing\paths\Paths {
 
     const CONSUMER_TERMS = [
         "template" => "LANDING_INNER_HTML",
-        "view" => "policies.consumer-terms",
+        "view" => "policies.policy-template",
         "custom_scripts" => null,
         "title" => 'Vilkår for forbrugere',
         "head" => null,
         "assets" => [
             "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.initializer.js",
                 "css.main.css",
                 "css.styles2.css",
                 "css.styles3.css",
@@ -133,12 +141,16 @@ class Landing extends \routing\paths\Paths {
 
     const MERCHANT_PRIVACY_POLICY = [
         "template" => "LANDING_INNER_HTML",
-        "view" => "policies.merchant-privacy",
+        "view" => "policies.policy-template",
         "custom_scripts" => null,
         "title" => 'Privatlivspolitik for forhandlere',
         "head" => null,
         "assets" => [
             "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.initializer.js",
                 "css.main.css",
                 "css.styles2.css",
                 "css.styles3.css",
@@ -152,12 +164,39 @@ class Landing extends \routing\paths\Paths {
 
     const MERCHANT_TERMS = [
         "template" => "LANDING_INNER_HTML",
-        "view" => "policies.merchant-terms",
+        "view" => "policies.policy-template",
         "custom_scripts" => null,
         "title" => 'Vilkår for forhandlere',
         "head" => null,
         "assets" => [
             "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.initializer.js",
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+            ],
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
+
+    const COOKIES_POLICY = [
+        "template" => "LANDING_INNER_HTML",
+        "view" => "policies.policy-template",
+        "custom_scripts" => null,
+        "title" => 'Cookiepolitik',
+        "head" => null,
+        "assets" => [
+            "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.initializer.js",
                 "css.main.css",
                 "css.styles2.css",
                 "css.styles3.css",

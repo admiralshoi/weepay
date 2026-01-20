@@ -30,6 +30,9 @@ class Settings {
     public static bool $impersonatingOrganisation = false;
     public static ?string $impersonatedOrganisationId = null;
 
+    // Cookie consent (GDPR)
+    public static bool $cookiesAccepted = false;
+
 
 
 

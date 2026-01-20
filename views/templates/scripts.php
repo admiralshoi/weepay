@@ -38,6 +38,8 @@ if(!\classes\Methods::isAdmin()) {
     const defaultCountry = <?=json_encode(Settings::$app->default_country)?>;
     const currencies = <?=json_encode(toArray(Settings::$app->currencies))?>;
     const platformLinks = <?=json_encode(\classes\enumerations\Links::toArray($linksToExclude))?>;
+    var cookiesAcceptedServer = <?=json_encode(Settings::$cookiesAccepted)?>;
+    var cookiesAccepted = cookiesAcceptedServer || (localStorage.getItem('cookiesAccepted') === 'true');
     var thirdPartyAuth = {}
 
     // Translation data from PHP (synced with classes/lang/lib/DA.php)

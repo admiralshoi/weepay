@@ -152,6 +152,25 @@ class CronjobController {
     }
 
 
+    /**
+     * Publish scheduled policies
+     */
+    #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
+    public static function policyPublish(array $args): array {
+        if (!self::validateToken($args)) {
+            return self::returnJsonResponse("Invalid token", 401);
+        }
+
+        $worker = self::init("policy_publish");
+        if($worker === null) return self::returnJsonResponse("Cronjob may not be initiated.", 202);
+
+        $requestHandler = Methods::cronRequestHandler();
+        $requestHandler->policyPublish($worker);
+
+        return self::end($worker);
+    }
+
+
     #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
     private static function end(CronWorker $worker): array {
         $worker->log("Finished running cronjob");
@@ -188,6 +207,7 @@ class CronjobController {
             'notification_queue' => 'notificationQueue',
             'rykker_checks' => 'rykkerChecks',
             'weekly_reports' => 'weeklyReports',
+            'policy_publish' => 'policyPublish',
         ];
 
         if (!isset($methodMap[$type])) {
@@ -213,6 +233,7 @@ class CronjobController {
             'notification_queue' => 'processNotificationQueue',
             'rykker_checks' => 'rykkerChecks',
             'weekly_reports' => 'weeklyReports',
+            'policy_publish' => 'policyPublish',
             default => null
         };
 

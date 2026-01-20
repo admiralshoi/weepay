@@ -2353,3 +2353,122 @@ input[type="checkbox"].custom-check:checked::after {
 .grecaptcha-badge {
     display: none !important;
 }
+
+/* ==========================================
+   GDPR Cookie Consent Popup
+   ========================================== */
+.cookie-consent-popup {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #1a1a1a;
+    color: #fff;
+    padding: 0;
+    z-index: 99999;
+    transform: translateY(100%);
+    animation: cookieSlideUp 0.3s ease forwards;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes cookieSlideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.cookie-consent-popup.hiding {
+    animation: cookieSlideDown 0.3s ease forwards;
+}
+
+@keyframes cookieSlideDown {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(100%);
+    }
+}
+
+.cookie-consent-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.cookie-consent-text {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 280px;
+}
+
+.cookie-consent-text i {
+    font-size: 1.5rem;
+    color: #FE5722;
+    flex-shrink: 0;
+}
+
+.cookie-consent-text p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #e0e0e0;
+}
+
+.cookie-consent-text a {
+    color: #FE5722;
+    text-decoration: underline;
+}
+
+.cookie-consent-text a:hover {
+    color: #ff7043;
+}
+
+.cookie-consent-accept {
+    background: #FE5722;
+    color: #fff;
+    border: none;
+    padding: 0.65rem 1.75rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.cookie-consent-accept:hover {
+    background: #e64a19;
+}
+
+.cookie-consent-accept:active {
+    transform: scale(0.98);
+}
+
+@media (max-width: 576px) {
+    .cookie-consent-content {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.25rem 1rem;
+    }
+
+    .cookie-consent-text {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .cookie-consent-accept {
+        width: 100%;
+    }
+}

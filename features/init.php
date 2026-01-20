@@ -37,6 +37,12 @@ foreach (\Database\model\UserRoles::where("defined", 1)->order("access_level", "
 }
 
 
+// Check cookie consent (GDPR) - valid if EITHER IP or user UID has consented
+$ipAddress = $_SERVER['REMOTE_ADDR'] ?? '';
+$hasConsentByIp = Methods::cookieConsents()->existsByIp($ipAddress);
+$hasConsentByUser = isLoggedIn() && Methods::cookieConsents()->existsByUser(__uuid());
+Settings::$cookiesAccepted = $hasConsentByIp || $hasConsentByUser;
+
 if(isLoggedIn()) {
     Settings::$user = Methods::users()->get(__uuid());
     debugLog(Settings::$user->cookies, 'user-cookies');

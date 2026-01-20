@@ -117,18 +117,24 @@ class PanelController {
     // =====================================================
 
     public static function policies(array $args): mixed {
+        $args['policies'] = Methods::policyTypes()->getAllWithStatus();
         return Views("ADMIN_PANEL_POLICIES", $args);
     }
 
     public static function policiesPrivacy(array $args): mixed {
+        $type = ($args['type'] ?? 'consumer') === 'merchant' ? 'merchant_privacy' : 'consumer_privacy';
+        $args['policyType'] = $type;
         return Views("ADMIN_PANEL_POLICIES_PRIVACY", $args);
     }
 
     public static function policiesTerms(array $args): mixed {
+        $type = ($args['type'] ?? 'consumer') === 'merchant' ? 'merchant_terms' : 'consumer_terms';
+        $args['policyType'] = $type;
         return Views("ADMIN_PANEL_POLICIES_TERMS", $args);
     }
 
     public static function policiesCookies(array $args): mixed {
+        $args['policyType'] = 'cookies';
         return Views("ADMIN_PANEL_POLICIES_COOKIES", $args);
     }
 

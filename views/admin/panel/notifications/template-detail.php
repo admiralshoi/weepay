@@ -208,6 +208,17 @@ $placeholderGroups = [
             '{{days_overdue}}' => 'Dage overskredet',
         ]
     ],
+    'policy' => [
+        'label' => 'Politik/Vilkår',
+        'icon' => 'mdi-file-document-outline',
+        'placeholders' => [
+            '{{policy_type}}' => 'Politik type',
+            '{{policy_name}}' => 'Politik navn',
+            '{{policy_link}}' => 'Link til politik',
+            '{{update_summary}}' => 'Opdateringssammendrag',
+            '{{effective_date}}' => 'Gældende fra dato',
+        ]
+    ],
     'misc' => [
         'label' => 'Andet',
         'icon' => 'mdi-dots-horizontal',

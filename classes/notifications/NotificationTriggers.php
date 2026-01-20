@@ -664,14 +664,16 @@ class NotificationTriggers {
     // =====================================================
 
     /**
-     * Trigger when a policy is updated
+     * Trigger when a policy is updated (single user)
      */
     public static function policyUpdated(
         object|array $user,
         string $policyType,
         string $policyName,
         string $updateSummary,
-        string $policyLink
+        string $policyLink,
+        string $changelogUid,
+        string $effectiveDate
     ): bool {
         $userData = self::normalizeData($user);
 
@@ -681,9 +683,174 @@ class NotificationTriggers {
             'policy_name' => $policyName,
             'update_summary' => $updateSummary,
             'policy_link' => $policyLink,
+            'effective_date' => $effectiveDate,
             'app' => self::getAppContext(),
             'email_title' => 'Opdatering af ' . $policyName,
+            // Reference for deduplication - uses changelog UID so republishing creates new notification
+            'reference_id' => $changelogUid,
+            'reference_type' => 'policy_changelog',
         ]);
+    }
+
+    /**
+     * Send policy update notifications to multiple recipient types
+     *
+     * @param object|array $policy The policy object
+     * @param array $recipientTypes Array of recipient type strings
+     * @param string $changelogUid The changelog UID for deduplication
+     * @param string $effectiveDate When the policy becomes/became active (for display)
+     */
+    public static function policyUpdatedBatch(
+        object|array $policy,
+        array $recipientTypes,
+        string $changelogUid,
+        string $effectiveDate
+    ): void {
+        $policyData = self::normalizeData($policy);
+        // Get type from policy_type (may be object or string like "pt_consumer_privacy")
+        $policyTypeUid = $policyData['policy_type'] ?? $policyData['type'] ?? '';
+        $policyType = is_object($policyTypeUid) ? $policyTypeUid->type : str_replace('pt_', '', $policyTypeUid);
+        $policyName = Methods::policyTypes()->getDisplayName($policyType) ?? $policyData['title'] ?? 'Politik';
+        // Get version number from policy data for direct link to specific version
+        $versionNumber = isset($policyData['version']) ? (int) $policyData['version'] : null;
+        $policyLink = self::getPolicyLink($policyType, $versionNumber);
+        $updateSummary = 'Vores ' . $policyName . ' er blevet opdateret.';
+
+        // Format effective date in Danish
+        $formattedDate = self::formatDanishDate($effectiveDate);
+
+        // Build recipient list based on types
+        $recipientUids = self::buildPolicyRecipients($recipientTypes);
+
+        debugLog([
+            'policy_type' => $policyType,
+            'policy_name' => $policyName,
+            'recipient_types' => $recipientTypes,
+            'recipient_count' => count($recipientUids),
+            'changelog_uid' => $changelogUid,
+            'effective_date' => $formattedDate,
+        ], 'NotificationTriggers_policyUpdatedBatch');
+
+        // Send notification to each recipient
+        foreach ($recipientUids as $userUid) {
+            $user = Methods::users()->get($userUid);
+            if ($user) {
+                self::policyUpdated($user, $policyType, $policyName, $updateSummary, $policyLink, $changelogUid, $formattedDate);
+            }
+        }
+    }
+
+    /**
+     * Format a datetime string to Danish readable format
+     */
+    private static function formatDanishDate(string $datetime): string {
+        $timestamp = strtotime($datetime);
+        $formatted = date('d. F Y', $timestamp);
+
+        // Map English month names to Danish
+        $danishMonths = [
+            'January' => 'januar', 'February' => 'februar', 'March' => 'marts',
+            'April' => 'april', 'May' => 'maj', 'June' => 'juni',
+            'July' => 'juli', 'August' => 'august', 'September' => 'september',
+            'October' => 'oktober', 'November' => 'november', 'December' => 'december'
+        ];
+
+        return str_replace(array_keys($danishMonths), array_values($danishMonths), $formatted);
+    }
+
+    /**
+     * Build list of recipient user UIDs based on recipient types
+     */
+    private static function buildPolicyRecipients(array $types): array {
+        $userUids = [];
+
+        // Handle 'all' type - sends to all active users
+        if (in_array('all', $types)) {
+            $users = Methods::users()->getByX(['deactivated' => 0]);
+            foreach ($users->list() as $user) {
+                $userUids[$user->uid] = true;
+            }
+            return array_keys($userUids);
+        }
+
+        // Consumers - access_level 1
+        if (in_array('consumers', $types)) {
+            $users = Methods::users()->getByX(['deactivated' => 0, 'access_level' => 1]);
+            foreach ($users->list() as $user) {
+                $userUids[$user->uid] = true;
+            }
+        }
+
+        // Merchants - access_level 2
+        if (in_array('merchants', $types)) {
+            $users = Methods::users()->getByX(['deactivated' => 0, 'access_level' => 2]);
+            foreach ($users->list() as $user) {
+                $userUids[$user->uid] = true;
+            }
+        }
+
+        // Organisation owners - members with role 'owner'
+        if (in_array('org_owners', $types)) {
+            $members = Methods::organisationMembers()->excludeForeignKeys()->getByX(['role' => 'owner', 'status' => 'active']);
+            foreach ($members->list() as $member) {
+                $userUids[$member->user] = true;
+            }
+        }
+
+        // Organisation admins - members with role 'admin'
+        if (in_array('org_admins', $types)) {
+            $members = Methods::organisationMembers()->excludeForeignKeys()->getByX(['role' => 'admin', 'status' => 'active']);
+            foreach ($members->list() as $member) {
+                $userUids[$member->user] = true;
+            }
+        }
+
+        // Location managers - members with location assignment
+        if (in_array('location_managers', $types)) {
+            $membersHandler = Methods::organisationMembers()->excludeForeignKeys();
+            $query = $membersHandler->queryBuilder()
+                ->where('status', 'active')
+                ->whereNotNull('location');
+            $members = $membersHandler->queryGetAll($query);
+            foreach ($members->list() as $member) {
+                $userUids[$member->user] = true;
+            }
+        }
+
+        // WeePay admins - access_level 8 or 9
+        if (in_array('weepay_admins', $types)) {
+            $usersHandler = Methods::users();
+            $query = $usersHandler->queryBuilder()
+                ->where('deactivated', 0)
+                ->where('access_level', '>=', 8);
+            $users = $usersHandler->queryGetAll($query);
+            foreach ($users->list() as $user) {
+                $userUids[$user->uid] = true;
+            }
+        }
+
+        return array_keys($userUids);
+    }
+
+    /**
+     * Get public policy link based on type
+     */
+    private static function getPolicyLink(string $policyType, ?int $version = null): string {
+        $baseUrl = match ($policyType) {
+            'consumer_privacy' => __url(Links::$policies->consumer->privacy),
+            'consumer_terms' => __url(Links::$policies->consumer->termsOfUse),
+            'merchant_privacy' => __url(Links::$policies->merchant->privacy),
+            'merchant_terms' => __url(Links::$policies->merchant->termsOfUse),
+            'cookies' => __url(Links::$policies->cookies),
+            default => __url('/'),
+        };
+
+        // Append version number if provided
+        if ($version !== null) {
+            return $baseUrl . '/' . $version;
+        }
+
+        return $baseUrl;
     }
 
     // =====================================================

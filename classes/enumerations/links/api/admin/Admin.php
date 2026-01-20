@@ -15,6 +15,7 @@ class Admin {
     public Impersonate $impersonate;
     public Panel $panel;
     public Support $support;
+    public Policies $policies;
 
     function __construct() {
         $this->payments = new Payments();
@@ -28,6 +29,7 @@ class Admin {
         $this->impersonate = new Impersonate();
         $this->panel = new Panel();
         $this->support = new Support();
+        $this->policies = new Policies();
     }
 }
 
@@ -98,4 +100,13 @@ class Support {
     public string $close = "api/admin/support/close";
     public string $reopen = "api/admin/support/reopen";
     public string $delete = "api/admin/support/delete";
+}
+
+class Policies {
+    public string $list = "api/admin/policies/list";
+    public string $get = "api/admin/policies/get";
+    public string $save = "api/admin/policies/save";
+    public string $publish = "api/admin/policies/publish";
+    public string $delete = "api/admin/policies/delete";
+    public string $versions = "api/admin/policies/versions";
 }

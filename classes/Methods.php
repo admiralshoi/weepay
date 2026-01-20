@@ -109,6 +109,14 @@ class Methods {
     // Support Ticket Handlers
     public static function supportTickets(): \classes\support\SupportTicketHandler { return new \classes\support\SupportTicketHandler(); }
     public static function supportTicketReplies(): \classes\support\SupportTicketReplyHandler { return new \classes\support\SupportTicketReplyHandler(); }
+
+    // Policy Handlers
+    public static function policyTypes(): \classes\policies\PolicyTypeHandler { return new \classes\policies\PolicyTypeHandler(); }
+    public static function policyVersions(): \classes\policies\PolicyVersionHandler { return new \classes\policies\PolicyVersionHandler(); }
+    public static function policyChangeLogs(): \classes\policies\PolicyChangeLogHandler { return new \classes\policies\PolicyChangeLogHandler(); }
+
+    // Cookie Consent Handler
+    public static function cookieConsents(): \classes\cookies\CookieConsentHandler { return new \classes\cookies\CookieConsentHandler(); }
     public static function sortByKey(&$arr,$key = "", $ascending = false, array $specialReplacement = array(), array $splitReplace = array(), $key2 = ""): void {
         (new SortByKey())->run($arr, $key, $ascending, $specialReplacement, $splitReplace, $key2); }
     public static function hasAccess(string $type, string $name, int $actionType, string|int $requestingLevel): bool {

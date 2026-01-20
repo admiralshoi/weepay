@@ -7,6 +7,7 @@ class Policies {
 
     public MerchantPolicies $merchant;
     public ConsumerPolicies $consumer;
+    public string $cookies = "cookies";
 
     function __construct() {
         $ref = new \ReflectionClass(self::class);

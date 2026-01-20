@@ -81,19 +81,54 @@ class LandingController {
     }
 
     public static function consumerPrivacyPolicy(array $args): mixed  {
+        $args['policy'] = self::getPolicyByVersionOrCurrent('consumer_privacy', $args);
+        $args['previousPolicy'] = Methods::policyTypes()->getPreviousVersion('consumer_privacy');
+        $args['fallbackTitle'] = 'Privatlivspolitik for forbrugere';
         return Views("CONSUMER_PRIVACY_POLICY", $args);
     }
 
     public static function consumerTerms(array $args): mixed  {
+        $args['policy'] = self::getPolicyByVersionOrCurrent('consumer_terms', $args);
+        $args['previousPolicy'] = Methods::policyTypes()->getPreviousVersion('consumer_terms');
+        $args['fallbackTitle'] = 'Handelsbetingelser for forbrugere';
         return Views("CONSUMER_TERMS", $args);
     }
 
     public static function merchantPrivacyPolicy(array $args): mixed  {
+        $args['policy'] = self::getPolicyByVersionOrCurrent('merchant_privacy', $args);
+        $args['previousPolicy'] = Methods::policyTypes()->getPreviousVersion('merchant_privacy');
+        $args['fallbackTitle'] = 'Privatlivspolitik for forhandlere';
         return Views("MERCHANT_PRIVACY_POLICY", $args);
     }
 
     public static function merchantTerms(array $args): mixed  {
+        $args['policy'] = self::getPolicyByVersionOrCurrent('merchant_terms', $args);
+        $args['previousPolicy'] = Methods::policyTypes()->getPreviousVersion('merchant_terms');
+        $args['fallbackTitle'] = 'Vilkår for forhandlere';
         return Views("MERCHANT_TERMS", $args);
+    }
+
+    public static function cookiesPolicy(array $args): mixed  {
+        $args['policy'] = self::getPolicyByVersionOrCurrent('cookies', $args);
+        $args['previousPolicy'] = Methods::policyTypes()->getPreviousVersion('cookies');
+        $args['fallbackTitle'] = 'Cookiepolitik';
+        return Views("COOKIES_POLICY", $args);
+    }
+
+    /**
+     * Get policy by version number if provided, otherwise get current version
+     * Falls back to current version if the specified version doesn't exist
+     */
+    private static function getPolicyByVersionOrCurrent(string $type, array $args): ?object {
+        if (isset($args['version']) && is_numeric($args['version'])) {
+            $version = (int) $args['version'];
+            $policy = Methods::policyVersions()->getByTypeAndVersion($type, $version);
+            // Fall back to current version if specified version doesn't exist
+            if (!isEmpty($policy)) {
+                return $policy;
+            }
+        }
+        return Methods::policyTypes()->getCurrentVersion($type);
     }
 
     public static function faqConsumer(array $args): mixed  {

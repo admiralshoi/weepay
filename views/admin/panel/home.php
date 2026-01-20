@@ -11,7 +11,7 @@ $pageTitle = "Panel";
 ?>
 <script>
     var pageTitle = <?=json_encode($pageTitle)?>;
-    activePage = "panel";
+    activePage = "panel-home";
 </script>
 
 <div class="page-content py-3">

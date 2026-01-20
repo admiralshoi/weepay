@@ -277,7 +277,7 @@ class NotificationBreakpoints extends \Database\Model {
             "name" => "Politikopdatering",
             "description" => "Udløses når vilkår eller privatlivspolitik opdateres",
             "category" => "system",
-            "available_placeholders" => '["user.full_name","user.email","policy_type","policy_name","update_summary","policy_link","app.name","app.url"]',
+            "available_placeholders" => '["user.full_name","user.email","policy_type","policy_name","update_summary","policy_link","effective_date","app.name","app.url"]',
             "trigger_type" => "instant",
             "is_system" => 1,
             "status" => "active"

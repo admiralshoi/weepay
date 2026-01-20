@@ -111,6 +111,15 @@ Routes::group(['api'], function() {
  * =========================================
  */
 
+/**
+ * =========================================
+ * ========= COOKIE CONSENT API ===========
+ * =========================================
+ */
+Routes::group(['api'], function() {
+    Routes::post("api/cookies/accept", "api.CookieController::accept");
+});
+
 
 /**
  *  =========================================
@@ -383,11 +392,19 @@ Routes::group(["requiresLogin"], function () {
 
 
 
-// Policy pages
+// Policy pages (with optional version parameter)
+Routes::get(Links::$policies->consumer->privacy . '/{version}', "LandingController::consumerPrivacyPolicy");
 Routes::get(Links::$policies->consumer->privacy, "LandingController::consumerPrivacyPolicy");
+Routes::get(Links::$policies->consumer->termsOfUse . '/{version}', "LandingController::consumerTerms");
 Routes::get(Links::$policies->consumer->termsOfUse, "LandingController::consumerTerms");
+Routes::get(Links::$policies->merchant->privacy . '/{version}', "LandingController::merchantPrivacyPolicy");
 Routes::get(Links::$policies->merchant->privacy, "LandingController::merchantPrivacyPolicy");
+Routes::get(Links::$policies->merchant->termsOfUse . '/{version}', "LandingController::merchantTerms");
 Routes::get(Links::$policies->merchant->termsOfUse, "LandingController::merchantTerms");
+Routes::get(Links::$policies->cookies . '/{version}', "LandingController::cookiesPolicy");
+Routes::get(Links::$policies->cookies, "LandingController::cookiesPolicy");
+Routes::get("policies/cookies/{version}", "LandingController::cookiesPolicy");
+Routes::get("policies/cookies", "LandingController::cookiesPolicy");
 
 // FAQ pages
 Routes::get(Links::$faq->consumer, "LandingController::faqConsumer");
@@ -696,6 +713,14 @@ Routes::group(['requiresApiLogin', "admin", "api"], function() {
     Routes::post(Links::$api->admin->support->reopen, "admin.ApiController::supportReopen");
     Routes::post(Links::$api->admin->support->delete, "admin.ApiController::supportDelete");
 
+    // Policy Management API
+    Routes::post(Links::$api->admin->policies->list, "admin.ApiController::policiesList");
+    Routes::post(Links::$api->admin->policies->get, "admin.ApiController::policiesGet");
+    Routes::post(Links::$api->admin->policies->save, "admin.ApiController::policiesSave");
+    Routes::post(Links::$api->admin->policies->publish, "admin.ApiController::policiesPublish");
+    Routes::post(Links::$api->admin->policies->delete, "admin.ApiController::policiesDelete");
+    Routes::post(Links::$api->admin->policies->versions, "admin.ApiController::policiesVersions");
+
     // Cronjob Admin API
     Routes::post("api/admin/cronjobs/force-run", "api.CronjobController::forceRun");
     Routes::get("api/admin/cronjobs/logs", "api.CronjobController::getLogs");
@@ -746,6 +771,7 @@ Routes::group(['requiresApiLogout'], function() {
     Routes::post("cron/{token}/notification-queue", "api.CronjobController::notificationQueue");
     Routes::post("cron/{token}/rykker-checks", "api.CronjobController::rykkerChecks");
     Routes::post("cron/{token}/weekly-reports", "api.CronjobController::weeklyReports");
+    Routes::post("cron/{token}/policy-publish", "api.CronjobController::policyPublish");
 });
 /**
  *  =========================================

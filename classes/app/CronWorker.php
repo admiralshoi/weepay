@@ -72,6 +72,15 @@ class CronWorker extends Crud {
             "max_run_time" => (60 * 15), // 15 min max
             "sleep_timer" => 10 // 10 seconds for testing
         ),
+        "policy_publish" => array(
+            "log_file" => CRON_LOGS."cronLog_policy_publish.log",
+            "log_date_file" => CRON_LOGS."cronDate_policy_publish.log",
+            "log_memory_file" => CRON_LOGS."cronMemory_policy_publish.log",
+            "row_id" => 'crn_policy_publish',
+            "time_gab" => 60, // 1 minute between runs
+            "max_run_time" => (60 * 5), // 5 min max
+            "sleep_timer" => 30 // 30 seconds between cycles
+        ),
     );
 
     function __construct(string $type = "") {

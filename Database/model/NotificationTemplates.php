@@ -1121,8 +1121,8 @@ Med venlig hilsen,
 
 Vi har opdateret vores {{policy_name}}.
 
-ÆNDRINGSOVERSIGT
-----------------
+Gældende fra: {{effective_date}}
+
 {{update_summary}}
 
 Du kan læse den fulde version her: {{policy_link}}
@@ -1137,8 +1137,8 @@ Med venlig hilsen,
 <p>Vi har opdateret vores <strong>{{policy_name}}</strong>.</p>
 
 <div style="background: #e3f2fd; padding: 20px; border-radius: 8px; margin: 20px 0;">
-    <h3 style="margin: 0 0 15px 0; color: #1976d2; font-size: 16px;">Ændringsoversigt</h3>
-    <p style="margin: 0; color: #555; white-space: pre-wrap;">{{update_summary}}</p>
+    <p style="margin: 0 0 10px 0; color: #1976d2; font-weight: bold;">Gældende fra: {{effective_date}}</p>
+    <p style="margin: 0; color: #555;">{{update_summary}}</p>
 </div>
 
 <p style="text-align: center; margin: 25px 0;">
@@ -1148,6 +1148,18 @@ Med venlig hilsen,
 <p>Har du spørgsmål, er du velkommen til at kontakte os på <a href="mailto:{{brand.email}}">{{brand.email}}</a></p>
 {{template.email_content_end}}
 {{template.email_footer}}',
+            "status" => "active",
+            "created_by" => null,
+        ],
+        [
+            "uid" => "ntpl_policy_update_bell",
+            "name" => "Politikopdatering (bell)",
+            "slug" => "policy_update_bell",
+            "type" => "bell",
+            "category" => "template",
+            "subject" => "{{policy_name}} opdateret",
+            "content" => "Vores {{policy_name}} træder i kraft {{effective_date}}. Klik for at læse den nye version.",
+            "html_content" => null,
             "status" => "active",
             "created_by" => null,
         ],

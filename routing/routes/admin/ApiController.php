@@ -2716,4 +2716,228 @@ class ApiController {
         Response()->jsonSuccess('Henvendelse slettet');
     }
 
+    // =====================================================
+    // POLICY MANAGEMENT API
+    // =====================================================
+
+    /**
+     * Get all policy summaries for admin overview
+     */
+    #[NoReturn] public static function policiesList(array $args): void {
+        $summaries = Methods::policyTypes()->getAllWithStatus();
+        Response()->jsonSuccess('', ['policies' => $summaries]);
+    }
+
+    /**
+     * Get a specific policy or create draft for editing
+     */
+    #[NoReturn] public static function policiesGet(array $args): void {
+        $type = $args['type'] ?? null;
+        $uid = $args['uid'] ?? null;
+
+        // If UID provided, get that specific policy version
+        if (!isEmpty($uid)) {
+            $policy = Methods::policyVersions()->get($uid);
+            if (isEmpty($policy)) {
+                Response()->jsonError('Politik ikke fundet', [], 404);
+            }
+
+            // Get type from policy_type FK
+            $policyType = is_object($policy->policy_type) ? $policy->policy_type->type : str_replace('pt_', '', $policy->policy_type);
+
+            Response()->jsonSuccess('', [
+                'policy' => [
+                    'uid' => $policy->uid,
+                    'type' => $policyType,
+                    'title' => $policy->title,
+                    'content' => $policy->content,
+                    'status' => $policy->status,
+                    'version' => $policy->version,
+                    'active_from' => $policy->active_from,
+                    'published_at' => $policy->published_at,
+                ]
+            ]);
+        }
+
+        // If type provided, get or create draft for editing
+        if (!isEmpty($type)) {
+            $draft = Methods::policyVersions()->getOrCreateDraft($type, __uuid());
+            if (isEmpty($draft)) {
+                Response()->jsonError('Kunne ikke oprette kladde', [], 500);
+            }
+
+            // Check if this is a scheduled version
+            $typeUid = Methods::policyTypes()->getUidForType($type);
+            $policyType = Methods::policyTypes()->excludeForeignKeys()->get($typeUid);
+            $isScheduled = !isEmpty($policyType) && $policyType->scheduled_version === $draft->uid;
+            $scheduledAt = $isScheduled ? $policyType->scheduled_at : null;
+
+            Response()->jsonSuccess('', [
+                'policy' => [
+                    'uid' => $draft->uid,
+                    'type' => $type,
+                    'title' => $draft->title,
+                    'content' => $draft->content,
+                    'status' => $draft->status,
+                    'version' => $draft->version,
+                    'active_from' => $draft->active_from,
+                    'published_at' => $draft->published_at,
+                    'is_scheduled' => $isScheduled,
+                    'scheduled_at' => $scheduledAt,
+                ]
+            ]);
+        }
+
+        Response()->jsonError('Angiv type eller uid', [], 400);
+    }
+
+    /**
+     * Save/update a draft policy
+     */
+    #[NoReturn] public static function policiesSave(array $args): void {
+        $uid = $args['uid'] ?? null;
+        $title = trim($args['title'] ?? '');
+        $content = $args['content'] ?? '';
+
+        if (isEmpty($uid)) {
+            Response()->jsonError('Politik UID mangler', [], 400);
+        }
+
+        if (isEmpty($title)) {
+            Response()->jsonError('Titel er påkrævet', [], 400);
+        }
+
+        $updated = Methods::policyVersions()->updateDraft($uid, [
+            'title' => $title,
+            'content' => $content,
+        ], __uuid());
+
+        if (!$updated) {
+            Response()->jsonError('Kunne ikke gemme kladde. Kun kladder kan redigeres.', [], 400);
+        }
+
+        // Return updated policy
+        $policy = Methods::policyVersions()->get($uid);
+        Response()->jsonSuccess('Kladde gemt', [
+            'policy' => [
+                'uid' => $policy->uid,
+                'title' => $policy->title,
+                'content' => $policy->content,
+                'status' => $policy->status,
+                'version' => $policy->version,
+                'updated_at' => $policy->updated_at,
+            ]
+        ]);
+    }
+
+    /**
+     * Publish a policy (immediate or scheduled)
+     */
+    #[NoReturn] public static function policiesPublish(array $args): void {
+        $uid = $args['uid'] ?? null;
+        $startsAt = $args['starts_at'] ?? null;
+        $notify = (bool)($args['notify'] ?? false);
+        $recipientTypes = $args['recipient_types'] ?? [];
+
+        if (isEmpty($uid)) {
+            Response()->jsonError('Politik UID mangler', [], 400);
+        }
+
+        // Validate starts_at if provided
+        if (!isEmpty($startsAt)) {
+            $timestamp = strtotime($startsAt);
+            if ($timestamp === false) {
+                Response()->jsonError('Ugyldig startdato', [], 400);
+            }
+        }
+
+        // Determine if immediate or scheduled publish
+        $isScheduled = !isEmpty($startsAt) && strtotime($startsAt) > time();
+
+        if ($isScheduled) {
+            // Schedule for future - notifications sent immediately with scheduled date
+            $success = Methods::policyVersions()->schedulePublish($uid, $startsAt, __uuid(), $notify, $recipientTypes);
+            $message = 'Politik planlagt til publicering';
+        } else {
+            // Publish immediately
+            $success = Methods::policyVersions()->publishImmediate($uid, __uuid(), $notify, $recipientTypes);
+            $message = 'Politik publiceret';
+        }
+
+        if (!$success) {
+            Response()->jsonError('Kunne ikke publicere politik. Kun kladder kan publiceres.', [], 400);
+        }
+
+        // Return the updated policy
+        $policy = Methods::policyVersions()->get($uid);
+        Response()->jsonSuccess($message, [
+            'policy' => [
+                'uid' => $policy->uid,
+                'title' => $policy->title,
+                'content' => $policy->content,
+                'status' => $policy->status,
+                'version' => $policy->version,
+                'active_from' => $policy->active_from,
+                'published_at' => $policy->published_at,
+                'is_scheduled' => false,
+                'scheduled_at' => null,
+            ]
+        ]);
+    }
+
+    /**
+     * Delete a draft policy
+     */
+    #[NoReturn] public static function policiesDelete(array $args): void {
+        $uid = $args['uid'] ?? null;
+
+        if (isEmpty($uid)) {
+            Response()->jsonError('Politik UID mangler', [], 400);
+        }
+
+        $success = Methods::policyVersions()->deleteDraft($uid);
+
+        if (!$success) {
+            Response()->jsonError('Kunne ikke slette politik. Kun kladder kan slettes.', [], 400);
+        }
+
+        Response()->jsonSuccess('Kladde slettet');
+    }
+
+    /**
+     * Get version history for a policy type
+     */
+    #[NoReturn] public static function policiesVersions(array $args): void {
+        $type = $args['type'] ?? null;
+        $changelogUid = $args['changelog_uid'] ?? null;
+
+        if (isEmpty($type) && isEmpty($changelogUid)) {
+            Response()->jsonError('Politik type eller changelog_uid mangler', [], 400);
+        }
+
+        // If changelog_uid provided, get that specific change log entry with snapshot
+        if (!isEmpty($changelogUid)) {
+            $changelog = Methods::policyChangeLogs()->get($changelogUid);
+            if (isEmpty($changelog)) {
+                Response()->jsonError('Changelog ikke fundet', [], 404);
+            }
+
+            Response()->jsonSuccess('', [
+                'changelog' => [
+                    'uid' => $changelog->uid,
+                    'title_snapshot' => $changelog->title_snapshot,
+                    'content_snapshot' => $changelog->content_snapshot,
+                    'version_snapshot' => $changelog->version_snapshot,
+                    'change_type' => $changelog->change_type,
+                    'created_at' => $changelog->created_at,
+                ]
+            ]);
+        }
+
+        // Get change log history for the type
+        $typeUid = Methods::policyTypes()->getUidForType($type);
+        $history = Methods::policyChangeLogs()->getTypeHistory($typeUid);
+        Response()->jsonSuccess('', ['versions' => $history]);
+    }
+
 }

@@ -604,6 +604,64 @@ class CronRequestHandler {
 
 
     /**
+     * Publish scheduled policies
+     * Checks PolicyTypes where scheduled_at <= NOW and swaps pointers
+     */
+    public function policyPublish(?CronWorker $worker = null): void {
+        $worker?->log("Running policyPublish...");
+
+        $stats = [
+            'checked' => 0,
+            'published' => 0,
+            'archived' => 0,
+            'errors' => 0,
+        ];
+
+        // Find policy types with scheduled versions ready to publish
+        $readyToPublish = Methods::policyTypes()->getReadyToPublish();
+
+        if ($readyToPublish && $readyToPublish->count() > 0) {
+            $worker?->log("Found {$readyToPublish->count()} scheduled policy types ready to publish.");
+
+            foreach ($readyToPublish->list() as $policyType) {
+                $stats['checked']++;
+
+                try {
+                    $worker?->log("Processing policy type {$policyType->uid} (scheduled_at: {$policyType->scheduled_at})");
+
+                    // Execute the atomic pointer swap
+                    $success = Methods::policyTypes()->executeScheduledPublish($policyType);
+
+                    if ($success) {
+                        $stats['published']++;
+                        if (!isEmpty($policyType->current_version)) {
+                            $stats['archived']++;
+                            $worker?->log("  - Archived previous version, swapped pointer");
+                        }
+                        $worker?->log("  - Published scheduled version for {$policyType->uid}");
+                    } else {
+                        $stats['errors']++;
+                        $worker?->log("  - ERROR: Failed to execute pointer swap");
+                    }
+
+                } catch (\Exception $e) {
+                    $stats['errors']++;
+                    $worker?->log("  - ERROR: " . $e->getMessage());
+                    debugLog([
+                        'policy_type_uid' => $policyType->uid,
+                        'error' => $e->getMessage(),
+                    ], 'POLICY_PUBLISH_CRON_ERROR');
+                }
+            }
+        } else {
+            $worker?->log("No scheduled policies ready to publish.");
+        }
+
+        $worker?->log("policyPublish completed. Checked: {$stats['checked']}, Published: {$stats['published']}, Archived: {$stats['archived']}, Errors: {$stats['errors']}");
+    }
+
+
+    /**
      * Retry failed PAST_DUE payments
      * Attempts to charge payments that have failed previously, including rykker fees
      * Similar to consumer payNow but automated via cronjob
