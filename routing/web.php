@@ -181,6 +181,12 @@ Routes::group(['api','requiresApiLogin'], function() {
     // Password change API - available to all logged-in users
     Routes::post(Links::$api->auth->changePassword, "auth.ApiController::changePassword");
 
+    // Bell notifications API - available to all logged-in users (admin, merchant, consumer)
+    Routes::post(Links::$api->user->notificationsList, "UserApiController::notificationsList");
+    Routes::post(Links::$api->user->notificationsMarkRead, "UserApiController::notificationsMarkRead");
+    Routes::post(Links::$api->user->notificationsMarkAllRead, "UserApiController::notificationsMarkAllRead");
+    Routes::get(Links::$api->user->notificationsUnreadCount, "UserApiController::notificationsUnreadCount");
+
     // Common user settings API (for both merchants and consumers)
     Routes::group(['merchantOrConsumer'], function() {
         Routes::post(Links::$api->user->updateProfile, "UserApiController::updateProfile");

@@ -178,6 +178,21 @@ class NotificationService {
         $referenceType = $context['reference_type'] ?? null;
         $recipientUid = $recipientData['uid'] ?? null;
 
+        // Generate hash for logging
+        $dedupHash = \classes\notifications\NotificationLogHandler::generateDedupHash(
+            $flow->uid, $recipientUid, $action->channel, $referenceId, $referenceType
+        );
+
+        debugLog([
+            'action' => 'dedup_check',
+            'flow_uid' => $flow->uid,
+            'recipient_uid' => $recipientUid,
+            'channel' => $action->channel,
+            'reference_id' => $referenceId,
+            'reference_type' => $referenceType,
+            'dedup_hash' => $dedupHash,
+        ], 'notification-dedup');
+
         if (Methods::notificationLogs()->alreadySent(
             $flow->uid,
             $recipientUid,
@@ -185,6 +200,16 @@ class NotificationService {
             $referenceId,
             $referenceType
         )) {
+            debugLog([
+                'action' => 'dedup_blocked',
+                'flow_uid' => $flow->uid,
+                'recipient_uid' => $recipientUid,
+                'channel' => $action->channel,
+                'reference_id' => $referenceId,
+                'reference_type' => $referenceType,
+                'dedup_hash' => $dedupHash,
+            ], 'notification-dedup');
+
             self::debug("SKIP: Duplicate notification already sent", [
                 'flow_uid' => $flow->uid,
                 'recipient' => $recipientUid,
@@ -856,6 +881,10 @@ class NotificationService {
                     self::debug("Custom recipient from flow", ['email' => $flow->recipient_email]);
                 }
                 break;
+
+            case 'admin':
+                $recipient = self::resolveAdminRecipient($context);
+                break;
         }
 
         // Direct recipient override from context (legacy support)
@@ -1007,6 +1036,31 @@ class NotificationService {
                     $recipient['full_name'] = $user->full_name;
                 }
             }
+        }
+
+        return $recipient;
+    }
+
+    /**
+     * Resolve admin recipient from context
+     * Returns the first active admin user (access_level 8 or 9)
+     */
+    private static function resolveAdminRecipient(array $context): array {
+        $recipient = [];
+
+        // Find first active admin user
+        $admin = Users::where('access_level', '>=', 8)
+            ->order('access_level', 'DESC')
+            ->first();
+
+        if ($admin) {
+            $recipient['uid'] = $admin->uid;
+            $recipient['email'] = $admin->email;
+            $recipient['phone'] = $admin->phone ?? null;
+            $recipient['full_name'] = $admin->full_name ?? 'Admin';
+            self::debug("Admin recipient resolved", ['uid' => $admin->uid, 'email' => $admin->email]);
+        } else {
+            self::debug("No admin user found for recipient");
         }
 
         return $recipient;

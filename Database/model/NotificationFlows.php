@@ -17,7 +17,7 @@ class NotificationFlows extends \Database\Model {
         "ends_at" => ["type" => "bigInteger", "nullable" => true, "default" => null],
         "conditions" => ["type" => "text", "nullable" => true, "default" => null],
         "schedule_offset_days" => ["type" => "integer", "default" => 0],
-        "recipient_type" => ["type" => "enum", "values" => ["user", "organisation", "location", "organisation_owner", "custom"], "default" => "user"],
+        "recipient_type" => ["type" => "enum", "values" => ["user", "organisation", "location", "organisation_owner", "custom", "admin"], "default" => "user"],
         "recipient_email" => ["type" => "string", "nullable" => true, "default" => null],
         "created_by" => ["type" => "string", "nullable" => true, "default" => null],
     ];
@@ -462,7 +462,7 @@ class NotificationFlows extends \Database\Model {
             "ends_at" => null,
             "conditions" => null,
             "schedule_offset_days" => 0,
-            "recipient_type" => "custom",
+            "recipient_type" => "admin",
             "recipient_email" => null,
             "created_by" => null,
         ],

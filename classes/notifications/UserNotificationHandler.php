@@ -32,14 +32,14 @@ class UserNotificationHandler extends Crud {
     public function markAsRead(string $uid): bool {
         return $this->update([
             'is_read' => 1,
-            'read_at' => time()
+            'read_at' => date('Y-m-d H:i:s')
         ], ['uid' => $uid]);
     }
 
     public function markAllAsRead(string $userUid): bool {
         return $this->update([
             'is_read' => 1,
-            'read_at' => time()
+            'read_at' => date('Y-m-d H:i:s')
         ], ['user' => $userUid, 'is_read' => 0]);
     }
 
@@ -83,5 +83,36 @@ class UserNotificationHandler extends Crud {
         $query->delete();
 
         return $count;
+    }
+
+    /**
+     * Get paginated notifications for a user
+     * Unread notifications appear first, then ordered by created_at DESC
+     */
+    public function getPaginated(string $userUid, int $perPage = 15, ?string $cursor = null): array {
+        $query = $this->queryBuilder()
+            ->where('user', $userUid)
+            ->order('is_read', 'ASC')  // Unread (0) first
+            ->order('created_at', 'DESC');
+
+        // Get total count and unread count for first page
+        $meta = [];
+        if (empty($cursor)) {
+            $countQuery = $this->queryBuilder()->where('user', $userUid);
+            $meta['total_count'] = $countQuery->count();
+            $meta['unread_count'] = $this->countUnread($userUid);
+        }
+
+        // Apply cursor for pagination
+        if (!empty($cursor)) {
+            $query->setPaginationCursor($cursor);
+        }
+
+        $items = $query->paginate($perPage);
+
+        return [
+            'items' => $items,
+            'meta' => $meta,
+        ];
     }
 }

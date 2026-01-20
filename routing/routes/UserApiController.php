@@ -298,4 +298,81 @@ class UserApiController {
 
         Response()->jsonError('Kunne ikke opdatere 2FA indstillinger', [], 500);
     }
+
+    // =====================================================
+    // BELL NOTIFICATIONS
+    // =====================================================
+
+    /**
+     * Get paginated notifications for current user
+     * Supports infinite scroll with cursor-based pagination
+     */
+    #[NoReturn] public static function notificationsList(array $args): void {
+        $cursor = $args['cursor'] ?? null;
+        $perPage = isset($args['per_page']) ? (int)$args['per_page'] : 15;
+        $perPage = max(1, min(50, $perPage)); // Limit between 1 and 50
+
+        $result = Methods::userNotifications()->getPaginated(__uuid(), $perPage, $cursor);
+        $items = $result['items'];
+        $meta = $result['meta'];
+
+        // Transform items for API response
+        $notifications = $items->map(function($notification) {
+            return [
+                'uid' => $notification['uid'],
+                'title' => $notification['title'],
+                'content' => $notification['content'],
+                'type' => $notification['type'],
+                'icon' => $notification['icon'],
+                'link' => $notification['link'],
+                'is_read' => (int)$notification['is_read'],
+                'created_at' => $notification['created_at'],
+                'time_ago' => \classes\utility\Numbers::timeAgo(strtotime($notification['created_at'])),
+            ];
+        });
+
+        Response()->jsonSuccess('', $notifications->apiPaginationResponse($meta));
+    }
+
+    /**
+     * Mark a single notification as read
+     */
+    #[NoReturn] public static function notificationsMarkRead(array $args): void {
+        $uid = $args['uid'] ?? null;
+
+        if (isEmpty($uid)) {
+            Response()->jsonError('Notification ID mangler', [], 400);
+        }
+
+        // Verify notification belongs to current user
+        $notification = Methods::userNotifications()->get($uid);
+        if (isEmpty($notification)) {
+            Response()->jsonError('Notifikation ikke fundet', [], 404);
+        }
+
+        // Handle foreign key - user might be object or string
+        $notificationUserUid = is_object($notification->user) ? $notification->user->uid : $notification->user;
+        if ($notificationUserUid !== __uuid()) {
+            Response()->jsonError('Adgang nægtet', [], 403);
+        }
+
+        Methods::userNotifications()->markAsRead($uid);
+        Response()->jsonSuccess('Notifikation markeret som læst');
+    }
+
+    /**
+     * Mark all notifications as read for current user
+     */
+    #[NoReturn] public static function notificationsMarkAllRead(array $args): void {
+        Methods::userNotifications()->markAllAsRead(__uuid());
+        Response()->jsonSuccess('Alle notifikationer markeret som læst');
+    }
+
+    /**
+     * Get unread notification count for current user
+     */
+    #[NoReturn] public static function notificationsUnreadCount(array $args): void {
+        $count = Methods::userNotifications()->countUnread(__uuid());
+        Response()->jsonSuccess('', ['unread_count' => $count]);
+    }
 }

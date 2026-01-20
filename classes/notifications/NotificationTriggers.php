@@ -1238,6 +1238,9 @@ class NotificationTriggers {
             'user' => $userData,
             'support_link' => $supportLink,
             'app' => self::getAppContext(),
+            // Use ticket UID for deduplication - allows one notification per ticket
+            'reference_id' => $ticketData['uid'] ?? null,
+            'reference_type' => 'support_ticket',
         ]);
     }
 
@@ -1255,6 +1258,13 @@ class NotificationTriggers {
             ? __url(Links::$merchant->support)
             : __url(Links::$consumer->support);
 
+        debugLog([
+            'trigger' => 'supportTicketReplied',
+            'ticket_uid' => $ticketData['uid'] ?? null,
+            'user_uid' => $userData['uid'] ?? null,
+            'reply_uid' => $replyData['uid'] ?? null,
+        ], 'notification-trigger');
+
         return NotificationService::trigger('support.ticket_replied', [
             'ticket' => $ticketData,
             'user' => $userData,
@@ -1262,6 +1272,9 @@ class NotificationTriggers {
             'support_link' => $supportLink,
             'app' => self::getAppContext(),
             'email_title' => 'Svar på din henvendelse',
+            // Use reply UID for deduplication - allows one notification per reply
+            'reference_id' => $replyData['uid'] ?? null,
+            'reference_type' => 'support_reply',
         ]);
     }
 }

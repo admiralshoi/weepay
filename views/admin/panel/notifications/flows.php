@@ -17,6 +17,7 @@ $categoryLabels = [
     'order' => 'Ordre',
     'payment' => 'Betaling',
     'organisation' => 'Virksomhed',
+    'support' => 'Support',
     'system' => 'System',
 ];
 
@@ -25,10 +26,11 @@ $categoryIcons = [
     'order' => 'mdi-cart',
     'payment' => 'mdi-credit-card',
     'organisation' => 'mdi-office-building',
+    'support' => 'mdi-lifebuoy',
     'system' => 'mdi-cog',
 ];
 
-$categoryOrder = ['user', 'order', 'payment', 'organisation', 'system'];
+$categoryOrder = ['user', 'order', 'payment', 'organisation', 'support', 'system'];
 
 // Build breakpoint lookup map (uid => category)
 $breakpointCategories = [];

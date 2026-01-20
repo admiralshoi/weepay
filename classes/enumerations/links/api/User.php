@@ -11,4 +11,10 @@ class User {
     public string $updateTwoFactor = "api/user/update-two-factor";
     public string $verifyPhone = "api/user/verify-phone";
 
+    // Bell notifications
+    public string $notificationsList = "api/user/notifications/list";
+    public string $notificationsMarkRead = "api/user/notifications/mark-read";
+    public string $notificationsMarkAllRead = "api/user/notifications/mark-all-read";
+    public string $notificationsUnreadCount = "api/user/notifications/unread-count";
+
 }
