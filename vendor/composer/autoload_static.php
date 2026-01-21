@@ -7,6 +7,10 @@ namespace Composer\Autoload;
 class ComposerStaticInitd3122854e9092980227b6518a7be4ba3
 {
     public static $prefixLengthsPsr4 = array (
+        's' =>
+        array (
+            'setasign\\Fpdi\\' => 14,
+        ),
         'S' =>
         array (
             'Svg\\' => 4,
@@ -36,6 +40,10 @@ class ComposerStaticInitd3122854e9092980227b6518a7be4ba3
     );
 
     public static $prefixDirsPsr4 = array (
+        'setasign\\Fpdi\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/setasign/fpdi/src',
+        ),
         'Svg\\' =>
         array (
             0 => __DIR__ . '/..' . '/dompdf/php-svg-lib/src/Svg',
@@ -73,6 +81,7 @@ class ComposerStaticInitd3122854e9092980227b6518a7be4ba3
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Dompdf\\Cpdf' => __DIR__ . '/..' . '/dompdf/dompdf/lib/Cpdf.php',
+        'FPDF' => __DIR__ . '/..' . '/setasign/fpdf/fpdf.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

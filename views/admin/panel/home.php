@@ -7,14 +7,16 @@
 use classes\enumerations\Links;
 use classes\lang\Translate;
 
+
 $pageTitle = "Panel";
+
 ?>
 <script>
     var pageTitle = <?=json_encode($pageTitle)?>;
     activePage = "panel-home";
 </script>
 
-<div class="page-content py-3">
+<div class="page-content py-3 ">
     <div class="page-inner-content">
         <div class="flex-col-start" style="row-gap: 1.5rem;">
 
@@ -170,7 +172,7 @@ $pageTitle = "Panel";
                     <a href="<?=__url(Links::$admin->panelMaintenance)?>" class="card border-radius-10px h-100 hover-shadow-card" style="text-decoration: none;">
                         <div class="card-body">
                             <div class="flex-row-start flex-align-center" style="gap: 1rem;">
-                                <div class="square-50 bg-warning border-radius-10px flex-row-center-center">
+                                <div class="square-50 bg-pee-yellow border-radius-10px flex-row-center-center">
                                     <i class="mdi mdi-tools color-white font-24"></i>
                                 </div>
                                 <div class="flex-col-start">

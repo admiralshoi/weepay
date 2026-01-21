@@ -78,9 +78,6 @@ if ($archivedDate) {
         padding: 3rem 1.5rem;
     }
     .policy-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
         margin-bottom: 2rem;
         padding-bottom: 1.5rem;
         border-bottom: 2px solid #e9ecef;
@@ -90,16 +87,26 @@ if ($archivedDate) {
         font-weight: bold;
         margin: 0;
         color: #1a1a1a;
+        flex-shrink: 0;
+    }
+    @media (max-width: 576px) {
+        .policy-header h1 {
+            width: 100%;
+        }
     }
     .policy-header .policy-updated {
         text-align: right;
         font-size: 0.85rem;
         color: #6c757d;
-        white-space: nowrap;
-        margin-left: 1.5rem;
         display: flex;
         flex-direction: column;
         gap: 0.25rem;
+    }
+    @media (max-width: 576px) {
+        .policy-header .policy-updated {
+            text-align: left;
+            width: 100%;
+        }
     }
     .policy-header .policy-updated span {
         display: block;
@@ -232,20 +239,20 @@ if ($archivedDate) {
 <div class="page-content">
     <div class="policy-container my-5">
         <?php if ($hasPolicy): ?>
-            <div class="policy-header">
+            <div class="policy-header flex-row-between flex-wrap g-1">
                 <h1><?=$pageTitle?></h1>
                 <?php if ($updatedDate || $publishedDate || $scheduledDate): ?>
                     <div class="policy-updated">
                         <?php if ($updatedDate): ?>
-                            <span>Senest opdateret: <strong><?=$updatedDate?></strong></span>
+                            <span class="text-nowrap">Senest opdateret: <strong class="text-nowrap"><?=$updatedDate?></strong></span>
                         <?php endif; ?>
                         <?php if ($scheduledDate): ?>
-                            <span>Gældende fra: <strong><?=$scheduledDate?></strong></span>
+                            <span class="text-nowrap">Gældende fra: <strong class="text-nowrap"><?=$scheduledDate?></strong></span>
                         <?php elseif ($publishedDate): ?>
-                            <span>Gældende fra: <strong><?=$publishedDate?></strong></span>
+                            <span class="text-nowrap">Gældende fra: <strong class="text-nowrap"><?=$publishedDate?></strong></span>
                         <?php endif; ?>
                         <?php if ($archivedDate): ?>
-                            <span>Gældende til: <strong><?=$archivedDate?></strong></span>
+                            <span class="text-nowrap">Gældende til: <strong class="text-nowrap"><?=$archivedDate?></strong></span>
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>

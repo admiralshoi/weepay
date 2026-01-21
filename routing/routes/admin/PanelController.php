@@ -44,7 +44,28 @@ class PanelController {
     }
 
     public static function marketing(array $args): mixed {
+        $args['templates'] = Methods::marketingTemplates()->getAll();
+        $args['typeOptions'] = Methods::marketingTemplates()->getTypeOptions();
+        $args['statusOptions'] = Methods::marketingTemplates()->getStatusOptions();
         return Views("ADMIN_PANEL_MARKETING", $args);
+    }
+
+    public static function marketingTemplateEditor(array $args): mixed {
+        $templateId = $args['id'] ?? null;
+        if (isEmpty($templateId)) {
+            return ["return_as" => 404];
+        }
+
+        $template = Methods::marketingTemplates()->get($templateId);
+        if (isEmpty($template)) {
+            return ["return_as" => 404];
+        }
+
+        $args['template'] = $template;
+        $args['placeholders'] = Methods::marketingPlaceholders()->excludeForeignKeys()->getByTemplate($templateId);
+        $args['placeholderTypes'] = Methods::marketingPlaceholders()->getTypeOptions();
+
+        return Views("ADMIN_PANEL_MARKETING_TEMPLATE_EDITOR", $args);
     }
 
     public static function fees(array $args): mixed {

@@ -540,6 +540,9 @@ body#landing-page-body .landing-wrapper {
 .bg-mute { background-color: var(--color-mute) !important; }
 .bg-cyan { background-color: var(--cyan) !important; }
 .bg-purple { background-color: var(--purple) !important; }
+.bg-pink { background-color: var(--pink-vibrant) !important; }
+.bg-teal { background-color: var(--teal) !important; }
+.bg-indigo { background-color: var(--indigo) !important; }
 
 
 
@@ -3161,6 +3164,9 @@ input.form-field-v2:focus {
 .bg-mute { background-color: var(--color-mute) !important; }
 .bg-cyan { background-color: var(--cyan) !important; }
 .bg-purple { background-color: var(--purple) !important; }
+.bg-pink { background-color: var(--pink-vibrant) !important; }
+.bg-teal { background-color: var(--teal) !important; }
+.bg-indigo { background-color: var(--indigo) !important; }
 
 
 

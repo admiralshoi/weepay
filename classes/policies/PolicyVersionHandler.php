@@ -266,8 +266,16 @@ class PolicyVersionHandler extends Crud {
             return $existingDraft;
         }
 
-        // Get current published to copy from
+        // Get current published to copy from (via pointer)
         $current = Methods::policyTypes()->getCurrentVersion($type);
+
+        // If no pointer exists, check for any published version in the database (e.g., from seed data)
+        if (isEmpty($current)) {
+            $current = $this->getFirstOrderBy('version', 'DESC', [
+                'policy_type' => $typeUid,
+                'status' => 'published'
+            ]);
+        }
 
         if ($current) {
             // Create draft from current published

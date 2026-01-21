@@ -636,8 +636,36 @@ class Admin extends \routing\paths\Paths {
         "assets" => [
             "main" => null,
             "base" => null,
-            "vendor" => [],
-            "custom" => [],
+            "vendor" => [
+                "vendor.sweetalert.sweetalert2.min.css",
+                "vendor.sweetalert.sweetalert2.min.js",
+                "js.includes.SweetPrompt.js",
+            ],
+            "custom" => [
+                "js.admin-marketing.js",
+            ],
+        ],
+    ];
+
+    const ADMIN_PANEL_MARKETING_TEMPLATE_EDITOR = [
+        "template" => "ADMIN_HOME_INNER_HTML",
+        "view" => "admin.panel.marketing-template-editor",
+        "custom_scripts" => null,
+        "head" => null,
+        "title" => "Template Editor",
+        "assets" => [
+            "main" => null,
+            "base" => null,
+            "vendor" => [
+                "vendor.sweetalert.sweetalert2.min.css",
+                "vendor.sweetalert.sweetalert2.min.js",
+                "js.includes.SweetPrompt.js",
+                "vendor.pdfjs.pdf.min.js",
+            ],
+            "custom" => [
+                "js.admin-marketing-editor.js",
+                "css.marketing-editor.css",
+            ],
         ],
     ];
 

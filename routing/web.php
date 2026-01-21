@@ -572,6 +572,7 @@ Routes::group(['requiresLogin', "admin"], function() {
     Routes::get(ADMIN_PANEL_PATH, "admin.PanelController::home");
     Routes::get(Links::$admin->panelSettings, "admin.PanelController::settings");
     Routes::get(Links::$admin->panelMarketing, "admin.PanelController::marketing");
+    Routes::get(Links::$admin->panelMarketing . "/{id}/editor", "admin.PanelController::marketingTemplateEditor");
     Routes::get(Links::$admin->panelFees, "admin.PanelController::fees");
     Routes::get(Links::$admin->panelUsers, "admin.AdminController::users");
     Routes::get(Links::$admin->panelUsers . "/{role}", "admin.AdminController::users");
@@ -705,6 +706,13 @@ Routes::group(['requiresApiLogin', "admin", "api"], function() {
     Routes::post("api/admin/faqs/delete", "admin.ApiController::faqDelete");
     Routes::post("api/admin/faqs/toggle-active", "admin.ApiController::faqToggleActive");
     Routes::post("api/admin/faqs/reorder", "admin.ApiController::faqReorder");
+
+    // Marketing Templates API
+    Routes::post("api/admin/marketing/templates/upload", "admin.MarketingApiController::uploadTemplate");
+    Routes::post("api/admin/marketing/templates/update", "admin.MarketingApiController::updateTemplate");
+    Routes::post("api/admin/marketing/templates/delete", "admin.MarketingApiController::deleteTemplate");
+    Routes::post("api/admin/marketing/templates/placeholders/save", "admin.MarketingApiController::savePlaceholders");
+    Routes::get("api/admin/marketing/templates/{id}/pdf", "admin.MarketingApiController::getPdfFile");
 
     // Support Ticket System API
     Routes::post(Links::$api->admin->support->list, "admin.ApiController::supportList");

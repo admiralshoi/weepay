@@ -67,6 +67,12 @@ use classes\enumerations\Links;
                 <p class="mb-1 mt-3 px-3 font-11 text-uppercase color-gray font-weight-bold sidebar-section-title">Indhold</p>
 
                 <a class="sidebar-nav-link py-2 px-3 text-sm font-weight-medium m-0 flex-row-start flex-align-center"
+                   data-page="marketing" href="<?=__url(Links::$admin->panelMarketing)?>">
+                    <i class="mdi mdi-bullhorn-outline"></i>
+                    <p class="ml-3 sidebar-text">Marketing</p>
+                </a>
+
+                <a class="sidebar-nav-link py-2 px-3 text-sm font-weight-medium m-0 flex-row-start flex-align-center"
                    data-page="policies" href="<?=__url(Links::$admin->panelPolicies)?>">
                     <i class="mdi mdi-file-document-edit-outline"></i>
                     <p class="ml-3 sidebar-text">Politikker</p>
