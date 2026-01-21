@@ -1,6 +1,9 @@
 # Generated reports
 /content/reports/
 
+# User uploaded content
+/public/content/
+
 # IDE
 .idea/
 .vscode/

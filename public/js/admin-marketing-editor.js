@@ -18,6 +18,7 @@ let isDragging = false;
 let isResizing = false;
 let dragOffset = { x: 0, y: 0 };
 let resizeHandle = null;
+let justSelected = false; // Flag to prevent immediate deselection after selection
 
 // Canvas and container
 let canvas = null;
@@ -180,6 +181,7 @@ function createPlaceholderElement(placeholder) {
 
     // Event listeners
     el.addEventListener('mousedown', function(e) {
+        e.stopPropagation(); // Prevent event from bubbling to overlay
         if (e.target.classList.contains('resize-handle')) {
             startResize(e, placeholder);
         } else {
@@ -212,7 +214,7 @@ function addPlaceholder(type) {
         width: 15,
         height: type === 'location_name' ? 5 : 15,
         page_number: currentPage,
-        font_size: 12,
+        font_size: 30,
         font_color: '#000000'
     };
 
@@ -227,6 +229,10 @@ function addPlaceholder(type) {
 function selectPlaceholder(placeholder) {
     selectedPlaceholder = placeholder;
 
+    // Set flag to prevent immediate deselection (reset after a short delay)
+    justSelected = true;
+    setTimeout(function() { justSelected = false; }, 100);
+
     // Update visual selection
     var boxes = overlay.querySelectorAll('.placeholder-box');
     boxes.forEach(function(box) {
@@ -240,7 +246,13 @@ function selectPlaceholder(placeholder) {
     document.getElementById('placeholder-properties').style.display = 'block';
 
     // Update property values
-    document.getElementById('prop-type').value = placeholder.type;
+    var typeSelect = document.getElementById('prop-type');
+    typeSelect.value = placeholder.type;
+    // Refresh the custom select UI to show the correct value
+    if (typeof refreshSelectV2UI === 'function') {
+        refreshSelectV2UI(typeSelect);
+    }
+
     document.getElementById('prop-font-size').value = placeholder.font_size;
     document.getElementById('prop-font-color').value = placeholder.font_color;
 
@@ -465,6 +477,10 @@ function setupEventListeners() {
 
     // Click outside to deselect
     overlay.addEventListener('click', function(e) {
+        // Don't deselect if we just selected something (prevents race condition with re-rendered DOM)
+        if (justSelected) return;
+
+        // Only deselect when clicking directly on the overlay background
         if (e.target === overlay) {
             selectedPlaceholder = null;
             document.getElementById('placeholder-properties').style.display = 'none';

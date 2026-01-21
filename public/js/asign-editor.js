@@ -335,9 +335,16 @@ function loadExistingDesign(design) {
         setBackgroundFromUrl(design.background_image);
     }
 
-    // Set logo image if available
+    // Set logo image if available (but check if it's already in canvas_data)
     if (design.logo_image) {
-        setLogoFromUrl(design.logo_image, !!design.background_image);
+        const logoInCanvas = design.canvas_data?.objects?.find(obj => obj.elementType === 'logo');
+        if (logoInCanvas) {
+            // Logo position is in canvas_data, just need to set the image source
+            setLogoFromUrlWithPosition(design.logo_image, logoInCanvas.left, logoInCanvas.top, logoInCanvas.scaleX, logoInCanvas.scaleY, !!design.background_image);
+        } else {
+            // No position saved, use default
+            setLogoFromUrl(design.logo_image, !!design.background_image);
+        }
     }
 
     // Initialize bottom bar for design type
@@ -1022,8 +1029,9 @@ function setBackgroundFromUrl(url) {
 
         // Load pending logo after background is done
         if (pendingLogoUrl) {
-            loadLogoImage(pendingLogoUrl);
+            loadLogoImage(pendingLogoUrl, pendingLogoPosition);
             pendingLogoUrl = null;
+            pendingLogoPosition = null;
         }
     }, { crossOrigin: 'anonymous' });
 }
@@ -1308,6 +1316,7 @@ function setLogoFromUrl(url, hasBackground) {
     if (hasBackground) {
         // Store the URL, logo will be loaded after background
         pendingLogoUrl = url;
+        pendingLogoPosition = null; // Use default position
     } else {
         // No background, load logo directly
         loadLogoImage(url);
@@ -1315,22 +1324,48 @@ function setLogoFromUrl(url, hasBackground) {
 }
 
 /**
- * Actually load the logo image
+ * Set logo from URL with specific position (for loading saved designs)
  */
-function loadLogoImage(url) {
+function setLogoFromUrlWithPosition(url, left, top, scaleX, scaleY, hasBackground) {
+    if (hasBackground) {
+        pendingLogoUrl = url;
+        pendingLogoPosition = { left, top, scaleX, scaleY };
+    } else {
+        loadLogoImage(url, { left, top, scaleX, scaleY });
+    }
+}
+
+/**
+ * Actually load the logo image
+ * @param {string} url - Image URL
+ * @param {object|null} position - Optional position {left, top, scaleX, scaleY}
+ */
+function loadLogoImage(url, position = null) {
     const displayDims = getDisplayDimensions();
 
     fabric.Image.fromURL(url, function(img) {
-        const maxWidth = 100;
-        if (img.width > maxWidth) {
-            img.scaleToWidth(maxWidth);
-        }
+        if (position) {
+            // Use saved position
+            img.set({
+                left: position.left,
+                top: position.top,
+                scaleX: position.scaleX || img.scaleX,
+                scaleY: position.scaleY || img.scaleY,
+                elementType: 'logo',
+            });
+        } else {
+            // Use default position
+            const maxWidth = 100;
+            if (img.width > maxWidth) {
+                img.scaleToWidth(maxWidth);
+            }
 
-        img.set({
-            left: 20,
-            top: isDesignType ? displayDims.height * 0.85 + 10 : displayDims.height - 60,
-            elementType: 'logo',
-        });
+            img.set({
+                left: 20,
+                top: isDesignType ? displayDims.height * 0.85 + 10 : displayDims.height - 60,
+                elementType: 'logo',
+            });
+        }
 
         // Remove existing logo first
         const existingLogo = canvas.getObjects().find(obj => obj.elementType === 'logo');
@@ -1349,8 +1384,9 @@ function loadLogoImage(url) {
     }, { crossOrigin: 'anonymous' });
 }
 
-// Store pending logo URL to load after background
+// Store pending logo URL and position to load after background
 let pendingLogoUrl = null;
+let pendingLogoPosition = null;
 
 /**
  * Add badge element (Design type only)
@@ -1445,16 +1481,16 @@ function addBadgeAtPosition(badgeConfig) {
  * Add shape element (Arbitrary type only)
  */
 function addShape(type) {
-    const config = window.editorConfig;
+    const displayDims = getDisplayDimensions();
     let shape;
 
     if (type === 'rect') {
         shape = new fabric.Rect({
-            left: config.canvasWidth / 2 - 50,
-            top: config.canvasHeight / 2 - 30,
+            left: displayDims.width / 2 - 50,
+            top: displayDims.height / 2 - 30,
             width: 100,
             height: 60,
-            fill: 'rgba(100, 100, 100, 0.5)',
+            fill: '#646464',
             stroke: '#333333',
             strokeWidth: 1,
             rx: 4,
@@ -1464,10 +1500,10 @@ function addShape(type) {
         });
     } else if (type === 'circle') {
         shape = new fabric.Circle({
-            left: config.canvasWidth / 2 - 40,
-            top: config.canvasHeight / 2 - 40,
+            left: displayDims.width / 2 - 40,
+            top: displayDims.height / 2 - 40,
             radius: 40,
-            fill: 'rgba(100, 100, 100, 0.5)',
+            fill: '#646464',
             stroke: '#333333',
             strokeWidth: 1,
             elementType: 'shape',
@@ -1914,6 +1950,20 @@ function toggleUnderline() {
 }
 
 function buildShapeProperties(obj) {
+    // Border radius only applies to rectangles
+    const isRect = obj.shapeType === 'rect' || obj.type === 'rect';
+    const borderRadiusControl = isRect ? `
+        <div class="mb-3">
+            <label class="form-label font-13">Hjørneradius</label>
+            <div class="flex-row-center" style="gap: .5rem;">
+                <input type="range" class="form-range" style="flex: 1;" min="0" max="50" value="${obj.rx || 0}"
+                       oninput="updateShapeBorderRadius(this.value)">
+                <input type="number" class="form-field-v2" style="width: 60px;" value="${obj.rx || 0}" min="0" max="100"
+                       onchange="updateShapeBorderRadius(this.value)">
+            </div>
+        </div>
+    ` : '';
+
     return `
         <div class="mb-3">
             <label class="form-label font-13">Fyldfarve</label>
@@ -1925,6 +1975,7 @@ function buildShapeProperties(obj) {
             <input type="range" class="form-range w-100" min="0" max="1" step="0.1" value="${obj.opacity || 1}"
                    onchange="updateActiveProperty('opacity', parseFloat(this.value))">
         </div>
+        ${borderRadiusControl}
         <div class="mb-3">
             <label class="form-label font-13">Kantfarve</label>
             <input type="color" value="${obj.stroke || '#333333'}" style="width: 100%; height: 36px; border: 1px solid #ddd; border-radius: 6px;"
@@ -2118,6 +2169,20 @@ function updateActiveProperty(property, value) {
     const activeObject = canvas.getActiveObject();
     if (activeObject) {
         activeObject.set(property, value);
+        canvas.renderAll();
+        markUnsavedChanges();
+    }
+}
+
+/**
+ * Update border radius for rectangle shapes (rx and ry)
+ */
+function updateShapeBorderRadius(value) {
+    const activeObject = canvas.getActiveObject();
+    if (activeObject && (activeObject.shapeType === 'rect' || activeObject.type === 'rect')) {
+        const radius = parseInt(value) || 0;
+        activeObject.set('rx', radius);
+        activeObject.set('ry', radius);
         canvas.renderAll();
         markUnsavedChanges();
     }

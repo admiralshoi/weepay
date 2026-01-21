@@ -52,14 +52,16 @@ function renderTemplateCard($template) {
 
 // Helper function to render inspiration card
 function renderInspirationCard($item, $categoryLabels) {
-    $imageUrl = __url($item->image_path);
+    $fullImageUrl = __url($item->image_path);
+    // Use thumbnail for preview if available, fall back to full image
+    $previewUrl = !empty($item->thumbnail_path) ? __url($item->thumbnail_path) : $fullImageUrl;
     $categoryLabel = $categoryLabels->{$item->category} ?? $item->category;
     ?>
     <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4 inspiration-item" data-category="<?=$item->category?>">
         <div class="card h-100 border-radius-10px overflow-hidden cursor-pointer"
-             onclick="viewInspiration('<?=$imageUrl?>', '<?=addslashes($item->title)?>', '<?=addslashes($item->description ?? '')?>')">
+             onclick="viewInspiration('<?=$previewUrl?>', '<?=addslashes($item->title)?>', '<?=addslashes($item->description ?? '')?>')">
             <div class="card-img-top" style="height: 200px; overflow: hidden;">
-                <img src="<?=$imageUrl?>" alt="<?=$item->title?>"
+                <img src="<?=$previewUrl?>" alt="<?=$item->title?>"
                      style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <div class="card-body p-3">

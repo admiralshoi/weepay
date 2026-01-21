@@ -122,12 +122,15 @@ class MarketingPdfGenerator {
         $width = ($placeholder->width / 100) * $pageSize['width'];
         $height = ($placeholder->height / 100) * $pageSize['height'];
 
+        // Get scale factor for font size adjustment
+        $scale = $pageSize['scale'] ?? 1.0;
+
         switch ($placeholder->type) {
             case 'qr_code':
                 $this->overlayQrCode($pdf, $x, $y, $width, $height);
                 break;
             case 'location_name':
-                $this->overlayLocationName($pdf, $x, $y, $width, $height, $placeholder);
+                $this->overlayLocationName($pdf, $x, $y, $width, $height, $placeholder, $scale);
                 break;
             case 'location_logo':
                 $this->overlayLocationLogo($pdf, $x, $y, $width, $height);
@@ -172,14 +175,17 @@ class MarketingPdfGenerator {
     /**
      * Overlay location name text at specified position
      */
-    private function overlayLocationName(Fpdi $pdf, float $x, float $y, float $width, float $height, object $placeholder): void {
-        $fontSize = $placeholder->font_size ?? 12;
+    private function overlayLocationName(Fpdi $pdf, float $x, float $y, float $width, float $height, object $placeholder, float $scale = 1.0): void {
+        $fontSize = $placeholder->font_size ?? 30;
         $fontColor = $placeholder->font_color ?? '#000000';
+
+        // Scale font size if the output is being scaled (e.g., A1 template → A4 output)
+        $scaledFontSize = $fontSize * $scale;
 
         // Parse hex color to RGB
         $color = $this->hexToRgb($fontColor);
 
-        $pdf->SetFont('Helvetica', '', $fontSize);
+        $pdf->SetFont('Helvetica', '', $scaledFontSize);
         $pdf->SetTextColor($color['r'], $color['g'], $color['b']);
 
         // Position and render text
@@ -189,7 +195,7 @@ class MarketingPdfGenerator {
         $text = $this->location->name ?? '';
 
         // Center text vertically in the height
-        $textHeight = $fontSize * 0.352778; // Convert pt to mm (approximate)
+        $textHeight = $scaledFontSize * 0.352778; // Convert pt to mm (approximate)
         $yOffset = ($height - $textHeight) / 2;
 
         $pdf->SetXY($x, $y + $yOffset);

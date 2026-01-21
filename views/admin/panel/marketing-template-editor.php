@@ -142,7 +142,7 @@ if (!$template) {
                             <div id="text-properties">
                                 <div class="form-group">
                                     <label class="font-13 font-weight-bold d-block mb-2">Skriftstoerrelse</label>
-                                    <input type="number" class="form-field-v2 w-100" id="prop-font-size" value="12" min="6" max="72" onchange="updateSelectedPlaceholder()">
+                                    <input type="number" class="form-field-v2 w-100" id="prop-font-size" value="30" min="6" max="300" onchange="updateSelectedPlaceholder()">
                                 </div>
                                 <div class="form-group">
                                     <label class="font-13 font-weight-bold d-block mb-2">Farve</label>
