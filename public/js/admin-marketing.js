@@ -336,3 +336,135 @@ function deleteInspiration(uid, title) {
         refreshTimeout: 1000
     });
 }
+
+// =====================================================
+// A-SIGN PRELOAD BACKGROUND FUNCTIONS
+// =====================================================
+
+function openAsignPreloadUploadModal() {
+    $('#asignPreloadUploadForm')[0].reset();
+    $('#asignPreloadUploadModal').modal('show');
+}
+
+function uploadAsignPreload() {
+    var fileInput = document.getElementById('asignPreloadFile');
+    var title = document.getElementById('asignPreloadTitle').value.trim();
+    var description = document.getElementById('asignPreloadDescription').value.trim();
+
+    if (!fileInput.files.length) {
+        showErrorNotification('Fejl', 'Vælg venligst et billede');
+        return;
+    }
+
+    if (!title) {
+        showErrorNotification('Fejl', 'Indtast venligst en titel');
+        return;
+    }
+
+    var formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    formData.append('title', title);
+    formData.append('category', 'a_sign_preload'); // Fixed category for preloads
+    formData.append('description', description);
+    formData.append('_csrf', _csrf);
+
+    // Show loading state
+    var btn = document.getElementById('asignPreloadUploadBtn');
+    btn.querySelector('.btn-text').classList.add('d-none');
+    btn.querySelector('.spinner-border').classList.remove('d-none');
+    btn.disabled = true;
+
+    fetch(HOST + 'api/admin/marketing/inspiration/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success' || data.success) {
+            queueNotificationOnLoad('Succes', data.message || 'Baggrund uploadet', 'success');
+            window.location.reload();
+        } else {
+            showErrorNotification('Fejl', data.error?.message || 'Kunne ikke uploade baggrund');
+            btn.querySelector('.btn-text').classList.remove('d-none');
+            btn.querySelector('.spinner-border').classList.add('d-none');
+            btn.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Upload error:', error);
+        showErrorNotification('Fejl', 'Der opstod en fejl under upload');
+        btn.querySelector('.btn-text').classList.remove('d-none');
+        btn.querySelector('.spinner-border').classList.add('d-none');
+        btn.disabled = false;
+    });
+}
+
+function editAsignPreload(uid, title, description, status) {
+    document.getElementById('asignPreloadEditUid').value = uid;
+    document.getElementById('asignPreloadEditTitle').value = title;
+    document.getElementById('asignPreloadEditDescription').value = description || '';
+    document.getElementById('asignPreloadEditStatus').value = status;
+    $('#asignPreloadEditModal').modal('show');
+}
+
+function saveAsignPreloadChanges() {
+    var uid = document.getElementById('asignPreloadEditUid').value;
+    var title = document.getElementById('asignPreloadEditTitle').value.trim();
+    var description = document.getElementById('asignPreloadEditDescription').value.trim();
+    var status = document.getElementById('asignPreloadEditStatus').value;
+
+    if (!title) {
+        showErrorNotification('Fejl', 'Indtast venligst en titel');
+        return;
+    }
+
+    var btn = document.getElementById('asignPreloadSaveBtn');
+    btn.querySelector('.btn-text').classList.add('d-none');
+    btn.querySelector('.spinner-border').classList.remove('d-none');
+    btn.disabled = true;
+
+    post('api/admin/marketing/inspiration/update', {
+        uid: uid,
+        title: title,
+        category: 'a_sign_preload', // Keep category fixed
+        description: description,
+        status: status
+    }).then(data => {
+        if (data.status === 'success' || data.success) {
+            queueNotificationOnLoad('Succes', data.message || 'Baggrund opdateret', 'success');
+            window.location.reload();
+        } else {
+            showErrorNotification('Fejl', data.error?.message || 'Kunne ikke opdatere baggrund');
+            btn.querySelector('.btn-text').classList.remove('d-none');
+            btn.querySelector('.spinner-border').classList.add('d-none');
+            btn.disabled = false;
+        }
+    }).catch(error => {
+        console.error('Update error:', error);
+        showErrorNotification('Fejl', 'Der opstod en fejl');
+        btn.querySelector('.btn-text').classList.remove('d-none');
+        btn.querySelector('.spinner-border').classList.add('d-none');
+        btn.disabled = false;
+    });
+}
+
+function deleteAsignPreload(uid, title) {
+    SweetPrompt.confirm('Slet baggrund', 'Er du sikker på du vil slette "' + title + '"? Dette kan ikke fortrydes.', {
+        confirmButtonText: 'Ja, slet',
+        onConfirm: async () => {
+            const data = await post('api/admin/marketing/inspiration/delete', {
+                uid: uid
+            });
+            if (data.status === 'success' || data.success) {
+                queueNotificationOnLoad('Succes', 'Baggrund slettet', 'success');
+            } else {
+                showErrorNotification('Fejl', data.error?.message || 'Kunne ikke slette baggrund');
+            }
+            return {
+                status: (data.status === 'success' || data.success) ? 'success' : 'error',
+                error: data.error?.message || 'Kunne ikke slette baggrund'
+            };
+        },
+        refreshTimeout: 1000
+    });
+}

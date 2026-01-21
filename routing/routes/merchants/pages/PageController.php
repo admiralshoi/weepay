@@ -940,9 +940,12 @@ class PageController {
         // Also get legacy a_sign category
         $legacyInspirations = $inspirationHandler->getActive('a_sign');
 
+        // Get preload backgrounds (admin-uploaded stock backgrounds)
+        $preloads = $inspirationHandler->getActive('a_sign_preload');
+
         return Views("MERCHANT_ASIGN_EDITOR", compact(
             'locations', 'design', 'isNew', 'typeOptions',
-            'designInspirations', 'arbitraryInspirations', 'legacyInspirations'
+            'designInspirations', 'arbitraryInspirations', 'legacyInspirations', 'preloads'
         ));
     }
 

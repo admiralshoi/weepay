@@ -268,6 +268,7 @@ Routes::group(['api','requiresApiLogin'], function() {
         Routes::post("api/merchant/asign/upload-preview", "merchants.ASignApiController::uploadPreview");
         Routes::get("api/merchant/asign/generate-qr", "merchants.ASignApiController::generateQr");
         Routes::get("api/merchant/asign/inspiration", "merchants.ASignApiController::getInspiration");
+        Routes::get("api/merchant/asign/preloads", "merchants.ASignApiController::getPreloads");
         Routes::post(Links::$api->orders->customers->list, "merchants.CustomersApiController::getCustomers");
 
         Routes::post(Links::$api->forms->createOrganisation, "merchants.ApiController::createOrganisation");

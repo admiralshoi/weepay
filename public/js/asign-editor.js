@@ -119,8 +119,8 @@ function initializeEditor() {
         initializeNewDesign();
     }
 
-    // Load inspiration based on type
-    loadInspiration();
+    // Load preload backgrounds
+    loadPreloads();
 
     // Setup event listeners
     setupEventListeners();
@@ -510,8 +510,7 @@ function onTypeChange() {
         removeBottomBar();
     }
 
-    // Update inspiration
-    loadInspiration();
+    // Preloads are the same for all types, no need to reload
 
     markUnsavedChanges();
 }
@@ -1544,7 +1543,7 @@ function showPropertiesPanel() {
     const content = document.getElementById('propertiesContent');
 
     panel.style.display = 'block';
-    document.getElementById('inspirationPanel').style.display = 'none';
+    document.getElementById('preloadsPanel').style.display = 'none';
 
     // Build properties based on element type
     let html = '';
@@ -1571,7 +1570,7 @@ function showPropertiesPanel() {
 
 function hidePropertiesPanel() {
     document.getElementById('propertiesPanel').style.display = 'none';
-    document.getElementById('inspirationPanel').style.display = 'block';
+    document.getElementById('preloadsPanel').style.display = 'block';
 }
 
 /**
@@ -2201,22 +2200,23 @@ function rgbaToHex(rgba) {
     return '#333333';
 }
 
-// ==================== INSPIRATION ====================
+// ==================== PRELOAD BACKGROUNDS ====================
 
-function loadInspiration() {
-    const grid = document.getElementById('inspirationGrid');
-    const noMessage = document.getElementById('noInspirationMessage');
+// Current preload selected for use
+let selectedPreload = null;
+
+/**
+ * Load preload backgrounds into the sidebar grid
+ */
+function loadPreloads() {
+    const grid = document.getElementById('preloadsGrid');
+    const noMessage = document.getElementById('noPreloadsMessage');
     const config = window.editorConfig;
 
-    // Get inspirations based on type
-    let inspirations = [];
-    if (isDesignType) {
-        inspirations = [...config.inspirations.design, ...config.inspirations.legacy];
-    } else {
-        inspirations = [...config.inspirations.arbitrary, ...config.inspirations.legacy];
-    }
+    // Get preloads from config
+    const preloads = config.preloads || [];
 
-    if (inspirations.length === 0) {
+    if (preloads.length === 0) {
         grid.innerHTML = '';
         noMessage.style.display = 'block';
         return;
@@ -2225,10 +2225,15 @@ function loadInspiration() {
     noMessage.style.display = 'none';
 
     let html = '';
-    inspirations.forEach(function(item) {
+    preloads.forEach(function(item) {
+        // Escape quotes in title and description for onclick
+        const escapedTitle = (item.title || '').replace(/'/g, "\\'").replace(/"/g, '\\"');
+        const escapedDesc = (item.description || '').replace(/'/g, "\\'").replace(/"/g, '\\"');
+        // Use thumbnail for grid preview, pass both thumbnail and full image URL
+        const thumbnailSrc = item.thumbnail || item.image;
         html += `
-            <div class="inspiration-item mb-2 cursor-pointer" onclick="viewInspirationImage('${item.image}', '${item.title}')">
-                <img src="${item.image}" alt="${item.title}" class="w-100 border-radius-6px" style="height: 80px; object-fit: cover;">
+            <div class="preload-item mb-2 cursor-pointer" onclick="showPreloadPreview('${item.image}', '${thumbnailSrc}', '${escapedTitle}', '${escapedDesc}')">
+                <img src="${thumbnailSrc}" alt="${item.title || ''}" class="w-100 border-radius-6px" style="height: 80px; object-fit: cover;">
             </div>
         `;
     });
@@ -2236,9 +2241,79 @@ function loadInspiration() {
     grid.innerHTML = html;
 }
 
+/**
+ * Show preload preview modal
+ * @param {string} fullImageUrl - Full resolution image URL (used when applying)
+ * @param {string} thumbnailUrl - Thumbnail URL (used for preview in modal)
+ * @param {string} title - Image title
+ * @param {string} description - Image description
+ */
+function showPreloadPreview(fullImageUrl, thumbnailUrl, title, description) {
+    selectedPreload = {
+        image: fullImageUrl,  // Store full image for when they choose to use it
+        title: title,
+        description: description
+    };
+
+    // Show thumbnail in modal preview (faster loading)
+    document.getElementById('preloadPreviewImage').src = thumbnailUrl;
+    document.getElementById('preloadPreviewTitle').textContent = title || 'Baggrund';
+    document.getElementById('preloadPreviewDescription').textContent = description || '';
+
+    $('#preloadPreviewModal').modal('show');
+}
+
+/**
+ * Use the selected preload as background - triggers crop flow
+ */
+function usePreloadAsBackground() {
+    if (!selectedPreload) {
+        showErrorNotification('Ingen baggrund valgt');
+        return;
+    }
+
+    // Close preview modal
+    $('#preloadPreviewModal').modal('hide');
+
+    // Fetch the image and trigger the existing crop flow
+    screenLoader.show();
+
+    fetch(selectedPreload.image)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Kunne ikke hente billede');
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            screenLoader.hide();
+
+            // Convert blob to data URL and use existing crop flow
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('cropImage').src = e.target.result;
+                $('#cropModal').modal('show');
+                $('#cropModal').one('shown.bs.modal', function() {
+                    initCropper();
+                });
+            };
+            reader.readAsDataURL(blob);
+        })
+        .catch(error => {
+            screenLoader.hide();
+            console.error('Error fetching preload image:', error);
+            showErrorNotification('Kunne ikke hente baggrundsbillede');
+        });
+}
+
+// Legacy support: Keep loadInspiration as alias for loadPreloads
+function loadInspiration() {
+    loadPreloads();
+}
+
 function viewInspirationImage(url, title) {
-    // Simple image view - could expand to modal
-    window.open(url, '_blank');
+    // Legacy - redirect to preload preview
+    showPreloadPreview(url, title, '');
 }
 
 // ==================== SAVE & EXPORT ====================

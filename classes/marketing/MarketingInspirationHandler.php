@@ -38,12 +38,13 @@ class MarketingInspirationHandler extends Crud {
         string $imagePath,
         string $category = 'other',
         ?string $description = null,
-        string $status = 'DRAFT'
+        string $status = 'DRAFT',
+        ?string $thumbnailPath = null
     ): ?string {
         // Get next sort order
         $maxSort = $this->queryBuilder()->max('sort_order') ?? 0;
 
-        $created = $this->create([
+        $data = [
             'title' => $title,
             'image_path' => $imagePath,
             'category' => $category,
@@ -51,7 +52,13 @@ class MarketingInspirationHandler extends Crud {
             'status' => $status,
             'sort_order' => $maxSort + 1,
             'created_by' => __uuid(),
-        ]);
+        ];
+
+        if ($thumbnailPath) {
+            $data['thumbnail_path'] = $thumbnailPath;
+        }
+
+        $created = $this->create($data);
         return $created ? $this->recentUid : null;
     }
 
@@ -70,7 +77,7 @@ class MarketingInspirationHandler extends Crud {
     }
 
     /**
-     * Delete inspiration item and associated image
+     * Delete inspiration item and associated images
      */
     public function deleteInspiration(string $uid): bool {
         $item = $this->excludeForeignKeys()->get($uid);
@@ -78,9 +85,14 @@ class MarketingInspirationHandler extends Crud {
             return false;
         }
 
-        // Delete image file
+        // Delete main image file
         if (!isEmpty($item->image_path) && file_exists(ROOT . $item->image_path)) {
             unlink(ROOT . $item->image_path);
+        }
+
+        // Delete thumbnail file
+        if (!isEmpty($item->thumbnail_path) && file_exists(ROOT . $item->thumbnail_path)) {
+            unlink(ROOT . $item->thumbnail_path);
         }
 
         return $this->delete(['uid' => $uid]);
@@ -95,6 +107,7 @@ class MarketingInspirationHandler extends Crud {
             'a_sign' => 'A-Skilt',
             'a_sign_design' => 'A-Skilt (Design)',
             'a_sign_arbitrary' => 'A-Skilt (Vilkårligt)',
+            'a_sign_preload' => 'A-Skilt Baggrunde',
             'poster' => 'Plakat',
             'other' => 'Andet',
         ];

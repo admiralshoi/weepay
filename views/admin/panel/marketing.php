@@ -14,6 +14,7 @@ $categoryOptions = $args->categoryOptions ?? [];
 $inspirations = $args->inspirations ?? null;
 $inspirationCategoryOptions = $args->inspirationCategoryOptions ?? [];
 $inspirationStatusOptions = $args->inspirationStatusOptions ?? [];
+$asignPreloads = $args->asignPreloads ?? null;
 
 /**
  * Render a template card
@@ -87,6 +88,43 @@ function renderTemplateCard($template, $statusOptions, bool $isActive = false): 
 }
 
 /**
+ * Render an A-Sign preload background card
+ */
+function renderAsignPreloadCard($item, $statusOptions): string {
+    $statusClass = match($item->status) {
+        'ACTIVE' => 'success-box',
+        'INACTIVE' => 'danger-box',
+        default => 'warning-box'
+    };
+    $statusText = $statusOptions->{$item->status} ?? $item->status;
+    // Use thumbnail if available, fallback to full image
+    $previewImage = !empty($item->thumbnail_path) ? $item->thumbnail_path : $item->image_path;
+
+    return '
+    <div class="col-md-6 col-lg-4 col-xl-3">
+        <div class="card border-radius-10px h-100">
+            <div class="card-body position-relative">
+                <div class="template-preview mb-3" style="height: 180px; overflow: hidden; border-radius: 8px; background: #f8f9fa;">
+                    <img src="' . __url($previewImage) . '" alt="' . htmlspecialchars($item->title) . '" class="img-fluid w-100 h-100" style="object-fit: cover;">
+                </div>
+                <h5 class="font-16 font-weight-bold mb-2">' . htmlspecialchars($item->title) . '</h5>
+                <div class="flex-row-start flex-align-center flex-wrap mb-2" style="gap: 0.5rem;">
+                    <span class="' . $statusClass . '">' . $statusText . '</span>
+                </div>
+                <div class="flex-row-between flex-align-center mt-auto">
+                    <button type="button" class="btn-v2 action-btn btn-sm" onclick="editAsignPreload(\'' . $item->uid . '\', \'' . htmlspecialchars($item->title) . '\', \'' . htmlspecialchars($item->description ?? '') . '\', \'' . $item->status . '\')">
+                        <i class="mdi mdi-pencil-outline mr-1"></i> Rediger
+                    </button>
+                    <button type="button" class="btn-v2 danger-btn btn-sm" onclick="deleteAsignPreload(\'' . $item->uid . '\', \'' . htmlspecialchars($item->title) . '\')">
+                        <i class="mdi mdi-delete"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>';
+}
+
+/**
  * Render an inspiration card
  */
 function renderInspirationCard($item, $categoryOptions, $statusOptions): string {
@@ -97,13 +135,15 @@ function renderInspirationCard($item, $categoryOptions, $statusOptions): string 
     };
     $statusText = $statusOptions->{$item->status} ?? $item->status;
     $categoryText = $categoryOptions->{$item->category} ?? $item->category;
+    // Use thumbnail if available, fallback to full image
+    $previewImage = !empty($item->thumbnail_path) ? $item->thumbnail_path : $item->image_path;
 
     return '
     <div class="col-md-6 col-lg-4 col-xl-3">
         <div class="card border-radius-10px h-100">
             <div class="card-body position-relative">
                 <div class="template-preview mb-3" style="height: 180px; overflow: hidden; border-radius: 8px; background: #f8f9fa;">
-                    <img src="' . __url($item->image_path) . '" alt="' . htmlspecialchars($item->title) . '" class="img-fluid w-100 h-100" style="object-fit: cover;">
+                    <img src="' . __url($previewImage) . '" alt="' . htmlspecialchars($item->title) . '" class="img-fluid w-100 h-100" style="object-fit: cover;">
                 </div>
                 <h5 class="font-16 font-weight-bold mb-2">' . htmlspecialchars($item->title) . '</h5>
                 <div class="flex-row-start flex-align-center flex-wrap mb-2" style="gap: 0.5rem;">
@@ -284,20 +324,39 @@ function renderInspirationCard($item, $categoryOptions, $statusOptions): string 
                 <?php endif; ?>
             </div>
 
-            <!-- Tab Content: A-Sign Generator -->
+            <!-- Tab Content: A-Sign Generator (Preload Backgrounds) -->
             <div id="tab-asign" class="tab-content" style="display: none;">
-                <div class="card border-radius-10px">
-                    <div class="card-body flex-col-center flex-align-center py-5">
-                        <div class="square-80 bg-light-gray border-radius-50 flex-row-center-center mb-3">
-                            <i class="mdi mdi-sign-real-estate font-40 color-gray"></i>
-                        </div>
-                        <p class="mb-0 font-18 font-weight-bold color-dark">A-Skilt Generator</p>
-                        <p class="mb-0 font-14 color-gray mt-2 text-center" style="max-width: 500px;">
-                            Denne funktion kommer snart. Her vil forhandlere kunne oprette deres egne A-skilte med et inspireret design, hvor de kan uploade deres eget billede og tilpasse tekst, QR-kode placering og farver.
-                        </p>
-                        <span class="warning-box mt-3">Kommer snart</span>
+                <div class="flex-row-between flex-align-center mb-3">
+                    <div>
+                        <p class="mb-0 font-14 color-gray">Upload baggrundsbilleder som forhandlere kan bruge i A-Skilt Generatoren.</p>
                     </div>
+                    <button type="button" class="btn-v2 action-btn" onclick="openAsignPreloadUploadModal()">
+                        <i class="mdi mdi-plus mr-2"></i> Upload baggrund
+                    </button>
                 </div>
+
+                <?php if($asignPreloads && !$asignPreloads->empty()): ?>
+                    <div class="row rg-1">
+                        <?php foreach($asignPreloads->list() as $item): ?>
+                            <?php echo renderAsignPreloadCard($item, (object)$inspirationStatusOptions); ?>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="card border-radius-10px">
+                        <div class="card-body flex-col-center flex-align-center py-5">
+                            <div class="square-80 bg-light-gray border-radius-50 flex-row-center-center mb-3">
+                                <i class="mdi mdi-image-multiple font-40 color-gray"></i>
+                            </div>
+                            <p class="mb-0 font-18 font-weight-bold color-dark">Ingen baggrundsbilleder</p>
+                            <p class="mb-0 font-14 color-gray mt-2 text-center" style="max-width: 400px;">
+                                Upload billeder som forhandlere kan bruge som baggrund i A-Skilt Generatoren.
+                            </p>
+                            <button type="button" class="btn-v2 action-btn mt-3" onclick="openAsignPreloadUploadModal()">
+                                <i class="mdi mdi-plus mr-2"></i> Upload baggrund
+                            </button>
+                        </div>
+                    </div>
+                <?php endif; ?>
             </div>
 
         </div>
@@ -437,7 +496,7 @@ function renderInspirationCard($item, $categoryOptions, $statusOptions): string 
                     <div class="form-group">
                         <label class="font-14 font-weight-bold d-block mb-2">Billede *</label>
                         <input type="file" name="file" id="inspirationFile" accept="image/*" required>
-                        <small class="form-text text-muted">Maks 10MB. JPG, PNG, GIF eller WebP.</small>
+                        <small class="form-text text-muted">Maks 30MB. JPG, PNG, GIF eller WebP.</small>
                     </div>
                     <div class="form-group">
                         <label class="font-14 font-weight-bold d-block mb-2">Titel *</label>
@@ -510,6 +569,86 @@ function renderInspirationCard($item, $categoryOptions, $statusOptions): string 
             <div class="modal-footer">
                 <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Annuller</button>
                 <button type="button" class="btn-v2 action-btn" onclick="saveInspirationChanges()" id="inspirationSaveBtn">
+                    <span class="btn-text">Gem</span>
+                    <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload A-Sign Preload Modal -->
+<div class="modal fade" id="asignPreloadUploadModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload baggrundsbillede</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="asignPreloadUploadForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Billede *</label>
+                        <input type="file" name="file" id="asignPreloadFile" accept="image/*" required>
+                        <small class="form-text text-muted">Maks 30MB. JPG, PNG, GIF eller WebP. Anbefalet format: Portrætorienteret.</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Titel *</label>
+                        <input type="text" class="form-field-v2 w-100" name="title" id="asignPreloadTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Beskrivelse</label>
+                        <textarea class="form-field-v2 w-100" name="description" id="asignPreloadDescription" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Annuller</button>
+                <button type="button" class="btn-v2 action-btn" onclick="uploadAsignPreload()" id="asignPreloadUploadBtn">
+                    <span class="btn-text">Upload</span>
+                    <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit A-Sign Preload Modal -->
+<div class="modal fade" id="asignPreloadEditModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Rediger baggrundsbillede</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="asignPreloadEditForm">
+                    <input type="hidden" name="uid" id="asignPreloadEditUid">
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Titel *</label>
+                        <input type="text" class="form-field-v2 w-100" name="title" id="asignPreloadEditTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Status</label>
+                        <select class="form-select-v2 w-100" name="status" id="asignPreloadEditStatus">
+                            <?php foreach($inspirationStatusOptions as $value => $label): ?>
+                                <option value="<?=$value?>"><?=$label?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Beskrivelse</label>
+                        <textarea class="form-field-v2 w-100" name="description" id="asignPreloadEditDescription" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Annuller</button>
+                <button type="button" class="btn-v2 action-btn" onclick="saveAsignPreloadChanges()" id="asignPreloadSaveBtn">
                     <span class="btn-text">Gem</span>
                     <span class="spinner-border spinner-border-sm d-none" role="status"></span>
                 </button>

@@ -272,9 +272,9 @@ class MarketingApiController {
             Response()->jsonError("Kun billeder er tilladt (jpg, png, gif, webp)", [], 400);
         }
 
-        // Validate file size (max 10MB)
-        if ($file['size'] > 10 * 1024 * 1024) {
-            Response()->jsonError("Filen er for stor. Maks 10MB", [], 400);
+        // Validate file size (max 30MB)
+        if ($file['size'] > 30 * 1024 * 1024) {
+            Response()->jsonError("Filen er for stor. Maks 30MB", [], 400);
         }
 
         // Ensure upload directory exists
@@ -311,19 +311,32 @@ class MarketingApiController {
             Response()->jsonError("Kunne ikke gemme filen - kontroller mapperettigheder", [], 500);
         }
 
+        // Create thumbnail for faster loading (max 400px width)
+        $thumbnailPath = null;
+        $thumbnailFilename = "thumb-" . $filename;
+        $thumbnailFullPath = ROOT . $uploadDir . $thumbnailFilename;
+
+        if (self::createThumbnail(ROOT . $filePath, $thumbnailFullPath, 400)) {
+            $thumbnailPath = $uploadDir . $thumbnailFilename;
+        }
+
         // Create inspiration record
         $inspirationUid = Methods::marketingInspiration()->createInspiration(
             $title,
             $filePath,
             $category,
             $description,
-            'DRAFT'
+            'DRAFT',
+            $thumbnailPath
         );
 
         if (!$inspirationUid) {
-            // Cleanup file on failure
+            // Cleanup files on failure
             if (file_exists(ROOT . $filePath)) {
                 unlink(ROOT . $filePath);
+            }
+            if ($thumbnailPath && file_exists(ROOT . $thumbnailPath)) {
+                unlink(ROOT . $thumbnailPath);
             }
             Response()->jsonError("Kunne ikke oprette inspiration", [], 500);
         }
@@ -399,5 +412,83 @@ class MarketingApiController {
         }
 
         Response()->jsonSuccess("Inspiration slettet");
+    }
+
+    /**
+     * Create a thumbnail from an image
+     * @param string $sourcePath Full path to source image
+     * @param string $destPath Full path for thumbnail
+     * @param int $maxWidth Maximum width of thumbnail
+     * @return bool Success
+     */
+    private static function createThumbnail(string $sourcePath, string $destPath, int $maxWidth = 400): bool {
+        if (!file_exists($sourcePath)) {
+            return false;
+        }
+
+        $imageInfo = getimagesize($sourcePath);
+        if (!$imageInfo) {
+            return false;
+        }
+
+        $mimeType = $imageInfo['mime'];
+        $origWidth = $imageInfo[0];
+        $origHeight = $imageInfo[1];
+
+        // If image is already smaller than max, just copy it
+        if ($origWidth <= $maxWidth) {
+            return copy($sourcePath, $destPath);
+        }
+
+        // Calculate new dimensions
+        $ratio = $maxWidth / $origWidth;
+        $newWidth = $maxWidth;
+        $newHeight = (int)($origHeight * $ratio);
+
+        // Create source image resource based on type
+        $sourceImage = match($mimeType) {
+            'image/jpeg' => imagecreatefromjpeg($sourcePath),
+            'image/png' => imagecreatefrompng($sourcePath),
+            'image/gif' => imagecreatefromgif($sourcePath),
+            'image/webp' => imagecreatefromwebp($sourcePath),
+            default => null
+        };
+
+        if (!$sourceImage) {
+            return false;
+        }
+
+        // Create new image
+        $thumbnail = imagecreatetruecolor($newWidth, $newHeight);
+
+        // Preserve transparency for PNG and GIF
+        if ($mimeType === 'image/png' || $mimeType === 'image/gif') {
+            imagealphablending($thumbnail, false);
+            imagesavealpha($thumbnail, true);
+            $transparent = imagecolorallocatealpha($thumbnail, 0, 0, 0, 127);
+            imagefilledrectangle($thumbnail, 0, 0, $newWidth, $newHeight, $transparent);
+        }
+
+        // Resize
+        imagecopyresampled(
+            $thumbnail, $sourceImage,
+            0, 0, 0, 0,
+            $newWidth, $newHeight, $origWidth, $origHeight
+        );
+
+        // Save based on type
+        $success = match($mimeType) {
+            'image/jpeg' => imagejpeg($thumbnail, $destPath, 85),
+            'image/png' => imagepng($thumbnail, $destPath, 8),
+            'image/gif' => imagegif($thumbnail, $destPath),
+            'image/webp' => imagewebp($thumbnail, $destPath, 85),
+            default => false
+        };
+
+        // Cleanup
+        imagedestroy($sourceImage);
+        imagedestroy($thumbnail);
+
+        return $success;
     }
 }

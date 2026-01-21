@@ -8,8 +8,9 @@ class MarketingInspiration extends \Database\Model {
     protected static array $schema = [
         "uid" => "string",
         "title" => "string",
-        "category" => ["type" => "enum", "default" => "other", "values" => ["instagram", "a_sign", "a_sign_design", "a_sign_arbitrary", "poster", "other"]],
+        "category" => ["type" => "enum", "default" => "other", "values" => ["instagram", "a_sign", "a_sign_design", "a_sign_arbitrary", "a_sign_preload", "poster", "other"]],
         "image_path" => "string",
+        "thumbnail_path" => ["type" => "string", "default" => null, "nullable" => true],
         "description" => ["type" => "text", "default" => null, "nullable" => true],
         "status" => ["type" => "enum", "default" => "DRAFT", "values" => ["DRAFT", "ACTIVE", "INACTIVE"]],
         "sort_order" => ["type" => "integer", "default" => 0],

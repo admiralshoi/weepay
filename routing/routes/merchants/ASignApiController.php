@@ -90,6 +90,8 @@ class ASignApiController {
         $size = $args['size'] ?? 'A1';
         $locationUid = $args['location_uid'] ?? null;
         $barColor = $args['bar_color'] ?? '#8B4513';
+        $canvasData = $args['canvas_data'] ?? null;
+        $elements = $args['elements'] ?? null;
 
         if (isEmpty($name)) {
             Response()->jsonError("Manglende navn", [], 400);
@@ -114,10 +116,22 @@ class ASignApiController {
         }
 
         $handler = Methods::asignDesigns();
-        $uid = $handler->createDesign($name, $type, $size, $locationUid, null, $barColor);
+        $uid = $handler->createDesign($name, $type, $size, $locationUid, $elements, $barColor);
 
         if (isEmpty($uid)) {
             Response()->jsonError("Kunne ikke oprette design", [], 500);
+        }
+
+        // If canvas_data was provided, update it (createDesign doesn't support it directly)
+        if (!isEmpty($canvasData) || !isEmpty($elements)) {
+            $updateData = [];
+            if (!isEmpty($canvasData)) {
+                $updateData['canvas_data'] = $canvasData;
+            }
+            if (!isEmpty($elements)) {
+                $updateData['elements'] = $elements;
+            }
+            $handler->updateDesign($uid, $updateData);
         }
 
         Response()->jsonSuccess("Design oprettet", ['uid' => $uid]);
@@ -274,9 +288,9 @@ class ASignApiController {
             Response()->jsonError("Ugyldig filtype. Kun JPG, PNG, WebP og SVG er tilladt.", [], 400);
         }
 
-        // Validate file size (10MB max)
-        if ($file['size'] > 10 * 1024 * 1024) {
-            Response()->jsonError("Filen er for stor. Maksimum 10MB.", [], 400);
+        // Validate file size (30MB max)
+        if ($file['size'] > 30 * 1024 * 1024) {
+            Response()->jsonError("Filen er for stor. Maksimum 30MB.", [], 400);
         }
 
         // Get storage path
@@ -478,6 +492,28 @@ class ASignApiController {
             'url' => $qrUrl,
             'qr_base64' => $qrCode
         ]);
+    }
+
+    /**
+     * Get preload background images for A-Sign designs
+     */
+    #[NoReturn] public static function getPreloads(array $args): void {
+        $handler = Methods::marketingInspiration();
+
+        // Get only active preload backgrounds
+        $items = $handler->getActive('a_sign_preload');
+
+        $result = [];
+        foreach ($items->list() as $item) {
+            $result[] = [
+                'uid' => $item->uid,
+                'title' => $item->title,
+                'description' => $item->description,
+                'image' => __url($item->image_path),
+            ];
+        }
+
+        Response()->jsonSuccess("Baggrunde hentet", ['items' => $result]);
     }
 
     /**

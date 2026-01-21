@@ -12,10 +12,13 @@ $isNew = $args->isNew ?? true;
 $locations = $args->locations ?? [];
 $typeOptions = $args->typeOptions ?? [];
 
-// Prepare inspiration data
+// Prepare inspiration data (legacy, keep for now)
 $designInspirations = $args->designInspirations ?? [];
 $arbitraryInspirations = $args->arbitraryInspirations ?? [];
 $legacyInspirations = $args->legacyInspirations ?? [];
+
+// Preload backgrounds from admin
+$preloads = $args->preloads ?? [];
 ?>
 
 <script>
@@ -67,6 +70,16 @@ $legacyInspirations = $args->legacyInspirations ?? [];
                 ];
             })->toArray())?>
         },
+        // Preload backgrounds from admin
+        preloads: <?=json_encode($preloads->map(function($item) {
+            return [
+                'uid' => $item['uid'],
+                'title' => $item['title'],
+                'description' => $item['description'] ?? '',
+                'image' => __url($item['image_path']),
+                'thumbnail' => !empty($item['thumbnail_path']) ? __url($item['thumbnail_path']) : __url($item['image_path']),
+            ];
+        })->toArray())?>,
         // A-Sign size options (real-world mm and 300 DPI pixels for print)
         // Display canvas is scaled down for screen (max ~400px width)
         sizes: {
@@ -193,7 +206,7 @@ $legacyInspirations = $args->legacyInspirations ?? [];
                     <div class="upload-area border-dashed p-3 text-center cursor-pointer mb-3" onclick="triggerBackgroundUpload()">
                         <i class="mdi mdi-cloud-upload font-24 color-gray"></i>
                         <p class="font-13 mb-0 color-gray">Klik for at uploade billede</p>
-                        <p class="font-11 color-muted mb-0">JPG, PNG, WebP, SVG (max 10MB)</p>
+                        <p class="font-11 color-muted mb-0">JPG, PNG, WebP, SVG (max 30MB)</p>
                     </div>
                     <input type="file" id="backgroundUpload" accept="image/*" style="display: none;" onchange="handleBackgroundUpload(this)">
                     <button type="button" class="btn-v2 mute-btn w-100 font-13" onclick="removeBackground()">
@@ -304,14 +317,15 @@ $legacyInspirations = $args->legacyInspirations ?? [];
                     </div>
                 </div>
 
-                <!-- Inspiration Panel -->
-                <div class="inspiration-panel p-3" id="inspirationPanel">
-                    <h6 class="font-weight-bold mb-3"><i class="mdi mdi-lightbulb-outline me-2"></i>Inspiration</h6>
-                    <div class="inspiration-grid" id="inspirationGrid">
-                        <!-- Populated by JS based on design type -->
+                <!-- Preload Backgrounds Panel -->
+                <div class="preloads-panel p-3" id="preloadsPanel">
+                    <h6 class="font-weight-bold mb-3"><i class="mdi mdi-image-multiple me-2"></i>Baggrunde</h6>
+                    <p class="font-12 color-gray mb-3">Klik på et billede for at bruge det som baggrund</p>
+                    <div class="preloads-grid" id="preloadsGrid">
+                        <!-- Populated by JS with preload backgrounds -->
                     </div>
-                    <div class="text-center mt-3" id="noInspirationMessage" style="display: none;">
-                        <p class="font-13 color-gray mb-0">Ingen inspiration tilgængelig endnu</p>
+                    <div class="text-center mt-3" id="noPreloadsMessage" style="display: none;">
+                        <p class="font-13 color-gray mb-0">Ingen baggrundsbilleder tilgængelige endnu</p>
                     </div>
                 </div>
             </div>
@@ -399,6 +413,31 @@ $legacyInspirations = $args->legacyInspirations ?? [];
                 <button type="button" class="btn-v2 action-btn" onclick="doExport()">
                     <i class="mdi mdi-download me-1"></i>
                     Eksporter
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Preload Preview Modal -->
+<div class="modal fade" id="preloadPreviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-radius-10px">
+            <div class="modal-header border-0">
+                <h5 class="modal-title font-weight-bold" id="preloadPreviewTitle">Baggrund</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <img id="preloadPreviewImage" src="" alt="" style="max-width: 100%; max-height: 60vh; object-fit: contain; border-radius: 8px;">
+                <p id="preloadPreviewDescription" class="font-13 color-gray mt-3 mb-0"></p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Annuller</button>
+                <button type="button" class="btn-v2 action-btn" onclick="usePreloadAsBackground()">
+                    <i class="mdi mdi-check me-1"></i>
+                    Brug som baggrund
                 </button>
             </div>
         </div>

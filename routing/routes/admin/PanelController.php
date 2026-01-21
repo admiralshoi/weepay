@@ -51,6 +51,8 @@ class PanelController {
         $args['inspirations'] = Methods::marketingInspiration()->getAll();
         $args['inspirationCategoryOptions'] = Methods::marketingInspiration()->getCategoryOptions();
         $args['inspirationStatusOptions'] = Methods::marketingInspiration()->getStatusOptions();
+        // Get A-Sign preload backgrounds specifically
+        $args['asignPreloads'] = Methods::marketingInspiration()->getByXOrderBy('sort_order', 'ASC', ['category' => 'a_sign_preload']);
         return Views("ADMIN_PANEL_MARKETING", $args);
     }
 
