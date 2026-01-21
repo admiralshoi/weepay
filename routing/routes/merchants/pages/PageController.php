@@ -897,6 +897,55 @@ class PageController {
         Response()->mimeType($qrGenerator->getString(), $qrGenerator->getMimeType());
     }
 
+    public static function asignEditor(array $args): mixed {
+        $designId = $args['id'] ?? null;
+
+        // Get user's accessible locations with published pages
+        $allLocations = Methods::locations()->getMyLocations(null, ['uid', 'name', 'slug']);
+        $locations = $allLocations->filter(function($location) {
+            $publishedPage = Methods::locationPages()->excludeForeignKeys()->getFirst([
+                'location' => $location['uid'],
+                'state' => 'PUBLISHED'
+            ]);
+            return !isEmpty($publishedPage);
+        });
+
+        $design = null;
+        $isNew = true;
+
+        if (!isEmpty($designId)) {
+            // Loading existing design
+            $handler = Methods::asignDesigns();
+            $design = $handler->getWithAccess($designId);
+
+            if (isEmpty($design)) {
+                // Design not found or no access, redirect to new editor
+                Response()->redirect(Links::$merchant->asignEditor);
+            }
+
+            // Fetch location if design has one
+            if (!isEmpty($design->location)) {
+                $design->location = Methods::locations()->get($design->location);
+            }
+            $isNew = false;
+        }
+
+        // Get type options
+        $typeOptions = Methods::asignDesigns()->getTypeOptions();
+
+        // Get inspiration images for sidebar
+        $inspirationHandler = Methods::marketingInspiration();
+        $designInspirations = $inspirationHandler->getActive('a_sign_design');
+        $arbitraryInspirations = $inspirationHandler->getActive('a_sign_arbitrary');
+        // Also get legacy a_sign category
+        $legacyInspirations = $inspirationHandler->getActive('a_sign');
+
+        return Views("MERCHANT_ASIGN_EDITOR", compact(
+            'locations', 'design', 'isNew', 'typeOptions',
+            'designInspirations', 'arbitraryInspirations', 'legacyInspirations'
+        ));
+    }
+
     public static function support(array $args): mixed {
         $ticketHandler = Methods::supportTickets();
         $replyHandler = Methods::supportTicketReplies();

@@ -118,22 +118,36 @@ function renderInspirationCard($item, $categoryLabels) {
         </div>
     </div>
 
-    <!-- Section 2: A-Sign Generator (Placeholder) -->
+    <!-- Section 2: A-Sign Generator -->
     <div class="card border-radius-10px mb-4">
         <div class="card-body">
-            <div class="flex-row-start flex-align-center flex-nowrap mb-3" style="column-gap: .5rem;">
-                <i class="mdi mdi-sign-real-estate font-20 color-orange"></i>
-                <p class="mb-0 font-20 font-weight-bold">A-Skilt Generator</p>
+            <div class="flex-row-between flex-align-center flex-wrap mb-3" style="column-gap: .5rem; row-gap: .5rem;">
+                <div class="flex-row-start flex-align-center flex-nowrap" style="column-gap: .5rem;">
+                    <i class="mdi mdi-sign-real-estate font-20 color-orange"></i>
+                    <p class="mb-0 font-20 font-weight-bold">A-Skilt Designer</p>
+                </div>
+                <a href="<?=__url(Links::$merchant->asignEditor)?>" class="btn-v2 action-btn">
+                    <i class="mdi mdi-plus me-1"></i>
+                    Opret nyt design
+                </a>
+            </div>
+            <p class="font-14 color-gray mb-4">
+                Design dit eget A-skilt med baggrundsbillede, tekst, QR-kode og logo.
+            </p>
+
+            <div class="row" id="asignDesignsGrid">
+                <!-- A-Sign designs will be loaded here -->
             </div>
 
-            <div class="flex-col-center flex-align-center text-center py-5">
-                <div class="square-80 flex-row-center flex-align-center bg-orange-light border-radius-50 mb-4">
-                    <i class="mdi mdi-image-edit-outline font-40 color-orange"></i>
+            <div id="noAsignDesigns" class="flex-col-center flex-align-center text-center py-4" style="display: none;">
+                <div class="square-60 flex-row-center flex-align-center bg-orange-light border-radius-50 mb-3">
+                    <i class="mdi mdi-sign-real-estate font-28 color-orange"></i>
                 </div>
-                <h3 class="font-18 font-weight-bold mb-2">Kommer snart</h3>
-                <p class="font-14 color-gray mb-0" style="max-width: 450px;">
-                    Her vil du kunne oprette dit eget A-skilt design ved at uploade et billede og tilpasse tekst, farver og QR-kode placering.
-                </p>
+                <p class="font-14 color-gray mb-2">Du har ikke oprettet nogen A-skilt designs endnu.</p>
+                <a href="<?=__url(Links::$merchant->asignEditor)?>" class="btn-v2 action-btn">
+                    <i class="mdi mdi-plus me-1"></i>
+                    Opret dit f&oslash;rste design
+                </a>
             </div>
         </div>
     </div>
@@ -374,7 +388,80 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+
+    // Load A-Sign designs
+    loadAsignDesigns();
 });
+
+// A-Sign Designs
+function loadAsignDesigns() {
+    fetch(HOST + 'api/merchant/asign/designs')
+        .then(function(response) { return response.json(); })
+        .then(function(data) {
+            var grid = document.getElementById('asignDesignsGrid');
+            var noDesigns = document.getElementById('noAsignDesigns');
+
+            if (data.success || data.status === 'success') {
+                var designs = data.data?.designs || data.result?.designs || [];
+                if (designs.length === 0) {
+                    grid.innerHTML = '';
+                    noDesigns.style.display = 'flex';
+                } else {
+                    noDesigns.style.display = 'none';
+                    grid.innerHTML = designs.map(renderAsignDesignCard).join('');
+                }
+            }
+        })
+        .catch(function(err) {
+            console.error('Failed to load A-Sign designs:', err);
+        });
+}
+
+function renderAsignDesignCard(design) {
+    var previewUrl = design.preview_image || HOST + 'public/media/default/pdf-placeholder.svg';
+    var typeLabel = design.type === 'design' ? 'Design' : 'Vilkårligt';
+    var statusBadge = design.status === 'SAVED'
+        ? '<span class="success-box position-absolute" style="top: 10px; right: 10px; font-size: 11px;">Gemt</span>'
+        : '<span class="warning-box position-absolute" style="top: 10px; right: 10px; font-size: 11px;">Kladde</span>';
+
+    return '<div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">' +
+        '<div class="card h-100 border-radius-10px template-card">' +
+        '<div class="card-img-top position-relative" style="height: 200px; overflow: hidden;">' +
+        '<img src="' + previewUrl + '" alt="' + design.name + '" ' +
+        'style="width: 100%; height: 100%; object-fit: contain; background: #f8f9fa;" onerror="replaceBadImage(this)">' +
+        statusBadge +
+        '</div>' +
+        '<div class="card-body">' +
+        '<span class="font-11 color-gray">' + typeLabel + '</span>' +
+        '<h5 class="font-16 font-weight-bold mb-1">' + design.name + '</h5>' +
+        (design.location_name ? '<p class="font-13 color-gray mb-3">' + design.location_name + '</p>' : '<p class="font-13 color-gray mb-3">Ingen lokation</p>') +
+        '<div class="flex-row-center" style="gap: .5rem;">' +
+        '<a href="' + HOST + 'asign-editor/' + design.uid + '" class="btn-v2 action-btn flex-1 flex-row-center flex-align-center" style="gap: .25rem;">' +
+        '<i class="mdi mdi-pencil"></i><span>Rediger</span>' +
+        '</a>' +
+        '<button type="button" class="btn-v2 mute-btn" onclick="deleteAsignDesign(\'' + design.uid + '\', \'' + design.name.replace(/'/g, "\\'") + '\')">' +
+        '<i class="mdi mdi-trash-can-outline"></i>' +
+        '</button>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '</div>';
+}
+
+function deleteAsignDesign(uid, name) {
+    SweetPrompt.confirm('Slet design', 'Er du sikker på at du vil slette "' + name + '"?', {
+        confirmButtonText: 'Ja, slet',
+        onConfirm: async () => {
+            const response = await post('api/merchant/asign/designs/delete', { uid: uid });
+            if (response.success || response.status === 'success') {
+                showSuccessNotification('Slettet', 'Design er blevet slettet');
+                loadAsignDesigns();
+            } else {
+                showErrorNotification('Fejl', response.error?.message || 'Kunne ikke slette design');
+            }
+        }
+    });
+}
 </script>
 
 <style>

@@ -20,6 +20,7 @@ class Merchant {
     public string $reports = "reports";
     public string $support = "support";
     public string $materials = "marketing-materials";
+    public string $asignEditor = "asign-editor";
     public string $accessDenied = "access-denied";
 
     public function orderDetail(string $orderId): string {

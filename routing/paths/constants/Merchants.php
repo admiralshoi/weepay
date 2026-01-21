@@ -621,8 +621,49 @@ class Merchants extends \routing\paths\Paths {
                 "css.responsiveness.css",
             ],
             "base" => null,
-            "vendor" => [],
-            "custom" => [],
+            "vendor" => [
+                "vendor.sweetalert.sweetalert2.min.css",
+                "vendor.sweetalert.sweetalert2.min.js",
+            ],
+            "custom" => [
+                "js.includes.SweetPrompt.js",
+            ],
+        ],
+    ];
+
+    const MERCHANT_ASIGN_EDITOR = [
+        "template" => "MERCHANT_INNER_HTML",
+        "view" => "merchants.pages.asign-editor",
+        "custom_scripts" => "templates.scripts",
+        "title" => "A-Skilt Designer",
+        "head" => "templates.head",
+        "assets" => [
+            "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.features.js",
+                "js.merchant.js",
+                "js.initializer.js",
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+            ],
+            "base" => null,
+            "vendor" => [
+                "vendor.fabricjs.fabric.min.js",
+                "vendor.cropperjs.cropper.min.js",
+                "vendor.cropperjs.cropper.min.css",
+                "vendor.sweetalert.sweetalert2.min.css",
+                "vendor.sweetalert.sweetalert2.min.js",
+                "vendor.jspdf.jspdf.min.js",
+            ],
+            "custom" => [
+                "js.includes.SweetPrompt.js",
+                "js.asign-editor.js",
+                "css.asign-editor.css",
+            ],
         ],
     ];
 

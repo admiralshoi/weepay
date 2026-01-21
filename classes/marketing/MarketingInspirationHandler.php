@@ -93,6 +93,8 @@ class MarketingInspirationHandler extends Crud {
         return [
             'instagram' => 'Instagram',
             'a_sign' => 'A-Skilt',
+            'a_sign_design' => 'A-Skilt (Design)',
+            'a_sign_arbitrary' => 'A-Skilt (Vilkårligt)',
             'poster' => 'Plakat',
             'other' => 'Andet',
         ];

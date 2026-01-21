@@ -415,35 +415,58 @@ Views are PHP templates in `views/` directory:
 ### Asset Imports - Path Constants System
 **NEVER include JS/CSS files directly in views with `<script src="">` or `<link href="">`.**
 
-Assets are defined in `routing/paths/constants/` files. Each page has a constant defining its assets:
+Assets are defined in `routing/paths/constants/` files. Each page has a constant defining its assets.
 
+**Location:** `routing/paths/constants/`
+- `Admin.php` - Admin pages
+- `Merchants.php` - Merchant pages
+- `Consumer.php` - Consumer pages
+- etc.
+
+**Structure of a Path Constant:**
 ```php
-// In routing/paths/constants/Admin.php
-const ADMIN_DASHBOARD_PAYMENTS = [
-    "template" => "ADMIN_INNER_HTML",
-    "view" => "admin.dashboard.payments",
+const MERCHANT_SOME_PAGE = [
+    "template" => "MERCHANT_INNER_HTML",
+    "view" => "merchants.pages.some-page",
     "assets" => [
         "main" => [
-            "js.server.js",        // public/js/server.js
-            "js.main.js",          // public/js/main.js
-            "js.admin-payments.js", // public/js/admin-payments.js (custom page script)
-            "css.main.css",        // public/css/main.css
+            "js.server.js",         // public/js/server.js - ALWAYS NEEDED
+            "js.main.js",           // public/js/main.js
+            "css.main.css",         // public/css/main.css
         ],
+        "base" => null,
         "vendor" => [
-            "vendor.apexcharts.apexcharts.min.js",
+            // Third-party libraries from public/vendor/
+            "vendor.sweetalert.sweetalert2.min.css",
+            "vendor.sweetalert.sweetalert2.min.js",
+        ],
+        "custom" => [
+            // Project includes from public/js/includes/
+            "js.includes.SweetPrompt.js",
+            "js.my-page-script.js",  // Page-specific JS
         ],
     ],
 ];
 ```
 
+**Asset Arrays - KNOW THE DIFFERENCE:**
+| Array | Purpose | Path Mapping |
+|-------|---------|--------------|
+| `main` | Core app scripts/styles | `js.file.js` → `public/js/file.js` |
+| `vendor` | Third-party libraries | `vendor.folder.file.js` → `public/vendor/folder/file.js` |
+| `custom` | Project utilities & page scripts | `js.includes.file.js` → `public/js/includes/file.js` |
+| `base` | Usually `null` or inherited | - |
+
 **Dot notation mapping:**
 - `js.filename.js` → `public/js/filename.js`
+- `js.includes.filename.js` → `public/js/includes/filename.js`
 - `css.filename.css` → `public/css/filename.css`
 - `vendor.folder.file.js` → `public/vendor/folder/file.js`
 
 **To add a new JS file for a page:**
-1. Create the file in `public/js/`
-2. Add it to the page's constant in `routing/paths/constants/`
+1. Create the file in `public/js/` (or `public/js/includes/` for utilities)
+2. Find the page's constant in `routing/paths/constants/`
+3. Add it to the correct array (`custom` for includes, `vendor` for third-party)
 
 ### JavaScript API Methods
 **NEVER use native `fetch()` in JavaScript.** Always use the project's methods from `server.js`:
@@ -491,14 +514,43 @@ SweetPrompt.confirm('Slet element?', 'Er du sikker på at du vil slette dette?',
         // Do the delete action
         var response = await post('api/delete', {uid: uid});
         if (response.status === 'success') {
-            location.reload();
+            return { status: 'success' };
+        } else {
+            return { status: 'error', error: response.error?.message || 'Fejl' };
         }
-    }
+    },
+    success: { title: 'Slettet', text: 'Elementet er blevet slettet' },
+    error: { title: 'Fejl', text: '<_ERROR_MSG_>' },
+    refireAfter: false
 });
 
 // WRONG - Never use native confirm()
 if (!confirm('Are you sure?')) return;
 ```
+
+### SweetPrompt Requirements - CRITICAL
+**SweetPrompt.js REQUIRES SweetAlert2 to work.** If you get `SweetPrompt is not defined` or `Swal is not defined`:
+
+1. Find the page's Path Constant in `routing/paths/constants/`
+2. Add BOTH of these to the `vendor` array:
+   ```php
+   "vendor" => [
+       "vendor.sweetalert.sweetalert2.min.css",
+       "vendor.sweetalert.sweetalert2.min.js",
+   ],
+   ```
+3. Add SweetPrompt to the `custom` array (NOT vendor - it's in `public/js/includes/`):
+   ```php
+   "custom" => [
+       "js.includes.SweetPrompt.js",
+   ],
+   ```
+
+**File locations:**
+- SweetAlert2: `public/vendor/sweetalert/sweetalert2.min.js` → Path: `vendor.sweetalert.sweetalert2.min.js`
+- SweetPrompt: `public/js/includes/SweetPrompt.js` → Path: `js.includes.SweetPrompt.js`
+
+**SweetPrompt is NOT a vendor file. It's a project utility in `js/includes/`.**
 
 ## Testing
 

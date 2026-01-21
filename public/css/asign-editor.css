@@ -1,0 +1,535 @@
+/**
+ * A-Sign Editor Styles
+ */
+
+/* Editor Container Layout */
+.editor-container {
+    margin-top: 1rem;
+}
+
+.editor-container .row {
+    margin: 0 -0.5rem;
+}
+
+.editor-container .row > [class*="col-"] {
+    padding: 0 0.5rem;
+}
+
+.editor-sidebar {
+    max-height: calc(100vh - 250px);
+    overflow-y: auto;
+    position: sticky;
+    top: 20px;
+}
+
+/* Sidebar Sections */
+.sidebar-section {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+}
+
+.sidebar-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.sidebar-section h6 {
+    color: #333;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-section h6 i {
+    color: #666;
+}
+
+/* Upload Area */
+.upload-area {
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    background: #fafafa;
+    transition: all 0.2s ease;
+}
+
+.upload-area:hover {
+    border-color: var(--blue);
+    background: #f0f7ff;
+}
+
+.upload-area i {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+/* Element Buttons */
+.element-buttons .btn-v2 {
+    justify-content: flex-start;
+}
+
+.element-buttons .btn-v2 i {
+    font-size: 18px;
+    width: 24px;
+}
+
+/* Canvas Container */
+.canvas-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px 10px;
+}
+
+.canvas-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* A-Sign Frame (visual border) */
+.asign-frame {
+    border: 12px solid #1a1a1a;
+    border-radius: 3px;
+    box-shadow:
+        inset 0 0 8px rgba(0,0,0,0.2),
+        0 8px 24px rgba(0,0,0,0.25);
+    background: #333;
+    padding: 4px;
+    display: inline-block;
+}
+
+.asign-frame canvas {
+    display: block;
+    border-radius: 1px;
+}
+
+.canvas-info {
+    margin-top: 1rem;
+}
+
+/* Properties Panel */
+.properties-panel {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 1rem;
+}
+
+.properties-panel h6 {
+    color: #333;
+    font-size: 13px;
+}
+
+/* Inspiration Panel */
+.inspiration-panel h6 {
+    color: #333;
+    font-size: 13px;
+}
+
+.inspiration-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.inspiration-item {
+    border-radius: 6px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.inspiration-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.inspiration-item img {
+    display: block;
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+}
+
+/* Layer Buttons */
+.layer-buttons .btn-v2 {
+    padding: 6px 10px;
+}
+
+.layer-buttons .btn-v2 i {
+    font-size: 16px;
+}
+
+.layer-buttons .btn-v2.text-danger:hover {
+    background: #fee;
+    color: #dc3545;
+}
+
+/* Element List */
+.element-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.element-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px;
+    margin-bottom: 4px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.element-list-item:hover {
+    background: #e9ecef;
+}
+
+.element-list-item.selected {
+    background: #e3f2fd;
+    border: 1px solid var(--blue);
+}
+
+.element-list-item .element-name {
+    font-size: 13px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.element-list-item .element-name i {
+    color: #666;
+    font-size: 14px;
+}
+
+.element-list-item .element-delete {
+    padding: 2px 6px;
+    border: none;
+    background: transparent;
+    color: #999;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+}
+
+.element-list-item .element-delete:hover {
+    background: #fee;
+    color: #dc3545;
+}
+
+.element-list-item.non-selectable {
+    cursor: default;
+    opacity: 0.7;
+}
+
+.element-list-item.non-selectable:hover {
+    background: #f8f9fa;
+}
+
+/* Form Label Styling */
+.editor-sidebar .form-label {
+    margin-bottom: 4px;
+    color: #666;
+    display: block;
+}
+
+/* Color Input */
+input[type="color"] {
+    cursor: pointer;
+    border: 1px solid #ddd;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 2px;
+}
+
+input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 4px;
+}
+
+/* Range Input */
+input[type="range"] {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #ddd;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--blue);
+    cursor: pointer;
+}
+
+/* Save Button States */
+#saveDraftBtn.has-changes {
+    background: #fff3cd;
+    border-color: #ffc107;
+    color: #856404;
+}
+
+#saveDraftBtn.has-changes:hover {
+    background: #ffeeba;
+}
+
+/* Modal Overrides */
+.crop-container {
+    background: #f0f0f0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Responsive Adjustments - Horizontal Toolbar on smaller screens */
+@media (max-width: 991px) {
+    .editor-container .row {
+        flex-direction: column;
+    }
+
+    .editor-container .col-lg-3,
+    .editor-container .col-lg-6,
+    .editor-container .col-md-4 {
+        width: 100%;
+        max-width: 100%;
+        flex: 0 0 100%;
+    }
+
+    /* Left sidebar becomes horizontal toolbar */
+    .editor-container .col-lg-3:first-child {
+        order: -1;
+    }
+
+    .editor-container .col-lg-3:first-child .editor-sidebar {
+        max-height: none;
+        position: relative;
+        top: 0;
+    }
+
+    /* Hide sidebar sections, show compact toolbar */
+    .editor-sidebar .sidebar-section {
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 0.5rem !important;
+    }
+
+    .editor-sidebar .sidebar-section h6 {
+        display: none !important;
+    }
+
+    /* Horizontal layout for form fields */
+    .editor-sidebar .sidebar-fields {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .editor-sidebar .sidebar-fields > div {
+        margin-bottom: 0 !important;
+        flex: 1;
+        min-width: 120px;
+        max-width: 200px;
+    }
+
+    /* Element buttons in horizontal row */
+    .element-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .element-buttons .btn-v2 {
+        width: auto !important;
+        flex: 0 0 auto;
+        padding: 6px 12px;
+        margin-bottom: 0 !important;
+    }
+
+    .element-buttons .btn-v2 span {
+        display: none;
+    }
+
+    .element-buttons .btn-v2 i {
+        margin: 0 !important;
+    }
+
+    /* Upload area compact */
+    .upload-area {
+        padding: 0.75rem !important;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .upload-area i {
+        margin-bottom: 0 !important;
+        font-size: 20px !important;
+    }
+
+    .upload-area p {
+        display: none;
+    }
+
+    .upload-area::after {
+        content: 'Upload billede';
+        font-size: 12px;
+        color: #666;
+    }
+
+    /* Layer buttons inline */
+    .layer-buttons {
+        justify-content: flex-start;
+        gap: 0.25rem;
+    }
+
+    /* Hide right sidebar on mobile, show as toggle */
+    .editor-container .col-lg-3:last-child {
+        display: none;
+    }
+
+    .canvas-container {
+        padding: 10px;
+        width: 100%;
+    }
+
+    .canvas-wrapper {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .asign-frame {
+        /* Scaling handled by JS for proper responsive behavior */
+    }
+
+    .canvas-info {
+        margin-top: 0.5rem;
+    }
+}
+
+@media (max-width: 767px) {
+
+    /* Even more compact toolbar */
+    .editor-sidebar .sidebar-fields > div {
+        min-width: 100px;
+        max-width: 150px;
+    }
+
+    .editor-sidebar .sidebar-fields > div:nth-child(3) {
+        /* Location select - full width on very small */
+        flex: 1 1 100%;
+        max-width: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .asign-frame {
+        max-width: calc(100vw - 40px);
+    }
+
+    /* Stack header buttons */
+    .flex-row-between.flex-align-center.flex-wrap {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+
+    .flex-row-between.flex-align-center.flex-wrap > div:first-child {
+        margin-bottom: 0.75rem;
+    }
+
+    .flex-row-between.flex-align-center.flex-wrap > div:last-child {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .flex-row-between.flex-align-center.flex-wrap > div:last-child .btn-v2 {
+        flex: 1;
+    }
+
+    /* Toolbar even more compact */
+    .editor-sidebar .sidebar-fields {
+        flex-direction: column;
+    }
+
+    .editor-sidebar .sidebar-fields > div {
+        width: 100%;
+        max-width: none;
+    }
+
+    .element-buttons {
+        justify-content: center;
+    }
+}
+
+/* Fabric.js Object Controls - Cursor overrides */
+.canvas-container .upper-canvas {
+    /* Cursors are set via JS on fabric.Object.prototype.controls */
+}
+
+/* Active text button style */
+.btn-v2.active {
+    background: var(--blue);
+    color: white;
+    border-color: var(--blue);
+}
+
+/* Border dashed style */
+.border-dashed {
+    border-style: dashed !important;
+}
+
+/* Text alignment helpers */
+.text-left {
+    text-align: left !important;
+}
+
+/* Scrollbar styling for sidebar */
+.editor-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.editor-sidebar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.editor-sidebar::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.editor-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+/* Loading state */
+.editor-loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255,255,255,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.editor-loading .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

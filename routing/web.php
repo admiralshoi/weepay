@@ -256,6 +256,18 @@ Routes::group(['api','requiresApiLogin'], function() {
         Routes::get("api/merchant/materials/download", "merchants.MaterialsApiController::download");
         Routes::get("api/merchant/materials/templates", "merchants.MaterialsApiController::getTemplates");
         Routes::get("api/merchant/materials/inspiration", "merchants.MaterialsApiController::getInspiration");
+
+        // A-Sign Designer
+        Routes::get("api/merchant/asign/designs", "merchants.ASignApiController::listDesigns");
+        Routes::get("api/merchant/asign/designs/{id}", "merchants.ASignApiController::getDesign");
+        Routes::post("api/merchant/asign/designs/create", "merchants.ASignApiController::createDesign");
+        Routes::post("api/merchant/asign/designs/update", "merchants.ASignApiController::updateDesign");
+        Routes::post("api/merchant/asign/designs/delete", "merchants.ASignApiController::deleteDesign");
+        Routes::post("api/merchant/asign/upload-background", "merchants.ASignApiController::uploadBackground");
+        Routes::post("api/merchant/asign/upload-logo", "merchants.ASignApiController::uploadLogo");
+        Routes::post("api/merchant/asign/upload-preview", "merchants.ASignApiController::uploadPreview");
+        Routes::get("api/merchant/asign/generate-qr", "merchants.ASignApiController::generateQr");
+        Routes::get("api/merchant/asign/inspiration", "merchants.ASignApiController::getInspiration");
         Routes::post(Links::$api->orders->customers->list, "merchants.CustomersApiController::getCustomers");
 
         Routes::post(Links::$api->forms->createOrganisation, "merchants.ApiController::createOrganisation");
@@ -364,6 +376,8 @@ Routes::group(["requiresLogin"], function () {
         Routes::get(Links::$merchant->locations->locationQr, "merchants.pages.PageController::getLocationQrBytes");
 
         Routes::get(Links::$merchant->materials, "merchants.pages.PageController::materials");
+        Routes::get(Links::$merchant->asignEditor, "merchants.pages.PageController::asignEditor");
+        Routes::get(Links::$merchant->asignEditor . "/{id}", "merchants.pages.PageController::asignEditor");
         Routes::get(Links::$merchant->reports, "merchants.pages.PageController::reports");
         Routes::get(Links::$merchant->support, "merchants.pages.PageController::support");
 

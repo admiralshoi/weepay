@@ -7,7 +7,6 @@
 use classes\enumerations\Links;
 use classes\lang\Translate;
 
-
 $pageTitle = "Panel";
 
 ?>
