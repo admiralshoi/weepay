@@ -1,7 +1,7 @@
 <?php
 /**
  * Admin Panel - Marketing Materials
- * Manage PDF templates for merchant marketing materials
+ * Manage PDF templates and inspiration for merchant marketing materials
  */
 
 use classes\enumerations\Links;
@@ -10,6 +10,10 @@ $pageTitle = "Marketing Materialer";
 $templates = $args->templates ?? null;
 $typeOptions = $args->typeOptions ?? [];
 $statusOptions = $args->statusOptions ?? [];
+$categoryOptions = $args->categoryOptions ?? [];
+$inspirations = $args->inspirations ?? null;
+$inspirationCategoryOptions = $args->inspirationCategoryOptions ?? [];
+$inspirationStatusOptions = $args->inspirationStatusOptions ?? [];
 
 /**
  * Render a template card
@@ -17,13 +21,6 @@ $statusOptions = $args->statusOptions ?? [];
 function renderTemplateCard($template, $statusOptions, bool $isActive = false): string {
     $cardBorderClass = $isActive ? 'border-success' : '';
     $cardStyle = $isActive ? 'border-width: 2px;' : '';
-
-    $statusClass = match($template->status) {
-        'ACTIVE' => 'badge-soft-success',
-        'INACTIVE' => 'badge-soft-danger',
-        default => 'badge-soft-warning'
-    };
-    $statusText = $statusOptions->{$template->status} ?? $template->status;
 
     $previewHtml = !isEmpty($template->preview_image)
         ? '<div class="template-preview mb-3" style="height: 180px; overflow: hidden; border-radius: 8px; background: #f8f9fa;">
@@ -37,17 +34,17 @@ function renderTemplateCard($template, $statusOptions, bool $isActive = false): 
         ? '<p class="font-13 color-gray mb-3" style="min-height: 40px;">' . htmlspecialchars(substr($template->description, 0, 80)) . (strlen($template->description) > 80 ? '...' : '') . '</p>'
         : '<p class="font-13 color-gray mb-3" style="min-height: 40px;"><em>Ingen beskrivelse</em></p>';
 
-    $statusOptions = [];
+    $statusOptionsArr = [];
     if ($template->status !== 'ACTIVE') {
-        $statusOptions[] = '<a class="dropdown-item" href="#" onclick="updateTemplateStatus(\'' . $template->uid . '\', \'ACTIVE\'); return false;"><i class="mdi mdi-check-circle mr-2"></i> Aktiver</a>';
+        $statusOptionsArr[] = '<a class="dropdown-item" href="#" onclick="updateTemplateStatus(\'' . $template->uid . '\', \'ACTIVE\'); return false;"><i class="mdi mdi-check-circle mr-2"></i> Aktiver</a>';
     }
     if ($template->status !== 'DRAFT') {
-        $statusOptions[] = '<a class="dropdown-item" href="#" onclick="updateTemplateStatus(\'' . $template->uid . '\', \'DRAFT\'); return false;"><i class="mdi mdi-pencil-outline mr-2"></i> Flyt til kladde</a>';
+        $statusOptionsArr[] = '<a class="dropdown-item" href="#" onclick="updateTemplateStatus(\'' . $template->uid . '\', \'DRAFT\'); return false;"><i class="mdi mdi-pencil-outline mr-2"></i> Flyt til kladde</a>';
     }
     if ($template->status !== 'INACTIVE') {
-        $statusOptions[] = '<a class="dropdown-item" href="#" onclick="updateTemplateStatus(\'' . $template->uid . '\', \'INACTIVE\'); return false;"><i class="mdi mdi-close-circle mr-2"></i> Deaktiver</a>';
+        $statusOptionsArr[] = '<a class="dropdown-item" href="#" onclick="updateTemplateStatus(\'' . $template->uid . '\', \'INACTIVE\'); return false;"><i class="mdi mdi-close-circle mr-2"></i> Deaktiver</a>';
     }
-    $statusOptionsHtml = implode('', $statusOptions);
+    $statusOptionsHtml = implode('', $statusOptionsArr);
 
     $activeIndicator = $isActive
         ? '<div class="position-absolute" style="top: 10px; right: 10px;"><span class="success-box"><i class="mdi mdi-check-circle mr-1"></i>Aktiv</span></div>'
@@ -88,12 +85,51 @@ function renderTemplateCard($template, $statusOptions, bool $isActive = false): 
         </div>
     </div>';
 }
+
+/**
+ * Render an inspiration card
+ */
+function renderInspirationCard($item, $categoryOptions, $statusOptions): string {
+    $statusClass = match($item->status) {
+        'ACTIVE' => 'success-box',
+        'INACTIVE' => 'danger-box',
+        default => 'warning-box'
+    };
+    $statusText = $statusOptions->{$item->status} ?? $item->status;
+    $categoryText = $categoryOptions->{$item->category} ?? $item->category;
+
+    return '
+    <div class="col-md-6 col-lg-4 col-xl-3">
+        <div class="card border-radius-10px h-100">
+            <div class="card-body position-relative">
+                <div class="template-preview mb-3" style="height: 180px; overflow: hidden; border-radius: 8px; background: #f8f9fa;">
+                    <img src="' . __url($item->image_path) . '" alt="' . htmlspecialchars($item->title) . '" class="img-fluid w-100 h-100" style="object-fit: cover;">
+                </div>
+                <h5 class="font-16 font-weight-bold mb-2">' . htmlspecialchars($item->title) . '</h5>
+                <div class="flex-row-start flex-align-center flex-wrap mb-2" style="gap: 0.5rem;">
+                    <span class="mute-box">' . $categoryText . '</span>
+                    <span class="' . $statusClass . '">' . $statusText . '</span>
+                </div>
+                <div class="flex-row-between flex-align-center mt-auto">
+                    <button type="button" class="btn-v2 action-btn btn-sm" onclick="editInspiration(\'' . $item->uid . '\', \'' . htmlspecialchars($item->title) . '\', \'' . $item->category . '\', \'' . htmlspecialchars($item->description ?? '') . '\', \'' . $item->status . '\')">
+                        <i class="mdi mdi-pencil-outline mr-1"></i> Rediger
+                    </button>
+                    <button type="button" class="btn-v2 danger-btn btn-sm" onclick="deleteInspiration(\'' . $item->uid . '\', \'' . htmlspecialchars($item->title) . '\')">
+                        <i class="mdi mdi-delete"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>';
+}
 ?>
 <script>
     var pageTitle = <?=json_encode($pageTitle)?>;
     activePage = "marketing";
     var typeOptions = <?=json_encode($typeOptions)?>;
     var statusOptions = <?=json_encode($statusOptions)?>;
+    var inspirationCategoryOptions = <?=json_encode($inspirationCategoryOptions)?>;
+    var inspirationStatusOptions = <?=json_encode($inspirationStatusOptions)?>;
 </script>
 
 <div class="page-content py-3">
@@ -111,100 +147,186 @@ function renderTemplateCard($template, $statusOptions, bool $isActive = false): 
             <div class="flex-row-between flex-align-center w-100 flex-wrap" style="gap: 1rem;">
                 <div class="flex-col-start">
                     <h1 class="mb-0 font-24 font-weight-bold">Marketing Materialer</h1>
-                    <p class="mb-0 font-14 color-gray">Upload og administrer PDF templates til forhandlere</p>
+                    <p class="mb-0 font-14 color-gray">Administrer templates og inspiration til forhandlere</p>
                 </div>
-                <button type="button" class="btn-v2 action-btn" onclick="openUploadModal()">
-                    <i class="mdi mdi-plus mr-2"></i> Upload Template
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex-row-start flex-align-center" style="gap: 0; border-bottom: 2px solid #e9ecef;">
+                <button type="button" class="tab-btn active" data-tab="templates" onclick="switchTab('templates')">
+                    <i class="mdi mdi-file-pdf-outline mr-2"></i> Templates
+                </button>
+                <button type="button" class="tab-btn" data-tab="inspiration" onclick="switchTab('inspiration')">
+                    <i class="mdi mdi-image-multiple mr-2"></i> Inspiration
+                </button>
+                <button type="button" class="tab-btn" data-tab="asign" onclick="switchTab('asign')">
+                    <i class="mdi mdi-sign-real-estate mr-2"></i> A-Skilt Generator
                 </button>
             </div>
 
-            <!-- Templates List -->
-            <?php if($templates && !$templates->empty()):
-                // Group templates by status
-                $activeTemplates = [];
-                $draftTemplates = [];
-                $inactiveTemplates = [];
-                foreach($templates->list() as $template) {
-                    match($template->status) {
-                        'ACTIVE' => $activeTemplates[] = $template,
-                        'DRAFT' => $draftTemplates[] = $template,
-                        'INACTIVE' => $inactiveTemplates[] = $template,
-                        default => $draftTemplates[] = $template
-                    };
-                }
-            ?>
+            <!-- Tab Content: Templates -->
+            <div id="tab-templates" class="tab-content">
+                <div class="flex-row-between flex-align-center mb-3">
+                    <div></div>
+                    <button type="button" class="btn-v2 action-btn" onclick="openUploadModal()">
+                        <i class="mdi mdi-plus mr-2"></i> Upload Template
+                    </button>
+                </div>
 
-                <?php if(!empty($activeTemplates)): ?>
-                <!-- Active Templates -->
-                <div class="flex-col-start" style="gap: 1rem;">
-                    <div class="flex-row-start flex-align-center" style="gap: 0.5rem;">
-                        <span class="square-10 bg-green border-radius-50"></span>
-                        <h2 class="mb-0 font-18 font-weight-bold">Aktive Templates</h2>
-                        <span class="success-box"><?=count($activeTemplates)?></span>
+                <?php if($templates && !$templates->empty()):
+                    // Group templates by status
+                    $activeTemplates = [];
+                    $draftTemplates = [];
+                    $inactiveTemplates = [];
+                    foreach($templates->list() as $template) {
+                        match($template->status) {
+                            'ACTIVE' => $activeTemplates[] = $template,
+                            'DRAFT' => $draftTemplates[] = $template,
+                            'INACTIVE' => $inactiveTemplates[] = $template,
+                            default => $draftTemplates[] = $template
+                        };
+                    }
+                ?>
+
+                    <?php if(!empty($activeTemplates)): ?>
+                    <div class="flex-col-start mb-4" style="gap: 1rem;">
+                        <div class="flex-row-start flex-align-center" style="gap: 0.5rem;">
+                            <span class="square-10 bg-green border-radius-50"></span>
+                            <h2 class="mb-0 font-18 font-weight-bold">Aktive Templates</h2>
+                            <span class="success-box"><?=count($activeTemplates)?></span>
+                        </div>
+                        <div class="row rg-1">
+                            <?php foreach($activeTemplates as $template): ?>
+                                <?php echo renderTemplateCard($template, $statusOptions, true); ?>
+                            <?php endforeach; ?>
+                        </div>
                     </div>
+                    <?php endif; ?>
+
+                    <?php if(!empty($draftTemplates)): ?>
+                    <div class="flex-col-start mb-4" style="gap: 1rem;">
+                        <div class="flex-row-start flex-align-center" style="gap: 0.5rem;">
+                            <span class="square-10 bg-pee-yellow border-radius-50"></span>
+                            <h2 class="mb-0 font-18 font-weight-bold">Kladder</h2>
+                            <span class="warning-box"><?=count($draftTemplates)?></span>
+                        </div>
+                        <div class="row rg-1">
+                            <?php foreach($draftTemplates as $template): ?>
+                                <?php echo renderTemplateCard($template, $statusOptions, false); ?>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <?php if(!empty($inactiveTemplates)): ?>
+                    <div class="flex-col-start mb-4" style="gap: 1rem;">
+                        <div class="flex-row-start flex-align-center" style="gap: 0.5rem;">
+                            <span class="square-10 bg-red border-radius-50"></span>
+                            <h2 class="mb-0 font-18 font-weight-bold">Inaktive Templates</h2>
+                            <span class="danger-box"><?=count($inactiveTemplates)?></span>
+                        </div>
+                        <div class="row rg-1">
+                            <?php foreach($inactiveTemplates as $template): ?>
+                                <?php echo renderTemplateCard($template, $statusOptions, false); ?>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                <?php else: ?>
+                    <div class="card border-radius-10px">
+                        <div class="card-body flex-col-center flex-align-center py-5">
+                            <div class="square-80 bg-light-gray border-radius-50 flex-row-center-center mb-3">
+                                <i class="mdi mdi-file-pdf-outline font-40 color-gray"></i>
+                            </div>
+                            <p class="mb-0 font-18 font-weight-bold color-dark">Ingen templates</p>
+                            <p class="mb-0 font-14 color-gray mt-2 text-center" style="max-width: 400px;">
+                                Upload din første marketing template for at komme i gang.
+                            </p>
+                            <button type="button" class="btn-v2 action-btn mt-3" onclick="openUploadModal()">
+                                <i class="mdi mdi-plus mr-2"></i> Upload Template
+                            </button>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Tab Content: Inspiration -->
+            <div id="tab-inspiration" class="tab-content" style="display: none;">
+                <div class="flex-row-between flex-align-center mb-3">
+                    <div></div>
+                    <button type="button" class="btn-v2 action-btn" onclick="openInspirationUploadModal()">
+                        <i class="mdi mdi-plus mr-2"></i> Upload Inspiration
+                    </button>
+                </div>
+
+                <?php if($inspirations && !$inspirations->empty()): ?>
                     <div class="row rg-1">
-                        <?php foreach($activeTemplates as $template): ?>
-                            <?php echo renderTemplateCard($template, $statusOptions, true); ?>
+                        <?php foreach($inspirations->list() as $item): ?>
+                            <?php echo renderInspirationCard($item, (object)$inspirationCategoryOptions, (object)$inspirationStatusOptions); ?>
                         <?php endforeach; ?>
                     </div>
-                </div>
+                <?php else: ?>
+                    <div class="card border-radius-10px">
+                        <div class="card-body flex-col-center flex-align-center py-5">
+                            <div class="square-80 bg-light-gray border-radius-50 flex-row-center-center mb-3">
+                                <i class="mdi mdi-image-multiple font-40 color-gray"></i>
+                            </div>
+                            <p class="mb-0 font-18 font-weight-bold color-dark">Ingen inspiration</p>
+                            <p class="mb-0 font-14 color-gray mt-2 text-center" style="max-width: 400px;">
+                                Upload billeder af Instagram posts, A-skilte og andre eksempler som forhandlere kan bruge som inspiration.
+                            </p>
+                            <button type="button" class="btn-v2 action-btn mt-3" onclick="openInspirationUploadModal()">
+                                <i class="mdi mdi-plus mr-2"></i> Upload Inspiration
+                            </button>
+                        </div>
+                    </div>
                 <?php endif; ?>
+            </div>
 
-                <?php if(!empty($draftTemplates)): ?>
-                <!-- Draft Templates -->
-                <div class="flex-col-start" style="gap: 1rem;">
-                    <div class="flex-row-start flex-align-center" style="gap: 0.5rem;">
-                        <span class="square-10 bg-pee-yellow border-radius-50"></span>
-                        <h2 class="mb-0 font-18 font-weight-bold">Kladder</h2>
-                        <span class="warning-box"><?=count($draftTemplates)?></span>
-                    </div>
-                    <div class="row rg-1">
-                        <?php foreach($draftTemplates as $template): ?>
-                            <?php echo renderTemplateCard($template, $statusOptions, false); ?>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-                <?php endif; ?>
-
-                <?php if(!empty($inactiveTemplates)): ?>
-                <!-- Inactive Templates -->
-                <div class="flex-col-start" style="gap: 1rem;">
-                    <div class="flex-row-start flex-align-center" style="gap: 0.5rem;">
-                        <span class="square-10 bg-red border-radius-50"></span>
-                        <h2 class="mb-0 font-18 font-weight-bold">Inaktive Templates</h2>
-                        <span class="danger-box"><?=count($inactiveTemplates)?></span>
-                    </div>
-                    <div class="row rg-1">
-                        <?php foreach($inactiveTemplates as $template): ?>
-                            <?php echo renderTemplateCard($template, $statusOptions, false); ?>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-                <?php endif; ?>
-
-            <?php else: ?>
-                <!-- Empty State -->
+            <!-- Tab Content: A-Sign Generator -->
+            <div id="tab-asign" class="tab-content" style="display: none;">
                 <div class="card border-radius-10px">
                     <div class="card-body flex-col-center flex-align-center py-5">
                         <div class="square-80 bg-light-gray border-radius-50 flex-row-center-center mb-3">
-                            <i class="mdi mdi-file-pdf-outline font-40 color-gray"></i>
+                            <i class="mdi mdi-sign-real-estate font-40 color-gray"></i>
                         </div>
-                        <p class="mb-0 font-18 font-weight-bold color-dark">Ingen templates</p>
-                        <p class="mb-0 font-14 color-gray mt-2 text-center" style="max-width: 400px;">
-                            Upload din foerste marketing template for at komme i gang.
+                        <p class="mb-0 font-18 font-weight-bold color-dark">A-Skilt Generator</p>
+                        <p class="mb-0 font-14 color-gray mt-2 text-center" style="max-width: 500px;">
+                            Denne funktion kommer snart. Her vil forhandlere kunne oprette deres egne A-skilte med et inspireret design, hvor de kan uploade deres eget billede og tilpasse tekst, QR-kode placering og farver.
                         </p>
-                        <button type="button" class="btn-v2 action-btn mt-3" onclick="openUploadModal()">
-                            <i class="mdi mdi-plus mr-2"></i> Upload Template
-                        </button>
+                        <span class="warning-box mt-3">Kommer snart</span>
                     </div>
                 </div>
-            <?php endif; ?>
+            </div>
 
         </div>
     </div>
 </div>
 
-<!-- Upload Modal -->
+<style>
+    .tab-btn {
+        background: none;
+        border: none;
+        padding: 0.75rem 1.25rem;
+        font-size: 14px;
+        font-weight: 500;
+        color: #6c757d;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+        transition: all 0.2s;
+    }
+    .tab-btn:hover {
+        color: #495057;
+    }
+    .tab-btn.active {
+        color: var(--primary-cta);
+        border-bottom-color: var(--primary-cta);
+    }
+</style>
+
+<!-- Upload Template Modal -->
 <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -250,7 +372,7 @@ function renderTemplateCard($template, $statusOptions, bool $isActive = false): 
     </div>
 </div>
 
-<!-- Edit Modal -->
+<!-- Edit Template Modal -->
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -292,6 +414,102 @@ function renderTemplateCard($template, $statusOptions, bool $isActive = false): 
             <div class="modal-footer">
                 <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Annuller</button>
                 <button type="button" class="btn-v2 action-btn" onclick="saveTemplateChanges()" id="saveBtn">
+                    <span class="btn-text">Gem</span>
+                    <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Inspiration Modal -->
+<div class="modal fade" id="inspirationUploadModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload inspiration</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="inspirationUploadForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Billede *</label>
+                        <input type="file" name="file" id="inspirationFile" accept="image/*" required>
+                        <small class="form-text text-muted">Maks 10MB. JPG, PNG, GIF eller WebP.</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Titel *</label>
+                        <input type="text" class="form-field-v2 w-100" name="title" id="inspirationTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Kategori</label>
+                        <select class="form-select-v2 w-100" name="category" id="inspirationCategory">
+                            <?php foreach($inspirationCategoryOptions as $value => $label): ?>
+                                <option value="<?=$value?>"><?=$label?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Beskrivelse</label>
+                        <textarea class="form-field-v2 w-100" name="description" id="inspirationDescription" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Annuller</button>
+                <button type="button" class="btn-v2 action-btn" onclick="uploadInspiration()" id="inspirationUploadBtn">
+                    <span class="btn-text">Upload</span>
+                    <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Inspiration Modal -->
+<div class="modal fade" id="inspirationEditModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Rediger inspiration</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="inspirationEditForm">
+                    <input type="hidden" name="uid" id="inspirationEditUid">
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Titel *</label>
+                        <input type="text" class="form-field-v2 w-100" name="title" id="inspirationEditTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Kategori</label>
+                        <select class="form-select-v2 w-100" name="category" id="inspirationEditCategory">
+                            <?php foreach($inspirationCategoryOptions as $value => $label): ?>
+                                <option value="<?=$value?>"><?=$label?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Status</label>
+                        <select class="form-select-v2 w-100" name="status" id="inspirationEditStatus">
+                            <?php foreach($inspirationStatusOptions as $value => $label): ?>
+                                <option value="<?=$value?>"><?=$label?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Beskrivelse</label>
+                        <textarea class="form-field-v2 w-100" name="description" id="inspirationEditDescription" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Annuller</button>
+                <button type="button" class="btn-v2 action-btn" onclick="saveInspirationChanges()" id="inspirationSaveBtn">
                     <span class="btn-text">Gem</span>
                     <span class="spinner-border spinner-border-sm d-none" role="status"></span>
                 </button>

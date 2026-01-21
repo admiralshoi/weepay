@@ -13,14 +13,31 @@ class MarketingTemplateHandler extends Crud {
     }
 
     /**
-     * Get all active templates, optionally filtered by type
+     * Get all active templates, optionally filtered by type and/or category
      */
-    public function getActive(?string $type = null): Collection {
+    public function getActive(?string $type = null, ?string $category = null): Collection {
         $params = ['status' => 'ACTIVE'];
         if ($type) {
             $params['type'] = $type;
         }
+        if ($category) {
+            $params['category'] = $category;
+        }
         return $this->getByXOrderBy('name', 'ASC', $params);
+    }
+
+    /**
+     * Get active downloadable templates (category = template)
+     */
+    public function getActiveTemplates(?string $type = null): Collection {
+        return $this->getActive($type, 'template');
+    }
+
+    /**
+     * Get active A-sign base templates (category = a_sign_base)
+     */
+    public function getActiveASignBases(): Collection {
+        return $this->getActive(null, 'a_sign_base');
     }
 
     /**
@@ -57,7 +74,7 @@ class MarketingTemplateHandler extends Crud {
      * Update template details
      */
     public function updateTemplate(string $uid, array $data): bool {
-        $allowedFields = ['name', 'type', 'description', 'status', 'preview_image'];
+        $allowedFields = ['name', 'type', 'category', 'description', 'status', 'preview_image'];
         $updateData = array_intersect_key($data, array_flip($allowedFields));
 
         if (empty($updateData)) {
@@ -127,6 +144,16 @@ class MarketingTemplateHandler extends Crud {
             'DRAFT' => 'Kladde',
             'ACTIVE' => 'Aktiv',
             'INACTIVE' => 'Inaktiv',
+        ];
+    }
+
+    /**
+     * Get category options array
+     */
+    public function getCategoryOptions(): array {
+        return [
+            'template' => 'Template',
+            'a_sign_base' => 'A-Skilt Base',
         ];
     }
 }

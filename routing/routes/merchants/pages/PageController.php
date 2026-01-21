@@ -714,7 +714,36 @@ class PageController {
     }
 
     public static function materials(array $args): mixed {
-        return Views("MERCHANT_MATERIALS");
+        // Get active marketing templates (only category=template, not a_sign_base)
+        $templates = Methods::marketingTemplates()->getActiveTemplates();
+
+        // Get user's accessible locations that have a published public page
+        $allLocations = Methods::locations()->getMyLocations(null, ['uid', 'name', 'slug']);
+        $locations = $allLocations->filter(function($location) {
+            $publishedPage = Methods::locationPages()->excludeForeignKeys()->getFirst([
+                'location' => $location['uid'],
+                'state' => 'PUBLISHED'
+            ]);
+            return !isEmpty($publishedPage);
+        });
+
+        // Get active inspiration items
+        $inspirations = Methods::marketingInspiration()->getActive();
+
+        // Group inspirations by category
+        $inspirationCategories = Methods::marketingInspiration()->getCategoryOptions();
+
+        // Size options for download
+        $sizeOptions = [
+            'original' => 'Original',
+            'A3' => 'A3 (297 × 420 mm)',
+            'A4' => 'A4 (210 × 297 mm)',
+            'A5' => 'A5 (148 × 210 mm)',
+        ];
+
+        return Views("MERCHANT_MATERIALS", compact(
+            'templates', 'locations', 'inspirations', 'inspirationCategories', 'sizeOptions'
+        ));
     }
 
     public static function reports(array $args): mixed {

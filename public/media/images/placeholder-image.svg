@@ -1,0 +1,7 @@
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#F5F5F5"/>
+  <rect x="140" y="90" width="120" height="90" rx="8" stroke="#BDBDBD" stroke-width="2" fill="none"/>
+  <circle cx="165" cy="115" r="10" stroke="#BDBDBD" stroke-width="2" fill="none"/>
+  <path d="M145 165 L175 135 L195 155 L225 120 L255 165" stroke="#BDBDBD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <text x="200" y="215" text-anchor="middle" fill="#9E9E9E" font-family="system-ui, -apple-system, sans-serif" font-size="14">Billede ikke tilgængeligt</text>
+</svg>

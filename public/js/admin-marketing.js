@@ -1,7 +1,28 @@
 /**
- * Admin Marketing Templates Management
+ * Admin Marketing Templates & Inspiration Management
  */
 
+// Tab switching
+function switchTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.tab-btn').forEach(function(btn) {
+        btn.classList.remove('active');
+        if (btn.dataset.tab === tabName) {
+            btn.classList.add('active');
+        }
+    });
+
+    // Update tab content
+    document.querySelectorAll('.tab-content').forEach(function(content) {
+        content.style.display = 'none';
+    });
+    var targetTab = document.getElementById('tab-' + tabName);
+    if (targetTab) {
+        targetTab.style.display = 'block';
+    }
+}
+
+// Template functions
 function openUploadModal() {
     $('#uploadForm')[0].reset();
     $('#uploadModal').modal('show');
@@ -151,6 +172,165 @@ function deleteTemplate(uid, name) {
             return {
                 status: (data.status === 'success' || data.success) ? 'success' : 'error',
                 error: data.error?.message || 'Kunne ikke slette template'
+            };
+        },
+        refreshTimeout: 1000
+    });
+}
+
+// =====================================================
+// INSPIRATION FUNCTIONS
+// =====================================================
+
+function openInspirationUploadModal() {
+    $('#inspirationUploadForm')[0].reset();
+    $('#inspirationUploadModal').modal('show');
+}
+
+function uploadInspiration() {
+    var fileInput = document.getElementById('inspirationFile');
+    var title = document.getElementById('inspirationTitle').value.trim();
+    var category = document.getElementById('inspirationCategory').value;
+    var description = document.getElementById('inspirationDescription').value.trim();
+
+    if (!fileInput.files.length) {
+        showErrorNotification('Fejl', 'Vælg venligst et billede');
+        return;
+    }
+
+    if (!title) {
+        showErrorNotification('Fejl', 'Indtast venligst en titel');
+        return;
+    }
+
+    var formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    formData.append('title', title);
+    formData.append('category', category);
+    formData.append('description', description);
+    formData.append('_csrf', _csrf);
+
+    // Show loading state
+    var btn = document.getElementById('inspirationUploadBtn');
+    btn.querySelector('.btn-text').classList.add('d-none');
+    btn.querySelector('.spinner-border').classList.remove('d-none');
+    btn.disabled = true;
+
+    fetch(HOST + 'api/admin/marketing/inspiration/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success' || data.success) {
+            queueNotificationOnLoad('Succes', data.message || 'Inspiration uploadet', 'success');
+            window.location.reload();
+        } else {
+            showErrorNotification('Fejl', data.error?.message || 'Kunne ikke uploade inspiration');
+            btn.querySelector('.btn-text').classList.remove('d-none');
+            btn.querySelector('.spinner-border').classList.add('d-none');
+            btn.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Upload error:', error);
+        showErrorNotification('Fejl', 'Der opstod en fejl under upload');
+        btn.querySelector('.btn-text').classList.remove('d-none');
+        btn.querySelector('.spinner-border').classList.add('d-none');
+        btn.disabled = false;
+    });
+}
+
+function editInspiration(uid, title, category, description, status) {
+    document.getElementById('inspirationEditUid').value = uid;
+    document.getElementById('inspirationEditTitle').value = title;
+    document.getElementById('inspirationEditCategory').value = category;
+    document.getElementById('inspirationEditDescription').value = description || '';
+    document.getElementById('inspirationEditStatus').value = status;
+    $('#inspirationEditModal').modal('show');
+}
+
+function saveInspirationChanges() {
+    var uid = document.getElementById('inspirationEditUid').value;
+    var title = document.getElementById('inspirationEditTitle').value.trim();
+    var category = document.getElementById('inspirationEditCategory').value;
+    var description = document.getElementById('inspirationEditDescription').value.trim();
+    var status = document.getElementById('inspirationEditStatus').value;
+
+    if (!title) {
+        showErrorNotification('Fejl', 'Indtast venligst en titel');
+        return;
+    }
+
+    var btn = document.getElementById('inspirationSaveBtn');
+    btn.querySelector('.btn-text').classList.add('d-none');
+    btn.querySelector('.spinner-border').classList.remove('d-none');
+    btn.disabled = true;
+
+    post('api/admin/marketing/inspiration/update', {
+        uid: uid,
+        title: title,
+        category: category,
+        description: description,
+        status: status
+    }).then(data => {
+        if (data.status === 'success' || data.success) {
+            queueNotificationOnLoad('Succes', data.message || 'Inspiration opdateret', 'success');
+            window.location.reload();
+        } else {
+            showErrorNotification('Fejl', data.error?.message || 'Kunne ikke opdatere inspiration');
+            btn.querySelector('.btn-text').classList.remove('d-none');
+            btn.querySelector('.spinner-border').classList.add('d-none');
+            btn.disabled = false;
+        }
+    }).catch(error => {
+        console.error('Update error:', error);
+        showErrorNotification('Fejl', 'Der opstod en fejl');
+        btn.querySelector('.btn-text').classList.remove('d-none');
+        btn.querySelector('.spinner-border').classList.add('d-none');
+        btn.disabled = false;
+    });
+}
+
+function updateInspirationStatus(uid, status) {
+    var actionText = status === 'ACTIVE' ? 'aktivere' : (status === 'DRAFT' ? 'flytte til kladde' : 'deaktivere');
+
+    SweetPrompt.confirm('Bekræft', 'Er du sikker på du vil ' + actionText + ' denne inspiration?', {
+        confirmButtonText: 'Ja, ' + actionText,
+        onConfirm: async () => {
+            const data = await post('api/admin/marketing/inspiration/update', {
+                uid: uid,
+                status: status
+            });
+            if (data.status === 'success' || data.success) {
+                queueNotificationOnLoad('Succes', 'Status opdateret', 'success');
+                window.location.reload();
+            } else {
+                showErrorNotification('Fejl', data.error?.message || 'Kunne ikke opdatere status');
+            }
+            return {
+                status: (data.status === 'success' || data.success) ? 'success' : 'error',
+                error: data.error?.message || 'Kunne ikke opdatere status'
+            };
+        }
+    });
+}
+
+function deleteInspiration(uid, title) {
+    SweetPrompt.confirm('Slet inspiration', 'Er du sikker på du vil slette "' + title + '"? Dette kan ikke fortrydes.', {
+        confirmButtonText: 'Ja, slet',
+        onConfirm: async () => {
+            const data = await post('api/admin/marketing/inspiration/delete', {
+                uid: uid
+            });
+            if (data.status === 'success' || data.success) {
+                queueNotificationOnLoad('Succes', 'Inspiration slettet', 'success');
+            } else {
+                showErrorNotification('Fejl', data.error?.message || 'Kunne ikke slette inspiration');
+            }
+            return {
+                status: (data.status === 'success' || data.success) ? 'success' : 'error',
+                error: data.error?.message || 'Kunne ikke slette inspiration'
             };
         },
         refreshTimeout: 1000

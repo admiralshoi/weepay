@@ -11,6 +11,16 @@ class MarketingPdfGenerator {
     private ?object $template = null;
     private ?object $location = null;
     private ?object $locationPage = null;
+    private string $outputSize = 'original';
+
+    /**
+     * Standard paper sizes in mm (width x height in portrait orientation)
+     */
+    private const PAPER_SIZES = [
+        'A5' => ['width' => 148, 'height' => 210],
+        'A4' => ['width' => 210, 'height' => 297],
+        'A3' => ['width' => 297, 'height' => 420],
+    ];
 
     /**
      * Set the template to use for generation
@@ -32,6 +42,15 @@ class MarketingPdfGenerator {
             'state' => 'PUBLISHED'
         ]);
 
+        return $this;
+    }
+
+    /**
+     * Set the output size for the generated PDF
+     * @param string $size A5, A4, A3, or 'original' to keep template size
+     */
+    public function setSize(string $size): static {
+        $this->outputSize = $size;
         return $this;
     }
 
@@ -64,18 +83,23 @@ class MarketingPdfGenerator {
             // Process each page
             for ($pageNum = 1; $pageNum <= $pageCount; $pageNum++) {
                 $tplId = $pdf->importPage($pageNum);
-                $size = $pdf->getTemplateSize($tplId);
+                $originalSize = $pdf->getTemplateSize($tplId);
 
-                // Add page with same dimensions as original
-                $pdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
-                $pdf->useTemplate($tplId);
+                // Calculate output dimensions based on requested size
+                $outputDimensions = $this->calculateOutputDimensions($originalSize);
 
-                // Apply placeholders for this page
+                // Add page with calculated dimensions
+                $pdf->AddPage($outputDimensions['orientation'], [$outputDimensions['width'], $outputDimensions['height']]);
+
+                // Use template scaled to fit the new page size
+                $pdf->useTemplate($tplId, 0, 0, $outputDimensions['width'], $outputDimensions['height']);
+
+                // Apply placeholders for this page (scaled to new dimensions)
                 foreach ($placeholders->list() as $placeholder) {
                     if ($placeholder->page_number !== $pageNum) {
                         continue;
                     }
-                    $this->applyPlaceholder($pdf, $placeholder, $size);
+                    $this->applyPlaceholder($pdf, $placeholder, $outputDimensions);
                 }
             }
 
@@ -236,6 +260,50 @@ class MarketingPdfGenerator {
             'r' => hexdec(substr($hex, 0, 2)),
             'g' => hexdec(substr($hex, 2, 2)),
             'b' => hexdec(substr($hex, 4, 2)),
+        ];
+    }
+
+    /**
+     * Calculate output dimensions based on requested size
+     * Maintains aspect ratio and determines orientation
+     */
+    private function calculateOutputDimensions(array $originalSize): array {
+        // If original size requested, return as-is
+        if ($this->outputSize === 'original' || !isset(self::PAPER_SIZES[$this->outputSize])) {
+            return [
+                'width' => $originalSize['width'],
+                'height' => $originalSize['height'],
+                'orientation' => $originalSize['orientation'],
+                'scale' => 1.0,
+            ];
+        }
+
+        $targetSize = self::PAPER_SIZES[$this->outputSize];
+
+        // Determine orientation from original
+        $isLandscape = $originalSize['width'] > $originalSize['height'];
+
+        if ($isLandscape) {
+            // Swap target dimensions for landscape
+            $targetWidth = $targetSize['height'];
+            $targetHeight = $targetSize['width'];
+            $orientation = 'L';
+        } else {
+            $targetWidth = $targetSize['width'];
+            $targetHeight = $targetSize['height'];
+            $orientation = 'P';
+        }
+
+        // Calculate scale factor
+        $scaleX = $targetWidth / $originalSize['width'];
+        $scaleY = $targetHeight / $originalSize['height'];
+        $scale = min($scaleX, $scaleY); // Use smaller scale to fit within bounds
+
+        return [
+            'width' => $targetWidth,
+            'height' => $targetHeight,
+            'orientation' => $orientation,
+            'scale' => $scale,
         ];
     }
 }

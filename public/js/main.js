@@ -966,7 +966,7 @@ function IsImageOk(img) {
     return true;
 }
 function replaceBadImage(img) {
-    img.setAttribute('src', serverHost + 'public/media/images/storyExpired.jpg');
+    img.setAttribute('src', serverHost + 'public/media/images/placeholder-image.svg');
 }
 
 

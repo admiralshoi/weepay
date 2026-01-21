@@ -251,6 +251,11 @@ Routes::group(['api','requiresApiLogin'], function() {
         Routes::post("api/merchant/orders/{id}/refund", "merchants.OrdersApiController::refundOrder");
         Routes::post("api/merchant/payments/{id}/refund", "merchants.OrdersApiController::refundPayment");
         Routes::post("api/merchant/payments/{id}/reset-rykker", "merchants.PaymentsApiController::resetPaymentRykker");
+
+        // Marketing Materials
+        Routes::get("api/merchant/materials/download", "merchants.MaterialsApiController::download");
+        Routes::get("api/merchant/materials/templates", "merchants.MaterialsApiController::getTemplates");
+        Routes::get("api/merchant/materials/inspiration", "merchants.MaterialsApiController::getInspiration");
         Routes::post(Links::$api->orders->customers->list, "merchants.CustomersApiController::getCustomers");
 
         Routes::post(Links::$api->forms->createOrganisation, "merchants.ApiController::createOrganisation");
@@ -713,6 +718,11 @@ Routes::group(['requiresApiLogin', "admin", "api"], function() {
     Routes::post("api/admin/marketing/templates/delete", "admin.MarketingApiController::deleteTemplate");
     Routes::post("api/admin/marketing/templates/placeholders/save", "admin.MarketingApiController::savePlaceholders");
     Routes::get("api/admin/marketing/templates/{id}/pdf", "admin.MarketingApiController::getPdfFile");
+
+    // Marketing Inspiration API
+    Routes::post("api/admin/marketing/inspiration/upload", "admin.MarketingApiController::uploadInspiration");
+    Routes::post("api/admin/marketing/inspiration/update", "admin.MarketingApiController::updateInspiration");
+    Routes::post("api/admin/marketing/inspiration/delete", "admin.MarketingApiController::deleteInspiration");
 
     // Support Ticket System API
     Routes::post(Links::$api->admin->support->list, "admin.ApiController::supportList");

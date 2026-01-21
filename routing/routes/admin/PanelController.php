@@ -47,6 +47,10 @@ class PanelController {
         $args['templates'] = Methods::marketingTemplates()->getAll();
         $args['typeOptions'] = Methods::marketingTemplates()->getTypeOptions();
         $args['statusOptions'] = Methods::marketingTemplates()->getStatusOptions();
+        $args['categoryOptions'] = Methods::marketingTemplates()->getCategoryOptions();
+        $args['inspirations'] = Methods::marketingInspiration()->getAll();
+        $args['inspirationCategoryOptions'] = Methods::marketingInspiration()->getCategoryOptions();
+        $args['inspirationStatusOptions'] = Methods::marketingInspiration()->getStatusOptions();
         return Views("ADMIN_PANEL_MARKETING", $args);
     }
 

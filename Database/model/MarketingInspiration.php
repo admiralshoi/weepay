@@ -2,22 +2,21 @@
 
 namespace Database\model;
 
-class MarketingTemplates extends \Database\Model {
+class MarketingInspiration extends \Database\Model {
 
-    public static ?string $uidPrefix = "mt";
+    public static ?string $uidPrefix = "mi";
     protected static array $schema = [
         "uid" => "string",
-        "name" => "string",
-        "file_path" => "string",
-        "type" => ["type" => "enum", "default" => "A4", "values" => ["A4", "A3", "A5", "roll-up", "poster", "flyer", "sticker"]],
-        "category" => ["type" => "enum", "default" => "template", "values" => ["template", "a_sign_base"]],
-        "status" => ["type" => "enum", "default" => "DRAFT", "values" => ["DRAFT", "ACTIVE", "INACTIVE"]],
-        "preview_image" => ["type" => "string", "default" => null, "nullable" => true],
+        "title" => "string",
+        "category" => ["type" => "enum", "default" => "other", "values" => ["instagram", "a_sign", "poster", "other"]],
+        "image_path" => "string",
         "description" => ["type" => "text", "default" => null, "nullable" => true],
+        "status" => ["type" => "enum", "default" => "DRAFT", "values" => ["DRAFT", "ACTIVE", "INACTIVE"]],
+        "sort_order" => ["type" => "integer", "default" => 0],
         "created_by" => ["type" => "string", "default" => null, "nullable" => true],
     ];
 
-    public static array $indexes = ["status", "type", "category"];
+    public static array $indexes = ["status", "category", "sort_order"];
     public static array $uniques = ["uid"];
 
     protected static array $requiredRows = [];

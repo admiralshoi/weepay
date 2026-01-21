@@ -247,4 +247,157 @@ class MarketingApiController {
         readfile($filePath);
         exit;
     }
+
+    /**
+     * Upload a new inspiration image
+     */
+    #[NoReturn] public static function uploadInspiration(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', 403);
+        }
+
+        if (empty($args['__FILES']) || !isset($args['__FILES']['file'])) {
+            Response()->jsonError("Ingen fil uploadet", [], 400);
+        }
+
+        $file = $args['__FILES']['file'];
+        $title = trim($args['title'] ?? '') ?: pathinfo($file['name'], PATHINFO_FILENAME);
+        $category = $args['category'] ?? 'other';
+        $description = isset($args['description']) ? trim($args['description']) : null;
+
+        // Validate image
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $allowedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        if (!in_array($ext, $allowedExts)) {
+            Response()->jsonError("Kun billeder er tilladt (jpg, png, gif, webp)", [], 400);
+        }
+
+        // Validate file size (max 10MB)
+        if ($file['size'] > 10 * 1024 * 1024) {
+            Response()->jsonError("Filen er for stor. Maks 10MB", [], 400);
+        }
+
+        // Ensure upload directory exists
+        $uploadDir = "public/content/marketing/inspiration/";
+        if (!is_dir(ROOT . $uploadDir)) {
+            mkdir(ROOT . $uploadDir, 0755, true);
+        }
+
+        // Generate unique filename
+        $filename = "inspiration-" . time() . "-" . uniqid() . "." . $ext;
+        $filePath = $uploadDir . $filename;
+
+        // Check for upload errors
+        if (isset($file['error']) && $file['error'] !== UPLOAD_ERR_OK) {
+            $errorMessages = [
+                UPLOAD_ERR_INI_SIZE => 'Filen overskrider upload_max_filesize',
+                UPLOAD_ERR_FORM_SIZE => 'Filen overskrider MAX_FILE_SIZE',
+                UPLOAD_ERR_PARTIAL => 'Filen blev kun delvist uploadet',
+                UPLOAD_ERR_NO_FILE => 'Ingen fil blev uploadet',
+                UPLOAD_ERR_NO_TMP_DIR => 'Mangler midlertidig mappe',
+                UPLOAD_ERR_CANT_WRITE => 'Kunne ikke skrive fil til disk',
+                UPLOAD_ERR_EXTENSION => 'En PHP udvidelse stoppede upload',
+            ];
+            $errorMsg = $errorMessages[$file['error']] ?? 'Ukendt upload fejl';
+            Response()->jsonError($errorMsg, $file, 400);
+        }
+
+        // Verify tmp file exists
+        if (empty($file['tmp_name']) || !file_exists($file['tmp_name'])) {
+            Response()->jsonError("Midlertidig fil ikke fundet", [], 500);
+        }
+
+        if (!move_uploaded_file($file['tmp_name'], ROOT . $filePath)) {
+            Response()->jsonError("Kunne ikke gemme filen - kontroller mapperettigheder", [], 500);
+        }
+
+        // Create inspiration record
+        $inspirationUid = Methods::marketingInspiration()->createInspiration(
+            $title,
+            $filePath,
+            $category,
+            $description,
+            'DRAFT'
+        );
+
+        if (!$inspirationUid) {
+            // Cleanup file on failure
+            if (file_exists(ROOT . $filePath)) {
+                unlink(ROOT . $filePath);
+            }
+            Response()->jsonError("Kunne ikke oprette inspiration", [], 500);
+        }
+
+        Response()->jsonSuccess("Inspiration uploadet", [
+            "uid" => $inspirationUid,
+            "image" => __url($filePath),
+        ]);
+    }
+
+    /**
+     * Update inspiration item
+     */
+    #[NoReturn] public static function updateInspiration(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', 403);
+        }
+
+        $uid = $args['uid'] ?? null;
+        if (isEmpty($uid)) {
+            Response()->jsonError("Manglende inspiration ID", [], 400);
+        }
+
+        $item = Methods::marketingInspiration()->get($uid);
+        if (isEmpty($item)) {
+            Response()->jsonError("Inspiration ikke fundet", [], 404);
+        }
+
+        $updateData = [];
+        if (isset($args['title']) && !isEmpty(trim($args['title']))) {
+            $updateData['title'] = trim($args['title']);
+        }
+        if (isset($args['category'])) {
+            $updateData['category'] = $args['category'];
+        }
+        if (isset($args['description'])) {
+            $updateData['description'] = trim($args['description']);
+        }
+        if (isset($args['status'])) {
+            $updateData['status'] = $args['status'];
+        }
+
+        if (empty($updateData)) {
+            Response()->jsonError("Ingen data at opdatere", [], 400);
+        }
+
+        $updated = Methods::marketingInspiration()->updateInspiration($uid, $updateData);
+
+        if (!$updated) {
+            Response()->jsonError("Kunne ikke opdatere inspiration", [], 500);
+        }
+
+        Response()->jsonSuccess("Inspiration opdateret");
+    }
+
+    /**
+     * Delete an inspiration item
+     */
+    #[NoReturn] public static function deleteInspiration(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', 403);
+        }
+
+        $uid = $args['uid'] ?? null;
+        if (isEmpty($uid)) {
+            Response()->jsonError("Manglende inspiration ID", [], 400);
+        }
+
+        $deleted = Methods::marketingInspiration()->deleteInspiration($uid);
+
+        if (!$deleted) {
+            Response()->jsonError("Kunne ikke slette inspiration", [], 500);
+        }
+
+        Response()->jsonSuccess("Inspiration slettet");
+    }
 }

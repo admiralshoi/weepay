@@ -122,6 +122,7 @@ class Methods {
     public static function marketingTemplates(): \classes\marketing\MarketingTemplateHandler { return new \classes\marketing\MarketingTemplateHandler(); }
     public static function marketingPlaceholders(): \classes\marketing\MarketingPlaceholderHandler { return new \classes\marketing\MarketingPlaceholderHandler(); }
     public static function marketingPdfGenerator(): \classes\marketing\MarketingPdfGenerator { return new \classes\marketing\MarketingPdfGenerator(); }
+    public static function marketingInspiration(): \classes\marketing\MarketingInspirationHandler { return new \classes\marketing\MarketingInspirationHandler(); }
     public static function sortByKey(&$arr,$key = "", $ascending = false, array $specialReplacement = array(), array $splitReplace = array(), $key2 = ""): void {
         (new SortByKey())->run($arr, $key, $ascending, $specialReplacement, $splitReplace, $key2); }
     public static function hasAccess(string $type, string $name, int $actionType, string|int $requestingLevel): bool {
