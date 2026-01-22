@@ -536,10 +536,10 @@ Med venlig hilsen,
             "slug" => "rykker_1_email",
             "type" => "email",
             "category" => "template",
-            "subject" => "1. rykker - Betaling mangler",
+            "subject" => "1. rykker fra {{location.name}} - Betaling mangler",
             "content" => "Kære {{user.full_name}},
 
-1. RYKKER
+1. RYKKER FRA {{location.name}}
 
 Vi har endnu ikke modtaget din betaling, som forfaldt den {{payment.due_date_formatted}}.
 
@@ -559,14 +559,19 @@ Betal her: {{payment_link}}
 
 Har du allerede betalt, bedes du se bort fra denne påmindelse.
 
+VIGTIGT: Rykkergebyret på {{rykker.formatted_fee}} er pålagt af {{location.name}} i henhold til deres betalingsbetingelser. Eventuelle spørgsmål eller tvister vedrørende dette gebyr skal rettes direkte til {{location.name}}.
+
 Med venlig hilsen,
-{{brand.name}}",
+{{location.name}}
+
+---
+Denne besked sendes på vegne af {{location.name}} via {{brand.name}}.",
             "html_content" => '{{template.email_header_location}}
 {{template.email_content_start}}
 <p>Kære {{user.full_name}},</p>
 
 <div style="background: #fff3e0; padding: 15px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ff9800;">
-    <h2 style="margin: 0; color: #e65100; font-size: 18px;">1. RYKKER</h2>
+    <h2 style="margin: 0; color: #e65100; font-size: 18px;">1. RYKKER FRA {{location.name}}</h2>
 </div>
 
 <p>Vi har endnu ikke modtaget din betaling, som forfaldt den <strong>{{payment.due_date_formatted}}</strong>.</p>
@@ -591,6 +596,12 @@ Med venlig hilsen,
 </p>
 
 <p style="font-size: 13px; color: #666;">Har du allerede betalt, bedes du se bort fra denne påmindelse.</p>
+
+<div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin-top: 20px; font-size: 12px; color: #666;">
+    <strong>Bemærk:</strong> Rykkergebyret på {{rykker.formatted_fee}} er pålagt af {{location.name}} i henhold til deres betalingsbetingelser. Eventuelle spørgsmål eller tvister vedrørende dette gebyr skal rettes direkte til {{location.name}}.
+</div>
+
+<p style="font-size: 11px; color: #999; margin-top: 15px; text-align: center;">Denne besked sendes på vegne af {{location.name}} via {{brand.name}}.</p>
 {{template.email_content_end}}
 {{template.email_footer}}',
             "status" => "active",
@@ -603,7 +614,7 @@ Med venlig hilsen,
             "type" => "sms",
             "category" => "template",
             "subject" => null,
-            "content" => "1. RYKKER: Din betaling mangler. Total at betale: {{payment.formatted_total_due}} (inkl. gebyr {{rykker.formatted_fee}}). Betal nu: {{payment_link}}",
+            "content" => "1. RYKKER fra {{location.name}}: Din betaling mangler. Total: {{payment.formatted_total_due}} (inkl. gebyr {{rykker.formatted_fee}} pålagt af butikken). Betal nu: {{payment_link}}",
             "html_content" => null,
             "status" => "active",
             "created_by" => null,
@@ -614,8 +625,8 @@ Med venlig hilsen,
             "slug" => "rykker_1_bell",
             "type" => "bell",
             "category" => "template",
-            "subject" => "1. rykker",
-            "content" => "Din betaling på {{payment.formatted_amount}} mangler. Betal venligst hurtigst muligt.",
+            "subject" => "1. rykker fra {{location.name}}",
+            "content" => "Din betaling på {{payment.formatted_amount}} til {{location.name}} mangler. Betal venligst hurtigst muligt.",
             "html_content" => null,
             "status" => "active",
             "created_by" => null,
@@ -630,10 +641,10 @@ Med venlig hilsen,
             "slug" => "rykker_2_email",
             "type" => "email",
             "category" => "template",
-            "subject" => "2. rykker - Handling påkrævet",
+            "subject" => "2. rykker fra {{location.name}} - Handling påkrævet",
             "content" => "Kære {{user.full_name}},
 
-2. RYKKER - HANDLING PÅKRÆVET
+2. RYKKER FRA {{location.name}} - HANDLING PÅKRÆVET
 
 Trods tidligere påmindelse har vi stadig ikke modtaget din betaling.
 
@@ -652,16 +663,21 @@ Vi gør opmærksom på, at manglende betaling kan medføre yderligere omkostning
 
 Betal omgående her: {{payment_link}}
 
-Kontakt os hurtigst muligt, hvis du har spørgsmål eller ønsker at aftale en betalingsordning.
+Kontakt {{location.name}} hurtigst muligt, hvis du har spørgsmål eller ønsker at aftale en betalingsordning.
+
+VIGTIGT: Alle rykkergebyrer (samlet {{rykker.formatted_total_fees}}) er pålagt af {{location.name}} i henhold til deres betalingsbetingelser. Eventuelle spørgsmål eller tvister vedrørende disse gebyrer skal rettes direkte til {{location.name}}.
 
 Med venlig hilsen,
-{{brand.name}}",
+{{location.name}}
+
+---
+Denne besked sendes på vegne af {{location.name}} via {{brand.name}}.",
             "html_content" => '{{template.email_header_location}}
 {{template.email_content_start}}
 <p>Kære {{user.full_name}},</p>
 
 <div style="background: #ffebee; padding: 15px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f44336;">
-    <h2 style="margin: 0; color: #c62828; font-size: 18px;">2. RYKKER - HANDLING PÅKRÆVET</h2>
+    <h2 style="margin: 0; color: #c62828; font-size: 18px;">2. RYKKER FRA {{location.name}} - HANDLING PÅKRÆVET</h2>
 </div>
 
 <p>Trods tidligere påmindelse har vi stadig ikke modtaget din betaling.</p>
@@ -686,7 +702,13 @@ Med venlig hilsen,
     <a href="{{payment_link}}" style="display: inline-block; padding: 12px 30px; background: #d32f2f; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;">Betal omgående</a>
 </p>
 
-<p style="font-size: 13px; color: #666;">Kontakt os hurtigst muligt, hvis du har spørgsmål eller ønsker at aftale en betalingsordning.</p>
+<p style="font-size: 13px; color: #666;">Kontakt {{location.name}} hurtigst muligt, hvis du har spørgsmål eller ønsker at aftale en betalingsordning.</p>
+
+<div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin-top: 20px; font-size: 12px; color: #666;">
+    <strong>Bemærk:</strong> Alle rykkergebyrer (samlet {{rykker.formatted_total_fees}}) er pålagt af {{location.name}} i henhold til deres betalingsbetingelser. Eventuelle spørgsmål eller tvister vedrørende disse gebyrer skal rettes direkte til {{location.name}}.
+</div>
+
+<p style="font-size: 11px; color: #999; margin-top: 15px; text-align: center;">Denne besked sendes på vegne af {{location.name}} via {{brand.name}}.</p>
 {{template.email_content_end}}
 {{template.email_footer}}',
             "status" => "active",
@@ -699,7 +721,7 @@ Med venlig hilsen,
             "type" => "sms",
             "category" => "template",
             "subject" => null,
-            "content" => "2. RYKKER: Total at betale: {{payment.formatted_total_due}} (inkl. gebyrer {{rykker.formatted_total_fees}}). Betal omgående: {{payment_link}}",
+            "content" => "2. RYKKER fra {{location.name}}: Total: {{payment.formatted_total_due}} (inkl. gebyrer {{rykker.formatted_total_fees}} pålagt af butikken). Betal omgående: {{payment_link}}",
             "html_content" => null,
             "status" => "active",
             "created_by" => null,
@@ -710,8 +732,8 @@ Med venlig hilsen,
             "slug" => "rykker_2_bell",
             "type" => "bell",
             "category" => "template",
-            "subject" => "2. rykker - Handling påkrævet",
-            "content" => "Din betaling på {{payment.formatted_amount}} mangler stadig. Betal omgående for at undgå yderligere konsekvenser.",
+            "subject" => "2. rykker fra {{location.name}}",
+            "content" => "Din betaling på {{payment.formatted_amount}} til {{location.name}} mangler stadig. Betal omgående for at undgå yderligere konsekvenser.",
             "html_content" => null,
             "status" => "active",
             "created_by" => null,
@@ -726,12 +748,12 @@ Med venlig hilsen,
             "slug" => "rykker_3_email",
             "type" => "email",
             "category" => "template",
-            "subject" => "SIDSTE ADVARSEL - Inkassovarsel",
+            "subject" => "SIDSTE ADVARSEL fra {{location.name}} - Inkassovarsel",
             "content" => "Kære {{user.full_name}},
 
-SIDSTE ADVARSEL - INKASSOVARSEL
+SIDSTE ADVARSEL FRA {{location.name}} - INKASSOVARSEL
 
-Dette er din sidste mulighed for at betale din udestående gæld, før sagen overdrages til inkasso.
+Dette er din sidste mulighed for at betale din udestående gæld til {{location.name}}, før sagen overdrages til inkasso.
 
 BETALINGSDETALJER
 -----------------
@@ -748,19 +770,24 @@ Hvis betalingen ikke modtages inden 7 dage, vil sagen uden yderligere varsel bli
 
 Betal omgående her: {{payment_link}}
 
-Ønsker du at undgå inkasso, skal du betale det fulde beløb eller kontakte os for at aftale en betalingsordning.
+Ønsker du at undgå inkasso, skal du betale det fulde beløb eller kontakte {{location.name}} direkte for at aftale en betalingsordning.
+
+VIGTIGT: Alle rykkergebyrer (samlet {{rykker.formatted_total_fees}}) er pålagt af {{location.name}} i henhold til deres betalingsbetingelser. Eventuelle spørgsmål eller tvister vedrørende disse gebyrer eller den udestående betaling skal rettes direkte til {{location.name}}.
 
 Med venlig hilsen,
-{{brand.name}}",
+{{location.name}}
+
+---
+Denne besked sendes på vegne af {{location.name}} via {{brand.name}}.",
             "html_content" => '{{template.email_header_location}}
 {{template.email_content_start}}
 <p>Kære {{user.full_name}},</p>
 
 <div style="background: #b71c1c; padding: 15px 20px; border-radius: 8px; margin: 20px 0;">
-    <h2 style="margin: 0; color: #fff; font-size: 18px;">SIDSTE ADVARSEL - INKASSOVARSEL</h2>
+    <h2 style="margin: 0; color: #fff; font-size: 18px;">SIDSTE ADVARSEL FRA {{location.name}} - INKASSOVARSEL</h2>
 </div>
 
-<p><strong>Dette er din sidste mulighed for at betale din udestående gæld, før sagen overdrages til inkasso.</strong></p>
+<p><strong>Dette er din sidste mulighed for at betale din udestående gæld til {{location.name}}, før sagen overdrages til inkasso.</strong></p>
 
 <div style="background: #ffebee; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #b71c1c;">
     <h3 style="margin: 0 0 15px 0; color: #b71c1c; font-size: 16px;">Betalingsdetaljer</h3>
@@ -784,7 +811,13 @@ Med venlig hilsen,
     <a href="{{payment_link}}" style="display: inline-block; padding: 15px 40px; background: #b71c1c; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">BETAL NU</a>
 </p>
 
-<p style="font-size: 13px; color: #666;">Ønsker du at undgå inkasso, skal du betale det fulde beløb eller kontakte os for at aftale en betalingsordning.</p>
+<p style="font-size: 13px; color: #666;">Ønsker du at undgå inkasso, skal du betale det fulde beløb eller kontakte {{location.name}} direkte for at aftale en betalingsordning.</p>
+
+<div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin-top: 20px; font-size: 12px; color: #666;">
+    <strong>Bemærk:</strong> Alle rykkergebyrer (samlet {{rykker.formatted_total_fees}}) er pålagt af {{location.name}} i henhold til deres betalingsbetingelser. Eventuelle spørgsmål eller tvister vedrørende disse gebyrer eller den udestående betaling skal rettes direkte til {{location.name}}.
+</div>
+
+<p style="font-size: 11px; color: #999; margin-top: 15px; text-align: center;">Denne besked sendes på vegne af {{location.name}} via {{brand.name}}.</p>
 {{template.email_content_end}}
 {{template.email_footer}}',
             "status" => "active",
@@ -797,7 +830,7 @@ Med venlig hilsen,
             "type" => "sms",
             "category" => "template",
             "subject" => null,
-            "content" => "INKASSOVARSEL: Total {{payment.formatted_total_due}} (inkl. gebyrer {{rykker.formatted_total_fees}}) skal betales NU. Sidste chance: {{payment_link}}",
+            "content" => "INKASSOVARSEL fra {{location.name}}: Total {{payment.formatted_total_due}} (inkl. gebyrer {{rykker.formatted_total_fees}} pålagt af butikken) skal betales NU. Sidste chance: {{payment_link}}",
             "html_content" => null,
             "status" => "active",
             "created_by" => null,
@@ -808,8 +841,8 @@ Med venlig hilsen,
             "slug" => "rykker_3_bell",
             "type" => "bell",
             "category" => "template",
-            "subject" => "INKASSOVARSEL",
-            "content" => "Sidste chance: Betal {{payment.formatted_amount}} nu for at undgå inkasso.",
+            "subject" => "INKASSOVARSEL fra {{location.name}}",
+            "content" => "Sidste chance: Betal {{payment.formatted_amount}} til {{location.name}} nu for at undgå inkasso.",
             "html_content" => null,
             "status" => "active",
             "created_by" => null,
