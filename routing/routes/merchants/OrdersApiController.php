@@ -872,4 +872,225 @@ class OrdersApiController {
             'transaction_id' => $result['TransactionId'],
         ]);
     }
+
+    /**
+     * Download order contract PDF
+     * Merchant version - verifies organisation ownership and location permissions
+     */
+    #[NoReturn] public static function downloadContract(array $args): void {
+        $orderUid = $args['uid'] ?? null;
+
+        // 1. Verify organisation membership
+        if (isEmpty(Settings::$organisation)) {
+            Response()->jsonError("Du er ikke medlem af nogen aktiv organisation.");
+        }
+
+        if (isEmpty($orderUid)) {
+            Response()->jsonError("Ordre ID mangler.");
+        }
+
+        // Get the order
+        $orderHandler = Methods::orders();
+        $order = $orderHandler->excludeForeignKeys()->get($orderUid);
+
+        if (isEmpty($order)) {
+            Response()->jsonError("Ordre ikke fundet.");
+        }
+
+        // 2. Verify order belongs to user's organisation
+        if ($order->organisation !== Settings::$organisation->organisation->uid) {
+            Response()->jsonError("Du har ikke adgang til denne ordre.");
+        }
+
+        // 3. Check location-level permissions
+        $location = Methods::locations()->excludeForeignKeys()->get($order->location);
+        if (!\classes\app\LocationPermissions::__oRead($location, 'orders')) {
+            Response()->jsonError("Du har ikke tilladelse til at se ordrer for denne lokation.");
+        }
+
+        // Only allow contracts for BNPL orders
+        if (!in_array($order->payment_plan, ['installments', 'pushed'])) {
+            Response()->jsonError("Denne ordre har ingen kontrakt.");
+        }
+
+        // Get or generate the contract PDF
+        $documentHandler = Methods::contractDocuments();
+        $pdfContent = $documentHandler->getContract($order);
+
+        if (!$pdfContent) {
+            // Generate the contract PDF
+            $pdf = new \classes\documents\OrderContractPdf($order);
+            $pdfContent = $pdf->generatePdfString();
+
+            // Save it for future use
+            $documentHandler->saveContract($order, $pdfContent);
+        }
+
+        // Stream the PDF to browser
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="kontrakt_' . $order->uid . '.pdf"');
+        header('Content-Length: ' . strlen($pdfContent));
+        header('Cache-Control: private, max-age=0, must-revalidate');
+        header('Pragma: public');
+
+        echo $pdfContent;
+        exit;
+    }
+
+    /**
+     * Download rykker PDF for an order's payment
+     * Merchant version - verifies organisation ownership and location permissions
+     */
+    #[NoReturn] public static function downloadRykker(array $args): void {
+        $orderUid = $args['uid'] ?? null;
+        $level = (int)($args['level'] ?? 0);
+
+        // 1. Verify organisation membership
+        if (isEmpty(Settings::$organisation)) {
+            Response()->jsonError("Du er ikke medlem af nogen aktiv organisation.");
+        }
+
+        if (isEmpty($orderUid)) {
+            Response()->jsonError("Ordre ID mangler.");
+        }
+
+        if ($level < 1 || $level > 3) {
+            Response()->jsonError("Ugyldigt rykker niveau.");
+        }
+
+        // Get the order
+        $orderHandler = Methods::orders();
+        $order = $orderHandler->excludeForeignKeys()->get($orderUid);
+
+        if (isEmpty($order)) {
+            Response()->jsonError("Ordre ikke fundet.");
+        }
+
+        // 2. Verify order belongs to user's organisation
+        if ($order->organisation !== Settings::$organisation->organisation->uid) {
+            Response()->jsonError("Du har ikke adgang til denne ordre.");
+        }
+
+        // 3. Check location-level permissions
+        $location = Methods::locations()->excludeForeignKeys()->get($order->location);
+        if (!\classes\app\LocationPermissions::__oRead($location, 'orders')) {
+            Response()->jsonError("Du har ikke tilladelse til at se ordrer for denne lokation.");
+        }
+
+        // Get payments for this order to find one with rykker at this level
+        $paymentHandler = Methods::payments();
+        $payments = $paymentHandler->excludeForeignKeys()->getByX(['order' => $orderUid]);
+
+        // Find a payment that has this rykker level
+        $targetPayment = null;
+        foreach ($payments->list() as $payment) {
+            if ((int)$payment->rykker_level >= $level) {
+                $targetPayment = $payment;
+                break;
+            }
+        }
+
+        if (!$targetPayment) {
+            Response()->jsonError("Ingen rykker fundet paa dette niveau for denne ordre.");
+        }
+
+        // Get or generate the rykker PDF
+        $documentHandler = Methods::contractDocuments();
+        $pdfContent = $documentHandler->getRykker($targetPayment, $level);
+
+        if (!$pdfContent) {
+            // Generate the rykker PDF
+            $pdf = new \classes\documents\RykkerPdf($targetPayment, $level);
+            $pdfContent = $pdf->generatePdfString();
+
+            // Save it for future use
+            $documentHandler->saveRykker($targetPayment, $level, $pdfContent);
+        }
+
+        // Stream the PDF to browser
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="rykker' . $level . '_' . $orderUid . '.pdf"');
+        header('Content-Length: ' . strlen($pdfContent));
+        header('Cache-Control: private, max-age=0, must-revalidate');
+        header('Pragma: public');
+
+        echo $pdfContent;
+        exit;
+    }
+
+    /**
+     * Download rykker PDF by payment UID
+     * Merchant version - verifies organisation ownership and location permissions
+     */
+    #[NoReturn] public static function downloadPaymentRykker(array $args): void {
+        $paymentUid = $args['uid'] ?? null;
+        $level = (int)($args['level'] ?? 0);
+
+        // 1. Verify organisation membership
+        if (isEmpty(Settings::$organisation)) {
+            Response()->jsonError("Du er ikke medlem af nogen aktiv organisation.");
+        }
+
+        if (isEmpty($paymentUid)) {
+            Response()->jsonError("Betalings ID mangler.");
+        }
+
+        if ($level < 1 || $level > 3) {
+            Response()->jsonError("Ugyldigt rykker niveau.");
+        }
+
+        // Get the payment
+        $paymentHandler = Methods::payments();
+        $payment = $paymentHandler->excludeForeignKeys()->get($paymentUid);
+
+        if (isEmpty($payment)) {
+            Response()->jsonError("Betaling ikke fundet.");
+        }
+
+        // Verify payment has this rykker level
+        if ((int)$payment->rykker_level < $level) {
+            Response()->jsonError("Denne betaling har ikke rykker niveau {$level}.");
+        }
+
+        // Get the order to check permissions
+        $order = Methods::orders()->excludeForeignKeys()->get($payment->order);
+
+        if (isEmpty($order)) {
+            Response()->jsonError("Ordre ikke fundet.");
+        }
+
+        // 2. Verify order belongs to user's organisation
+        if ($order->organisation !== Settings::$organisation->organisation->uid) {
+            Response()->jsonError("Du har ikke adgang til denne betaling.");
+        }
+
+        // 3. Check location-level permissions
+        $location = Methods::locations()->excludeForeignKeys()->get($order->location);
+        if (!\classes\app\LocationPermissions::__oRead($location, 'orders')) {
+            Response()->jsonError("Du har ikke tilladelse til at se ordrer for denne lokation.");
+        }
+
+        // Get or generate the rykker PDF
+        $documentHandler = Methods::contractDocuments();
+        $pdfContent = $documentHandler->getRykker($payment, $level);
+
+        if (!$pdfContent) {
+            // Generate the rykker PDF
+            $pdf = new \classes\documents\RykkerPdf($payment, $level);
+            $pdfContent = $pdf->generatePdfString();
+
+            // Save it for future use
+            $documentHandler->saveRykker($payment, $level, $pdfContent);
+        }
+
+        // Stream the PDF to browser
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="rykker' . $level . '_' . $paymentUid . '.pdf"');
+        header('Content-Length: ' . strlen($pdfContent));
+        header('Cache-Control: private, max-age=0, must-revalidate');
+        header('Pragma: public');
+
+        echo $pdfContent;
+        exit;
+    }
 }

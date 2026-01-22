@@ -81,16 +81,45 @@ class NotificationTriggers {
      * Trigger when an order is completed
      */
     public static function orderCompleted(object|array $order, ?object $user = null, ?object $organisation = null): bool {
-        $context = self::buildOrderContext($order, $user, $organisation);
+        $orderUid = is_array($order) ? ($order['uid'] ?? 'unknown') : ($order->uid ?? 'unknown');
+        $orderPlan = is_array($order) ? ($order['payment_plan'] ?? 'unknown') : ($order->payment_plan ?? 'unknown');
+
         debugLog([
+            'order_uid' => $orderUid,
+            'payment_plan' => $orderPlan,
+            'timestamp' => date('Y-m-d H:i:s.u'),
+            'user_provided' => $user !== null,
+            'org_provided' => $organisation !== null,
+        ], 'NOTIFICATION_ORDER_COMPLETED_ENTRY');
+
+        $context = self::buildOrderContext($order, $user, $organisation);
+
+        debugLog([
+            'order_uid' => $orderUid,
+            'context_order_uid' => $context['order']['uid'] ?? 'missing',
+            'context_order_payment_plan' => $context['order']['payment_plan'] ?? 'missing',
+            'context_user_email' => $context['user']['email'] ?? 'missing',
             'has_location' => isset($context['location']),
             'location_name' => $context['location']['name'] ?? null,
             'has_payment_plan' => isset($context['payment_plan']),
             'payment_plan_type' => $context['payment_plan']['type'] ?? null,
             'payment_plan_total' => $context['payment_plan']['total_amount_formatted'] ?? null,
             'payment_plan_first' => $context['payment_plan']['first_amount_formatted'] ?? null,
-        ], 'NotificationTriggers_orderCompleted_context');
-        return NotificationService::trigger('order.completed', $context);
+        ], 'NOTIFICATION_ORDER_COMPLETED_CONTEXT');
+
+        debugLog([
+            'order_uid' => $orderUid,
+            'about_to_trigger' => 'order.completed',
+        ], 'NOTIFICATION_ORDER_COMPLETED_BEFORE_TRIGGER');
+
+        $result = NotificationService::trigger('order.completed', $context);
+
+        debugLog([
+            'order_uid' => $orderUid,
+            'trigger_result' => $result,
+        ], 'NOTIFICATION_ORDER_COMPLETED_AFTER_TRIGGER');
+
+        return $result;
     }
 
     /**
@@ -1279,6 +1308,9 @@ class NotificationTriggers {
         $installmentCount = 0;
         $remainingAmount = 0;
         $scheduleLines = [];
+        $firstDueDate = null;
+        $nextDueDate = null;
+        $lastDueDate = null;
 
         if ($orderUid) {
             $payments = Methods::payments()->getByXOrderBy('installment_number', 'ASC', ['order' => $orderUid]);
@@ -1291,13 +1323,26 @@ class NotificationTriggers {
                 $isPaid = in_array($status, ['COMPLETED', 'PAID']);
                 $isRefundedOrCancelled = in_array($status, ['REFUNDED', 'VOIDED', 'CANCELLED']);
 
+                $dueDate = $payment->due_date ?? null;
+
                 if ($payment->installment_number === 1) {
                     $firstAmount = $paymentAmount;
+                    $firstDueDate = $dueDate;
                 } else {
                     // Use amount from subsequent payments as installment amount
                     if ($installmentAmount === 0) {
                         $installmentAmount = $paymentAmount;
                     }
+                }
+
+                // Track next due date (first unpaid payment)
+                if (!$isPaid && !$isRefundedOrCancelled && $nextDueDate === null && $dueDate) {
+                    $nextDueDate = $dueDate;
+                }
+
+                // Track last due date
+                if ($dueDate) {
+                    $lastDueDate = $dueDate;
                 }
 
                 // Only add to remaining if not paid and not refunded/cancelled
@@ -1307,7 +1352,6 @@ class NotificationTriggers {
 
                 // Build schedule summary line
                 $statusText = $isPaid ? '✓' : ($isRefundedOrCancelled ? '✗' : '');
-                $dueDate = $payment->due_date ?? null;
                 $dueDateFormatted = $dueDate ? date('d.m.Y', strtotime($dueDate)) : '-';
                 $amountFormatted = number_format($paymentAmount, 2, ',', '.') . ' ' . $currency;
                 $scheduleLines[] = "Rate " . ($i + 1) . ": " . $amountFormatted . " - " . $dueDateFormatted . " " . $statusText;
@@ -1334,6 +1378,9 @@ class NotificationTriggers {
             'total_installments' => $installmentCount,
             'remaining_amount' => $remainingAmountCents,
             'remaining_amount_formatted' => number_format($remainingAmount, 2, ',', '.') . ' ' . $currency,
+            'first_due_date' => $firstDueDate ? date('d.m.Y', strtotime($firstDueDate)) : null,
+            'next_due_date' => $nextDueDate ? date('d.m.Y', strtotime($nextDueDate)) : null,
+            'last_due_date' => $lastDueDate ? date('d.m.Y', strtotime($lastDueDate)) : null,
             'schedule_summary' => implode("\n", $scheduleLines),
         ];
     }

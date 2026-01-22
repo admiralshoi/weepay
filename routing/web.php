@@ -58,6 +58,8 @@ Routes::group(['requiresLogin', 'consumer'], function() {
     Routes::post(Links::$api->consumer->payNow, "consumer.ApiController::payNow", ['consumerProfileComplete']);
     Routes::post(Links::$api->consumer->payOrderOutstanding, "consumer.ApiController::payOrderOutstanding", ['consumerProfileComplete']);
     Routes::get("api/consumer/payments/{id}/receipt", "consumer.ApiController::downloadReceipt", ['consumerProfileComplete']);
+    Routes::get("api/consumer/orders/{uid}/contract", "consumer.ApiController::downloadContract", ['consumerProfileComplete']);
+    Routes::get("api/consumer/payments/{uid}/rykker/{level}", "consumer.ApiController::downloadRykker", ['consumerProfileComplete']);
     // More specific routes must come before less specific ones
     Routes::post("api/consumer/change-card/payment-method/{paymentMethodUid}", "consumer.ApiController::initiatePaymentMethodCardChange", ['consumerProfileComplete']);
     Routes::post("api/consumer/change-card/order/{orderUid}", "consumer.ApiController::initiateOrderCardChange", ['consumerProfileComplete']);
@@ -248,6 +250,9 @@ Routes::group(['api','requiresApiLogin'], function() {
         Routes::post(Links::$api->orders->locationList, "merchants.OrdersApiController::getLocationOrders");
         Routes::post(Links::$api->orders->payments->list, "merchants.PaymentsApiController::getPayments");
         Routes::get("api/payments/{id}/receipt", "merchants.PaymentsApiController::downloadReceipt");
+        Routes::get("api/merchant/orders/{uid}/contract", "merchants.OrdersApiController::downloadContract");
+        Routes::get("api/merchant/orders/{uid}/rykker/{level}", "merchants.OrdersApiController::downloadRykker");
+        Routes::get("api/merchant/payments/{uid}/rykker/{level}", "merchants.OrdersApiController::downloadPaymentRykker");
         Routes::post("api/merchant/orders/{id}/refund", "merchants.OrdersApiController::refundOrder");
         Routes::post("api/merchant/payments/{id}/refund", "merchants.OrdersApiController::refundPayment");
         Routes::post("api/merchant/payments/{id}/reset-rykker", "merchants.PaymentsApiController::resetPaymentRykker");
@@ -590,6 +595,8 @@ Routes::group(['requiresLogin', "admin"], function() {
      *  =========================================
      */
     Routes::get(ADMIN_PANEL_PATH, "admin.PanelController::home");
+    Routes::get(ADMIN_PANEL_PATH . "/update-permissions", "admin.AdminController::updateBasePermissions");
+    Routes::get(ADMIN_PANEL_PATH . "/db-migrate", "admin.AdminController::runDbMigrate");
     Routes::get(Links::$admin->panelSettings, "admin.PanelController::settings");
     Routes::get(Links::$admin->panelMarketing, "admin.PanelController::marketing");
     Routes::get(Links::$admin->panelMarketing . "/{id}/editor", "admin.PanelController::marketingTemplateEditor");

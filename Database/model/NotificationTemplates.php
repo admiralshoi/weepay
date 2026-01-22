@@ -233,6 +233,7 @@ BETALINGSPLAN
 {{payment_plan.schedule_summary}}
 
 Din kontrakt er vedhæftet denne email som PDF.
+{{attach:order_contract}}
 
 Se din ordre her: {{order_link}}
 
@@ -264,6 +265,7 @@ Med venlig hilsen,
 </div>
 
 <p><strong>Din kontrakt er vedhæftet denne email som PDF.</strong></p>
+{{attach:order_contract}}
 
 <p style="text-align: center; margin: 25px 0;">
     <a href="{{order_link}}" style="display: inline-block; padding: 12px 30px; background: #FE5722; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;">Se din ordre</a>
@@ -561,6 +563,9 @@ Har du allerede betalt, bedes du se bort fra denne påmindelse.
 
 VIGTIGT: Rykkergebyret på {{rykker.formatted_fee}} er pålagt af {{location.name}} i henhold til deres betalingsbetingelser. Eventuelle spørgsmål eller tvister vedrørende dette gebyr skal rettes direkte til {{location.name}}.
 
+Din rykker er vedhæftet denne email som PDF.
+{{attach:rykker_pdf}}
+
 Med venlig hilsen,
 {{location.name}}
 
@@ -569,6 +574,7 @@ Denne besked sendes på vegne af {{location.name}} via {{brand.name}}.",
             "html_content" => '{{template.email_header_location}}
 {{template.email_content_start}}
 <p>Kære {{user.full_name}},</p>
+{{attach:rykker_pdf}}
 
 <div style="background: #fff3e0; padding: 15px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ff9800;">
     <h2 style="margin: 0; color: #e65100; font-size: 18px;">1. RYKKER FRA {{location.name}}</h2>
@@ -667,6 +673,9 @@ Kontakt {{location.name}} hurtigst muligt, hvis du har spørgsmål eller ønsker
 
 VIGTIGT: Alle rykkergebyrer (samlet {{rykker.formatted_total_fees}}) er pålagt af {{location.name}} i henhold til deres betalingsbetingelser. Eventuelle spørgsmål eller tvister vedrørende disse gebyrer skal rettes direkte til {{location.name}}.
 
+Din rykker er vedhæftet denne email som PDF.
+{{attach:rykker_pdf}}
+
 Med venlig hilsen,
 {{location.name}}
 
@@ -675,6 +684,7 @@ Denne besked sendes på vegne af {{location.name}} via {{brand.name}}.",
             "html_content" => '{{template.email_header_location}}
 {{template.email_content_start}}
 <p>Kære {{user.full_name}},</p>
+{{attach:rykker_pdf}}
 
 <div style="background: #ffebee; padding: 15px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f44336;">
     <h2 style="margin: 0; color: #c62828; font-size: 18px;">2. RYKKER FRA {{location.name}} - HANDLING PÅKRÆVET</h2>
@@ -774,6 +784,9 @@ Betal omgående her: {{payment_link}}
 
 VIGTIGT: Alle rykkergebyrer (samlet {{rykker.formatted_total_fees}}) er pålagt af {{location.name}} i henhold til deres betalingsbetingelser. Eventuelle spørgsmål eller tvister vedrørende disse gebyrer eller den udestående betaling skal rettes direkte til {{location.name}}.
 
+Din rykker er vedhæftet denne email som PDF.
+{{attach:rykker_pdf}}
+
 Med venlig hilsen,
 {{location.name}}
 
@@ -782,6 +795,7 @@ Denne besked sendes på vegne af {{location.name}} via {{brand.name}}.",
             "html_content" => '{{template.email_header_location}}
 {{template.email_content_start}}
 <p>Kære {{user.full_name}},</p>
+{{attach:rykker_pdf}}
 
 <div style="background: #b71c1c; padding: 15px 20px; border-radius: 8px; margin: 20px 0;">
     <h2 style="margin: 0; color: #fff; font-size: 18px;">SIDSTE ADVARSEL FRA {{location.name}} - INKASSOVARSEL</h2>

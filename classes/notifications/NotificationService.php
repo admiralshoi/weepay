@@ -41,6 +41,20 @@ class NotificationService {
      * @return bool Whether any notifications were triggered
      */
     public static function trigger(string $breakpointKey, array $context = []): bool {
+        // DEEP DEBUG: Unique tag for easy log searching
+        $orderUid = $context['order']['uid'] ?? 'no_order';
+        $orderPlan = $context['order']['payment_plan'] ?? 'no_plan';
+        $triggerTime = date('Y-m-d H:i:s.u');
+
+        debugLog([
+            'breakpoint_key' => $breakpointKey,
+            'order_uid' => $orderUid,
+            'order_payment_plan' => $orderPlan,
+            'timestamp' => $triggerTime,
+            'context_keys' => array_keys($context),
+            'user_email' => $context['user']['email'] ?? 'no_email',
+        ], 'DEEP_NOTIFICATION_TRIGGER_ENTRY');
+
         self::debug("=== TRIGGER START ===", [
             'breakpoint_key' => $breakpointKey,
             'context_keys' => array_keys($context)
@@ -69,8 +83,27 @@ class NotificationService {
         $flows = Methods::notificationFlows()->getActiveByBreakpoint($breakpointKey);
         if ($flows->empty()) {
             self::debug("ABORT: No active flows for breakpoint", ['key' => $breakpointKey]);
+            debugLog(['breakpoint' => $breakpointKey, 'reason' => 'no_active_flows'], 'DEEP_NOTIFICATION_ABORT');
             return false;
         }
+
+        // DEEP DEBUG: Log ALL matched flows with their conditions
+        $flowsList = [];
+        foreach ($flows->list() as $f) {
+            $flowsList[] = [
+                'uid' => $f->uid,
+                'name' => $f->name,
+                'conditions' => $f->conditions,
+                'status' => $f->status,
+            ];
+        }
+        debugLog([
+            'breakpoint' => $breakpointKey,
+            'order_uid' => $context['order']['uid'] ?? 'no_order',
+            'order_payment_plan' => $context['order']['payment_plan'] ?? 'no_plan',
+            'flows_count' => $flows->count(),
+            'flows' => $flowsList,
+        ], 'DEEP_NOTIFICATION_FLOWS_FOUND');
 
         self::debug("Found active flows", ['count' => $flows->count()]);
 
@@ -85,7 +118,17 @@ class NotificationService {
             ]);
 
             // Check flow conditions
-            if (!self::evaluateConditions($flow->conditions, $context)) {
+            $conditionsMet = self::evaluateConditions($flow->conditions, $context);
+            debugLog([
+                'flow_uid' => $flow->uid,
+                'flow_name' => $flow->name,
+                'order_uid' => $context['order']['uid'] ?? 'no_order',
+                'order_payment_plan' => $context['order']['payment_plan'] ?? 'no_plan',
+                'conditions' => $flow->conditions,
+                'conditions_met' => $conditionsMet,
+            ], 'DEEP_NOTIFICATION_FLOW_CONDITION_CHECK');
+
+            if (!$conditionsMet) {
                 self::debug("SKIP: Flow conditions not met", ['flow_uid' => $flow->uid, 'conditions' => $flow->conditions]);
                 continue;
             }
@@ -141,6 +184,20 @@ class NotificationService {
                 }
 
                 // Process the action
+                debugLog([
+                    'flow_uid' => $flow->uid,
+                    'flow_name' => $flow->name,
+                    'action_uid' => $action->uid,
+                    'channel' => $action->channel,
+                    'template_uid' => $template->uid,
+                    'template_name' => $template->name,
+                    'order_uid' => $context['order']['uid'] ?? 'no_order',
+                    'recipient_email' => $recipientData['email'] ?? 'no_email',
+                    'recipient_phone' => $recipientData['phone'] ?? 'no_phone',
+                    'delay_minutes' => $action->delay_minutes ?? 0,
+                    'will_send_immediately' => !isset($action->delay_minutes) || $action->delay_minutes <= 0,
+                ], 'DEEP_NOTIFICATION_ABOUT_TO_SEND');
+
                 if (isset($action->delay_minutes) && $action->delay_minutes > 0) {
                     self::debug("Queueing notification for later", ['delay_minutes' => $action->delay_minutes]);
                     self::queueNotification($action, $template, $recipientData, $context, $flow);
@@ -149,11 +206,27 @@ class NotificationService {
                     self::sendNotification($action, $template, $recipientData, $context, $flow);
                 }
 
+                debugLog([
+                    'flow_uid' => $flow->uid,
+                    'action_uid' => $action->uid,
+                    'channel' => $action->channel,
+                    'order_uid' => $context['order']['uid'] ?? 'no_order',
+                    'sent' => true,
+                ], 'DEEP_NOTIFICATION_SENT');
+
                 $triggered = true;
             }
         }
 
         self::debug("=== TRIGGER END ===", ['triggered' => $triggered]);
+
+        debugLog([
+            'breakpoint' => $breakpointKey,
+            'order_uid' => $context['order']['uid'] ?? 'no_order',
+            'triggered' => $triggered,
+            'timestamp' => date('Y-m-d H:i:s.u'),
+        ], 'DEEP_NOTIFICATION_TRIGGER_COMPLETE');
+
         return $triggered;
     }
 
@@ -232,11 +305,18 @@ class NotificationService {
         ]);
 
         $success = false;
+        $attachments = [];
 
         switch ($action->channel) {
             case 'email':
                 self::debug("Sending via EMAIL channel");
-                $success = self::sendEmail($recipientData, $subject, $content, $htmlContent, $context);
+                // Process attachment placeholders for email
+                $processed = self::processAttachmentPlaceholders($content, $htmlContent, $context);
+                $content = $processed['content'];
+                $htmlContent = $processed['htmlContent'];
+                $attachments = $processed['attachments'];
+                self::debug("Attachment placeholders processed", ['attachments_count' => count($attachments)]);
+                $success = self::sendEmail($recipientData, $subject, $content, $htmlContent, $context, $attachments);
                 break;
             case 'sms':
                 self::debug("Sending via SMS channel");
@@ -445,9 +525,144 @@ class NotificationService {
     }
 
     /**
+     * Process attachment placeholders in content
+     * Returns array with 'content', 'htmlContent', and 'attachments'
+     */
+    private static function processAttachmentPlaceholders(string $content, ?string $htmlContent, array $context): array {
+        $attachments = [];
+
+        // Check for {{attach:order_contract}} placeholder
+        if (str_contains($content, '{{attach:order_contract}}') || ($htmlContent && str_contains($htmlContent, '{{attach:order_contract}}'))) {
+            try {
+                $attachment = self::generateOrderContractAttachment($context);
+                if ($attachment) {
+                    $attachments[] = $attachment;
+                }
+            } catch (\Exception $e) {
+                debugLog(['error' => $e->getMessage()], 'ATTACH_ORDER_CONTRACT_ERROR');
+            }
+        }
+
+        // Check for {{attach:rykker_pdf}} placeholder
+        if (str_contains($content, '{{attach:rykker_pdf}}') || ($htmlContent && str_contains($htmlContent, '{{attach:rykker_pdf}}'))) {
+            try {
+                $attachment = self::generateRykkerAttachment($context);
+                if ($attachment) {
+                    $attachments[] = $attachment;
+                }
+            } catch (\Exception $e) {
+                debugLog(['error' => $e->getMessage()], 'ATTACH_RYKKER_PDF_ERROR');
+            }
+        }
+
+        // Remove attachment placeholders from content
+        $content = preg_replace('/\{\{attach:[a-z_]+\}\}/', '', $content);
+        if ($htmlContent) {
+            $htmlContent = preg_replace('/\{\{attach:[a-z_]+\}\}/', '', $htmlContent);
+        }
+
+        return [
+            'content' => trim($content),
+            'htmlContent' => $htmlContent ? trim($htmlContent) : null,
+            'attachments' => $attachments,
+        ];
+    }
+
+    /**
+     * Generate order contract PDF attachment
+     */
+    private static function generateOrderContractAttachment(array $context): ?array {
+        // Need order in context
+        $order = $context['order_object'] ?? null;
+
+        // If no object, try to get from UID
+        if (!$order && isset($context['order']['uid'])) {
+            $order = Methods::orders()->get($context['order']['uid']);
+        }
+
+        if (!$order) {
+            self::debug("Cannot generate order contract: no order in context");
+            return null;
+        }
+
+        // Only generate for BNPL orders
+        if (!in_array($order->payment_plan, ['installments', 'pushed'])) {
+            self::debug("Skipping contract attachment: not a BNPL order", ['payment_plan' => $order->payment_plan]);
+            return null;
+        }
+
+        // Check if contract already exists
+        $documentHandler = Methods::contractDocuments();
+        $contractContent = $documentHandler->getContract($order);
+
+        if (!$contractContent) {
+            // Generate the contract PDF
+            $pdf = new \classes\documents\OrderContractPdf($order);
+            $contractContent = $pdf->generatePdfString();
+
+            // Save it for future use
+            $documentHandler->saveContract($order, $contractContent);
+        }
+
+        return [
+            'filename' => "kontrakt_{$order->uid}.pdf",
+            'content' => $contractContent,
+            'mime' => 'application/pdf',
+        ];
+    }
+
+    /**
+     * Generate rykker PDF attachment
+     */
+    private static function generateRykkerAttachment(array $context): ?array {
+        // Need payment and rykker level in context
+        $payment = $context['payment_object'] ?? null;
+        $rykkerLevel = $context['rykker']['level'] ?? null;
+
+        // If no object, try to get from UID
+        if (!$payment && isset($context['payment']['uid'])) {
+            $payment = Methods::payments()->get($context['payment']['uid']);
+        }
+
+        if (!$payment) {
+            self::debug("Cannot generate rykker PDF: no payment in context");
+            return null;
+        }
+
+        if (!$rykkerLevel) {
+            // Try to get from payment object
+            $rykkerLevel = (int)($payment->rykker_level ?? 0);
+        }
+
+        if ($rykkerLevel < 1) {
+            self::debug("Cannot generate rykker PDF: no rykker level");
+            return null;
+        }
+
+        // Check if rykker already exists
+        $documentHandler = Methods::contractDocuments();
+        $rykkerContent = $documentHandler->getRykker($payment, $rykkerLevel);
+
+        if (!$rykkerContent) {
+            // Generate the rykker PDF
+            $pdf = new \classes\documents\RykkerPdf($payment, $rykkerLevel);
+            $rykkerContent = $pdf->generatePdfString();
+
+            // Save it for future use
+            $documentHandler->saveRykker($payment, $rykkerLevel, $rykkerContent);
+        }
+
+        return [
+            'filename' => "rykker{$rykkerLevel}_{$payment->uid}.pdf",
+            'content' => $rykkerContent,
+            'mime' => 'application/pdf',
+        ];
+    }
+
+    /**
      * Send email notification via MessageDispatcher
      */
-    private static function sendEmail(array $recipientData, ?string $subject, string $content, ?string $htmlContent = null, array $context = []): bool {
+    private static function sendEmail(array $recipientData, ?string $subject, string $content, ?string $htmlContent = null, array $context = [], array $attachments = []): bool {
         // Determine from name - use location name if available for consumer emails
         $fromName = null;
         if (!empty($context['location']['name'])) {
@@ -487,14 +702,19 @@ class NotificationService {
         }
 
         try {
-            self::debug("Calling MessageDispatcher::email", ['to' => $recipientData['email'], 'fromName' => $fromName]);
+            self::debug("Calling MessageDispatcher::email", [
+                'to' => $recipientData['email'],
+                'fromName' => $fromName,
+                'attachments_count' => count($attachments)
+            ]);
             $result = MessageDispatcher::email(
                 $recipientData['email'],
                 $subject ?? BRAND_NAME,
                 $content,
                 $htmlContent,
-                null,      // fromEmail - use default
-                $fromName  // fromName - location name or default
+                null,        // fromEmail - use default
+                $fromName,   // fromName - location name or default
+                $attachments // PDF attachments
             );
             self::debug("MessageDispatcher::email result", ['success' => $result]);
             return $result;

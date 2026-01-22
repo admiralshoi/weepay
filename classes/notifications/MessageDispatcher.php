@@ -38,6 +38,7 @@ class MessageDispatcher {
      * @param string|null $htmlContent Optional HTML content (if null, text is converted to basic HTML)
      * @param string|null $fromEmail Optional sender email
      * @param string|null $fromName Optional sender name
+     * @param array $attachments Optional attachments: [['filename' => 'doc.pdf', 'content' => $binary, 'mime' => 'application/pdf'], ...]
      * @return bool True on success
      */
     public static function email(
@@ -46,7 +47,8 @@ class MessageDispatcher {
         string $textContent,
         ?string $htmlContent = null,
         ?string $fromEmail = null,
-        ?string $fromName = null
+        ?string $fromName = null,
+        array $attachments = []
     ): bool {
         // Validate email
         if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
@@ -61,6 +63,7 @@ class MessageDispatcher {
                 'subject' => $subject,
                 'text' => substr($textContent, 0, 200),
                 'html' => $htmlContent ? 'yes' : 'no',
+                'attachments' => count($attachments) . ' files',
             ], 'MESSAGE_DISPATCHER_EMAIL_DEBUG');
             return true; // Return true in dev to not break flows
         }
@@ -73,7 +76,27 @@ class MessageDispatcher {
 
         debugLog(compact('fromEmail', 'fromName', 'encodedFromName'), 'MESSAGE_DISPATCHER_EMAIL_FROM');
 
-        // Generate boundary for multipart
+        // Build email based on whether there are attachments
+        if (empty($attachments)) {
+            // Simple multipart/alternative (text + HTML)
+            return self::sendMultipartAlternativeEmail($to, $subject, $textContent, $htmlContent, $fromEmail, $encodedFromName);
+        } else {
+            // multipart/mixed containing multipart/alternative + attachments
+            return self::sendEmailWithAttachments($to, $subject, $textContent, $htmlContent, $fromEmail, $encodedFromName, $attachments);
+        }
+    }
+
+    /**
+     * Send a simple multipart/alternative email (no attachments)
+     */
+    private static function sendMultipartAlternativeEmail(
+        string $to,
+        string $subject,
+        string $textContent,
+        ?string $htmlContent,
+        string $fromEmail,
+        string $encodedFromName
+    ): bool {
         $boundary = md5(uniqid('', true));
 
         // Build headers
@@ -99,14 +122,13 @@ class MessageDispatcher {
         if ($htmlContent) {
             $message .= chunk_split(base64_encode($htmlContent));
         } else {
-            // Convert plain text to basic HTML
             $basicHtml = self::textToHtml($textContent);
             $message .= chunk_split(base64_encode($basicHtml));
         }
 
         $message .= "--$boundary--";
 
-        // Send the email with envelope sender for better deliverability
+        // Send the email
         $result = @mail($to, $subject, $message, $headers, "-f$fromEmail");
 
         if (!$result) {
@@ -115,6 +137,101 @@ class MessageDispatcher {
                 'to' => $to,
                 'subject' => $subject,
             ], 'MESSAGE_DISPATCHER_EMAIL_FAILED');
+        }
+
+        return $result;
+    }
+
+    /**
+     * Send an email with attachments using multipart/mixed
+     * Structure: multipart/mixed { multipart/alternative { text, html }, attachment1, attachment2, ... }
+     */
+    private static function sendEmailWithAttachments(
+        string $to,
+        string $subject,
+        string $textContent,
+        ?string $htmlContent,
+        string $fromEmail,
+        string $encodedFromName,
+        array $attachments
+    ): bool {
+        // Generate unique boundaries
+        $mixedBoundary = 'mixed_' . md5(uniqid('', true));
+        $altBoundary = 'alt_' . md5(uniqid('', true));
+
+        // Build headers - outer boundary is multipart/mixed
+        $headers = "From: $encodedFromName <$fromEmail>\r\n";
+        $headers .= "Reply-To: $fromEmail\r\n";
+        $headers .= "MIME-Version: 1.0\r\n";
+        $headers .= "Content-Type: multipart/mixed; boundary=\"$mixedBoundary\"\r\n";
+
+        // Build message body
+        $message = "";
+
+        // Start with multipart/alternative section (text + HTML)
+        $message .= "--$mixedBoundary\r\n";
+        $message .= "Content-Type: multipart/alternative; boundary=\"$altBoundary\"\r\n\r\n";
+
+        // Plain text part
+        $message .= "--$altBoundary\r\n";
+        $message .= "Content-Type: text/plain; charset=UTF-8\r\n";
+        $message .= "Content-Transfer-Encoding: base64\r\n\r\n";
+        $message .= chunk_split(base64_encode($textContent));
+
+        // HTML part
+        $message .= "--$altBoundary\r\n";
+        $message .= "Content-Type: text/html; charset=UTF-8\r\n";
+        $message .= "Content-Transfer-Encoding: base64\r\n\r\n";
+
+        if ($htmlContent) {
+            $message .= chunk_split(base64_encode($htmlContent));
+        } else {
+            $basicHtml = self::textToHtml($textContent);
+            $message .= chunk_split(base64_encode($basicHtml));
+        }
+
+        // Close the alternative section
+        $message .= "--$altBoundary--\r\n\r\n";
+
+        // Add attachments
+        foreach ($attachments as $attachment) {
+            if (empty($attachment['filename']) || empty($attachment['content'])) {
+                continue;
+            }
+
+            $filename = $attachment['filename'];
+            $content = $attachment['content'];
+            $mimeType = $attachment['mime'] ?? 'application/octet-stream';
+
+            // Encode filename for UTF-8 support
+            $encodedFilename = '=?UTF-8?B?' . base64_encode($filename) . '?=';
+
+            $message .= "--$mixedBoundary\r\n";
+            $message .= "Content-Type: $mimeType; name=\"$encodedFilename\"\r\n";
+            $message .= "Content-Disposition: attachment; filename=\"$encodedFilename\"\r\n";
+            $message .= "Content-Transfer-Encoding: base64\r\n\r\n";
+            $message .= chunk_split(base64_encode($content));
+        }
+
+        // Close the mixed section
+        $message .= "--$mixedBoundary--";
+
+        // Send the email
+        $result = @mail($to, $subject, $message, $headers, "-f$fromEmail");
+
+        if (!$result) {
+            debugLog([
+                'error' => 'mail() with attachments failed',
+                'to' => $to,
+                'subject' => $subject,
+                'attachments_count' => count($attachments),
+            ], 'MESSAGE_DISPATCHER_EMAIL_FAILED');
+        } else {
+            debugLog([
+                'to' => $to,
+                'subject' => $subject,
+                'attachments_count' => count($attachments),
+            ], 'MESSAGE_DISPATCHER_EMAIL_WITH_ATTACHMENTS_SENT');
         }
 
         return $result;

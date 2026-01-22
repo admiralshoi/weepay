@@ -30,16 +30,60 @@ class OrderHandler extends Crud {
 
 
     public function setCompleted(string $id): bool {
+        // DEEP DEBUG: Capture stack trace to find duplicate callers
+        $stackTrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10);
+        $callers = [];
+        foreach ($stackTrace as $i => $trace) {
+            $callers[] = ($trace['class'] ?? '') . ($trace['type'] ?? '') . ($trace['function'] ?? 'unknown') . ' @ ' . ($trace['file'] ?? 'unknown') . ':' . ($trace['line'] ?? '?');
+        }
+
+        debugLog([
+            'order_id' => $id,
+            'timestamp' => date('Y-m-d H:i:s.u'),
+            'request_uri' => $_SERVER['REQUEST_URI'] ?? 'CLI',
+            'request_method' => $_SERVER['REQUEST_METHOD'] ?? 'CLI',
+            'callers' => $callers,
+        ], 'ORDER_SETCOMPLETED_ENTRY');
+
         $order = $this->get($id);
+
+        debugLog([
+            'order_id' => $id,
+            'order_found' => !isEmpty($order),
+            'current_status' => $order->status ?? 'N/A',
+            'will_skip' => isEmpty($order) || $order->status === 'COMPLETED',
+        ], 'ORDER_SETCOMPLETED_CHECK');
+
         if (isEmpty($order) || $order->status === 'COMPLETED') {
+            debugLog([
+                'order_id' => $id,
+                'reason' => isEmpty($order) ? 'order_not_found' : 'already_completed',
+            ], 'ORDER_SETCOMPLETED_SKIPPED');
             return false;
         }
 
         $result = $this->update(['status' => 'COMPLETED'], ['uid' => $id]);
 
+        debugLog([
+            'order_id' => $id,
+            'update_result' => $result,
+            'will_trigger_notification' => $result,
+        ], 'ORDER_SETCOMPLETED_UPDATE');
+
         if ($result) {
             $order->status = 'COMPLETED';
+            debugLog([
+                'order_id' => $id,
+                'order_payment_plan' => $order->payment_plan ?? 'N/A',
+                'about_to_call' => 'NotificationTriggers::orderCompleted',
+            ], 'ORDER_SETCOMPLETED_BEFORE_NOTIFICATION');
+
             NotificationTriggers::orderCompleted($order);
+
+            debugLog([
+                'order_id' => $id,
+                'notification_triggered' => true,
+            ], 'ORDER_SETCOMPLETED_AFTER_NOTIFICATION');
         }
 
         return $result;

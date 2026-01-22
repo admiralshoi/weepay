@@ -273,7 +273,22 @@ class AdminController {
         ]);
     }
 
+    #[NoReturn] public static function updateBasePermissions(): mixed  {
+        \classes\Methods::organisations()->updateNewBasePermissions();
+        \classes\Methods::locations()->updateNewBasePermissions();
+        return self::returnJsonResponse([
+            "status" => "success",
+            "message" => "Organisation and location permissions updated with new base permissions"
+        ]);
+    }
 
+    #[NoReturn] public static function runDbMigrate(): mixed  {
+        \features\DbMigration::_migrate_db();
+        return self::returnJsonResponse([
+            "status" => "success",
+            "message" => "Database schema migration completed"
+        ]);
+    }
 
 
 

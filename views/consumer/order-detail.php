@@ -263,6 +263,13 @@ foreach ($pastDuePayments->list() as $p) {
                         </a>
                         <?php endif; ?>
 
+                        <?php if(in_array($order->payment_plan, ['installments', 'pushed'])): ?>
+                        <a href="<?=__url("api/consumer/orders/{$order->uid}/contract")?>" target="_blank" class="btn-v2 mute-btn w-100 flex-row-center flex-align-center" style="gap: .5rem;">
+                            <i class="mdi mdi-file-document-outline font-16"></i>
+                            <span class="font-14">Download Kontrakt</span>
+                        </a>
+                        <?php endif; ?>
+
                         <a href="<?=__url(Links::$consumer->orders)?>" class="btn-v2 <?=$hasUnpaidPayments ? 'mute-btn' : 'action-btn'?> w-100 flex-row-center flex-align-center" style="gap: .5rem;">
                             <i class="mdi mdi-arrow-left font-16"></i>
                             <span class="font-14">Tilbage til ordrer</span>

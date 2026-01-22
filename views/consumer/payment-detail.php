@@ -440,6 +440,21 @@ $orderUid = is_object($order) ? $order->uid : ($order ?? null);
                         <?php endif; ?>
                         <?php endif; ?>
 
+                        <!-- Rykker Downloads (if any rykkers were sent) -->
+                        <?php if($rykkerLevel > 0): ?>
+                        <div class="flex-col-start mt-2" style="gap: .5rem;">
+                            <p class="mb-0 font-13 color-gray font-weight-medium">Rykker dokumenter:</p>
+                            <div class="flex-row-start flex-wrap" style="gap: .5rem;">
+                                <?php for($i = 1; $i <= $rykkerLevel; $i++): ?>
+                                <a href="<?=__url("api/consumer/payments/{$payment->uid}/rykker/{$i}")?>" target="_blank" class="btn-v2 mute-btn btn-sm flex-row-center flex-align-center" style="gap: .25rem;">
+                                    <i class="mdi mdi-file-pdf-box font-14"></i>
+                                    <span class="font-12">Rykker <?=$i?></span>
+                                </a>
+                                <?php endfor; ?>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
                         <!-- Info message (only for unpaid) -->
                         <?php if(!$sentToCollection && !$isCompleted): ?>
                         <div class="p-2 bg-light-gray border-radius-5px">

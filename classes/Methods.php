@@ -124,6 +124,9 @@ class Methods {
     public static function marketingPdfGenerator(): \classes\marketing\MarketingPdfGenerator { return new \classes\marketing\MarketingPdfGenerator(); }
     public static function marketingInspiration(): \classes\marketing\MarketingInspirationHandler { return new \classes\marketing\MarketingInspirationHandler(); }
     public static function asignDesigns(): \classes\marketing\ASignDesignHandler { return new \classes\marketing\ASignDesignHandler(); }
+
+    // Document Handlers
+    public static function contractDocuments(): \classes\documents\ContractDocumentHandler { return new \classes\documents\ContractDocumentHandler(); }
     public static function sortByKey(&$arr,$key = "", $ascending = false, array $specialReplacement = array(), array $splitReplace = array(), $key2 = ""): void {
         (new SortByKey())->run($arr, $key, $ascending, $specialReplacement, $splitReplace, $key2); }
     public static function hasAccess(string $type, string $name, int $actionType, string|int $requestingLevel): bool {

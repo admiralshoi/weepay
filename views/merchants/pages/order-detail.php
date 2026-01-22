@@ -255,6 +255,44 @@ if(!isEmpty($payments)) {
                     </div>
 
                     <div class="flex-col-start" style="row-gap: .75rem;">
+                        <?php if(in_array($order->payment_plan, ['installments', 'pushed'])): ?>
+                        <a href="<?=__url("api/merchant/orders/{$order->uid}/contract")?>" target="_blank" class="btn-v2 action-btn w-100 flex-row-center flex-align-center" style="gap: .5rem;">
+                            <i class="mdi mdi-file-document-outline font-16"></i>
+                            <span class="font-14">Download Kontrakt</span>
+                        </a>
+                        <?php endif; ?>
+
+                        <?php
+                        // Collect payments with rykkers
+                        $paymentsWithRykkers = [];
+                        if(!isEmpty($payments)) {
+                            foreach($payments->list() as $p) {
+                                $rykkerLevel = (int)($p->rykker_level ?? 0);
+                                if($rykkerLevel > 0) {
+                                    $paymentsWithRykkers[] = $p;
+                                }
+                            }
+                        }
+                        ?>
+                        <?php if(!empty($paymentsWithRykkers)): ?>
+                        <div class="flex-col-start" style="gap: .5rem;">
+                            <p class="mb-0 font-13 color-gray">Rykker dokumenter:</p>
+                            <?php foreach($paymentsWithRykkers as $rykkerPayment): ?>
+                            <div class="flex-col-start" style="gap: .25rem;">
+                                <span class="font-11 color-gray">Betaling #<?=$rykkerPayment->installment_number ?? $rykkerPayment->uid?></span>
+                                <div class="flex-row-start flex-wrap" style="gap: .5rem;">
+                                    <?php for($i = 1; $i <= (int)$rykkerPayment->rykker_level; $i++): ?>
+                                    <a href="<?=__url("api/merchant/payments/{$rykkerPayment->uid}/rykker/{$i}")?>" target="_blank" class="btn-v2 mute-btn btn-sm flex-row-center flex-align-center" style="gap: .25rem;">
+                                        <i class="mdi mdi-file-pdf-box font-14"></i>
+                                        <span class="font-12">Rykker <?=$i?></span>
+                                    </a>
+                                    <?php endfor; ?>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif; ?>
+
                         <?php if($order->status === 'COMPLETED' || $order->status === 'PENDING'): ?>
                         <button type="button" class="btn-v2 danger-outline-btn w-100 flex-row-center flex-align-center" style="gap: .5rem;" data-refund-order="<?=$order->uid?>" data-has-pending-payments="<?=$hasPendingPayments ? 'true' : 'false'?>">
                             <i class="mdi mdi-cash-refund font-16"></i>

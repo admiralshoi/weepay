@@ -496,8 +496,8 @@ class PaymentsHandler extends Crud {
      * @return bool Success status
      */
     public function resetRykker(string $paymentId, bool $clearFees = true, bool $sendNotification = true): bool {
-        // Fetch payment before reset (for notification)
-        $payment = $sendNotification ? $this->get($paymentId) : null;
+        // Fetch payment before reset (for notification and PDF deletion)
+        $payment = $this->get($paymentId);
 
         // Get grace period from settings (days until first rykker)
         $rykker1Days = (int)(Settings::$app->rykker_1_days ?? 7);
@@ -517,6 +517,16 @@ class PaymentsHandler extends Crud {
 
         $result = $this->update($updateData, ['uid' => $paymentId]);
 
+        // Delete rykker PDFs if reset was successful
+        if ($result && $payment) {
+            try {
+                Methods::contractDocuments()->deleteRykkerPdfs($payment);
+            } catch (\Exception $e) {
+                // Log error but don't fail the reset
+                debugLog(['error' => $e->getMessage(), 'payment_id' => $paymentId], 'DELETE_RYKKER_PDF_ERROR');
+            }
+        }
+
         // Trigger notification if successful and payment had a rykker
         if ($result && $sendNotification && $payment && (int)($payment->rykker_level ?? 0) > 0) {
             NotificationTriggers::paymentRykkerCancelled($payment);
@@ -532,9 +542,23 @@ class PaymentsHandler extends Crud {
      * @return bool Success status
      */
     public function clearRykkerOnRefund(string $paymentId): bool {
-        return $this->update([
+        // Get payment for PDF deletion
+        $payment = $this->get($paymentId);
+
+        $result = $this->update([
             'rykker_fee' => 0,
         ], ['uid' => $paymentId]);
+
+        // Delete rykker PDFs
+        if ($result && $payment) {
+            try {
+                Methods::contractDocuments()->deleteRykkerPdfs($payment);
+            } catch (\Exception $e) {
+                debugLog(['error' => $e->getMessage(), 'payment_id' => $paymentId], 'DELETE_RYKKER_PDF_ERROR');
+            }
+        }
+
+        return $result;
     }
 
     /**

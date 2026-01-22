@@ -231,6 +231,15 @@ $placeholderGroups = [
             '{{viva_note}}' => 'VIVA håndterings note',
         ]
     ],
+    'attachments' => [
+        'label' => 'Vedhæftede Filer',
+        'icon' => 'mdi-attachment',
+        'placeholders' => [
+            '{{attach:order_contract}}' => 'Vedhæft ordrekontrakt (PDF)',
+            '{{attach:rykker_pdf}}' => 'Vedhæft rykker (PDF)',
+        ],
+        'htmlOnly' => false,
+    ],
 ];
 ?>
 <script>

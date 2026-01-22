@@ -64,21 +64,6 @@ class NotificationFlows extends \Database\Model {
         // ORDER FLOWS
         // =====================================================
         [
-            "uid" => "nflw_consumer_order_confirm",
-            "name" => "Ordrebekræftelse til forbruger",
-            "description" => "Sendes til forbruger når en ordre oprettes",
-            "breakpoint" => "nbp_order_created",
-            "status" => "active",
-            "priority" => 100,
-            "starts_at" => null,
-            "ends_at" => null,
-            "conditions" => null,
-            "schedule_offset_days" => 0,
-            "recipient_type" => "user",
-            "recipient_email" => null,
-            "created_by" => null,
-        ],
-        [
             "uid" => "nflw_order_contract",
             "name" => "Ordrekontrakt til forbruger (BNPL)",
             "description" => "Sendes til forbruger når en bnpl ordre er gennemført med kontrakt",

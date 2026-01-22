@@ -1321,6 +1321,127 @@ class ApiController {
     }
 
     /**
+     * Download order contract PDF
+     * Consumer version - verifies the order belongs to the current user
+     */
+    #[NoReturn] public static function downloadContract(array $args): void {
+        $orderUid = $args['uid'] ?? null;
+        $userId = __uuid();
+
+        if (isEmpty($userId)) {
+            Response()->jsonError("Du skal vaere logget ind.");
+        }
+
+        if (isEmpty($orderUid)) {
+            Response()->jsonError("Ordre ID mangler.");
+        }
+
+        // Get the order
+        $orderHandler = Methods::orders();
+        $order = $orderHandler->excludeForeignKeys()->get($orderUid);
+
+        if (isEmpty($order)) {
+            Response()->jsonError("Ordre ikke fundet.");
+        }
+
+        // Verify the order belongs to the current user
+        if ($order->uuid !== $userId) {
+            Response()->jsonError("Du har ikke adgang til denne ordre.");
+        }
+
+        // Only allow contracts for BNPL orders
+        if (!in_array($order->payment_plan, ['installments', 'pushed'])) {
+            Response()->jsonError("Denne ordre har ingen kontrakt.");
+        }
+
+        // Get or generate the contract PDF
+        $documentHandler = Methods::contractDocuments();
+        $pdfContent = $documentHandler->getContract($order);
+
+        if (!$pdfContent) {
+            // Generate the contract PDF
+            $pdf = new \classes\documents\OrderContractPdf($order);
+            $pdfContent = $pdf->generatePdfString();
+
+            // Save it for future use
+            $documentHandler->saveContract($order, $pdfContent);
+        }
+
+        // Stream the PDF to browser
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="kontrakt_' . $order->uid . '.pdf"');
+        header('Content-Length: ' . strlen($pdfContent));
+        header('Cache-Control: private, max-age=0, must-revalidate');
+        header('Pragma: public');
+
+        echo $pdfContent;
+        exit;
+    }
+
+    /**
+     * Download rykker PDF for a payment
+     * Consumer version - verifies the payment belongs to the current user
+     */
+    #[NoReturn] public static function downloadRykker(array $args): void {
+        $paymentUid = $args['uid'] ?? null;
+        $level = (int)($args['level'] ?? 0);
+        $userId = __uuid();
+
+        if (isEmpty($userId)) {
+            Response()->jsonError("Du skal vaere logget ind.");
+        }
+
+        if (isEmpty($paymentUid)) {
+            Response()->jsonError("Betalings ID mangler.");
+        }
+
+        if ($level < 1 || $level > 3) {
+            Response()->jsonError("Ugyldigt rykker niveau.");
+        }
+
+        // Get the payment
+        $paymentHandler = Methods::payments();
+        $payment = $paymentHandler->excludeForeignKeys()->get($paymentUid);
+
+        if (isEmpty($payment)) {
+            Response()->jsonError("Betaling ikke fundet.");
+        }
+
+        // Verify the payment belongs to the current user
+        if ($payment->uuid !== $userId) {
+            Response()->jsonError("Du har ikke adgang til denne betaling.");
+        }
+
+        // Check if this rykker level was actually sent
+        if ($payment->rykker_level < $level) {
+            Response()->jsonError("Denne rykker findes ikke.");
+        }
+
+        // Get or generate the rykker PDF
+        $documentHandler = Methods::contractDocuments();
+        $pdfContent = $documentHandler->getRykker($payment, $level);
+
+        if (!$pdfContent) {
+            // Generate the rykker PDF
+            $pdf = new \classes\documents\RykkerPdf($payment, $level);
+            $pdfContent = $pdf->generatePdfString();
+
+            // Save it for future use
+            $documentHandler->saveRykker($payment, $level, $pdfContent);
+        }
+
+        // Stream the PDF to browser
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="rykker' . $level . '_' . $payment->uid . '.pdf"');
+        header('Content-Length: ' . strlen($pdfContent));
+        header('Cache-Control: private, max-age=0, must-revalidate');
+        header('Pragma: public');
+
+        echo $pdfContent;
+        exit;
+    }
+
+    /**
      * Download payment receipt as PDF
      * Consumer version - verifies the payment belongs to the current user
      */
