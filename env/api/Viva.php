@@ -7,7 +7,10 @@ class Viva {
 
     public static function isSandbox(): bool { return self::$sandbox; }
     public static function sandbox(): void { self::$sandbox = true; }
-    public static function live(): void { self::$sandbox = false; }
+    public static function live(): void {
+        if (\features\Settings::$userTestMode) return;
+        self::$sandbox = false;
+    }
 
 
     public static function clientId(): string { return self::$sandbox ? self::SANDBOX_CLIENT_ID : self::CLIENT_ID; }
@@ -54,7 +57,7 @@ class Viva {
     }
 
 
-    private static bool $sandbox = true;
+    private static bool $sandbox = false;
     private const SANDBOX_CLIENT_ID = "067jg2zsb0g51m923ez87ic03n8isrqughtqpjldn5bu6.apps.vivapayments.com";
     private const SANDBOX_CLIENT_SECRET = "7nUK8kkFW442A3q9Od4r9FmdP6t31K";
     private const SANDBOX_RESELLER_ID = "7e416dfc-aa89-4335-9be5-4b3ce2dc359b";

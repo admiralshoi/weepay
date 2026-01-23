@@ -25,7 +25,7 @@ $orderStatusInfo = $orderStatusMap[$order->status] ?? null;
 
 <?php
 // Count PAST_DUE payments for this order
-$pastDuePayments = $payments->filter(fn($p) => $p->status === 'PAST_DUE');
+$pastDuePayments = $payments->filter(fn($p) => $p['status'] === 'PAST_DUE');
 $pastDueCount = $pastDuePayments->count();
 $pastDueTotal = 0;
 $pastDueFees = 0;

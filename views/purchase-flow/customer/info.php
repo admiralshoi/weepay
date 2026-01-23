@@ -73,6 +73,10 @@ $pageTitle = "{$terminal->location->name} - Købsdetaljer";
             <?php if(!isEmpty($args->bnplLimit)): ?>
             <!-- Dark Credit Box -->
             <?=\features\DomMethods::bnplCreditCard($args->bnplLimit, $args->hasPastDue ?? false, null, 'w-100')?>
+            <p class="font-12 color-gray text-center mb-0 mt-2">
+                <i class="mdi mdi-store-outline"></i>
+                Kredit tilbydes af <strong><?=$terminal->location->name?></strong>
+            </p>
             <?php endif; ?>
 
             <!-- Store & Basket Info -->

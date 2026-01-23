@@ -43,9 +43,22 @@ $hasConsentByIp = Methods::cookieConsents()->existsByIp($ipAddress);
 $hasConsentByUser = isLoggedIn() && Methods::cookieConsents()->existsByUser(__uuid());
 Settings::$cookiesAccepted = $hasConsentByIp || $hasConsentByUser;
 
+// Check for test mode - forces sandbox for APIs
+// Either: query param with secret token, session flag, OR logged in user with test=1
+if (defined('SANDBOX_MODE_TOKEN') && isset($_GET['sandbox']) && hash_equals(SANDBOX_MODE_TOKEN, $_GET['sandbox'])) {
+    $_SESSION['sandbox_mode'] = true;
+}
+$hasValidSandboxSession = !empty($_SESSION['sandbox_mode']);
+
 if(isLoggedIn()) {
     Settings::$user = Methods::users()->get(__uuid());
-    debugLog(Settings::$user->cookies, 'user-cookies');
+
+    // Check if user has test mode enabled
+    if (!isEmpty(Settings::$user) && (Settings::$user->test ?? 0) == 1) {
+        Settings::$userTestMode = true;
+        \env\api\Viva::sandbox();
+        \env\api\Signicat::sandbox();
+    }
 
     // Check if we're impersonating (admin logged in as merchant owner or consumer)
     if (!empty($_SESSION["admin_impersonating_uid"])) {
@@ -69,6 +82,11 @@ if(isLoggedIn()) {
         Methods::organisationMembers()->setChosenOrganisation($memberRow);
     }
     else debugLog(Settings::$user->cookies, 'user-no-organisation-cookies');
+} elseif ($hasValidSandboxSession) {
+    // Not logged in but has valid sandbox session
+    Settings::$userTestMode = true;
+    \env\api\Viva::sandbox();
+    \env\api\Signicat::sandbox();
 }
 
 

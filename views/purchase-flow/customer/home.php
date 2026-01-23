@@ -58,6 +58,10 @@ $pageTitle = $location->name;
                 <i class="mdi mdi-qrcode"></i>
                 Scan QR-koden &bullet; Køb nu &bullet; Betal senere
             </button>
+            <p class="mb-0 font-13 color-white opacity-90 mt-2">
+                <i class="mdi mdi-store-outline"></i>
+                Kredit tilbydes af <strong><?=$location->name?></strong>
+            </p>
         </div>
     </div>
 </div>
@@ -148,9 +152,13 @@ $offerVisible = !isEmpty($page->offer_enabled) && !isEmpty($page->offer_title) &
                             <!-- Logged in - show actual credit -->
                             <?=\features\DomMethods::bnplCreditCard($bnplLimit, $hasPastDue)?>
                             <div class="mt-3 pt-3 border-top">
-                                <p class="font-13 color-gray mb-0">
+                                <p class="font-13 color-gray mb-2">
                                     <i class="mdi mdi-information-outline"></i>
                                     Butikken forbeholder sig retten til at afvise køb nu betal senere i øjeblikket.
+                                </p>
+                                <p class="font-12 color-gray mb-0">
+                                    <i class="mdi mdi-store-outline"></i>
+                                    Kredit tilbydes af <strong><?=$location->name?></strong>. <?=BRAND_NAME?> leverer betalingsløsningen.
                                 </p>
                             </div>
                         <?php else: ?>
@@ -166,9 +174,13 @@ $offerVisible = !isEmpty($page->offer_enabled) && !isEmpty($page->offer_title) &
                                 Tjek min kredit nu
                             </a>
                             <div class="mt-3 pt-3 border-top">
-                                <p class="font-13 color-gray mb-0">
+                                <p class="font-13 color-gray mb-2">
                                     <i class="mdi mdi-information-outline"></i>
                                     Butikken forbeholder sig retten til at afvise køb nu betal senere i øjeblikket.
+                                </p>
+                                <p class="font-12 color-gray mb-0">
+                                    <i class="mdi mdi-store-outline"></i>
+                                    Kredit tilbydes af <strong><?=$location->name?></strong>. <?=BRAND_NAME?> leverer betalingsløsningen.
                                 </p>
                             </div>
                         <?php endif; ?>

@@ -6,11 +6,27 @@ namespace env\api;
 class Signicat {
 
 
-    public static function sandbox(): void { self::$sandbox = true; }
-    public static function live(): void { self::$sandbox = false; }
+    public static function sandbox(): void {
+        debugLog(['action' => 'sandbox called', 'before' => self::$sandbox], 'DEBUG_SIGNICAT');
+        self::$sandbox = true;
+        debugLog(['action' => 'sandbox set', 'after' => self::$sandbox], 'DEBUG_SIGNICAT');
+    }
+    public static function live(): void {
+        debugLog(['action' => 'live called', 'userTestMode' => \features\Settings::$userTestMode, 'before' => self::$sandbox], 'DEBUG_SIGNICAT');
+        if (\features\Settings::$userTestMode) {
+            debugLog(['action' => 'live BLOCKED by userTestMode'], 'DEBUG_SIGNICAT');
+            return;
+        }
+        self::$sandbox = false;
+        debugLog(['action' => 'live set', 'after' => self::$sandbox], 'DEBUG_SIGNICAT');
+    }
 
+    public static function isSandbox(): bool { return self::$sandbox; }
 
-    public static function clientId(): string { return self::$sandbox ? self::SANDBOX_CLIENT_ID : self::CLIENT_ID; }
+    public static function clientId(): string {
+        debugLog(['action' => 'clientId', 'sandbox' => self::$sandbox, 'returning' => self::$sandbox ? 'SANDBOX' : 'LIVE'], 'DEBUG_SIGNICAT');
+        return self::$sandbox ? self::SANDBOX_CLIENT_ID : self::CLIENT_ID;
+    }
     public static function clientSecret(): string { return self::$sandbox ? self::SANDBOX_CLIENT_SECRET : self::CLIENT_SECRET; }
     public static function accountId(): string { return self::$sandbox ? self::SANDBOX_ACCOUNT_ID : self::ACCOUNT_ID; }
     public static function mitIdReferenceId(): string { return self::$sandbox ? self::SANDBOX_MITID_REFERENCE_ID : self::MITID_REFERENCE_ID; }
@@ -41,7 +57,7 @@ class Signicat {
 
 
 
-    private static bool $sandbox = true;
+    private static bool $sandbox = false;
     private const SANDBOX_CLIENT_ID = "sandbox-biting-clock-989";
 //    private const SANDBOX_CLIENT_ID = "sandbox-tricky-turtle-183";
     private const SANDBOX_CLIENT_SECRET = "NY8YZLg05SlEsRTYgY7ANOCPzDQi1789r98uI4kTOTAdJzBY";

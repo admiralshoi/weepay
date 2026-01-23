@@ -174,6 +174,8 @@ class CardValidationService
             $isvAmount // Use stored ISV amount from payment record
         );
 
+        testLog($result, 'VIVA_CHARGE_RECURRING_RESPONSE');
+
         if (empty($result)) {
             debugLog(['error' => 'Empty response'], 'RECURRING_CHARGE_ERROR');
             return [

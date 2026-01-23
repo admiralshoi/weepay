@@ -33,6 +33,9 @@ class Settings {
     // Cookie consent (GDPR)
     public static bool $cookiesAccepted = false;
 
+    // User test mode - forces sandbox for Viva and Signicat
+    public static bool $userTestMode = false;
+
 
 
 

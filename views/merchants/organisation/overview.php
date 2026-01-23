@@ -425,6 +425,81 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
         </div>
         <?php endif; ?>
 
+        <!-- Transaction Fees Card -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card border-radius-10px">
+                    <div class="card-body">
+                        <!-- Header -->
+                        <div class="flex-row-start flex-align-center flex-nowrap" style="column-gap: .5rem;">
+                            <i class="mdi mdi-percent-outline font-22 color-blue"></i>
+                            <p class="mb-0 font-22 font-weight-bold">Transaktionsgebyrer</p>
+                        </div>
+
+                        <!-- Standard Fees Section -->
+                        <div class="mt-3">
+                            <p class="font-14 font-weight-bold mb-2">Standardgebyrer</p>
+                            <div class="bg-lightest-gray p-3 border-radius-8px">
+                                <div class="flex-row-between mb-2">
+                                    <span>Platformgebyr</span>
+                                    <span class="font-weight-bold"><?= number_format($args->resellerFee, 2, ',', '.') ?> %</span>
+                                </div>
+                                <div class="flex-row-between mb-2 color-gray">
+                                    <span>− Estimeret kortgebyr (Visa/Mastercard)</span>
+                                    <span><?= number_format($args->cardFee, 2, ',', '.') ?> %</span>
+                                </div>
+                                <div class="flex-row-between mb-2 color-gray">
+                                    <span>− Estimeret Viva-gebyr</span>
+                                    <span><?= number_format($args->paymentProviderFee, 2, ',', '.') ?> %</span>
+                                </div>
+                                <hr class="my-2">
+                                <div class="flex-row-between">
+                                    <span class="font-weight-bold">Dit gebyr til <?= BRAND_NAME ?></span>
+                                    <span class="font-weight-bold color-blue"><?= number_format($args->netFee, 2, ',', '.') ?> %</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <?php if (!isEmpty($args->activeFeeException)): ?>
+                        <!-- Active Exception Section -->
+                        <div class="mt-3 p-3 bg-lightest-blue border-radius-8px">
+                            <div class="flex-row-start-center g-1 mb-2">
+                                <i class="mdi mdi-star-outline color-blue"></i>
+                                <span class="font-weight-bold">Særlig gebyrordning aktiv</span>
+                            </div>
+                            <?php
+                                $exceptionNetFee = max(0, (float)$args->activeFeeException->fee - $args->cardFee - $args->paymentProviderFee);
+                                $endDate = $args->activeFeeException->end_time ? date('d.m.Y', $args->activeFeeException->end_time) : null;
+                            ?>
+                            <p class="mb-1">Dit nuværende platformgebyr: <strong><?= number_format($args->activeFeeException->fee, 2, ',', '.') ?> %</strong></p>
+                            <p class="mb-1">Dit gebyr til <?= BRAND_NAME ?>: <strong class="color-blue"><?= number_format($exceptionNetFee, 2, ',', '.') ?> %</strong></p>
+                            <?php if ($endDate): ?>
+                            <p class="mb-0 color-gray font-12">Gælder til: <?= $endDate ?></p>
+                            <?php else: ?>
+                            <p class="mb-0 color-gray font-12">Ingen udløbsdato</p>
+                            <?php endif; ?>
+                        </div>
+                        <?php endif; ?>
+
+                        <!-- Important Info Section -->
+                        <div class="mt-3">
+                            <p class="font-12 color-dark mb-2">
+                                <i class="mdi mdi-information-outline mr-1"></i>
+                                <strong>Sådan fungerer gebyrer:</strong>
+                            </p>
+                            <ul class="font-12 color-gray mb-0" style="padding-left: 1.25rem;">
+                                <li class="mb-1">Du betaler <?= BRAND_NAME ?> det viste gebyr pr. transaktion.</li>
+                                <li class="mb-1">Kort- og Viva-gebyrer trækkes automatisk af Viva fra din merchant-konto.</li>
+                                <li class="mb-1">Ovenstående kortgebyrer gælder standard personlige Visa/Mastercard.</li>
+                                <li class="mb-1">Faktiske kortgebyrer kan variere afhængigt af din omsætning og korttype. Erhvervskort kan medføre gebyrer op til 4%.</li>
+                                <li class="mb-0">I nogle tilfælde kan de samlede gebyrer overstige eller være lavere end det estimerede platformgebyr. Dette ligger uden for vores kontrol.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row mt-4">
             <div class="col-12">
                 <div class="card border-radius-10px">

@@ -102,7 +102,7 @@ class MerchantApiController {
         $basketHandler = Methods::checkoutBasket();
         $currentActiveBasket = $basketHandler->getActiveBasket($sessionId);
         if(!isEmpty($currentActiveBasket)) $basketHandler->setVoid($currentActiveBasket->uid);
-        $basketId = $basketHandler->setNew($sessionId, $name, $price, Methods::locations()->tradingCurrency($session->terminal->location), $note);
+        $basketId = $basketHandler->setNew($sessionId, $name, $price, Methods::locations()->tradingCurrency($session->terminal->location), $note, __uuid());
         if(isEmpty($basketId)) Response()->jsonError("Noget gik galt.", [], 500);
         Response()->jsonSuccess("Kurven er blevet oprettet", ['id' => $basketId]);
     }
@@ -217,5 +217,67 @@ class MerchantApiController {
     }
 
 
+    #[NoReturn] public static function getTodaysSales(array $args): void {
+        foreach (['location'] as $key) if(!array_key_exists($key, $args))
+            Response()->jsonError("Mangler parametre", [], 400);
+
+        $locationId = $args['location'];
+        $showAll = ($args['all'] ?? '0') === '1';
+
+        $location = Methods::locations()->get($locationId);
+        if(isEmpty($location)) Response()->jsonError("Ugyldig lokation", [], 404);
+        if(is_string($location->uuid)) $location->uuid = Methods::organisations()->get($location->uuid);
+        if(!LocationPermissions::__oRead($location, "checkout"))
+            Response()->jsonError("Du har ikke tilladelse til denne handling", [], 401);
+
+        $todayStart = date('Y-m-d 00:00:00');
+        $ordersHandler = Methods::orders();
+        $basketHandler = Methods::checkoutBasket();
+        $slug = $location->slug;
+
+        $query = $ordersHandler->queryBuilder()
+            ->where('location', $locationId)
+            ->where('status', 'COMPLETED')
+            ->where('created_at', '>=', $todayStart)
+            ->order('created_at', 'DESC')
+            ->limit(20);
+
+        $orders = $ordersHandler->queryGetAll($query);
+
+        $sales = [];
+        foreach ($orders->list() as $order) {
+            $tsUid = is_object($order->terminal_session) ? $order->terminal_session->uid : $order->terminal_session;
+            $basket = $basketHandler->getFirst(['terminal_session' => $tsUid, 'status' => 'FULFILLED']);
+            if (isEmpty($basket)) continue;
+
+            // If not showing all, filter to only this user's baskets
+            $createdByUid = is_object($basket->created_by) ? $basket->created_by->uid : $basket->created_by;
+            if (!$showAll && $createdByUid !== __uuid()) continue;
+
+            $customerName = is_object($order->uuid) ? ($order->uuid->full_name ?? 'Kunde') : 'Kunde';
+
+            // Get cashier name - created_by could be object (foreign key resolved) or string (UID)
+            $cashierName = 'Ukendt';
+            if (is_object($basket->created_by)) {
+                $cashierName = $basket->created_by->full_name ?? 'Ukendt';
+            } elseif (!isEmpty($basket->created_by)) {
+                $cashierUser = Methods::users()->get($basket->created_by);
+                $cashierName = $cashierUser->full_name ?? 'Ukendt';
+            }
+
+            $sales[] = [
+                'order_uid' => $order->uid,
+                'basket_name' => $basket->name,
+                'customer_name' => $customerName,
+                'cashier_name' => $cashierName,
+                'price' => number_format($basket->price, 2, ',', '.'),
+                'currency' => currencySymbol($basket->currency),
+                'time' => date('H:i', strtotime($basket->created_at)),
+                'link' => __url(Links::$merchant->orderDetail($order->uid)),
+            ];
+        }
+
+        Response()->jsonSuccess("", ['sales' => $sales, 'count' => count($sales)]);
+    }
 
 }

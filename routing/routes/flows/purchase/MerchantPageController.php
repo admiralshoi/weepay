@@ -34,7 +34,10 @@ class MerchantPageController {
 
         Methods::terminalSessions()->unsetAllActiveByTerminalId($terminalId);
 
-        return Views("MERCHANT_POS_START", compact('terminal', 'terminalId'));
+        $slug = $terminal->location->slug;
+        $locationId = $terminal->location->uid;
+
+        return Views("MERCHANT_POS_START", compact('terminal', 'terminalId', 'slug', 'locationId'));
     }
 
     public static function posDetails(array $args): mixed {

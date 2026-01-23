@@ -365,7 +365,7 @@ class PageController {
         // Get all payments for this order
         $payments = $paymentsHandler->getByX([
             'order' => $orderId
-        ], ['uid', 'amount', 'status', 'due_date', 'paid_at', 'created_at']);
+        ], ['uid', 'amount', 'status', 'due_date', 'paid_at', 'created_at', 'rykker_fee']);
 
         return Views("CONSUMER_ORDER_DETAIL", compact('order', 'payments'));
     }

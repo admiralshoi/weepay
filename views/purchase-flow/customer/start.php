@@ -78,7 +78,7 @@ $showMitId = true; // Always show MitID
 
 
             <div class="card border-radius-10px w-100">
-                <div class="w-100 h-200px overflow-hidden">
+                <div class="w-100 h-200px overflow-hidden position-relative">
                     <div
                             class="w-100 h-100 overflow-hidden bg-cover"
                             style="
@@ -87,6 +87,13 @@ $showMitId = true; // Always show MitID
                                 background-image: url('<?=resolveImportUrl($args->page->hero_image)?>');
                             "
                     ></div>
+                    <!-- Store credit clarification -->
+                    <div class="position-absolute" style="bottom: 10px; left: 10px; right: 10px;">
+                        <div class="d-inline-flex flex-row-start-center" style="gap: 6px; background: rgba(255,255,255,0.95); padding: 6px 12px; border-radius: 6px; backdrop-filter: blur(4px);">
+                            <i class="mdi mdi-store-outline color-design-blue font-14"></i>
+                            <span class="font-12 color-dark">Kredit tilbydes af <strong><?=$terminal->location->name?></strong></span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="py-3 px-4 w-100 flex-col-start" style="row-gap: .5rem;">

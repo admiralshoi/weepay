@@ -1263,8 +1263,8 @@ class NotificationService {
                 'status' => 'active'
             ]);
 
-            if ($ownerMember && $ownerMember->user) {
-                $user = is_object($ownerMember->user) ? $ownerMember->user : Users::where('uid', $ownerMember->user)->first();
+            if ($ownerMember && $ownerMember->uuid) {
+                $user = is_object($ownerMember->uuid) ? $ownerMember->uuid : Methods::users()->get($ownerMember->uuid);
                 if ($user) {
                     $recipient['uid'] = $user->uid;
                     $recipient['email'] = $user->email;

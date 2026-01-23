@@ -105,6 +105,7 @@ class Viva {
         $requests->get(API::merchantReadUrl($accountId));
 
         $response = $requests->getResponse();
+        testLog($response, 'VIVA_CONNECTED_MERCHANT_RESPONSE');
         return $response;
         //Find the error response and at right...
 //        if(empty($token)) {
@@ -300,11 +301,22 @@ class Viva {
             $payload['isvAmount'] = (int)((float)$resellerFee * 100);
         }
 
+        testLog([
+            'merchantId' => $merchantId,
+            'initialTransactionId' => $initialTransactionId,
+            'url' => API::recurringPaymentUrl($initialTransactionId),
+            'payload' => $payload,
+            'sandbox' => API::isSandbox(),
+        ], 'VIVA_RECURRING_CHARGE_REQUEST');
+
         $requests->setBody($payload);
         // POST /api/transactions/{initialTransactionId}
         $requests->post(API::recurringPaymentUrl($initialTransactionId));
 
         $response = $requests->getResponse();
+
+        testLog($response, 'VIVA_RECURRING_CHARGE_RESPONSE');
+
         if (is_null($response) || (isset($response['ErrorCode']) && $response['ErrorCode'] !== 0)) {
             errorLog([
                 'payload' => $payload,

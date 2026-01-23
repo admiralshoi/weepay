@@ -10,6 +10,7 @@ class Checkout {
 
     public string $merchantVoidBasket = "api/terminal-sessions/{id}/basket/void";
     public string $basketHash = "api/terminal-sessions/{id}/basket/hash";
+    public string $todaysSales = "api/locations/{location}/todays-sales";
 
 
 

@@ -6,6 +6,7 @@
 
 use classes\enumerations\Links;
 use classes\lang\Translate;
+use classes\Methods;
 
 $pageTitle = "Panel";
 
@@ -26,6 +27,7 @@ $pageTitle = "Panel";
                     <p class="mb-0 font-14 color-gray">System konfiguration og indstillinger</p>
                 </div>
             </div>
+
 
             <!-- Quick Links Grid -->
             <div class="row rg-15">

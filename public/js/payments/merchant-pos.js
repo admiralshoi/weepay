@@ -9,9 +9,11 @@ const MerchantPOS = {
     tId: null,
     tsId: null,
     basketId: null,
+    locationId: null,
     basketInterval: null,
     checkSessionInterval: null,
     sentToCustomer: false,
+    allSalesLoaded: false,
     elements: {
         awaitingContainer: null,
         sessionContainer: null,
@@ -24,11 +26,15 @@ const MerchantPOS = {
         sessionStatus: null,
         pageTitleVoid: null,
         pageTitlePending: null,
+        salesListContainer: null,
+        mySalesCount: null,
+        allSalesCount: null,
     },
     init() {
         if('terminalId' in window) this.tId = terminalId;
         if('terminalSessionId' in window) this.tsId = terminalSessionId;
         if('terminalSessionBasket' in window) this.basketId = terminalSessionBasket;
+        if('locationId' in window) this.locationId = locationId;
         this.elements.awaitingContainer = document.getElementById('awaiting_customers');
         this.elements.sessionContainer = document.getElementById('session_container');
         this.elements.sessionTableBody = document.getElementById('session_body');
@@ -40,9 +46,9 @@ const MerchantPOS = {
         this.elements.sessionStatus = document.getElementById('session-status');
         this.elements.pageTitleVoid = document.getElementById('page-title-void');
         this.elements.pageTitlePending = document.getElementById('page-title-pending');
-
-
-
+        this.elements.salesListContainer = document.getElementById('sales-list-container');
+        this.elements.mySalesCount = document.getElementById('my-sales-count');
+        this.elements.allSalesCount = document.getElementById('all-sales-count');
 
 
         this.bindEvents();
@@ -66,6 +72,19 @@ const MerchantPOS = {
         }
         if(!empty(this.tsId) && this.elements.voidSessionBtn) {
             this.elements.voidSessionBtn.addEventListener('click', this.voidSession.bind(this));
+        }
+        // Sales toggle buttons (only on start page)
+        if(this.elements.salesListContainer) {
+            document.querySelectorAll('.sales-toggle-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.sales-toggle-btn').forEach(b => b.classList.remove('active'));
+                    e.currentTarget.classList.add('active');
+                    const showAll = e.currentTarget.dataset.showAll === '1';
+                    this.loadSales(showAll);
+                });
+            });
+            // Load initial sales
+            this.loadSales(false);
         }
     },
 
@@ -290,6 +309,59 @@ const MerchantPOS = {
 
 
         return result;
+    },
+    async loadSales(showAll) {
+        if(!this.locationId || !this.elements.salesListContainer) return;
+
+        let link = platformLinks.api.checkout.todaysSales.replace("{location}", this.locationId);
+        if(showAll) link += '?all=1';
+
+        this.elements.salesListContainer.innerHTML = '<div class="flex-col-center flex-align-center py-4"><span class="spinner-border color-blue square-30" style="border-width: 3px;"></span></div>';
+
+        const result = await get(link);
+        if(result.status === 'error') {
+            this.elements.salesListContainer.innerHTML = '<div class="flex-col-center flex-align-center py-4"><p class="color-red">Kunne ikke hente salg</p></div>';
+            return;
+        }
+
+        const sales = result.data.sales || [];
+        const count = result.data.count || 0;
+
+        if(showAll) {
+            this.allSalesLoaded = true;
+            if(this.elements.allSalesCount) this.elements.allSalesCount.innerText = count;
+        } else {
+            if(this.elements.mySalesCount) this.elements.mySalesCount.innerText = count;
+        }
+
+        if(sales.length === 0) {
+            this.elements.salesListContainer.innerHTML =
+                '<div class="flex-col-center flex-align-center py-4" style="row-gap: .5rem;">' +
+                '<i class="mdi mdi-cart-outline font-30 color-gray"></i>' +
+                '<p class="mb-0 font-14 color-gray text-center">Ingen gennemførte salg endnu i dag</p>' +
+                '</div>';
+            return;
+        }
+
+        let html = '<div class="flex-col-start" style="row-gap: .5rem; max-height: 350px; overflow-y: auto;">';
+        for(let i in sales) {
+            let sale = sales[i];
+            html += '<a href="' + sale.link + '" target="_blank" class="card-border p-3 border-radius-8px text-decoration-none d-block">';
+            html += '<div class="flex-row-between flex-align-start">';
+            html += '<div class="flex-col-start" style="row-gap: .25rem;">';
+            html += '<p class="mb-0 font-14 font-weight-bold color-dark">' + sale.basket_name + '</p>';
+            html += '<p class="mb-0 font-12 color-gray">' + sale.customer_name + '</p>';
+            if(showAll) html += '<p class="mb-0 font-11 color-gray"><i class="mdi mdi-account-outline"></i> ' + sale.cashier_name + '</p>';
+            html += '</div>';
+            html += '<div class="flex-col-end" style="row-gap: .25rem;">';
+            html += '<p class="mb-0 font-14 font-weight-bold color-green">' + sale.price + ' ' + sale.currency + '</p>';
+            html += '<p class="mb-0 font-11 color-gray">' + sale.time + '</p>';
+            html += '</div>';
+            html += '</div>';
+            html += '</a>';
+        }
+        html += '</div>';
+        this.elements.salesListContainer.innerHTML = html;
     },
 }
 

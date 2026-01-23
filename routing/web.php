@@ -300,6 +300,7 @@ Routes::group(['api','requiresApiLogin'], function() {
         Routes::get(Links::$api->checkout->merchantPosBasket, "flows.purchase.MerchantApiController::getBasket");
         Routes::post(Links::$api->checkout->merchantVoidBasket, "flows.purchase.MerchantApiController::voidBasket");
         Routes::get(Links::$api->checkout->terminalSession, "flows.purchase.MerchantApiController::getTerminalSession");
+        Routes::get(Links::$api->checkout->todaysSales, "flows.purchase.MerchantApiController::getTodaysSales");
 
         // Merchant support routes
         Routes::post(Links::$api->merchant->support->create, "merchants.ApiController::supportCreate");

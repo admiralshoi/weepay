@@ -22,6 +22,7 @@ class Users extends \Database\Model {
         "payout_bank_info" => ["type" => "string", "default" => null, "nullable" => true],
         "birthdate" => ["type" => "string", "default" => null, "nullable" => true],
         "phone_country_code" => ["type" => "string", "default" => null, "nullable" => true],
+        "test" => ["type" => "tinyInteger", "default" => 0],
     ];
     public static array $indexes = [
 

@@ -31,10 +31,10 @@ class CheckoutBasketHandler extends Crud {
     }
 
 
-    public function setNew(string $terminalSessionId, string $name, string|int|float $price, string $currency, ?string $note = null): ?string {
+    public function setNew(string $terminalSessionId, string $name, string|int|float $price, string $currency, ?string $note = null, ?string $createdBy = null): ?string {
         if($this->exists(['terminal_session' => $terminalSessionId, 'status' => 'DRAFT']))
             $this->update(['status' => 'VOID'], ['terminal_session' => $terminalSessionId, 'status' => 'DRAFT']);
-        if(!$this->create(['terminal_session' => $terminalSessionId, 'name' => $name, 'price' => $price, 'currency' => $currency, 'note' => $note])) return null;
+        if(!$this->create(['terminal_session' => $terminalSessionId, 'name' => $name, 'price' => $price, 'currency' => $currency, 'note' => $note, 'created_by' => $createdBy])) return null;
         return $this->recentUid;
     }
 
@@ -57,8 +57,21 @@ class CheckoutBasketHandler extends Crud {
             if(!isEmpty($customerId)) {
                 $bnplLimit = Methods::payments()->getBnplLimit($customerId, $organisationId);
 
-                // If basket amount exceeds available BNPL limit, don't show this plan
-                if($basket->price > $bnplLimit['available']) {
+                // Calculate credit needed based on plan type
+                // - Pushed: full amount is deferred to credit
+                // - Installments: first payment is NOW, remaining (n-1) payments are on credit
+                $installmentCount = $plan->installments ?? 1;
+
+                if($planName === 'pushed') {
+                    $creditNeeded = $basket->price;
+                } elseif($planName === 'installments' && $installmentCount > 1) {
+                    // Same formula as used later: floor(price/n) * (n-1)
+                    $creditNeeded = floor($basket->price / $installmentCount) * ($installmentCount - 1);
+                } else {
+                    $creditNeeded = $basket->price;
+                }
+
+                if($creditNeeded > $bnplLimit['available']) {
                     return null;
                 }
             }

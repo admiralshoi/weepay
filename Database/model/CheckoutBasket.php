@@ -13,9 +13,10 @@ class CheckoutBasket extends \Database\Model {
         "currency" => "string",
         "note" => ["type" => 'string', "default" => null, 'nullable' => true],
         "status" => ["type" => "enum", "default" => 'DRAFT', 'values' => ['DRAFT', 'VOID', 'FULFILLED']],
+        "created_by" => ["type" => 'string', "default" => null, 'nullable' => true],
     ];
 
-    public static array $indexes = ["terminal_session", "status"];
+    public static array $indexes = ["terminal_session", "status", "created_by"];
     public static array $uniques = ["uid"];
 
     protected static array $requiredRows = [];
@@ -27,6 +28,7 @@ class CheckoutBasket extends \Database\Model {
     public static function foreignkeys(): array {
         return [
             "terminal_session" => [TerminalSession::tableColumn("uid"), TerminalSession::newStatic()],
+            "created_by" => [Users::tableColumn("uid"), Users::newStatic()],
         ];
     }
 }

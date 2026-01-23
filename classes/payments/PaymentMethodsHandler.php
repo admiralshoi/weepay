@@ -19,6 +19,14 @@ class PaymentMethodsHandler extends Crud {
         'NET_JCB' => 'JCB',
     ];
 
+    /**
+     * Mapping of Viva digitalWalletId to display name
+     */
+    private const WALLET_MAP = [
+        1 => 'Google Pay',
+        2 => 'Apple Pay',
+    ];
+
     public function __construct() {
         parent::__construct(PaymentMethods::newStatic(), "payment_methods");
     }
@@ -36,8 +44,18 @@ class PaymentMethodsHandler extends Crud {
         array $vivaData,
         bool $isTest = false
     ): ?object {
+        // Debug: Log full Viva response to see Apple Pay/Google Pay data
+        debugLog($vivaData, 'VIVA_PAYMENT_METHOD_DATA');
+
         // Extract cardUniqueReference for deduplication
         $cardUniqueReference = $vivaData['cardUniqueReference'] ?? null;
+        $digitalWalletId = $vivaData['digitalWalletId'] ?? null;
+        $last4 = $vivaData['primaryAccountNumberLast4Digits'] ?? null;
+
+        // For digital wallets (Apple Pay/Google Pay), create a synthetic reference
+        if (isEmpty($cardUniqueReference) && !isEmpty($digitalWalletId) && !isEmpty($last4)) {
+            $cardUniqueReference = "digitalWallet_{$digitalWalletId}_{$last4}";
+        }
 
         if (isEmpty($cardUniqueReference)) {
             errorLog(['vivaData' => $vivaData], 'payment-method-missing-card-reference');
@@ -50,12 +68,15 @@ class PaymentMethodsHandler extends Crud {
             return $existing;
         }
 
-        // Map bankId to brand
+        // Map bankId to brand, or use wallet name for digital wallets
         $bankId = $vivaData['bankId'] ?? null;
-        $brand = self::BRAND_MAP[$bankId] ?? 'Unknown';
+        if (!isEmpty($digitalWalletId) && isset(self::WALLET_MAP[$digitalWalletId])) {
+            $brand = self::WALLET_MAP[$digitalWalletId];
+        } else {
+            $brand = self::BRAND_MAP[$bankId] ?? 'Unknown';
+        }
 
-        // Extract last 4 digits
-        $last4 = $vivaData['primaryAccountNumberLast4Digits'] ?? null;
+        // Extract last 4 digits (already fetched above for digital wallet check)
         if ($last4 !== null) {
             $last4 = (int)$last4;
         }

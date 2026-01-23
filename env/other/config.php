@@ -15,7 +15,7 @@ define("LIVE", !str_contains($_SERVER["HTTP_HOST"], "localhost"));
 /**
  * ENV files
  */
-const PLATFORM_VERSION = "v1.053";
+const PLATFORM_VERSION = "v1.054";
 const HTACCESS_PWD_FILE = "env/other/htaccessPwd.txt";
 const DB_LIVE_FILE = "env/db/live.php";
 const DB_LOCAL_FILE = "env/db/local.php";
@@ -24,6 +24,7 @@ const FORWARD_KEY = "1b9fb9e6ca4379142b55469e5492220d70b21917c63a79f685e8bf540d6
 const MIGRATION_TOKEN = "fa6fe44b34b7f76f66a2f1252cb0a8b7a7af70ae3a9713bc5a01029ded35cf89";
 const CRONJOB_TOKEN = "91fcd71769087fb0fdad6faf7bc599260965c3481bdda73c9d850e5425ceadd4";
 const LIVE_DB_FORCE_TOKEN = "583359b03515cd03a19de12e2039c7f524654babd314f029ecd65b8e3d703992";
+const SANDBOX_MODE_TOKEN = "d8f2a91c7e5b43609af1d2c8b7e6f5a4c3b2a19087f6e5d4c3b2a19087f6e5d4";
 
 if(LIVE) {
     define("ROOT_DIR", "");

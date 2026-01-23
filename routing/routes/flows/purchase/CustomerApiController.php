@@ -59,10 +59,12 @@ class CustomerApiController {
             // Get customer birthdate for payment plans calculation (same as getBasketHash)
             $birthdate = $terminalSession->customer?->birthdate ?? null;
             $customerId = $terminalSession->customer?->uid ?? null;
+            $org = $terminalSession->terminal->location->uuid;
+            $orgIdForHash = is_object($org) ? $org->uid : $org;
 
             $paymentPlans = [];
             foreach (\features\Settings::$app->paymentPlans as $name => $plan){
-                $planInfo = $basketHandler->createCheckoutInfo($basket, $name, $birthdate, $customerId);
+                $planInfo = $basketHandler->createCheckoutInfo($basket, $name, $birthdate, $customerId, $orgIdForHash);
                 if(isEmpty($planInfo)) continue;
                 $paymentPlans[] = $planInfo;
             }
@@ -255,6 +257,7 @@ class CustomerApiController {
                         }
 
                         $paymentInfo = $viva->getPayment($merchantId, $transactionId);
+                        debugLog($paymentInfo, 'VIVA_GETPAYMENT_RESPONSE_PUSHED');
                         $paymentMethodUid = null;
 
                         if (!isEmpty($paymentInfo)) {
@@ -308,6 +311,7 @@ class CustomerApiController {
                     if (!empty($transactionId)) {
                         // Get card details from Viva and store payment method
                         $paymentInfo = $viva->getPayment($merchantId, $transactionId);
+                        debugLog($paymentInfo, 'VIVA_GETPAYMENT_RESPONSE_INSTALLMENTS');
                         $paymentMethodUid = null;
 
                         if (!isEmpty($paymentInfo)) {
@@ -460,10 +464,12 @@ class CustomerApiController {
         // Get customer birthdate and ID for age restriction and BNPL limit
         $birthdate = $terminalSession->customer?->birthdate ?? null;
         $customerId = $terminalSession->customer?->uid ?? null;
+        $org = $terminalSession->terminal->location->uuid;
+        $organisationId = is_object($org) ? $org->uid : $org;
 
         $paymentPlans = [];
         foreach (Settings::$app->paymentPlans as $name => $plan){
-            $plan = $basketHandler->createCheckoutInfo($basket, $name, $birthdate, $customerId);
+            $plan = $basketHandler->createCheckoutInfo($basket, $name, $birthdate, $customerId, $organisationId);
             if(isEmpty($plan)) continue;
             $paymentPlans[] = $plan;
         }

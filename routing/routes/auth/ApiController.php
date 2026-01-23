@@ -594,7 +594,7 @@ class ApiController {
             ], ['user' => $userId]);
         } else {
             // Create new record with phone, enable 2FA (without password - user can set it later if needed)
-            $localAuthHandler->insert([
+            $localAuthHandler->create([
                 'user' => $userId,
                 'phone' => $cleanedPhone,
                 'phone_country_code' => $phoneCountryCode,

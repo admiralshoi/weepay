@@ -64,7 +64,30 @@ class PageController {
         // Get setup requirements
         $setupRequirements = Methods::organisations()->getSetupRequirements();
 
-        return Views("ORGANISATION_OVERVIEW", compact('memberRows', 'worldCountries', 'locations', 'setupRequirements'));
+        // Get fee settings for display
+        $resellerFee = (float)(Settings::$app->resellerFee ?? 5.95);
+        $cardFee = (float)(Settings::$app->cardFee ?? 0.39);
+        $paymentProviderFee = (float)(Settings::$app->paymentProviderFee ?? 0.39);
+        $netFee = max(0, $resellerFee - $cardFee - $paymentProviderFee);
+
+        // Check for active special fee exception
+        $now = time();
+        $organisation = Settings::$organisation?->organisation ?? null;
+        $activeFeeException = null;
+        if (!isEmpty($organisation)) {
+            $activeFeeException = Methods::organisationFees()->queryGetFirst(
+                Methods::organisationFees()->queryBuilder()
+                    ->where('organisation', $organisation->uid)
+                    ->where('enabled', 1)
+                    ->where('start_time', '<=', $now)
+                    ->startGroup('OR')
+                        ->where('end_time', '>=', $now)
+                        ->whereNull('end_time')
+                    ->endGroup()
+            );
+        }
+
+        return Views("ORGANISATION_OVERVIEW", compact('memberRows', 'worldCountries', 'locations', 'setupRequirements', 'resellerFee', 'cardFee', 'paymentProviderFee', 'netFee', 'activeFeeException'));
     }
 
     public static function team(array $args): mixed {
