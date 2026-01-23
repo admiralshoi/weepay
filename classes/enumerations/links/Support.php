@@ -5,7 +5,7 @@ namespace classes\enumerations\links;
 class Support {
 
 
-    public string $public = 'help/support';
+    public string $public = 'support';
 
 
     function __construct() {

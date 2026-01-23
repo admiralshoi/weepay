@@ -73,10 +73,12 @@ $faqs = $args->faqs ?? [];
             <h3>Har du flere spørgsmål?</h3>
             <p>Vi er her for at hjælpe dig</p>
             <div class="faq-cta-buttons">
+                <?php if(!isLoggedIn()): ?>
                 <a href="<?=__url(Links::$app->auth->consumerLogin)?>" class="btn-v2 action-btn px-4 py-2 border-radius-10px font-weight-bold">
                     Log ind
                 </a>
-                <a href="<?=__url(Links::$app->home)?>#contact" class="btn-v2 trans-hover-design-action-btn card-border px-4 py-2 border-radius-10px font-weight-medium">
+                <?php endif; ?>
+                <a href="<?=__url(Links::$app->home . '#contact')?>" class="btn-v2 trans-hover-design-action-btn card-border px-4 py-2 border-radius-10px font-weight-medium">
                     Kontakt os
                 </a>
             </div>

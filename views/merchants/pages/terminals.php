@@ -3,6 +3,7 @@
  * @var object $args
  */
 
+use classes\app\OrganisationPermissions;
 use classes\enumerations\Links;
 
 $pageTitle = "Kasseapparater";
@@ -44,11 +45,13 @@ $pageTitle = "Kasseapparater";
             <p class="mb-0 font-16 font-weight-medium color-gray">Administrer dine terminaler og QR-koder</p>
         </div>
         <div class="flex-row-end">
+            <?php OrganisationPermissions::__oModifyProtectedContent('locations', 'terminals'); ?>
             <button class="btn-v2 action-btn flex-row-center flex-align-center flex-nowrap"
                     onclick="LocationActions.addNewTerminal()" style="gap: .5rem;">
                 <i class="mdi mdi-plus"></i>
                 <span>Tilføj ny terminal</span>
             </button>
+            <?php OrganisationPermissions::__oEndContentSilent(); ?>
         </div>
     </div>
 

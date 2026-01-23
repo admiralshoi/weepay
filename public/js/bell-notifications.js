@@ -309,3 +309,47 @@
     };
 
 })();
+
+/**
+ * User Dropdown
+ */
+(function() {
+    'use strict';
+
+    function init() {
+        const trigger = document.getElementById('userDropdownTrigger');
+        const menu = document.getElementById('userDropdownMenu');
+
+        if (!trigger || !menu) return;
+
+        trigger.addEventListener('click', function(e) {
+            e.stopPropagation();
+            menu.classList.toggle('show');
+
+            // Close bell notifications if open
+            const bellDropdown = document.getElementById('bellNotificationsDropdown');
+            if (bellDropdown) bellDropdown.classList.remove('show');
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!menu.contains(e.target) && !trigger.contains(e.target)) {
+                menu.classList.remove('show');
+            }
+        });
+
+        // Close on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                menu.classList.remove('show');
+            }
+        });
+    }
+
+    // Initialize on DOM ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();

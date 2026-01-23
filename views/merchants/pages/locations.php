@@ -3,6 +3,7 @@
  * @var object $args
  */
 
+use classes\app\OrganisationPermissions;
 use classes\enumerations\Links;
 use classes\Methods;
 use features\Settings;
@@ -39,11 +40,13 @@ $pageTitle = "Butikslokationer";
             <p class="mb-0 font-16 font-weight-medium color-gray">Administrer dine butikslokationer</p>
         </div>
         <div class="flex-row-end">
+            <?php OrganisationPermissions::__oModifyProtectedContent('organisation', 'locations'); ?>
             <button class="btn-v2 action-btn flex-row-center flex-align-center flex-nowrap"
                 onclick="LocationActions.addNewLocation()" style="gap: .5rem;">
                 <i class="mdi mdi-plus"></i>
                 <span>Tilføj ny butik</span>
             </button>
+            <?php OrganisationPermissions::__oEndContentSilent(); ?>
         </div>
     </div>
 
@@ -79,11 +82,13 @@ $pageTitle = "Butikslokationer";
                                     </td>
                                     <td><?=ucfirst(strtolower($location->status))?></td>
                                     <td>
+                                        <?php OrganisationPermissions::__oModifyProtectedContent('organisation', 'locations'); ?>
                                         <div class="flex-col-start " style="row-gap: 0;">
                                             <div class="nav-button font-14" data-location-id="<?=$location->uid?>" onclick="LocationActions.open(this)">
                                                 <i class="mdi mdi-dots-horizontal font-14"></i>
                                             </div>
                                         </div>
+                                        <?php OrganisationPermissions::__oEndContentSilent(); ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

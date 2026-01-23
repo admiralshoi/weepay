@@ -56,7 +56,7 @@ class OrganisationMemberHandler extends Crud {
         return OrganisationMembers::queryBuilder()
             ->where('uuid', $uuid)
             ->where('organisation', $organisationId)
-            ->where('invitation_status', "!=", MemberEnum::INVITATION_PENDING)
+            ->where('invitation_status', MemberEnum::INVITATION_ACCEPTED)
             ->where('status', MemberEnum::MEMBER_ACTIVE)
             ->exists();
     }
@@ -90,7 +90,8 @@ class OrganisationMemberHandler extends Crud {
         if($organisation->status === MemberEnum::MEMBER_SUSPENDED || $organisation->status === MemberEnum::MEMBER_DELETED) return false;
 
         $role = $organisation->role;
-        $permissions = toArray($organisation->organisation->permissions->$role);
+        $orgPermissions = $organisation->organisation->permissions ?? new \stdClass();
+        $permissions = isset($orgPermissions->$role) ? toArray($orgPermissions->$role) : [];
 
         $mainPermission = [];
         $subPermission = [];
@@ -130,6 +131,22 @@ class OrganisationMemberHandler extends Crud {
         string $invitationStatus = MemberEnum::INVITATION_PENDING,
         ?array $scopedLocations = null
     ): bool {
+        // Check if member already exists (including deleted/suspended)
+        $existingMember = $this->getMember($organisationId, $uuid);
+        if(!isEmpty($existingMember)) {
+            // Update existing member instead of creating duplicate
+            $updateParams = [
+                "role" => $role,
+                "invitation_status" => $invitationStatus,
+                "status" => MemberEnum::MEMBER_ACTIVE,
+                "invitation_activity" => $this->getEventDetails($invitationStatus),
+            ];
+            if($scopedLocations !== null) {
+                $updateParams["scoped_locations"] = $scopedLocations;
+            }
+            return $this->updateMemberDetails($organisationId, $uuid, $updateParams);
+        }
+
         $params = [
             "organisation" => $organisationId,
             "uuid" => $uuid,

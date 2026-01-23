@@ -47,6 +47,7 @@ Routes::group(['requiresLogin', 'consumer'], function() {
     Routes::get("payments/{id}", "consumer.PageController::paymentDetail", ['consumerProfileComplete']);
     Routes::get("location/{id}", "consumer.PageController::locationDetail", ['consumerProfileComplete']);
     Routes::get(Links::$consumer->settings, "consumer.PageController::settings", ['consumerProfileComplete']);
+    Routes::get(Links::$consumer->help, "consumer.PageController::help", ['consumerProfileComplete']);
     Routes::get(Links::$consumer->support, "consumer.PageController::support", ['consumerProfileComplete']);
 
     // Consumer API routes
@@ -180,6 +181,12 @@ Routes::group(['api', "requiresApiLogout"], function() {
  *  ========== API LOGGED OUT END ===========
  *  =========================================
  */
+
+/**
+ * Team Invitation Verification
+ * Accessible without login - logs user in and redirects to password change
+ */
+Routes::get("invitation/{organisation_uid}/{code}", "auth.PageController::verifyInvitation");
 
 
 
@@ -386,6 +393,7 @@ Routes::group(["requiresLogin"], function () {
         Routes::get(Links::$merchant->asignEditor, "merchants.pages.PageController::asignEditor");
         Routes::get(Links::$merchant->asignEditor . "/{id}", "merchants.pages.PageController::asignEditor");
         Routes::get(Links::$merchant->reports, "merchants.pages.PageController::reports");
+        Routes::get(Links::$merchant->help, "merchants.pages.PageController::help");
         Routes::get(Links::$merchant->support, "merchants.pages.PageController::support");
 
         Routes::get(Links::$merchant->terminals->terminalPosStart, "flows.purchase.MerchantPageController::posStart");

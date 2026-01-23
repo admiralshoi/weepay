@@ -14,6 +14,7 @@ class Consumer {
     public string $upcomingPayments = "upcoming-payments";
     public string $outstandingPayments = "outstanding-payments";
     public string $settings = "settings";
+    public string $help = "help";
     public string $support = "support";
 
     public function orderDetail(string $orderId): string {

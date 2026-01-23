@@ -43,6 +43,14 @@ class OrganisationPermissions {
     }
 
     public static function __oEndContent(): void {
+        self::endProtectedContent(false);
+    }
+
+    public static function __oEndContentSilent(): void {
+        self::endProtectedContent(true);
+    }
+
+    private static function endProtectedContent(bool $silent = false): void {
         $content = ob_get_clean();
         $item = array_pop($GLOBALS['protected_organisation_content']);
         $mainObject = $item['main'] ?? "";
@@ -58,9 +66,8 @@ class OrganisationPermissions {
             "delete" => self::__oDelete($mainObject, $subObject),
         };
 
-
         if ($status) echo $content;
-        else echo '<p class="mt-2 text-wrap color-red font-12">You lack the permissions necessary to ' . $type . ' the content</p>';
+        elseif (!$silent) echo '<p class="mt-2 text-wrap color-red font-12">You lack the permissions necessary to ' . $type . ' the content</p>';
     }
 
 }

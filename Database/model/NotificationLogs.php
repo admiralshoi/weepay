@@ -22,9 +22,10 @@ class NotificationLogs extends \Database\Model {
         "schedule_offset" => ["type" => "integer", "nullable" => true, "default" => null],
         "metadata" => ["type" => "text", "nullable" => true, "default" => null],
         "dedup_hash" => ["type" => "string", "nullable" => true, "default" => null],
+        "created_at" => ["type" => "integer", "nullable" => true, "default" => null],
     ];
 
-    public static array $indexes = ["flow", "template", "breakpoint_key", "recipient", "channel", "status", "reference_id"];
+    public static array $indexes = ["flow", "template", "breakpoint_key", "recipient", "channel", "status", "reference_id", "created_at"];
     public static array $uniques = ["uid", "dedup_hash"];
 
     protected static array $requiredRows = [];

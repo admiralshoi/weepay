@@ -11,8 +11,16 @@ class Auth {
     public string $consumerSignup = "consumer/signup";
     public string $adminLogin = "admin/login";
     public string $changePassword = "auth/change-password";
+    public string $invitation = "invitation"; // Base path for invitation links
 
     public Oicd $oicd;
+
+    /**
+     * Generate invitation link with org UID and code
+     */
+    public function invitationLink(string $organisationUid, string $code): string {
+        return $this->invitation . "/{$organisationUid}/{$code}";
+    }
 
 
 

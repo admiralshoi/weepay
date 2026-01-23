@@ -448,6 +448,11 @@ class PageController {
     }
 
 
+    public static function help(array $args): mixed {
+        return Views("CONSUMER_HELP");
+    }
+
+
     public static function support(array $args): mixed {
         $ticketHandler = Methods::supportTickets();
         $replyHandler = Methods::supportTicketReplies();

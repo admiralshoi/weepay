@@ -3,6 +3,7 @@
  * @var object $args
  */
 
+use classes\app\OrganisationPermissions;
 use classes\enumerations\Links;
 
 $pageTitle = "Kunder";
@@ -25,6 +26,7 @@ $pageTitle = "Kunder";
         <p class="mb-0 font-16 font-weight-medium color-gray">Oversigt over alle kunder</p>
     </div>
 
+    <?php OrganisationPermissions::__oReadProtectedContent('orders', 'customers'); ?>
     <div class="row mt-4">
         <div class="col-12">
             <div class="card border-radius-10px">
@@ -115,6 +117,7 @@ $pageTitle = "Kunder";
             </div>
         </div>
     </div>
+    <?php OrganisationPermissions::__oEndContent(); ?>
 
 
 </div>

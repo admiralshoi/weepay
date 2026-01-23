@@ -74,12 +74,18 @@ if(isLoggedIn()) {
     // Normal organisation context loading
     if(!is_null(Settings::$user->cookies) && array_key_exists("organisation", toArray(Settings::$user->cookies))) {
         $organisationId = Settings::$user->cookies->organisation;
-        $memberRow = Methods::organisationMembers()->getMember($organisationId);
-        if(isEmpty($memberRow) || !Methods::organisationMembers()->userIsMember($organisationId)) {
+        if(!isEmpty($organisationId)) {
+            $memberRow = Methods::organisationMembers()->getMember($organisationId);
+            if(isEmpty($memberRow) || !Methods::organisationMembers()->userIsMember($organisationId)) {
+                $memberRow = Methods::organisationMembers()->firstValidOrganisation();
+                debugLog($memberRow, 'member-row-2');
+            }
+            Methods::organisationMembers()->setChosenOrganisation($memberRow);
+        } else {
+            // Cookie exists but org ID is null - find first valid org
             $memberRow = Methods::organisationMembers()->firstValidOrganisation();
-            debugLog($memberRow, 'member-row-2');
+            Methods::organisationMembers()->setChosenOrganisation($memberRow);
         }
-        Methods::organisationMembers()->setChosenOrganisation($memberRow);
     }
     else debugLog(Settings::$user->cookies, 'user-no-organisation-cookies');
 } elseif ($hasValidSandboxSession) {

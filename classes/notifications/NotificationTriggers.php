@@ -569,13 +569,26 @@ class NotificationTriggers {
         ?string $inviteLink = null
     ): bool {
         $orgData = self::normalizeData($organisation);
+        $inviterUid = $inviter ? (is_object($inviter) ? $inviter->uid : ($inviter['uid'] ?? '')) : '';
+        $orgUid = $orgData['uid'] ?? '';
+
+        $finalInviteLink = $inviteLink ?? __url(Links::$app->auth->merchantLogin);
+
+        debugLog([
+            'received_invite_link' => $inviteLink,
+            'final_invite_link' => $finalInviteLink,
+        ], 'ORG_INVITE_LINK_DEBUG');
+
         $context = [
             'organisation' => $orgData,
             'invitee_email' => $inviteeEmail,
             'recipient_email' => $inviteeEmail,
-            'invite_link' => $inviteLink ?? __url(Links::$app->auth->merchantLogin),
+            'invite_link' => $finalInviteLink,
             'app' => self::getAppContext(),
             'email_title' => 'Invitation',
+            // Reference for deduplication - unique per inviter + org + recipient email
+            'reference_id' => md5("{$inviterUid}:{$orgUid}:{$inviteeEmail}"),
+            'reference_type' => 'organisation_invite',
         ];
 
         if ($inviter) {

@@ -820,7 +820,9 @@ function requiresOrganisation(): bool {
     $isApi = array_key_exists("Request-Type", $headers) && $headers["Request-Type"] === "api";
     $exceptionPaths = [
         Links::$merchant->organisation->add,
-        Links::$app->logout
+        Links::$app->logout,
+        Links::$merchant->accessDenied,
+        Links::$app->auth->changePassword,
     ];
     return !$isApi &&
         isLoggedIn() &&
@@ -835,7 +837,9 @@ function requiresSelectedOrganisation(): bool {
         Links::$merchant->organisation->switch,
         Links::$merchant->organisation->home,
         Links::$merchant->organisation->add,
-        Links::$app->logout
+        Links::$app->logout,
+        Links::$app->auth->changePassword,
+        Links::$merchant->accessDenied
     ];
     return !$isApi &&
         isLoggedIn() &&
@@ -862,7 +866,9 @@ function requiresProfileCompletion(): bool {
     if(array_key_exists("Request-Type", $headers) && $headers["Request-Type"] === "api") return false;
     $exceptionPaths = [
         Links::$app->auth->consumerSignup . '/complete-profile',
-        Links::$app->logout
+        Links::$app->logout,
+        Links::$app->auth->changePassword,
+        Links::$merchant->accessDenied
     ];
     return \classes\Methods::isConsumer() &&
         (isEmpty(\features\Settings::$user?->phone) ||
@@ -874,7 +880,6 @@ function requiresPasswordChange(): bool {
     // Skip for non-logged-in users
     if(!isLoggedIn()) return false;
     if(adminImpersonating()) return false;
-    if(!isOidcAuthenticated()) return false;
 
     $headers = apache_request_headers();
     // Skip for API requests
@@ -925,7 +930,8 @@ function requiresWhitelistedIp(): bool {
         Links::$merchant->organisation->switch,
         Links::$merchant->organisation->add,
         Links::$app->logout,
-        Links::$merchant->accessDenied
+        Links::$merchant->accessDenied,
+        Links::$app->auth->changePassword
     ];
     if(in_array(realUrlPath(), $exceptionPaths)) return false;
 

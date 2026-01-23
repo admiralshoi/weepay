@@ -27,7 +27,7 @@ use classes\Methods;
 
             <?php if(Methods::isMerchant()): ?>
                 <p class="mb-0 color-gray font-14 font-weight-medium ellipsis-single-line hideOnMobileBlock" style="max-width: 200px;">
-                    <?=\classes\utility\Titles::cleanUcAll(\features\Settings::$organisation?->organisation?->name)?>
+                    <?=\classes\utility\Titles::cleanUcAll(\features\Settings::$organisation?->organisation?->name ?? '')?>
                 </p>
                 <a href="<?=__url(Links::$merchant->dashboard)?>"
                    class="btn-v2 trans-btn flex-row-start flex-align-center flex-nowrap font-14 border-radius-5px" style="gap: .5rem;">

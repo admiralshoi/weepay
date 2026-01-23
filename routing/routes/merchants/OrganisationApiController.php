@@ -3,6 +3,7 @@
 namespace routing\routes\merchants;
 
 use classes\app\OrganisationPermissions;
+use classes\enumerations\Links;
 use classes\lang\Translate;
 use classes\Methods;
 use classes\notifications\NotificationTriggers;
@@ -135,6 +136,7 @@ class OrganisationApiController {
         $organisationRoles = [];
         foreach($permissions as $role => $roleData) {
             if($role === 'location_employee') continue; // Exclude from dropdown
+            if($role === 'owner') continue; // Only one owner allowed, cannot invite as owner
             $organisationRoles[$role] = ucfirst(Translate::word(Titles::clean($role)));
         }
 
@@ -157,8 +159,24 @@ class OrganisationApiController {
         $organisationId = $args["organisation_id"];
         $action = trim($args["action"]);
         $member = Methods::organisationMembers()->getMember($organisationId, __uuid());
-        if(isEmpty($member)) Response()->jsonError("Ugyldig anmodning", [], 400);
-        if($member->invitation_status !== MemberEnum::INVITATION_PENDING) Response()->jsonError("Ugyldig anmodning", [], 400);
+
+        debugLog([
+            'organisationId' => $organisationId,
+            'userId' => __uuid(),
+            'member' => $member,
+            'member_status' => $member->status ?? 'no_member',
+            'invitation_status' => $member->invitation_status ?? 'no_member',
+        ], 'INVITATION_ACTION_DEBUG');
+
+        if(isEmpty($member)) Response()->jsonError("Ugyldig anmodning", ['debug' => 'member_not_found'], 400);
+
+        // Allow responding if:
+        // 1. Invitation is pending (normal case)
+        // 2. Member is deleted (needs to re-accept to rejoin)
+        $canRespond = $member->invitation_status === MemberEnum::INVITATION_PENDING ||
+                      $member->status === MemberEnum::MEMBER_DELETED;
+
+        if(!$canRespond) Response()->jsonError("Ugyldig anmodning", ['debug' => 'not_pending', 'current_status' => $member->invitation_status, 'member_status' => $member->status], 400);
 
 
         // Get all location IDs belonging to this organisation
@@ -189,10 +207,15 @@ class OrganisationApiController {
 
                 Response()->jsonSuccess("Invitationen er blevet afvist.");
             case "accept":
-                $accepted = Methods::organisationMembers()->updateMemberDetails($organisationId, __uuid(), [
+                $updateData = [
                     "invitation_status" => MemberEnum::INVITATION_ACCEPTED,
                     "invitation_activity" => Methods::organisationMembers()->getEventDetails(MemberEnum::INVITATION_ACCEPTED)
-                ]);
+                ];
+                // If member was deleted, reactivate them
+                if($member->status === MemberEnum::MEMBER_DELETED) {
+                    $updateData["status"] = MemberEnum::MEMBER_ACTIVE;
+                }
+                $accepted = Methods::organisationMembers()->updateMemberDetails($organisationId, __uuid(), $updateData);
 
                 if(!$accepted) Response()->jsonError("Operationen mislykkedes. Prøv igen senere.");
 
@@ -251,6 +274,8 @@ class OrganisationApiController {
             Response()->jsonError("Du har ikke tilladelse til at udføre denne handling.");
         if(!property_exists(Settings::$organisation->organisation->permissions, $role))
             Response()->jsonError("Ugyldig rolle.");
+        if($role === 'owner')
+            Response()->jsonError("Der kan kun være én ejer pr. organisation.");
 
         $organisation = Settings::$organisation->organisation;
         $organisationId = $organisation->uid;
@@ -269,6 +294,23 @@ class OrganisationApiController {
             // Create member with PENDING status
             Methods::organisationMembers()->createNewMember($organisationId, $existingUser->uid, $role, MemberEnum::INVITATION_PENDING, $scopedLocations);
 
+            // Create invitation code (24hr TTL)
+            $invitationResult = Methods::twoFactorAuth()->createInvitationCode(
+                $existingUser->uid,
+                $organisationId,
+                $existingUser->email ?? $email
+            );
+            $inviteLink = $invitationResult
+                ? __url(Links::$app->auth->invitationLink($organisationId, $invitationResult['code']))
+                : __url(Links::$app->auth->merchantLogin);
+
+            debugLog([
+                'path' => 'EXISTING_USER',
+                'invitationResult' => $invitationResult,
+                'inviteLink' => $inviteLink,
+                'existingUserEmail' => $existingUser->email ?? $email,
+            ], 'ORG_INVITE_CONTROLLER_DEBUG');
+
             // Log notification
             Methods::notificationHandler()->teamInvitation([
                 'uid' => $existingUser->uid,
@@ -279,11 +321,16 @@ class OrganisationApiController {
 
             // Trigger organisation member invited notification
             $inviter = Methods::users()->get(__uuid());
+            debugLog([
+                'about_to_trigger' => true,
+                'inviteLink' => $inviteLink,
+                'email' => $existingUser->email ?? '',
+            ], 'ORG_INVITE_BEFORE_TRIGGER');
             NotificationTriggers::organisationMemberInvited(
                 $organisation,
                 $existingUser->email ?? '',
                 $inviter,
-                __url(ORGANISATION_PANEL_PATH . '/add') // Link to pending invitations page
+                $inviteLink
             );
 
             Response()->setRedirect()->jsonSuccess('Brugeren er blevet inviteret, og en email er blevet sendt.');
@@ -293,11 +340,12 @@ class OrganisationApiController {
             $userHandler = Methods::users();
             // Generate unique username
             $username = $userHandler->generateUniqueUsername($organisationName, $fullName);
-            $password = $organisationId; // Use org UID as temp password
+            $password = bin2hex(random_bytes(16)); // Random secure password (user will never see it)
 
             // Create user
             if(!$userHandler->create([
                 'full_name' => $fullName,
+                'email' => $email ?? null,
                 'access_level' => Methods::roles()->accessLevel('merchant'),
                 'lang' => 'DA',
                 'created_by' => __uuid()
@@ -308,7 +356,7 @@ class OrganisationApiController {
             // Create auth record
             Methods::localAuthentication()->create([
                 'username' => $username,
-                'email' => null, // Don't set email to avoid conflicts
+                'email' => $email ?? null,
                 'password' => passwordHashing($password),
                 'user' => $userUid,
                 'enabled' => 1,
@@ -318,39 +366,47 @@ class OrganisationApiController {
             // Create member with PENDING status (will change when they log in)
             Methods::organisationMembers()->createNewMember($organisationId, $userUid, $role, MemberEnum::INVITATION_PENDING, $scopedLocations);
 
+            // Create invitation code (24hr TTL)
+            $invitationResult = Methods::twoFactorAuth()->createInvitationCode(
+                $userUid,
+                $organisationId,
+                $email ?? ''
+            );
+            $inviteLink = $invitationResult
+                ? __url(Links::$app->auth->invitationLink($organisationId, $invitationResult['code']))
+                : __url(Links::$app->auth->merchantLogin);
+
+            debugLog([
+                'path' => 'NEW_USER',
+                'invitationResult' => $invitationResult,
+                'inviteLink' => $inviteLink,
+                'email' => $email ?? '',
+            ], 'ORG_INVITE_CONTROLLER_DEBUG');
+
             // Trigger organisation member invited notification (for new user path)
             $inviter = Methods::users()->get(__uuid());
+            debugLog([
+                'about_to_trigger' => true,
+                'inviteLink' => $inviteLink,
+                'email' => $email ?? '',
+            ], 'ORG_INVITE_BEFORE_TRIGGER');
             NotificationTriggers::organisationMemberInvited(
                 $organisation,
                 $email ?? '',
                 $inviter,
-                __url(ORGANISATION_PANEL_PATH . '/add')
+                $inviteLink
             );
 
-            // Log notification
-            if($email) {
-                // If email provided, send email notification
-                Methods::notificationHandler()->userCreated([
-                    'uid' => $userUid,
-                    'organisation_name' => $organisationName,
-                    'username' => $username,
-                    'password' => $password,
-                    'ref' => $organisationId,
-                    'push_type' => 1 // Email
-                ]);
-                $emailSent = true;
-            } else {
-                // No email, just platform notification
-                Methods::notificationHandler()->userCreated([
-                    'uid' => $userUid,
-                    'organisation_name' => $organisationName,
-                    'username' => $username,
-                    'password' => $password,
-                    'ref' => $organisationId,
-                    'push_type' => 0 // Platform only
-                ]);
-                $emailSent = false;
-            }
+            // Log notification (platform only - email is sent via NotificationTriggers)
+            Methods::notificationHandler()->userCreated([
+                'uid' => $userUid,
+                'organisation_name' => $organisationName,
+                'username' => $username,
+                'password' => '[via invitation link]',
+                'ref' => $organisationId,
+                'push_type' => 0 // Platform only - email handled by NotificationTriggers
+            ]);
+            $emailSent = !isEmpty($email);
 
             // Return success with credentials
             Response()->setRedirect()->jsonSuccess(
@@ -479,6 +535,8 @@ class OrganisationApiController {
                 if(!OrganisationPermissions::__oModify('team', 'roles')) Response()->jsonPermissionError("redigerings", 'medlemmer');
                 if(isEmpty($role)) Response()->jsonError("Rolle er påkrævet.");
                 if(!property_exists(Settings::$organisation->organisation->permissions, $role)) Response()->jsonError("Ugyldig rolle.");
+                if($role === 'owner') Response()->jsonError("Der kan kun være én ejer pr. organisation.");
+                if($member->role === 'owner') Response()->jsonError("Ejeren kan ikke ændre sin egen rolle.");
                 if($member->role === $role) Response()->jsonSuccess("Medlemmet har allerede denne rolle.");
                 $orgMemberHandler->updateMemberDetails($organisationId, $uuid, [
                     "role" => $role,

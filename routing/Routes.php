@@ -51,6 +51,18 @@ class Routes {
         $method = strtolower($_SERVER["REQUEST_METHOD"]);
         debugLog($path, "request-path");
 
+
+
+        if(requiresPasswordChange()) {
+            header("location: " . __url(Links::$app->auth->changePassword));
+            exit;
+        }
+
+        if(requiresWhitelistedIp()) {
+            header("location: " . __url(Links::$merchant->accessDenied));
+            exit;
+        }
+
         if(requiresOrganisation()) {
             header("location: " . __url(Links::$merchant->organisation->add));
             exit;
@@ -66,16 +78,6 @@ class Routes {
                 $_SESSION['redirect_after_profile_completion'] = realUrlPath() . (empty($q) ? '' : '?' . $q);
             }
             header("location: " . __url(Links::$app->auth->consumerSignup . '/complete-profile'));
-            exit;
-        }
-
-        if(requiresPasswordChange()) {
-            header("location: " . __url(Links::$app->auth->changePassword));
-            exit;
-        }
-
-        if(requiresWhitelistedIp()) {
-            header("location: " . __url(Links::$merchant->accessDenied));
             exit;
         }
 

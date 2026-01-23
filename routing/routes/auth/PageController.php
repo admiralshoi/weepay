@@ -134,4 +134,60 @@ class PageController {
 
         return Views("CONSUMER_AUTH_COMPLETE_PROFILE", compact('user', 'worldCountries'));
     }
+
+    /**
+     * Handle team invitation verification link
+     * URL: /invitation/{org_uid}/{code}
+     *
+     * This validates the invitation code, logs the user in, marks the code as used,
+     * and redirects to the password change page (since force_password_change is set)
+     */
+    public static function verifyInvitation(array $args): mixed {
+        $organisationUid = $args['organisation_uid'] ?? null;
+        $code = $args['code'] ?? null;
+
+        // Validate required params
+        if(isEmpty($organisationUid) || isEmpty($code)) {
+            return Views("AUTH_INVITATION_ERROR", [
+                'error' => 'Ugyldigt invitationslink.',
+                'error_type' => 'invalid'
+            ]);
+        }
+
+        // Verify the invitation code
+        $twoFactorAuth = Methods::twoFactorAuth();
+        $verification = $twoFactorAuth->verifyInvitationCode($organisationUid, $code);
+
+        if(isEmpty($verification)) {
+            return Views("AUTH_INVITATION_ERROR", [
+                'error' => 'Invitationslinket er ugyldigt eller udløbet.',
+                'error_type' => 'expired'
+            ]);
+        }
+
+        // Get the user
+        $userUid = $verification->user; // Raw UID since we used excludeForeignKeys
+        $user = Methods::users()->get($userUid);
+
+        if(isEmpty($user)) {
+            return Views("AUTH_INVITATION_ERROR", [
+                'error' => 'Brugerkontoen kunne ikke findes.',
+                'error_type' => 'not_found'
+            ]);
+        }
+
+        // Mark the invitation code as used BEFORE logging in
+        $twoFactorAuth->markInvitationUsed($verification->uid);
+
+        // Log the user in by setting session variables
+        $userArray = toArray($user);
+        $keys = array_keys($userArray);
+        $keys[] = "logged_in";
+        $keys[] = "localAuth";
+        setSessions($userArray, $keys);
+
+        // Redirect to password change page (force_password_change should be set)
+        Response()->redirect(__url(Links::$app->auth->changePassword));
+        return null;
+    }
 }

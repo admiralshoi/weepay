@@ -14,15 +14,20 @@ class LocationPermissions {
         // Check if user is a location member
         $locationMember = $locationMemberHandler->first(['location' => $location->uid, 'uuid' => __uuid()]);
 
-        // If they are a location member but suspended/deleted, they have no access via this location
+        // If they are a location member...
         if(!isEmpty($locationMember)) {
-            if($locationMember->status === \classes\organisations\MemberEnum::MEMBER_SUSPENDED ||
-               $locationMember->status === \classes\organisations\MemberEnum::MEMBER_DELETED) {
+            // If suspended, they have no access at all (not even org-level fallback)
+            if($locationMember->status === \classes\organisations\MemberEnum::MEMBER_SUSPENDED) {
                 return false;
             }
-            // If they are an active location member but didn't have permission via memberHasPermission,
-            // we return false since location membership access supersedes org-level access
-            return false;
+            // If deleted, treat as if not a location member - fall through to org-level check
+            if($locationMember->status === \classes\organisations\MemberEnum::MEMBER_DELETED) {
+                // Continue to org-level check below
+            } else {
+                // Active location member but didn't have permission via memberHasPermission
+                // Location membership access supersedes org-level access
+                return false;
+            }
         }
 
         // User is not a location member, check org-level access
@@ -56,7 +61,7 @@ class LocationPermissions {
             $mainObject = "general";
         }
         if(!$strictRole && !\classes\Methods::isMerchant()) return true;
-        if(\classes\Methods::locationMembers()->memberHasPermission($location, $type, $mainObject, $subObject))  return true;
+        if(\classes\Methods::locationMembers()->memberHasPermission($location, $type, $mainObject, $subObject)) return true;
         return self::checkParent($type, $location, $subObject, $strictRole);
     }
     public static function __oModify(?object $location, string $mainObject = "", string $subObject = "", bool $strictRole = false): bool {
@@ -103,6 +108,14 @@ class LocationPermissions {
     }
 
     public static function __oEndContent(): void {
+        self::endProtectedContent(false);
+    }
+
+    public static function __oEndContentSilent(): void {
+        self::endProtectedContent(true);
+    }
+
+    private static function endProtectedContent(bool $silent = false): void {
         $content = ob_get_clean();
         $item = array_pop($GLOBALS['protected_location_content']);
         $mainObject = $item['main'] ?? "";
@@ -119,9 +132,8 @@ class LocationPermissions {
             "delete" => self::__oDelete($location, $mainObject, $subObject),
         };
 
-
         if ($status) echo $content;
-        else echo '<p class="mt-2 text-wrap color-red font-12">'.Translate::context("permissions.std_$type").'</p>';
+        elseif (!$silent) echo '<p class="mt-2 text-wrap color-red font-12">'.Translate::context("permissions.std_$type").'</p>';
     }
 
 }

@@ -70,13 +70,15 @@ $faqs = $args->faqs ?? [];
         <?php endif; ?>
 
         <div class="faq-cta">
-            <h3>Klar til at komme i gang?</h3>
-            <p>Tilmeld dig i dag og begynd at tilbyde fleksible betalinger til dine kunder</p>
+            <h3><?=isLoggedIn() ? 'Har du flere spørgsmål?' : 'Klar til at komme i gang?'?></h3>
+            <p><?=isLoggedIn() ? 'Vi er her for at hjælpe dig' : 'Tilmeld dig i dag og begynd at tilbyde fleksible betalinger til dine kunder'?></p>
             <div class="faq-cta-buttons">
+                <?php if(!isLoggedIn()): ?>
                 <a href="<?=__url(Links::$app->auth->merchantLogin)?>" class="btn-v2 action-btn px-4 py-2 border-radius-10px font-weight-bold">
                     Bliv forhandler
                 </a>
-                <a href="<?=__url(Links::$app->home)?>#contact" class="btn-v2 trans-hover-design-action-btn card-border px-4 py-2 border-radius-10px font-weight-medium">
+                <?php endif; ?>
+                <a href="<?=__url(Links::$app->home . '#contact')?>" class="btn-v2 trans-hover-design-action-btn card-border px-4 py-2 border-radius-10px font-weight-medium">
                     Kontakt os
                 </a>
             </div>

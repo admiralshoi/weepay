@@ -57,8 +57,8 @@ $currentOrg = Settings::$organisation;
                             <p class="font-22 font-weight-700"><?=$closedCount?></p>
                         </div>
                         <div class="flex-row-end">
-                            <div class="square-50 bg-success border-radius-10px flex-row-center-center">
-                                <i class="mdi mdi-check-circle color-green font-30"></i>
+                            <div class="square-50 bg-green border-radius-10px flex-row-center-center">
+                                <i class="mdi mdi-check-circle color-white font-30"></i>
                             </div>
                         </div>
                     </div>
@@ -151,7 +151,7 @@ $currentOrg = Settings::$organisation;
                         </div>
                         <div class="p-3 bg-light-gray border-radius-8px">
                             <div class="flex-row-start flex-align-start" style="gap: .75rem;">
-                                <div class="square-40 bg-success border-radius-8px flex-row-center-center flex-shrink-0">
+                                <div class="square-40 bg-green border-radius-8px flex-row-center-center flex-shrink-0">
                                     <i class="mdi mdi-phone-outline color-white font-20"></i>
                                 </div>
                                 <div class="flex-col-start">
@@ -197,8 +197,8 @@ $currentOrg = Settings::$organisation;
                     <?php else: ?>
                         <!-- Empty states for filtered views -->
                         <div class="flex-col-center flex-align-center py-5" id="emptyOpenState" style="<?=$openCount > 0 ? 'display: none;' : ''?>">
-                            <div class="square-60 bg-success border-radius-50 flex-row-center-center mb-3">
-                                <i class="mdi mdi-check font-30 color-green"></i>
+                            <div class="square-60 bg-green border-radius-50 flex-row-center-center mb-3">
+                                <i class="mdi mdi-check font-30 color-white"></i>
                             </div>
                             <p class="mb-0 font-16 color-gray">Ingen åbne sager</p>
                             <p class="mb-0 font-14 color-gray mt-1">Du har ingen aktive henvendelser.</p>
@@ -222,8 +222,8 @@ $currentOrg = Settings::$organisation;
                                                         <i class="mdi mdi-ticket-outline color-acoustic-yellow font-20"></i>
                                                     </div>
                                                 <?php else: ?>
-                                                    <div class="square-40 bg-success border-radius-8px flex-row-center-center flex-shrink-0">
-                                                        <i class="mdi mdi-check-circle color-green font-20"></i>
+                                                    <div class="square-40 bg-green border-radius-8px flex-row-center-center flex-shrink-0">
+                                                        <i class="mdi mdi-check-circle color-white font-20"></i>
                                                     </div>
                                                 <?php endif; ?>
                                                 <div class="flex-col-start">

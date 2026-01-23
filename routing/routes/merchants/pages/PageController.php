@@ -1003,4 +1003,8 @@ class PageController {
         return Views("MERCHANT_SUPPORT", compact('tickets', 'openCount', 'closedCount', 'categories', 'ticketReplies'));
     }
 
+    public static function help(array $args): mixed {
+        return Views("MERCHANT_HELP");
+    }
+
 }

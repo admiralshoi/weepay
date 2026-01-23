@@ -139,25 +139,11 @@ class Sidebars {
                     "icon-class" => "mdi mdi-cash",
                     "access_level" => []
                 ),
-                "settings" => array(
-                    "link" => Links::$consumer->settings,
-                    "title" => "Indstillinger",
-                    "data-value" => "settings",
-                    "icon-class" => "mdi mdi-cog-outline",
-                    "access_level" => []
-                ),
-                "support" => array(
-                    "link" => Links::$consumer->support,
-                    "title" => "Support",
-                    "data-value" => "support",
-                    "icon-class" => "mdi mdi-face-agent",
-                    "access_level" => []
-                ),
-                "faq" => array(
-                    "link" => Links::$faq->consumer,
-                    "title" => "FAQ",
-                    "data-value" => "faq",
-                    "icon-class" => "mdi mdi-frequently-asked-questions",
+                "help" => array(
+                    "link" => Links::$consumer->help,
+                    "title" => "Hjælp",
+                    "data-value" => "help",
+                    "icon-class" => "mdi mdi-help-circle-outline",
                     "access_level" => []
                 ),
             ),
@@ -218,13 +204,6 @@ class Sidebars {
                     "icon-class" => "fa-regular fa-building",
                     "access_level" => []
                 ),
-                "settings" => array(
-                    "link" => Links::$merchant->settings,
-                    "title" => "Indstillinger",
-                    "data-value" => "settings",
-                    "icon-class" => "mdi mdi-cog-outline",
-                    "access_level" => []
-                ),
                 "reports" => array(
                     "link" => Links::$merchant->reports,
                     "title" => "Rapporter",
@@ -239,18 +218,11 @@ class Sidebars {
                     "icon-class" => "mdi mdi-image-multiple-outline",
                     "access_level" => []
                 ),
-                "support" => array(
-                    "link" => Links::$merchant->support,
-                    "title" => "Support",
-                    "data-value" => "support",
-                    "icon-class" => "mdi mdi-face-agent",
-                    "access_level" => []
-                ),
-                "faq" => array(
-                    "link" => Links::$faq->merchant,
-                    "title" => "FAQ",
-                    "data-value" => "faq",
-                    "icon-class" => "mdi mdi-frequently-asked-questions",
+                "help" => array(
+                    "link" => Links::$merchant->help,
+                    "title" => "Hjælp",
+                    "data-value" => "help",
+                    "icon-class" => "mdi mdi-help-circle-outline",
                     "access_level" => []
                 ),
             ),
@@ -421,13 +393,6 @@ class Sidebars {
                     "icon-class" => "fa-regular fa-building",
                     "access_level" => []
                 ),
-                "settings" => array(
-                    "link" => Links::$merchant->settings,
-                    "title" => "Indstillinger",
-                    "data-value" => "settings",
-                    "icon-class" => "mdi mdi-cog-outline",
-                    "access_level" => []
-                ),
                 "reports" => array(
                     "link" => Links::$merchant->reports,
                     "title" => "Rapporter",
@@ -442,18 +407,11 @@ class Sidebars {
                     "icon-class" => "mdi mdi-image-multiple-outline",
                     "access_level" => []
                 ),
-                "support" => array(
-                    "link" => Links::$merchant->support,
-                    "title" => "Support",
-                    "data-value" => "support",
-                    "icon-class" => "mdi mdi-face-agent",
-                    "access_level" => []
-                ),
-                "faq" => array(
-                    "link" => Links::$faq->merchant,
-                    "title" => "FAQ",
-                    "data-value" => "faq",
-                    "icon-class" => "mdi mdi-frequently-asked-questions",
+                "help" => array(
+                    "link" => Links::$merchant->help,
+                    "title" => "Hjælp",
+                    "data-value" => "help",
+                    "icon-class" => "mdi mdi-help-circle-outline",
                     "access_level" => []
                 ),
             ),

@@ -252,11 +252,24 @@
     background: #9ca3af;
 }
 
+/* User dropdown menu items */
+.bell-notifications-dropdown a.flex-row-start:hover {
+    background-color: #f3f4f6;
+}
+
 /* Mobile responsiveness */
 @media (max-width: 480px) {
     .bell-notifications-dropdown {
         width: calc(100vw - 20px);
-        right: -10px;
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%) translateY(-10px);
+        position: fixed;
+        top: 60px;
+    }
+
+    .bell-notifications-dropdown.show {
+        transform: translateX(-50%) translateY(0);
     }
 
     .bell-notifications-list {

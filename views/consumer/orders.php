@@ -38,47 +38,43 @@ $pageTitle = "Ordre";
 
             <div class="mt-3">
                 <!-- Filters and Search -->
-                <div class="flex-row-between flex-align-center flex-wrap mb-3" style="gap: .75rem;">
-                    <div class="flex-row-start flex-align-center flex-wrap" style="gap: .5rem;">
-                        <div class="form-group mb-0">
-                            <input type="text" class="form-control-v2 form-field-v2" id="consumer-orders-search"
-                                   placeholder="Søg ordre eller butik..." style="min-width: 200px;">
-                        </div>
-                        <div class="form-group mb-0">
-                            <select class="form-select-v2" id="consumer-orders-filter-status" data-selected="all" style="min-width: 140px;">
-                                <option value="all" selected>Alle statusser</option>
-                                <option value="COMPLETED">Gennemført</option>
-                                <option value="PENDING">Afventer</option>
-                                <option value="CANCELLED">Annulleret</option>
-                                <option value="REFUNDED">Refunderet</option>
-                                <option value="VOIDED">Ophævet</option>
-                            </select>
-                        </div>
-                        <div class="form-group mb-0 position-relative">
-                            <input type="text" class="form-control-v2 form-field-v2" id="consumer-orders-daterange"
-                                   placeholder="Vælg datointerval" style="min-width: 220px; padding-right: 30px;" readonly>
-                            <i class="mdi mdi-close-circle font-16 color-red position-absolute cursor-pointer d-none"
-                               id="consumer-orders-daterange-clear"
-                               style="right: 8px; top: 50%; transform: translateY(-50%);"
-                               title="Ryd datofilter"></i>
-                        </div>
+                <div class="flex-row-start flex-align-center flex-wrap mb-3" style="gap: .5rem;">
+                    <div class="form-group mb-0">
+                        <input type="text" class="form-control-v2 form-field-v2" id="consumer-orders-search"
+                               placeholder="Søg ordre eller butik..." style="min-width: 200px;">
                     </div>
-                    <div class="flex-row-end flex-align-center flex-wrap" style="gap: .5rem;">
-                        <div class="form-group mb-0">
-                            <select class="form-select-v2" id="consumer-orders-sort" data-selected="date-DESC" style="min-width: 150px;">
-                                <option value="date-DESC" selected>Nyeste først</option>
-                                <option value="date-ASC">Ældste først</option>
-                                <option value="amount-DESC">Beløb (høj-lav)</option>
-                                <option value="amount-ASC">Beløb (lav-høj)</option>
-                            </select>
-                        </div>
-                        <div class="form-group mb-0">
-                            <select class="form-select-v2" id="consumer-orders-per-page" data-selected="10" style="min-width: 80px;">
-                                <option value="10" selected>10</option>
-                                <option value="25">25</option>
-                                <option value="50">50</option>
-                            </select>
-                        </div>
+                    <div class="form-group mb-0">
+                        <select class="form-select-v2" id="consumer-orders-filter-status" data-selected="all" style="min-width: 140px;">
+                            <option value="all" selected>Alle statusser</option>
+                            <option value="COMPLETED">Gennemført</option>
+                            <option value="PENDING">Afventer</option>
+                            <option value="CANCELLED">Annulleret</option>
+                            <option value="REFUNDED">Refunderet</option>
+                            <option value="VOIDED">Ophævet</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-0 position-relative">
+                        <input type="text" class="form-control-v2 form-field-v2" id="consumer-orders-daterange"
+                               placeholder="Vælg datointerval" style="min-width: 180px; padding-right: 30px;" readonly>
+                        <i class="mdi mdi-close-circle font-16 color-red position-absolute cursor-pointer d-none"
+                           id="consumer-orders-daterange-clear"
+                           style="right: 8px; top: 50%; transform: translateY(-50%);"
+                           title="Ryd datofilter"></i>
+                    </div>
+                    <div class="form-group mb-0">
+                        <select class="form-select-v2" id="consumer-orders-sort" data-selected="date-DESC" style="min-width: 130px;">
+                            <option value="date-DESC" selected>Nyeste først</option>
+                            <option value="date-ASC">Ældste først</option>
+                            <option value="amount-DESC">Beløb (høj-lav)</option>
+                            <option value="amount-ASC">Beløb (lav-høj)</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-0">
+                        <select class="form-select-v2" id="consumer-orders-per-page" data-selected="10" style="min-width: 70px;">
+                            <option value="10" selected>10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
                     </div>
                 </div>
 

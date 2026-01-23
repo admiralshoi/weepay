@@ -18,6 +18,7 @@ class Merchant {
     public string $customers = "customers";
     public string $settings = "settings";
     public string $reports = "reports";
+    public string $help = "help";
     public string $support = "support";
     public string $materials = "marketing-materials";
     public string $asignEditor = "asign-editor";

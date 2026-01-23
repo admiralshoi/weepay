@@ -4,6 +4,7 @@ namespace routing\routes\merchants;
 
 use classes\app\LocationPermissions;
 use classes\app\OrganisationPermissions;
+use classes\enumerations\Links;
 use classes\lang\Translate;
 use classes\Methods;
 use classes\notifications\NotificationTriggers;
@@ -111,6 +112,7 @@ class LocationApiController {
         $permissions = $location->permissions;
         $locationRoles = [];
         foreach($permissions as $role => $roleData) {
+            if($role === 'owner') continue; // Only one owner allowed
             $locationRoles[$role] = ucfirst(Translate::word(Titles::clean($role)));
         }
 
@@ -151,6 +153,10 @@ class LocationApiController {
         // Check location permissions
         if(!LocationPermissions::__oModify($location, 'team_invitations'))
             Response()->jsonError(Translate::context("location.no_permission_invite"));
+
+        // Owner role validation
+        if($role === 'owner')
+            Response()->jsonError("Der kan kun være én ejer pr. lokation.");
 
         $organisationId = __oUuid();
 
@@ -247,10 +253,20 @@ class LocationApiController {
                     $orgMemberHandler->createNewMember(
                         $organisationId,
                         $existingUser->uid,
-                        'LOCATION_EMPLOYEE',
+                        'location_employee',
                         MemberEnum::INVITATION_PENDING,
                         [$locationUid]
                     );
+
+                    // Create invitation code (24hr TTL)
+                    $invitationResult = Methods::twoFactorAuth()->createInvitationCode(
+                        $existingUser->uid,
+                        $organisationId,
+                        $existingUser->email ?? $email
+                    );
+                    $inviteLink = $invitationResult
+                        ? __url(Links::$app->auth->invitationLink($organisationId, $invitationResult['code']))
+                        : __url(Links::$app->auth->merchantLogin);
 
                     // Send invitation notification
                     Methods::notificationHandler()->teamInvitation([
@@ -266,7 +282,7 @@ class LocationApiController {
                         $organisation,
                         $existingUser->email ?? '',
                         $inviter,
-                        __url(ORGANISATION_PANEL_PATH . '/add')
+                        $inviteLink
                     );
                 } elseif(!$isActiveOrgMember) {
                     // Was an org member but suspended/deleted - reactivate with pending invitation
@@ -281,6 +297,16 @@ class LocationApiController {
                         'invitation_activity' => $orgMemberHandler->getEventDetails(MemberEnum::INVITATION_PENDING)
                     ]);
 
+                    // Create invitation code (24hr TTL)
+                    $invitationResult = Methods::twoFactorAuth()->createInvitationCode(
+                        $existingUser->uid,
+                        $organisationId,
+                        $existingUser->email ?? $email
+                    );
+                    $inviteLink = $invitationResult
+                        ? __url(Links::$app->auth->invitationLink($organisationId, $invitationResult['code']))
+                        : __url(Links::$app->auth->merchantLogin);
+
                     // Send invitation notification
                     Methods::notificationHandler()->teamInvitation([
                         'uid' => $existingUser->uid,
@@ -295,7 +321,7 @@ class LocationApiController {
                         $organisation,
                         $existingUser->email ?? '',
                         $inviter,
-                        __url(ORGANISATION_PANEL_PATH . '/add')
+                        $inviteLink
                     );
                 } else {
                     // Active org member - just ensure location is in their scope
@@ -348,11 +374,12 @@ class LocationApiController {
 
                 // Generate unique username
                 $username = $userHandler->generateUniqueUsername($organisationName, $fullName);
-                $password = $organisationId; // Use org UID as temp password
+                $password = bin2hex(random_bytes(16)); // Random secure password (user will never see it)
 
                 // Create user
                 if(!$userHandler->create([
                     'full_name' => $fullName,
+                    'email' => $email ?? null,
                     'access_level' => Methods::roles()->accessLevel('merchant'),
                     'lang' => 'DA',
                     'created_by' => __uuid()
@@ -362,7 +389,7 @@ class LocationApiController {
                 // Create auth record
                 Methods::localAuthentication()->create([
                     'username' => $username,
-                    'email' => null, // Don't set email to avoid conflicts
+                    'email' => $email ?? null,
                     'password' => passwordHashing($password),
                     'user' => $userUid,
                     'enabled' => 1,
@@ -378,6 +405,16 @@ class LocationApiController {
                     [$locationUid]
                 );
 
+                // Create invitation code (24hr TTL)
+                $invitationResult = Methods::twoFactorAuth()->createInvitationCode(
+                    $userUid,
+                    $organisationId,
+                    $email ?? ''
+                );
+                $inviteLink = $invitationResult
+                    ? __url(Links::$app->auth->invitationLink($organisationId, $invitationResult['code']))
+                    : __url(Links::$app->auth->merchantLogin);
+
                 // Trigger organisation member invited notification
                 $organisation = Methods::organisations()->get($organisationId);
                 $inviter = Methods::users()->get(__uuid());
@@ -385,7 +422,7 @@ class LocationApiController {
                     $organisation,
                     $email ?? '',
                     $inviter,
-                    __url(ORGANISATION_PANEL_PATH . '/add')
+                    $inviteLink
                 );
 
                 // Add to location with PENDING status
@@ -474,6 +511,8 @@ class LocationApiController {
                 if(!LocationPermissions::__oModify($location, 'team_members'))
                     Response()->jsonPermissionError("redigerings", 'medarbejdere');
                 if(isEmpty($role)) Response()->jsonError("Rolle er påkrævet.");
+                if($role === 'owner') Response()->jsonError("Der kan kun være én ejer pr. lokation.");
+                if($member->role === 'owner') Response()->jsonError("Ejeren kan ikke ændre sin egen rolle.");
 
                 $locationMemberHandler->update(['role' => $role], ['uuid' => $memberUuid, 'location' => $locationUid]);
                 Response()->setRedirect()->jsonSuccess(Translate::context("location.member_role_updated"));

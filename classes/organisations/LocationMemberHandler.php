@@ -82,9 +82,24 @@ class LocationMemberHandler extends Crud {
 
 
 
-    public function createNewMember(string|int $organisationId, string|int $uuid, string $role, string $invitationStatus = MemberEnum::INVITATION_PENDING): bool {
+    public function createNewMember(string|int $locationId, string|int $uuid, string $role, string $invitationStatus = MemberEnum::INVITATION_PENDING): bool {
+        // Check if member already exists (including deleted/suspended)
+        $existingMember = $this->getMember($locationId, $uuid);
+        if(!isEmpty($existingMember)) {
+            // Update existing member instead of creating duplicate
+            return $this->update([
+                "role" => $role,
+                "invitation_status" => $invitationStatus,
+                "status" => MemberEnum::MEMBER_ACTIVE,
+                "invitation_activity" => json_encode(array_merge(
+                    toArray($existingMember->invitation_activity ?? []),
+                    [$this->getEventDetails($invitationStatus)]
+                )),
+            ], ["location" => $locationId, "uuid" => $uuid]);
+        }
+
         $params = [
-            "organisation" => $organisationId,
+            "location" => $locationId,
             "uuid" => $uuid,
             "role" => $role,
             "invitation_status" => $invitationStatus,
@@ -96,7 +111,7 @@ class LocationMemberHandler extends Crud {
     }
 
 
-    public function updateMemberDetails(string|int $organisationId, string|int $uuid, array $args): bool {
+    public function updateMemberDetails(string|int $locationId, string|int $uuid, array $args): bool {
         $params = [];
         foreach ([
                      "role", "invitation_status", "status",
@@ -104,7 +119,7 @@ class LocationMemberHandler extends Crud {
                  ] as $key) if(array_key_exists($key, $args)) $params[$key] = $args[$key];
 
 
-        $identifier = ["organisation" => $organisationId, "uuid" => $uuid];
+        $identifier = ["location" => $locationId, "uuid" => $uuid];
         $row = $this->first($identifier);
         if(isEmpty($row)) return false;
 

@@ -17,7 +17,7 @@ use classes\enumerations\Links;
     </div>
 
 
-    <div class="flex-row-end flex-align-center" style="column-gap: 1rem">
+    <div class="flex-row-end flex-align-center" style="column-gap: .75rem">
 
         <?php if(empty($isPanel)): ?>
         <a href="<?=__url(Links::$admin->panel)?>" class="btn-v2 trans-hover-btn flex-row-start flex-align-center flex-nowrap font-14" style="gap: .5rem;" title="System Panel">
@@ -49,14 +49,8 @@ use classes\enumerations\Links;
             </div>
         </div>
 
-        <p class="mb-0 color-gray font-14 font-weight-medium ellipsis-single-line hideOnSmallScreen" style="max-width: 200px;">
-            <?=\classes\utility\Titles::cleanUcAll(__name())?>
-        </p>
-
-        <a href="<?=__url(Links::$app->logout)?>" class="btn-v2 trans-hover-design-action-btn flex-row-start flex-align-center flex-nowrap font-14" style="gap: .5rem;">
-            <i class="mdi mdi-logout"></i>
-            <span class="hideOnSmallScreen">Log ud</span>
-        </a>
+        <!-- User Dropdown -->
+        <?php include __DIR__ . '/../partials/user-dropdown.php'; ?>
 
     </div>
 </div>

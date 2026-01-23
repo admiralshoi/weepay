@@ -158,7 +158,30 @@ class NotificationService {
 
             self::debug("Found actions for flow", ['flow_uid' => $flow->uid, 'action_count' => $actions->count()]);
 
+            // DEBUG: Log all actions for this flow
+            $actionsDebug = [];
+            foreach ($actions->list() as $a) {
+                $actionsDebug[] = [
+                    'uid' => $a->uid,
+                    'channel' => $a->channel,
+                    'status' => $a->status,
+                    'template' => is_object($a->template) ? $a->template->uid : $a->template
+                ];
+            }
+            debugLog([
+                'flow_uid' => $flow->uid,
+                'action_count' => $actions->count(),
+                'actions' => $actionsDebug
+            ], 'NOTIFICATION_FLOW_ACTIONS_DEBUG');
+
             foreach ($actions->list() as $action) {
+                debugLog([
+                    'step' => 'FOREACH_ACTION_START',
+                    'action_uid' => $action->uid,
+                    'channel' => $action->channel,
+                    'status' => $action->status,
+                ], 'NOTIF_DEBUG_STEP');
+
                 self::debug("Processing action", [
                     'action_uid' => $action->uid,
                     'channel' => $action->channel,
@@ -167,21 +190,27 @@ class NotificationService {
                 ]);
 
                 if ($action->status !== 'active') {
+                    debugLog(['step' => 'SKIP_NOT_ACTIVE', 'status' => $action->status], 'NOTIF_DEBUG_STEP');
                     self::debug("SKIP: Action not active", ['action_uid' => $action->uid, 'status' => $action->status]);
                     continue;
                 }
 
                 // Get template
                 $templateUid = is_object($action->template) ? $action->template->uid : $action->template;
+                debugLog(['step' => 'GET_TEMPLATE', 'templateUid' => $templateUid], 'NOTIF_DEBUG_STEP');
                 $template = Methods::notificationTemplates()->get($templateUid);
                 if (isEmpty($template)) {
+                    debugLog(['step' => 'SKIP_TEMPLATE_NOT_FOUND', 'templateUid' => $templateUid], 'NOTIF_DEBUG_STEP');
                     self::debug("SKIP: Template not found", ['template_uid' => $templateUid]);
                     continue;
                 }
                 if ($template->status !== 'active') {
+                    debugLog(['step' => 'SKIP_TEMPLATE_NOT_ACTIVE', 'status' => $template->status], 'NOTIF_DEBUG_STEP');
                     self::debug("SKIP: Template not active", ['template_uid' => $template->uid, 'status' => $template->status]);
                     continue;
                 }
+
+                debugLog(['step' => 'TEMPLATE_LOADED', 'template_uid' => $template->uid, 'template_status' => $template->status], 'NOTIF_DEBUG_STEP');
 
                 self::debug("Template loaded", [
                     'template_uid' => $template->uid,
@@ -191,7 +220,9 @@ class NotificationService {
                 ]);
 
                 // Determine recipient based on flow's recipient_type
+                debugLog(['step' => 'RESOLVE_RECIPIENT_START', 'recipient_type' => $flow->recipient_type ?? 'null'], 'NOTIF_DEBUG_STEP');
                 $recipientData = self::resolveRecipient($flow, $context);
+                debugLog(['step' => 'RESOLVE_RECIPIENT_DONE', 'recipientData' => $recipientData], 'NOTIF_DEBUG_STEP');
                 self::debug("Recipient resolved", $recipientData);
 
                 if (empty($recipientData) || (empty($recipientData['email']) && empty($recipientData['phone']) && empty($recipientData['uid']))) {

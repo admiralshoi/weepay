@@ -89,14 +89,15 @@ async function teamInviteModal() {
                 showCredentialsModal(result.data)
             } else {
                 // Existing user invited
-                notifyTopCorner(result.message, 1500, "bg-success")
                 modalHandler.close()
 
                 // Refresh the members table instead of reloading the page
                 if(typeof OrganisationMembersPagination !== 'undefined' && OrganisationMembersPagination.refresh) {
                     OrganisationMembersPagination.refresh();
+                    showSuccessNotification("Invitation sendt", result.message)
                 } else {
-                    handleStandardApiRedirect(result, 800)
+                    queueNotificationOnLoad("Invitation sendt", result.message, 'success')
+                    handleStandardApiRedirect(result)
                 }
             }
         }
@@ -390,13 +391,13 @@ async function invitationAction(btn) {
         return false;
     }
 
-    queueNotificationOnLoad("Handling fuldført", result.message, 'success')
-    handleStandardApiRedirect(result)
     if(action === 'decline') {
         btn.parents('tr').first().remove()
+        showSuccessNotification("Handling fuldført", result.message)
+    } else {
+        queueNotificationOnLoad("Handling fuldført", result.message, 'success')
+        handleStandardApiRedirect(result)
     }
-    removeQueuedNotification();
-    showSuccessNotification("Handling fuldført", result.message)
     applicationProcessing.invitationAction = false;
     btn.get(0).disabled = false
 }
@@ -458,14 +459,8 @@ async function organisationCreateRole() {
             }
 
             queueNotificationOnLoad("Handling fuldført", result.message, 'success')
-            handleStandardApiRedirect(result, 1)
-
-            setTimeout(function (){
-                applicationProcessing.organisationCreateRole = false;
-                removeQueuedNotification();
-                showSuccessNotification("Handling fuldført", result.message)
-            }, 100)
-
+            handleStandardApiRedirect(result)
+            applicationProcessing.organisationCreateRole = false;
         }
     })
     modal.open()
@@ -528,13 +523,8 @@ async function organisationRenameRole(btn) {
             }
 
             queueNotificationOnLoad("Handling fuldført", result.message, 'success')
-            handleStandardApiRedirect(result, 1)
-
-            setTimeout(function (){
-                applicationProcessing.organisationRenameRole = false;
-                removeQueuedNotification();
-                showSuccessNotification("Handling fuldført", result.message)
-            }, 100)
+            handleStandardApiRedirect(result)
+            applicationProcessing.organisationRenameRole = false;
         }
     })
     modal.open()
@@ -568,15 +558,8 @@ async function organisationDeleteRole(btn) {
                 }
 
                 queueNotificationOnLoad("Handling fuldført", result.message, 'success')
-                handleStandardApiRedirect(result, 1)
-
-                setTimeout(function (){
-                    applicationProcessing.organisationDeleteRole = false;
-                    btn.get(0).disabled = false;
-                    removeQueuedNotification();
-                    showSuccessNotification("Handling fuldført", result.message)
-                }, 100)
-
+                handleStandardApiRedirect(result)
+                applicationProcessing.organisationDeleteRole = false;
                 return { status: 'success', message: result.message };
             }
         }
@@ -610,14 +593,8 @@ async function editRolePermissions(btn) {
     }
 
     queueNotificationOnLoad("Handling fuldført", result.message, 'success')
-    handleStandardApiRedirect(result, 1)
-
-    setTimeout(function (){
-        applicationProcessing.editRolePermissions = false;
-        btn.disabled = false;
-        removeQueuedNotification();
-        showSuccessNotification("Handling fuldført", result.message)
-    }, 100)
+    handleStandardApiRedirect(result)
+    applicationProcessing.editRolePermissions = false;
 }
 
 

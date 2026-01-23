@@ -120,6 +120,7 @@ class NotificationLogHandler extends Crud {
             'schedule_offset' => $scheduleOffset,
             'metadata' => $metadata,
             'dedup_hash' => $dedupHash,
+            'created_at' => time(),
         ]);
     }
 }

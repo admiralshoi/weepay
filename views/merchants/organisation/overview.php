@@ -7,6 +7,7 @@ use classes\enumerations\Links;
 use classes\Methods;
 use features\Settings;
 use classes\lang\Translate;
+use classes\app\OrganisationPermissions;
 
 $pageTitle = ucfirst(Translate::word("Organisation"));
 if(!isEmpty(Settings::$organisation?->organisation)) $pageTitle .= " - " . Settings::$organisation->organisation->name;
@@ -127,6 +128,7 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
                             <i class="fa-regular fa-building font-18"></i>
                             <p class="font-22 font-weight-bold">Oplysninger</p>
                         </div>
+                        <?php OrganisationPermissions::__oModifyProtectedContent("organisation", "settings"); ?>
                         <div  class="flex-row-end">
                             <button class="btn-v2 mute-btn font-13 font-weight-medium flex-row-center-center cg-075"
                                     onclick="editOrganisationDetails()" name="edit_organisation_details">
@@ -134,6 +136,7 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
                                 <span>Rediger</span>
                             </button>
                         </div>
+                        <?php OrganisationPermissions::__oEndContentSilent(); ?>
                     </div>
 
                     <div class="flex-row-between-center g-1 mt-4 pb-4 border-bottom-card">
@@ -221,6 +224,7 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
 
 
 
+        <?php OrganisationPermissions::__oReadProtectedContent("billing", "wallet"); ?>
         <div class="col-12 col-md-6 d-flex">
             <div class="card border-radius-10px w-100">
                 <div class="card-body">
@@ -254,32 +258,34 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
                         </div>
                         <?php endif; ?>
 
-                        <?php if(isEmpty($connectedAccount) || in_array($connectedAccount->state, ['VOID', 'REMOVED'])): ?>
-                        <button onclick="VivaWallet.setupVivaWallet(this)" class="btn-v2 mute-hover-design-action-btn-lg flex-row-between-center cg-1">
-                            <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
-                                <span class="spinner-border color-gray square-15" role="status" style="border-width: 2px;">
-                                  <span class="sr-only">Loading...</span>
+                        <?php OrganisationPermissions::__oModifyProtectedContent("billing", "wallet"); ?>
+                            <?php if(isEmpty($connectedAccount) || in_array($connectedAccount->state, ['VOID', 'REMOVED'])): ?>
+                            <button onclick="VivaWallet.setupVivaWallet(this)" class="btn-v2 mute-hover-design-action-btn-lg flex-row-between-center cg-1">
+                                <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
+                                    <span class="spinner-border color-gray square-15" role="status" style="border-width: 2px;">
+                                      <span class="sr-only">Loading...</span>
+                                    </span>
                                 </span>
-                            </span>
-                            <span class="font-14">Opsæt min wallet</span>
-                            <i class="mdi mdi-cog-outline"></i>
-                        </button>
-                        <?php elseif($connectedAccount->state === 'DRAFT'): ?>
-                        <button onclick="VivaWallet.setupVivaWallet(this)" class="btn-v2 mute-hover-design-action-btn-lg flex-row-between-center cg-1">
-                            <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
-                                <span class="spinner-border color-gray square-15" role="status" style="border-width: 2px;">
-                                  <span class="sr-only">Loading...</span>
+                                <span class="font-14">Opsæt min wallet</span>
+                                <i class="mdi mdi-cog-outline"></i>
+                            </button>
+                            <?php elseif($connectedAccount->state === 'DRAFT'): ?>
+                            <button onclick="VivaWallet.setupVivaWallet(this)" class="btn-v2 mute-hover-design-action-btn-lg flex-row-between-center cg-1">
+                                <span class="ml-3 flex-align-center flex-row-start button-disabled-spinner">
+                                    <span class="spinner-border color-gray square-15" role="status" style="border-width: 2px;">
+                                      <span class="sr-only">Loading...</span>
+                                    </span>
                                 </span>
-                            </span>
-                            <span class="font-14">Færdiggør opsætning</span>
-                            <i class="mdi mdi-open-in-new"></i>
-                        </button>
-                        <?php else: ?>
-                        <a href="<?=VIVA_LOGIN_URL?>" class="btn-v2 mute-hover-design-action-btn-lg flex-row-between-center cg-1">
-                            <span class="font-14">Åbn Viva wallet</span>
-                            <i class="mdi mdi-open-in-new"></i>
-                        </a>
-                        <?php endif; ?>
+                                <span class="font-14">Færdiggør opsætning</span>
+                                <i class="mdi mdi-open-in-new"></i>
+                            </button>
+                            <?php else: ?>
+                            <a href="<?=VIVA_LOGIN_URL?>" class="btn-v2 mute-hover-design-action-btn-lg flex-row-between-center cg-1">
+                                <span class="font-14">Åbn Viva wallet</span>
+                                <i class="mdi mdi-open-in-new"></i>
+                            </a>
+                            <?php endif; ?>
+                        <?php OrganisationPermissions::__oEndContentSilent(); ?>
 
                         <p class="font-14 font-weight-medium">Din wallet håndterer:</p>
                         <ul class="pl-3 line-spacing">
@@ -291,11 +297,12 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
                 </div>
             </div>
         </div>
+        <?php OrganisationPermissions::__oEndContentSilent(); ?>
     </div>
 
 
 
-        <?php if(\classes\app\OrganisationPermissions::__oRead("organisation", "settings")): ?>
+        <?php OrganisationPermissions::__oReadProtectedContent("organisation", "settings"); ?>
         <?php
             $generalSettings = $organisation->general_settings ?? (object)[];
             $whitelistEnabled = $generalSettings->whitelist_enabled ?? false;
@@ -314,7 +321,7 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
                                 <i class="mdi mdi-shield-lock-outline font-18 color-blue"></i>
                                 <p class="font-20 font-weight-bold">IP Whitelist</p>
                             </div>
-                            <?php if(\classes\app\OrganisationPermissions::__oModify("organisation", "settings")): ?>
+                            <?php if(OrganisationPermissions::__oModify("organisation", "settings")): ?>
                             <div class="flex-row-end-center g-075">
                                 <span class="font-12 color-gray"><?=$whitelistEnabled ? 'Aktiveret' : 'Deaktiveret'?></span>
                                 <label class="form-switch">
@@ -334,7 +341,7 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
                             </div>
                         </div>
 
-                        <?php if(\classes\app\OrganisationPermissions::__oModify("organisation", "settings")): ?>
+                        <?php if(OrganisationPermissions::__oModify("organisation", "settings")): ?>
                         <div class="flex-row-start flex-align-end flex-nowrap w-100 mb-3" style="gap: .5rem;">
                             <div class="flex-col-start" style="flex: 1;">
                                 <label class="form-label font-13 font-weight-medium">Tilføj IP-adresse</label>
@@ -352,7 +359,7 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
                                 <thead class="color-gray">
                                     <tr>
                                         <th class="font-12">IP-adresse</th>
-                                        <?php if(\classes\app\OrganisationPermissions::__oModify("organisation", "settings")): ?>
+                                        <?php if(OrganisationPermissions::__oModify("organisation", "settings")): ?>
                                         <th class="font-12 text-right">Handling</th>
                                         <?php endif; ?>
                                     </tr>
@@ -368,7 +375,7 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
                                     <?php foreach($whitelistIps as $ip): ?>
                                     <tr data-ip="<?=htmlspecialchars($ip)?>">
                                         <td class="font-13 font-monospace"><?=htmlspecialchars($ip)?></td>
-                                        <?php if(\classes\app\OrganisationPermissions::__oModify("organisation", "settings")): ?>
+                                        <?php if(OrganisationPermissions::__oModify("organisation", "settings")): ?>
                                         <td class="text-right">
                                             <button class="btn-v2 danger-btn remove-whitelist-ip" data-ip="<?=htmlspecialchars($ip)?>">
                                                 <i class="mdi mdi-delete-outline"></i>
@@ -403,7 +410,7 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
                                            placeholder="<?=number_format($platformMaxBnpl, 2, ',', '.')?>"
                                            step="0.01" min="0" max="<?=$platformMaxBnpl?>"
                                            style="width: 150px;"
-                                           <?=!\classes\app\OrganisationPermissions::__oModify("organisation", "settings") ? 'disabled' : ''?>>
+                                           <?=!OrganisationPermissions::__oModify("organisation", "settings") ? 'disabled' : ''?>>
                                     <span class="font-14 color-gray">DKK</span>
                                 </div>
                                 <small class="form-text text-muted">
@@ -412,20 +419,21 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
                                 </small>
                             </div>
 
-                            <?php if(\classes\app\OrganisationPermissions::__oModify("organisation", "settings")): ?>
+                            <?php OrganisationPermissions::__oModifyProtectedContent("organisation", "settings"); ?>
                             <button type="submit" class="btn-v2 action-btn" id="saveOrgSettingsBtn">
                                 <i class="mdi mdi-content-save"></i>
                                 <span>Gem Indstillinger</span>
                             </button>
-                            <?php endif; ?>
+                            <?php OrganisationPermissions::__oEndContentSilent(); ?>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
-        <?php endif; ?>
+        <?php OrganisationPermissions::__oEndContentSilent(); ?>
 
         <!-- Transaction Fees Card -->
+        <?php OrganisationPermissions::__oReadProtectedContent("billing"); ?>
         <div class="row mt-4">
             <div class="col-12">
                 <div class="card border-radius-10px">
@@ -499,7 +507,9 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
                 </div>
             </div>
         </div>
+        <?php OrganisationPermissions::__oEndContentSilent(); ?>
 
+        <?php OrganisationPermissions::__oReadProtectedContent("organisation", "locations"); ?>
         <div class="row mt-4">
             <div class="col-12">
                 <div class="card border-radius-10px">
@@ -563,6 +573,7 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
                 </div>
             </div>
         </div>
+        <?php OrganisationPermissions::__oEndContentSilent(); ?>
 
 
 

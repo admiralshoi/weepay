@@ -233,6 +233,92 @@ class TwoFactorAuth extends Crud {
     }
 
     /**
+     * Create an invitation verification code (30 char string, 24hr TTL)
+     * Used for team member invitations where the user doesn't know their password
+     *
+     * @param string $userId User UID being invited
+     * @param string $organisationId Organisation UID
+     * @param string $email Email of the invited user
+     * @return array|null Returns array with code on success, null on failure
+     */
+    public function createInvitationCode(string $userId, string $organisationId, string $email): ?array {
+        // Invalidate any existing pending invitation codes for this user/org
+        $this->update(
+            ['verified' => -1],
+            ['user' => $userId, 'identifier' => $organisationId, 'purpose' => 'team_invitation', 'verified' => 0]
+        );
+
+        // Generate random 30-character code
+        $code = bin2hex(random_bytes(15)); // 30 hex characters
+
+        // 24 hour expiry
+        $expiresAt = time() + (24 * 60 * 60);
+
+        // Create verification record
+        $data = [
+            'user' => $userId,
+            'type' => 'link',
+            'purpose' => 'team_invitation',
+            'code' => $code,
+            'identifier' => $organisationId, // Store org UID as identifier
+            'message' => $email, // Store email in message field
+            'verified' => 0,
+            'expires_at' => $expiresAt,
+        ];
+
+        if (!$this->create($data)) {
+            return null;
+        }
+
+        return [
+            'code' => $code,
+            'code_id' => $this->recentUid,
+            'expires_at' => $expiresAt,
+        ];
+    }
+
+    /**
+     * Verify an invitation code and return the user/org info
+     *
+     * @param string $organisationId Organisation UID from URL
+     * @param string $code 30-character code from URL
+     * @return object|null Returns verification record on success, null on failure
+     */
+    public function verifyInvitationCode(string $organisationId, string $code): ?object {
+        // Find the verification record - use excludeForeignKeys to get raw user UID
+        $verification = $this->excludeForeignKeys()->getFirst([
+            'identifier' => $organisationId,
+            'code' => $code,
+            'purpose' => 'team_invitation',
+            'verified' => 0
+        ]);
+
+        if (isEmpty($verification)) {
+            return null;
+        }
+
+        // Check if expired
+        if ($verification->expires_at < time()) {
+            return null;
+        }
+
+        return $verification;
+    }
+
+    /**
+     * Mark an invitation code as used
+     *
+     * @param string $codeUid The UID of the verification record
+     * @return bool
+     */
+    public function markInvitationUsed(string $codeUid): bool {
+        return $this->update(
+            ['verified' => 1, 'verified_at' => time()],
+            ['uid' => $codeUid]
+        );
+    }
+
+    /**
      * Clear phone verification records for a specific user
      * @param string $userId User UID
      * @param string $purpose Purpose of verification (default: phone_verification)
