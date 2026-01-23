@@ -183,11 +183,16 @@ $rykker3Fee = $args->rykker_3_fee ?? 100;
                     </div>
 
                     <!-- Info -->
-                    <div class="flex-row-start flex-align-center mt-3 p-2 bg-lightest-blue border-radius-8px">
-                        <i class="mdi mdi-information-outline font-16 color-blue mr-2"></i>
-                        <p class="mb-0 font-12 color-dark">
-                            Efter Rykker 3 markeres betalingen automatisk til inkasso. Rykkere sendes via e-mail og SMS.
-                        </p>
+                    <div class="flex-row-start flex-align-start mt-3 p-2 bg-lightest-blue border-radius-8px">
+                        <i class="mdi mdi-information-outline font-16 color-blue mr-2 mt-1"></i>
+                        <div class="flex-col-start">
+                            <p class="mb-1 font-12 color-dark">
+                                Rykkere sendes via e-mail og SMS baseret på dage efter forfaldsdato.
+                            </p>
+                            <p class="mb-0 font-12 color-dark">
+                                <strong>7 dage efter Rykker 3</strong> markeres betalingen automatisk til inkasso.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

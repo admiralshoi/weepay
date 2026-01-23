@@ -37,6 +37,8 @@ class Payments extends \Database\Model {
         "rykker_2_sent_at"  => ["type" => "timestamp", "nullable" => true, "default" => null],
         "rykker_3_sent_at"  => ["type" => "timestamp", "nullable" => true, "default" => null],
         "sent_to_collection" => ["type" => "tinyInteger", "default" => 0],
+        // Lock for notification processing (separate from processing_at which is for payment charging)
+        "notification_lock_at" => ["type" => "timestamp", "nullable" => true, "default" => null],
     ];
 
     public static array $indexes = ["order", "uuid", "organisation", "location", "status", "due_date"];

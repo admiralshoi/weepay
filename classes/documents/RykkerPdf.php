@@ -210,11 +210,22 @@ class RykkerPdf {
         $organisation = $this->organisation;
         $location = $this->location;
 
-        // Format values - payment->amount already includes rykker_fee
-        // So we subtract to get the original amount
+        // Calculate amounts based on payment status
+        // - If COMPLETED (paid): amount column includes rykker_fee, so original = amount - fee
+        // - If NOT paid (PAST_DUE, SCHEDULED, etc.): amount is original, total = amount + fee
         $rykkerFee = (float)($payment->rykker_fee ?? 0);
-        $totalAmount = (float)$payment->amount; // This is the total (original + fee)
-        $originalAmount = $totalAmount - $rykkerFee; // Original amount before fees
+        $paymentAmount = (float)$payment->amount;
+        $isPaid = ($payment->status === 'COMPLETED' || !isEmpty($payment->paid_at));
+
+        if ($isPaid) {
+            // Payment already made - amount includes the rykker fee
+            $totalAmount = $paymentAmount;
+            $originalAmount = $paymentAmount - $rykkerFee;
+        } else {
+            // Payment not yet made - amount is the original, fee will be added
+            $originalAmount = $paymentAmount;
+            $totalAmount = $paymentAmount + $rykkerFee;
+        }
 
         $originalFormatted = $this->formatAmount($originalAmount);
         $totalFormatted = $this->formatAmount($totalAmount);

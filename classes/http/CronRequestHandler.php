@@ -16,6 +16,11 @@ class CronRequestHandler {
     private const PAYMENT_LOCK_TIMEOUT = 120; // 2 minutes
 
     /**
+     * Lock timeout for notification processing (separate from payment charging)
+     */
+    private const NOTIFICATION_LOCK_TIMEOUT = 120; // 2 minutes
+
+    /**
      * Take scheduled payments (BNPL installments, deferred "pushed" payments)
      * Processes payments with status SCHEDULED that are due today or earlier
      *
@@ -223,8 +228,17 @@ class CronRequestHandler {
             $paymentsHandler->markAsCompleted($paymentUid, $chargeResult['transaction_id'] ?? null);
             $worker?->log("Payment $paymentUid charged successfully.");
 
+            debugLog([
+                'payment_uid' => $paymentUid,
+                'about_to_call' => 'triggerPaymentNotification',
+                'payment_uuid_type' => gettype($payment->uuid ?? null),
+                'payment_order_type' => gettype($payment->order ?? null),
+            ], 'DEEP_BEFORE_TRIGGER_NOTIFICATION');
+
             // Trigger success notification
             $this->triggerPaymentNotification($payment, 'success');
+
+            debugLog(['payment_uid' => $paymentUid, 'done' => true], 'DEEP_AFTER_TRIGGER_NOTIFICATION');
 
             return ['success' => true];
         } else {
@@ -278,19 +292,68 @@ class CronRequestHandler {
      * @param string|null $failureReason
      */
     private function triggerPaymentNotification(object $payment, string $type, ?string $failureReason = null): void {
+        debugLog([
+            'payment_uid' => $payment->uid,
+            'type' => $type,
+            'timestamp' => date('Y-m-d H:i:s.u'),
+        ], 'DEEP_TRIGGER_PAYMENT_NOTIFICATION_ENTRY');
+
         try {
-            // Get user and order from payment (FKs should be resolved)
-            $user = $payment->uuid ?? null;
+            // Get order from payment (FK should be resolved)
             $order = $payment->order ?? null;
 
-            if ($type === 'success') {
-                NotificationTriggers::paymentSuccessful($payment, $user, $order);
-            } elseif ($type === 'past_due') {
-                NotificationTriggers::paymentPastDue($payment, $user, $order, $failureReason);
-            } else {
-                NotificationTriggers::paymentFailed($payment, $user, $order, $failureReason);
+            // Get user - handle FK resolution order issue
+            // payment.uuid may be a string while payment.order.uuid is resolved
+            $user = $payment->uuid ?? null;
+            if (!is_object($user) && is_object($order) && is_object($order->uuid ?? null)) {
+                // User not resolved on payment, but resolved on order
+                $user = $order->uuid;
+            } elseif (!is_object($user) && !isEmpty($user)) {
+                // Still a string, fetch directly
+                $user = Methods::users()->get($user);
             }
+
+            debugLog([
+                'payment_uid' => $payment->uid,
+                'user_resolved' => is_object($user),
+                'user_type' => gettype($user),
+                'user_uid' => is_object($user) ? ($user->uid ?? 'no_uid') : $user,
+                'user_email' => is_object($user) ? ($user->email ?? 'no_email') : 'not_object',
+                'order_resolved' => is_object($order),
+                'order_type' => gettype($order),
+                'order_uid' => is_object($order) ? ($order->uid ?? 'no_uid') : $order,
+            ], 'DEEP_TRIGGER_PAYMENT_NOTIFICATION_DATA');
+
+            if ($type === 'success') {
+                debugLog(['calling' => 'paymentSuccessful'], 'DEEP_TRIGGER_ABOUT_TO_CALL');
+                $result = NotificationTriggers::paymentSuccessful($payment, $user, $order);
+                debugLog(['result' => $result], 'DEEP_TRIGGER_PAYMENT_SUCCESSFUL_RESULT');
+            } elseif ($type === 'past_due') {
+                debugLog(['calling' => 'paymentPastDue'], 'DEEP_TRIGGER_ABOUT_TO_CALL');
+                $result = NotificationTriggers::paymentPastDue($payment, $user, $order, $failureReason);
+                debugLog(['result' => $result], 'DEEP_TRIGGER_PAYMENT_PAST_DUE_RESULT');
+            } else {
+                debugLog(['calling' => 'paymentFailed'], 'DEEP_TRIGGER_ABOUT_TO_CALL');
+                $result = NotificationTriggers::paymentFailed($payment, $user, $order, $failureReason);
+                debugLog(['result' => $result], 'DEEP_TRIGGER_PAYMENT_FAILED_RESULT');
+            }
+
+            debugLog([
+                'payment_uid' => $payment->uid,
+                'type' => $type,
+                'completed' => true,
+            ], 'DEEP_TRIGGER_PAYMENT_NOTIFICATION_COMPLETE');
+
         } catch (\Throwable $e) {
+            debugLog([
+                'payment_uid' => $payment->uid,
+                'type' => $type,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => array_slice($e->getTrace(), 0, 5),
+            ], 'DEEP_TRIGGER_PAYMENT_NOTIFICATION_ERROR');
+
             errorLog([
                 'payment_uid' => $payment->uid,
                 'type' => $type,
@@ -335,16 +398,196 @@ class CronRequestHandler {
 
 
     /**
-     * Process scheduled notification breakpoints
-     * Triggers notifications based on scheduled events (payment reminders, overdue, etc.)
+     * Send payment due reminder notifications
+     *
+     * Finds payments where due_date matches any active flow offset (e.g., today+5, today+1)
+     * Sends notifications directly (no queue) and logs to NotificationLog for deduplication
+     *
+     * Follows the same pattern as takePayments:
+     * - Processes one payment at a time in a while loop
+     * - Uses notification_lock_at to prevent race conditions
+     * - Respects worker timeout
+     *
+     * Runs every 5 mins with max 3 min runtime
      */
     public function paymentNotifications(?CronWorker $worker = null): void {
-        $worker?->log("Running scheduled notification breakpoints...");
+        $worker?->log("Running paymentNotifications...");
 
-        $results = \classes\notifications\NotificationService::processScheduledBreakpoints();
+        $flowsHandler = Methods::notificationFlows();
+        $lockTimeout = date('Y-m-d H:i:s', time() - self::NOTIFICATION_LOCK_TIMEOUT);
 
-        $worker?->log("Scheduled breakpoints processed: " . json_encode($results));
-        $worker?->log("paymentNotifications completed.");
+        // Get all active flows for payment.due_reminder breakpoint with their offsets
+        $reminderFlows = $flowsHandler->getActiveByBreakpoint('payment.due_reminder');
+        if ($reminderFlows->empty()) {
+            $worker?->log("No active reminder flows found.");
+            return;
+        }
+
+        // Calculate target due dates from flow offsets
+        // e.g., offset -5 means "5 days before due" → look for payments due in 5 days
+        $targetDates = [];
+        $flowsByOffset = [];
+        foreach ($reminderFlows->list() as $flow) {
+            $offset = abs((int)($flow->schedule_offset_days ?? 0));
+            $targetDate = date('Y-m-d', strtotime("+{$offset} days"));
+            $targetDates[$targetDate] = true;
+
+            if (!isset($flowsByOffset[$offset])) {
+                $flowsByOffset[$offset] = [];
+            }
+            $flowsByOffset[$offset][] = $flow;
+        }
+        $targetDates = array_keys($targetDates);
+
+        $worker?->log("Target due dates: " . implode(', ', $targetDates));
+        $worker?->log("Flow offsets: " . implode(', ', array_keys($flowsByOffset)));
+
+        $totalProcessed = 0;
+        $totalSent = 0;
+        $totalSkipped = 0;
+
+        while (true) {
+            // Find next payment needing notification
+            $payment = $this->getNextPaymentForNotification($targetDates, $lockTimeout);
+
+            if (isEmpty($payment)) {
+                $worker?->log("No more payments to notify.");
+                break;
+            }
+
+            // Acquire lock atomically
+            if (!$this->acquireNotificationLock($payment->uid, $lockTimeout)) {
+                $worker?->log("Payment {$payment->uid} already locked, skipping.");
+                usleep(100000); // 100ms
+                continue;
+            }
+
+            try {
+                // Calculate days until due for this payment
+                $dueDate = strtotime(date('Y-m-d', strtotime($payment->due_date)));
+                $today = strtotime('today');
+                $daysUntilDue = (int)(($dueDate - $today) / 86400);
+
+                $worker?->log("Processing payment {$payment->uid} (due in {$daysUntilDue} days)");
+
+                // Send notification using existing NotificationTriggers
+                // - Finds all active flows for payment.due_reminder breakpoint
+                // - Checks flow conditions (e.g., payment_plan != 'direct')
+                // - Handles deduplication via NotificationLog (reference_id + flow)
+                // - Resolves placeholders and sends email/SMS
+                $sent = $this->sendPaymentDueNotification($payment, $daysUntilDue, $worker);
+
+                if ($sent) {
+                    $totalSent++;
+                    $worker?->log("Notification triggered for {$payment->uid}");
+                } else {
+                    $totalSkipped++;
+                    $worker?->log("Notification skipped/failed for {$payment->uid}");
+                }
+
+                $totalProcessed++;
+
+            } finally {
+                // Always release lock
+                $this->releaseNotificationLock($payment->uid);
+            }
+
+            usleep(200000); // 200ms between payments
+
+            // Check worker timeout AFTER completing current payment
+            if ($worker !== null && !$worker->canRun()) {
+                $worker?->log("Worker timeout reached, stopping.");
+                break;
+            }
+        }
+
+        $worker?->log("paymentNotifications completed. Processed: $totalProcessed, Sent: $totalSent, Skipped: $totalSkipped");
+    }
+
+    /**
+     * Get next payment needing notification
+     * Returns payment with due_date matching any target date, not locked
+     */
+    private function getNextPaymentForNotification(array $targetDates, string $lockTimeout): ?object {
+        if (empty($targetDates)) return null;
+
+        // Build query for payments with due_date matching any target
+        $query = Methods::payments()->excludeForeignKeys()->queryBuilder()
+            ->where('status', 'SCHEDULED');
+
+        // due_date IN (target_dates) - need to match just the date part
+        // Each date becomes an AND group within an OR group
+        $query->startGroup('OR');
+        foreach ($targetDates as $date) {
+            $query->startGroup('AND')
+                ->where('due_date', '>=', $date . ' 00:00:00')
+                ->where('due_date', '<=', $date . ' 23:59:59')
+            ->endGroup();
+        }
+        $query->endGroup();
+
+        // Not locked (or lock is stale)
+        $query->startGroup('OR')
+            ->whereNull('notification_lock_at')
+            ->where('notification_lock_at', '<', $lockTimeout)
+        ->endGroup();
+
+        $query->order('due_date', 'ASC');
+
+        return Methods::payments()->queryGetFirst($query);
+    }
+
+    /**
+     * Acquire notification lock on a payment
+     */
+    private function acquireNotificationLock(string $paymentUid, string $lockTimeout): bool {
+        $now = date('Y-m-d H:i:s');
+
+        // Update only if not locked or lock is stale
+        $query = Methods::payments()->queryBuilder()
+            ->where('uid', $paymentUid)
+            ->startGroup('OR')
+                ->whereNull('notification_lock_at')
+                ->where('notification_lock_at', '<', $lockTimeout)
+            ->endGroup();
+
+        return Methods::payments()->queryUpdate($query, ['notification_lock_at' => $now]);
+    }
+
+    /**
+     * Release notification lock on a payment
+     */
+    private function releaseNotificationLock(string $paymentUid): void {
+        Methods::payments()->update(['notification_lock_at' => null], ['uid' => $paymentUid]);
+    }
+
+    /**
+     * Send payment due notification using existing NotificationTriggers
+     *
+     * Uses the existing paymentDueReminder() method which:
+     * 1. Builds context via buildPaymentReminderContext() (includes all placeholders)
+     * 2. Calls NotificationService::trigger('payment.due_reminder', $context)
+     * 3. Trigger handles conditions, deduplication, placeholder resolution, and sending
+     */
+    private function sendPaymentDueNotification(object $payment, int $daysUntilDue, ?CronWorker $worker): bool {
+        // Get payment with resolved FKs for context building
+        $paymentFull = Methods::payments()->get($payment->uid);
+        if (isEmpty($paymentFull)) return false;
+
+        // Get user from payment (FK resolved as object)
+        $user = is_object($paymentFull->uuid) ? $paymentFull->uuid : Methods::users()->get($paymentFull->uuid);
+        if (isEmpty($user)) {
+            $worker?->log("User not found for payment {$payment->uid}");
+            return false;
+        }
+
+        // Use existing NotificationTriggers method - handles everything:
+        // - Builds context with user, payment, order, organisation, location data
+        // - Resolves all placeholders ({{user.full_name}}, {{payment.formatted_amount}}, etc.)
+        // - Checks flow conditions
+        // - Handles deduplication via NotificationLog
+        // - Sends email/SMS directly
+        return NotificationTriggers::paymentDueReminder($paymentFull, $user, $daysUntilDue);
     }
 
 
@@ -445,6 +688,7 @@ class CronRequestHandler {
             'rykker_1_sent' => 0,
             'rykker_2_sent' => 0,
             'rykker_3_sent' => 0,
+            'sent_to_collection' => 0,
             'notifications_triggered' => 0,
             'errors' => 0,
         ];
@@ -493,6 +737,32 @@ class CronRequestHandler {
                     ], 'RYKKER_CRON_PAYMENT_SKIPPED');
                     continue;
                 }
+
+                // Check minimum days since due_date for this rykker level
+                $dueTimestamp = strtotime($payment->due_date);
+                $todayTimestamp = strtotime('today');
+                $daysSinceDue = (int)(($todayTimestamp - $dueTimestamp) / 86400);
+
+                $requiredDays = match($newLevel) {
+                    1 => $rykker1Days,
+                    2 => $rykker2Days,
+                    3 => $rykker3Days,
+                    default => 0,
+                };
+
+                if ($daysSinceDue < $requiredDays) {
+                    $worker?->log("  - SKIP: Only {$daysSinceDue} days since due_date, need {$requiredDays} days for rykker {$newLevel}");
+                    debugLog([
+                        'payment_uid' => $payment->uid,
+                        'reason' => 'not_enough_days_since_due',
+                        'days_since_due' => $daysSinceDue,
+                        'required_days' => $requiredDays,
+                        'new_level' => $newLevel,
+                    ], 'RYKKER_CRON_PAYMENT_SKIPPED');
+                    continue;
+                }
+
+                $worker?->log("  - Days since due: {$daysSinceDue} (required: {$requiredDays})");
 
                 // Get fee for this rykker level
                 $fee = match($newLevel) {
@@ -568,12 +838,48 @@ class CronRequestHandler {
             $worker?->log(""); // Empty line between payments
         }
 
+        // =====================================================
+        // PHASE 2: Mark rykker level 3 payments as sent_to_collection
+        // after 7-day grace period (scheduled_at has passed)
+        // =====================================================
+        $worker?->log("------------------------------------------");
+        $worker?->log("Checking for rykker 3 payments ready for collection...");
+
+        $collectionPayments = $paymentHandler->queryGetAll(
+            $paymentHandler->queryBuilder()
+                ->where('status', 'PAST_DUE')
+                ->where('rykker_level', 3)
+                ->where('sent_to_collection', 0)
+                ->where('scheduled_at', '<=', date('Y-m-d H:i:s'))
+        );
+
+        $collectionCount = 0;
+        foreach ($collectionPayments->list() as $payment) {
+            $worker?->log("Marking payment {$payment->uid} as sent_to_collection");
+
+            $paymentHandler->update([
+                'sent_to_collection' => 1,
+                'scheduled_at' => null,
+            ], ['uid' => $payment->uid]);
+
+            $collectionCount++;
+
+            debugLog([
+                'payment_uid' => $payment->uid,
+                'action' => 'marked_sent_to_collection',
+            ], 'RYKKER_CRON_SENT_TO_COLLECTION');
+        }
+
+        $worker?->log("Marked {$collectionCount} payments as sent_to_collection");
+        $stats['sent_to_collection'] = $collectionCount;
+
         $worker?->log("==========================================");
         $worker?->log("rykkerChecks COMPLETED");
         $worker?->log("  - Payments checked: {$stats['checked']}");
         $worker?->log("  - Rykker 1 sent: {$stats['rykker_1_sent']}");
         $worker?->log("  - Rykker 2 sent: {$stats['rykker_2_sent']}");
         $worker?->log("  - Rykker 3 sent: {$stats['rykker_3_sent']}");
+        $worker?->log("  - Sent to collection: {$stats['sent_to_collection']}");
         $worker?->log("  - Notifications triggered: {$stats['notifications_triggered']}");
         $worker?->log("  - Errors: {$stats['errors']}");
         $worker?->log("==========================================");

@@ -295,6 +295,14 @@ class CustomerPageController {
         // Get order code from query param 's'
         $orderCode = $args['s'] ?? null;
 
+        debugLog([
+            'transaction_id' => $transactionId,
+            'order_code' => $orderCode,
+            'slug' => $slug,
+            'all_params' => $args,
+            'timestamp' => date('Y-m-d H:i:s.u'),
+        ], 'PAYMENT_CALLBACK_ENTRY');
+
         // For any errors, we need to redirect back to the checkout flow
         // First try to get basic order info for redirect context
         $order = null;
@@ -540,6 +548,14 @@ class CustomerPageController {
             }
 
             $orderHandler->setCompleted($order->uid);
+
+            debugLog([
+                'order_uid' => $order->uid,
+                'order_code' => $orderCode,
+                'transaction_id' => $transactionId,
+                'payment_plan' => $order->payment_plan,
+                'final_status' => 'COMPLETED',
+            ], 'PAYMENT_CALLBACK_COMPLETED');
 
             // Success: redirect to confirmation page
             $confirmationUrl = __url(Links::$checkout->createOrderConfirmation($order->uid));

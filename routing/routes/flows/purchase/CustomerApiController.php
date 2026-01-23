@@ -18,6 +18,27 @@ class CustomerApiController {
         foreach (['ts_id', 'plan'] as $key) if(!array_key_exists($key, $args)) Response()->jsonError("Mangler parametre", [], 400);
         $terminalSessionId = $args["ts_id"];
         $planName = $args["plan"];
+        $idempotencyKey = $args["idempotency_key"] ?? null;
+        $expectedBasketHash = $args["basket_hash"] ?? null;
+
+        // Check for existing order with same idempotency key (prevents double-click)
+        if (!isEmpty($idempotencyKey)) {
+            $existingOrder = Methods::orders()->excludeForeignKeys()->getFirst(['idempotency_key' => $idempotencyKey]);
+            if (!isEmpty($existingOrder)) {
+                debugLog([
+                    'idempotency_key' => $idempotencyKey,
+                    'existing_order' => $existingOrder->uid,
+                    'prid' => $existingOrder->prid,
+                ], 'GENERATE_SESSION_IDEMPOTENCY_HIT');
+
+                // Return existing checkout URL
+                $checkoutUrl = Methods::viva()->checkoutUrl($existingOrder->prid);
+                Response()->jsonSuccess('Order already exists', [
+                    'paymentSessionUrl' => $checkoutUrl,
+                    'orderCode' => $existingOrder->prid,
+                ]);
+            }
+        }
 
         $customer = Methods::oidcAuthentication()->getByUserId();
         if(isEmpty($customer)) Response()->jsonError("Ugyldig kunde", [], 400);
@@ -32,6 +53,42 @@ class CustomerApiController {
         if($location->status !== 'ACTIVE') Response()->jsonError("Sessionen er ikke aktiv", [], 404);
         $basket = $basketHandler->getActiveBasket($terminalSession->uid);
         if(isEmpty($basket)) Response()->jsonError("Kurven blev ikke fundet", [], 404);
+
+        // Validate basket hash to ensure basket hasn't changed since plan page loaded
+        if (!isEmpty($expectedBasketHash)) {
+            // Get customer birthdate for payment plans calculation (same as getBasketHash)
+            $birthdate = $terminalSession->customer?->birthdate ?? null;
+            $customerId = $terminalSession->customer?->uid ?? null;
+
+            $paymentPlans = [];
+            foreach (\features\Settings::$app->paymentPlans as $name => $plan){
+                $planInfo = $basketHandler->createCheckoutInfo($basket, $name, $birthdate, $customerId);
+                if(isEmpty($planInfo)) continue;
+                $paymentPlans[] = $planInfo;
+            }
+
+            $actualHash = hash("sha256", json_encode($basket) . "_" . json_encode($paymentPlans));
+
+            if ($expectedBasketHash !== $actualHash) {
+                debugLog([
+                    'terminal_session' => $terminalSessionId,
+                    'expected_hash' => $expectedBasketHash,
+                    'actual_hash' => $actualHash,
+                ], 'GENERATE_SESSION_BASKET_HASH_MISMATCH');
+
+                $redirectUrl = __url(\classes\enumerations\Links::$merchant->terminals->getConsumerChoosePlan($location->slug, $terminalSessionId));
+                Response()->jsonError('Kurven er blevet opdateret. Genindlæs venligst.', ['goto' => $redirectUrl], 409);
+            }
+        }
+
+        debugLog([
+            'terminal_session' => $terminalSessionId,
+            'idempotency_key' => $idempotencyKey,
+            'basket_uid' => $basket->uid,
+            'basket_price' => $basket->price,
+            'selected_plan' => $planName,
+            'basket_hash_provided' => !isEmpty($expectedBasketHash),
+        ], 'GENERATE_SESSION_ENTRY');
 
         // Get customer birthdate and ID for age restriction and BNPL limit
         $birthdate = $customer->user?->birthdate ?? null;
@@ -114,9 +171,17 @@ class CustomerApiController {
             $orderCode,
             $terminalSession->uid,
             $plan,
-            .8
+            .8,
+            $idempotencyKey
         );
 
+        debugLog([
+            'order_code' => $orderCode,
+            'terminal_session' => $terminalSessionId,
+            'idempotency_key' => $idempotencyKey,
+            'basket_price' => $basket->price,
+            'plan' => $planName,
+        ], 'GENERATE_SESSION_ORDER_CREATED');
 
         Response()->jsonSuccess('Checkout Session', compact(
             'slug', 'terminalSessionId', 'customer', 'paymentSessionUrl', 'orderCode',

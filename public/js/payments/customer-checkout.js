@@ -123,6 +123,7 @@ const CustomerCheckout = {
     interval: null,
     tsId: null,
     basketHash: null,
+    idempotencyKey: null,
     elements: {
         payButton: null,
         payButtonText: null,
@@ -137,6 +138,9 @@ const CustomerCheckout = {
         this.plans = paymentPlans;
         this.tsId = tsId;
         if('basketHash' in window) this.basketHash = basketHash;
+
+        // Generate unique idempotency key for this checkout session
+        this.idempotencyKey = `${tsId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
         this.elements.acceptTerms = document.querySelector('[name=accept_terms]');
         this.elements.payButton = document.getElementById('payButton');
@@ -271,14 +275,33 @@ const CustomerCheckout = {
             showErrorNotification("Acceptér vilkår", "Du skal acceptere vilkårene før du kan fortsætte.")
             return;
         }
+
+        // Disable button immediately to prevent double-clicks
         this.elements.payButton.disabled = true;
         this.elements.paymentButtonLoader.style.display = 'flex';
+        if(this.elements.payButtonText) {
+            this.elements.payButtonText.innerText = 'Behandler...';
+        }
 
-        const result = await post(`api/checkout/payment/session`, {ts_id: this.tsId, plan: this.selectedPlan.name})
+        const result = await post(`api/checkout/payment/session`, {
+            ts_id: this.tsId,
+            plan: this.selectedPlan.name,
+            idempotency_key: this.idempotencyKey,
+            basket_hash: this.basketHash
+        })
+
         if(result.status === 'error') {
+            // Handle basket changed (409) - redirect to plans page
+            if(result.error?.code === 409 && result.error?.goto) {
+                showNeutralNotification("Kurven er blevet opdateret", "Omdirigerer...");
+                setTimeout(() => window.location = result.error.goto, 1000);
+                return;
+            }
+
             showErrorNotification("Kunne ikke fortsætte", result.error.message)
             this.elements.payButton.disabled = false;
             this.elements.paymentButtonLoader.style.display = 'none';
+            this.updatePayButtonText(); // Restore original button text
             return
         }
 

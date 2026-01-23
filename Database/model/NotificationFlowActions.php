@@ -144,24 +144,8 @@ class NotificationFlowActions extends \Database\Model {
         ],
 
         // =====================================================
-        // MERCHANT ORDER ACTIONS
+        // MERCHANT ORDER ACTIONS (bell only - no email/SMS)
         // =====================================================
-        [
-            "uid" => "nfla_merchant_order_email",
-            "flow" => "nflw_merchant_order",
-            "template" => "ntpl_merchant_order_email",
-            "channel" => "email",
-            "delay_minutes" => 0,
-            "status" => "active",
-        ],
-        [
-            "uid" => "nfla_merchant_order_sms",
-            "flow" => "nflw_merchant_order",
-            "template" => "ntpl_merchant_order_sms",
-            "channel" => "sms",
-            "delay_minutes" => 0,
-            "status" => "active",
-        ],
         [
             "uid" => "nfla_merchant_order_bell",
             "flow" => "nflw_merchant_order",

@@ -12,9 +12,8 @@
 .DS_Store
 Thumbs.db
 
-# Logs
-/logs/debug/
-/logs/cron/
+# Logs (keep /logs/*/  structure, ignore contents inside)
+/logs/*/*
 
 # Environment
 /env/db/local.php

@@ -31,10 +31,11 @@ class Orders extends \Database\Model {
         "terminal_session"       => ["type" => "string", "nullable" => true, "default" => null],
         "type"       => ["type" => "enum", "default" => "purchase", "values" => ["purchase", "card_change"]],
         "test" => "tinyInteger",
+        "idempotency_key" => ["type" => "string", "nullable" => true, "default" => null],
     ];
 
     public static array $indexes = ["uuid", "location", "organisation"];
-    public static array $uniques = ["uid", "prid"];
+    public static array $uniques = ["uid", "prid", "idempotency_key"];
 
     protected static array $requiredRows = [];
     protected static array $requiredRowsTesting = [];

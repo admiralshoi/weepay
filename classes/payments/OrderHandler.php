@@ -80,6 +80,9 @@ class OrderHandler extends Crud {
 
             NotificationTriggers::orderCompleted($order);
 
+            // Also notify the merchant about the new order
+            NotificationTriggers::merchantOrderReceived($order);
+
             debugLog([
                 'order_id' => $id,
                 'notification_triggered' => true,
@@ -116,7 +119,8 @@ class OrderHandler extends Crud {
         ?string $prid,
         ?string $terminalSessionId,
         ?object $planObject = null,
-        float|int $creditScore = 0
+        float|int $creditScore = 0,
+        ?string $idempotencyKey = null
     ): bool {
         $user = Methods::users()->get($customerId);
         $isTest = (int)Viva::isSandbox();
@@ -138,6 +142,7 @@ class OrderHandler extends Crud {
             "prid" => $prid,
             "credit_score" => $creditScore,
             "terminal_session" => $terminalSessionId,
+            "idempotency_key" => $idempotencyKey,
             "billing_details" => [
                 "customer_name" => $user?->full_name,
                 "address" => [

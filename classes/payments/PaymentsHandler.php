@@ -421,14 +421,16 @@ class PaymentsHandler extends Crud {
             "rykker_{$rykkerLevel}_sent_at" => date('Y-m-d H:i:s'),
         ];
 
-        // If this is rykker 3, mark for collection (no more scheduling needed)
         if ($rykkerLevel >= 3) {
-            $updateData['sent_to_collection'] = 1;
-            $updateData['scheduled_at'] = null;
+            // Rykker 3: Schedule for collection check in 7 days (grace period)
+            // Don't mark sent_to_collection yet - rykkerChecks will do that after 7 days
+            $collectionSchedule = date('Y-m-d H:i:s', strtotime('+7 days'));
+            $updateData['scheduled_at'] = $collectionSchedule;
             debugLog([
                 'payment_id' => $paymentId,
-                'action' => 'marked_for_collection',
-            ], 'SEND_RYKKER_COLLECTION');
+                'action' => 'scheduled_for_collection',
+                'collection_date' => $collectionSchedule,
+            ], 'SEND_RYKKER_COLLECTION_SCHEDULED');
         } else {
             // Schedule next rykker check
             $nextScheduledAt = $this->calculateNextRykkerDate($rykkerLevel);
