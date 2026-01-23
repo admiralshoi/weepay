@@ -117,6 +117,22 @@ class NotificationService {
                 'status' => $flow->status
             ]);
 
+            // Check schedule_offset_days matches days_until_due (for scheduled notifications)
+            $flowOffset = $flow->schedule_offset_days ?? null;
+            $daysUntilDue = $context['days_until_due'] ?? null;
+            if ($flowOffset !== null && $daysUntilDue !== null) {
+                $expectedDays = abs((int)$flowOffset);
+                if ((int)$daysUntilDue !== $expectedDays) {
+                    self::debug("SKIP: Flow offset doesn't match days_until_due", [
+                        'flow_uid' => $flow->uid,
+                        'flow_offset' => $flowOffset,
+                        'expected_days' => $expectedDays,
+                        'actual_days_until_due' => $daysUntilDue
+                    ]);
+                    continue;
+                }
+            }
+
             // Check flow conditions
             $conditionsMet = self::evaluateConditions($flow->conditions, $context);
             debugLog([

@@ -27,7 +27,7 @@ class NotificationTriggers {
      * Trigger when a new user registers
      */
     public static function userRegistered(object|array $user): bool {
-        $userData = self::normalizeData($user);
+        $userData = self::normalizeUserData($user);
 
         return NotificationService::trigger('user.registered', [
             'user' => $userData,
@@ -41,7 +41,7 @@ class NotificationTriggers {
      * Trigger when user verifies their email
      */
     public static function userEmailVerified(object|array $user): bool {
-        $userData = self::normalizeData($user);
+        $userData = self::normalizeUserData($user);
 
         return NotificationService::trigger('user.email_verified', [
             'user' => $userData,
@@ -55,7 +55,7 @@ class NotificationTriggers {
      * Trigger when user requests password reset
      */
     public static function userPasswordReset(object|array $user, string $resetLink): bool {
-        $userData = self::normalizeData($user);
+        $userData = self::normalizeUserData($user);
 
         return NotificationService::trigger('user.password_reset', [
             'user' => $userData,
@@ -310,7 +310,7 @@ class NotificationTriggers {
 
         // Add user context if provided
         if ($user) {
-            $userData = self::normalizeData($user);
+            $userData = self::normalizeUserData($user);
             $context['user'] = $userData;
             $context['recipient_email'] = $userData['email'] ?? null;
             $context['recipient_phone'] = $userData['phone'] ?? $userData['phone_number'] ?? null;
@@ -663,7 +663,7 @@ class NotificationTriggers {
         ];
 
         if ($owner) {
-            $context['user'] = self::normalizeData($owner);
+            $context['user'] = self::normalizeUserData($owner);
         }
 
         return NotificationService::trigger('merchant.org_ready', $context);
@@ -682,7 +682,7 @@ class NotificationTriggers {
         ];
 
         if ($owner) {
-            $context['user'] = self::normalizeData($owner);
+            $context['user'] = self::normalizeUserData($owner);
         }
 
         return NotificationService::trigger('merchant.viva_approved', $context);
@@ -704,7 +704,7 @@ class NotificationTriggers {
         string $changelogUid,
         string $effectiveDate
     ): bool {
-        $userData = self::normalizeData($user);
+        $userData = self::normalizeUserData($user);
 
         return NotificationService::trigger('system.policy_updated', [
             'user' => $userData,
@@ -993,7 +993,7 @@ class NotificationTriggers {
             $user = is_object($userValue) ? $userValue : Methods::users()->get($userValue);
         }
         if ($user) {
-            $context['user'] = self::normalizeData($user);
+            $context['user'] = self::normalizeUserData($user);
         }
 
         // Resolve order
@@ -1108,7 +1108,7 @@ class NotificationTriggers {
         }
 
         if ($user) {
-            $context['user'] = self::normalizeData($user);
+            $context['user'] = self::normalizeUserData($user);
         }
 
         // Resolve order if available
@@ -1222,7 +1222,7 @@ class NotificationTriggers {
         }
 
         if ($user) {
-            $context['user'] = self::normalizeData($user);
+            $context['user'] = self::normalizeUserData($user);
         }
 
         // Resolve organisation if not provided
@@ -1397,6 +1397,19 @@ class NotificationTriggers {
     }
 
     /**
+     * Normalize user data with first_name derived from full_name
+     */
+    private static function normalizeUserData(object|array $user): array {
+        $data = self::normalizeData($user);
+        // Add first_name derived from full_name for SMS templates
+        if (!empty($data['full_name']) && empty($data['first_name'])) {
+            $nameParts = explode(' ', trim($data['full_name']));
+            $data['first_name'] = $nameParts[0] ?? '';
+        }
+        return $data;
+    }
+
+    /**
      * Get app context for placeholders
      */
     private static function getAppContext(): array {
@@ -1440,7 +1453,7 @@ class NotificationTriggers {
      */
     public static function supportTicketCreated(object|array $ticket, object|array $user): bool {
         $ticketData = self::normalizeData($ticket);
-        $userData = self::normalizeData($user);
+        $userData = self::normalizeUserData($user);
 
         // Determine support link based on ticket type
         $supportLink = $ticketData['type'] === 'merchant'
@@ -1464,7 +1477,7 @@ class NotificationTriggers {
      */
     public static function supportTicketReplied(object|array $ticket, object|array $user, object|array $reply): bool {
         $ticketData = self::normalizeData($ticket);
-        $userData = self::normalizeData($user);
+        $userData = self::normalizeUserData($user);
         $replyData = self::normalizeData($reply);
 
         // Determine support link based on ticket type

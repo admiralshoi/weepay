@@ -445,10 +445,26 @@ class CronRequestHandler {
         $totalProcessed = 0;
         $totalSent = 0;
         $totalSkipped = 0;
+        $iterations = 0;
+        $maxIterations = 300; // Safety limit
+        $processedUids = []; // Track already processed to avoid infinite loop
 
         while (true) {
-            // Find next payment needing notification
-            $payment = $this->getNextPaymentForNotification($targetDates, $lockTimeout);
+            $iterations++;
+
+            // Safety checks at START of each iteration
+            if ($iterations > $maxIterations) {
+                $worker?->log("Safety limit reached ($maxIterations iterations), stopping.");
+                break;
+            }
+
+            if ($worker !== null && !$worker->canRun()) {
+                $worker?->log("Worker timeout reached, stopping.");
+                break;
+            }
+
+            // Find next payment needing notification (exclude already processed)
+            $payment = $this->getNextPaymentForNotification($targetDates, $lockTimeout, $processedUids);
 
             if (isEmpty($payment)) {
                 $worker?->log("No more payments to notify.");
@@ -463,6 +479,9 @@ class CronRequestHandler {
             }
 
             try {
+                // Mark as processed immediately to avoid re-querying
+                $processedUids[] = $payment->uid;
+
                 // Calculate days until due for this payment
                 $dueDate = strtotime(date('Y-m-d', strtotime($payment->due_date)));
                 $today = strtotime('today');
@@ -493,27 +512,26 @@ class CronRequestHandler {
             }
 
             usleep(200000); // 200ms between payments
-
-            // Check worker timeout AFTER completing current payment
-            if ($worker !== null && !$worker->canRun()) {
-                $worker?->log("Worker timeout reached, stopping.");
-                break;
-            }
         }
 
-        $worker?->log("paymentNotifications completed. Processed: $totalProcessed, Sent: $totalSent, Skipped: $totalSkipped");
+        $worker?->log("paymentNotifications completed. Iterations: $iterations, Processed: $totalProcessed, Sent: $totalSent, Skipped: $totalSkipped");
     }
 
     /**
      * Get next payment needing notification
-     * Returns payment with due_date matching any target date, not locked
+     * Returns payment with due_date matching any target date, not locked, not already processed
      */
-    private function getNextPaymentForNotification(array $targetDates, string $lockTimeout): ?object {
+    private function getNextPaymentForNotification(array $targetDates, string $lockTimeout, array $processedUids = []): ?object {
         if (empty($targetDates)) return null;
 
         // Build query for payments with due_date matching any target
         $query = Methods::payments()->excludeForeignKeys()->queryBuilder()
             ->where('status', 'SCHEDULED');
+
+        // Exclude already processed UIDs to prevent infinite loop
+        if (!empty($processedUids)) {
+            $query->where('uid', 'NOT IN', $processedUids);
+        }
 
         // due_date IN (target_dates) - need to match just the date part
         // Each date becomes an AND group within an OR group
