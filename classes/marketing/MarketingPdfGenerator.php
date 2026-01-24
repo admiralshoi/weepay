@@ -63,7 +63,14 @@ class MarketingPdfGenerator {
             return null;
         }
 
-        $templatePath = ROOT . $this->template->file_path;
+        // Get file path - use template handler's fallback logic for base templates
+        $filePath = Methods::marketingTemplates()->getFilePath($this->template);
+        if (isEmpty($filePath)) {
+            debugLog("Template has no file path", "MARKETING_PDF");
+            return null;
+        }
+
+        $templatePath = ROOT . $filePath;
         if (!file_exists($templatePath)) {
             debugLog("Template file not found: " . $templatePath, "MARKETING_PDF");
             return null;

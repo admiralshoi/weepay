@@ -2,24 +2,20 @@
 
 namespace Database\model;
 
-class MarketingTemplates extends \Database\Model {
+class MarketingBaseTemplates extends \Database\Model {
 
-    public static ?string $uidPrefix = "mt";
+    public static ?string $uidPrefix = "mbt";
     protected static array $schema = [
         "uid" => "string",
         "name" => "string",
-        "base_template" => ["type" => "string", "default" => null, "nullable" => true],
-        "version_name" => ["type" => "string", "default" => null, "nullable" => true],
-        "file_path" => ["type" => "string", "default" => null, "nullable" => true],
+        "file_path" => "string",
         "type" => ["type" => "enum", "default" => "A4", "values" => ["A4", "A3", "A5", "roll-up", "poster", "flyer", "sticker"]],
-        "category" => ["type" => "enum", "default" => "template", "values" => ["template", "a_sign_base"]],
-        "status" => ["type" => "enum", "default" => "DRAFT", "values" => ["DRAFT", "ACTIVE", "INACTIVE"]],
         "preview_image" => ["type" => "string", "default" => null, "nullable" => true],
         "description" => ["type" => "text", "default" => null, "nullable" => true],
         "created_by" => ["type" => "string", "default" => null, "nullable" => true],
     ];
 
-    public static array $indexes = ["status", "type", "category", "base_template"];
+    public static array $indexes = ["type"];
     public static array $uniques = ["uid"];
 
     protected static array $requiredRows = [];
@@ -30,7 +26,6 @@ class MarketingTemplates extends \Database\Model {
 
     public static function foreignkeys(): array {
         return [
-            "base_template" => [MarketingBaseTemplates::tableColumn("uid"), MarketingBaseTemplates::newStatic()],
             "created_by" => [Users::tableColumn("uid"), Users::newStatic()],
         ];
     }

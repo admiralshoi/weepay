@@ -746,7 +746,15 @@ Routes::group(['requiresApiLogin', "admin", "api"], function() {
     Routes::post("api/admin/faqs/toggle-active", "admin.ApiController::faqToggleActive");
     Routes::post("api/admin/faqs/reorder", "admin.ApiController::faqReorder");
 
-    // Marketing Templates API
+    // Marketing Base Templates API
+    Routes::post("api/admin/marketing/base-templates/upload", "admin.MarketingApiController::uploadBaseTemplate");
+    Routes::get("api/admin/marketing/base-templates", "admin.MarketingApiController::getBaseTemplates");
+    Routes::post("api/admin/marketing/base-templates/update", "admin.MarketingApiController::updateBaseTemplate");
+    Routes::post("api/admin/marketing/base-templates/delete", "admin.MarketingApiController::deleteBaseTemplate");
+    Routes::get("api/admin/marketing/base-templates/{id}/pdf", "admin.MarketingApiController::getBaseTemplatePdf");
+    Routes::post("api/admin/marketing/base-templates/create-version", "admin.MarketingApiController::createVersionFromBase");
+
+    // Marketing Templates API (versions)
     Routes::post("api/admin/marketing/templates/upload", "admin.MarketingApiController::uploadTemplate");
     Routes::post("api/admin/marketing/templates/update", "admin.MarketingApiController::updateTemplate");
     Routes::post("api/admin/marketing/templates/delete", "admin.MarketingApiController::deleteTemplate");

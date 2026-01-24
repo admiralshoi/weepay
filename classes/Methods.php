@@ -120,6 +120,7 @@ class Methods {
 
     // Marketing Handlers
     public static function marketingTemplates(): \classes\marketing\MarketingTemplateHandler { return new \classes\marketing\MarketingTemplateHandler(); }
+    public static function marketingBaseTemplates(): \classes\marketing\MarketingBaseTemplateHandler { return new \classes\marketing\MarketingBaseTemplateHandler(); }
     public static function marketingPlaceholders(): \classes\marketing\MarketingPlaceholderHandler { return new \classes\marketing\MarketingPlaceholderHandler(); }
     public static function marketingPdfGenerator(): \classes\marketing\MarketingPdfGenerator { return new \classes\marketing\MarketingPdfGenerator(); }
     public static function marketingInspiration(): \classes\marketing\MarketingInspirationHandler { return new \classes\marketing\MarketingInspirationHandler(); }

@@ -179,6 +179,199 @@ function deleteTemplate(uid, name) {
 }
 
 // =====================================================
+// BASE TEMPLATE FUNCTIONS
+// =====================================================
+
+function openBaseTemplateUploadModal() {
+    $('#baseTemplateUploadForm')[0].reset();
+    $('#baseTemplateUploadModal').modal('show');
+}
+
+function uploadBaseTemplate() {
+    var fileInput = document.getElementById('baseTemplateFile');
+    var name = document.getElementById('baseTemplateName').value.trim();
+    var type = document.getElementById('baseTemplateType').value;
+    var description = document.getElementById('baseTemplateDescription').value.trim();
+
+    if (!fileInput.files.length) {
+        showErrorNotification('Fejl', 'Vælg venligst en PDF fil');
+        return;
+    }
+
+    if (!name) {
+        showErrorNotification('Fejl', 'Indtast venligst et navn');
+        return;
+    }
+
+    var formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    formData.append('name', name);
+    formData.append('type', type);
+    formData.append('description', description);
+    formData.append('_csrf', _csrf);
+
+    // Show loading state
+    var btn = document.getElementById('baseTemplateUploadBtn');
+    btn.querySelector('.btn-text').classList.add('d-none');
+    btn.querySelector('.spinner-border').classList.remove('d-none');
+    btn.disabled = true;
+
+    fetch(HOST + 'api/admin/marketing/base-templates/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success' || data.success) {
+            queueNotificationOnLoad('Succes', data.message || 'Base template uploadet', 'success');
+            window.location.reload();
+        } else {
+            showErrorNotification('Fejl', data.error?.message || 'Kunne ikke uploade base template');
+            btn.querySelector('.btn-text').classList.remove('d-none');
+            btn.querySelector('.spinner-border').classList.add('d-none');
+            btn.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Upload error:', error);
+        showErrorNotification('Fejl', 'Der opstod en fejl under upload');
+        btn.querySelector('.btn-text').classList.remove('d-none');
+        btn.querySelector('.spinner-border').classList.add('d-none');
+        btn.disabled = false;
+    });
+}
+
+function editBaseTemplate(uid, name, type, description) {
+    document.getElementById('baseTemplateEditUid').value = uid;
+    document.getElementById('baseTemplateEditName').value = name;
+    document.getElementById('baseTemplateEditType').value = type;
+    document.getElementById('baseTemplateEditDescription').value = description || '';
+    $('#baseTemplateEditModal').modal('show');
+}
+
+function saveBaseTemplateChanges() {
+    var uid = document.getElementById('baseTemplateEditUid').value;
+    var name = document.getElementById('baseTemplateEditName').value.trim();
+    var type = document.getElementById('baseTemplateEditType').value;
+    var description = document.getElementById('baseTemplateEditDescription').value.trim();
+
+    if (!name) {
+        showErrorNotification('Fejl', 'Indtast venligst et navn');
+        return;
+    }
+
+    var btn = document.getElementById('baseTemplateSaveBtn');
+    btn.querySelector('.btn-text').classList.add('d-none');
+    btn.querySelector('.spinner-border').classList.remove('d-none');
+    btn.disabled = true;
+
+    post('api/admin/marketing/base-templates/update', {
+        uid: uid,
+        name: name,
+        type: type,
+        description: description
+    }).then(data => {
+        if (data.status === 'success' || data.success) {
+            queueNotificationOnLoad('Succes', data.message || 'Base template opdateret', 'success');
+            window.location.reload();
+        } else {
+            showErrorNotification('Fejl', data.error?.message || 'Kunne ikke opdatere base template');
+            btn.querySelector('.btn-text').classList.remove('d-none');
+            btn.querySelector('.spinner-border').classList.add('d-none');
+            btn.disabled = false;
+        }
+    }).catch(error => {
+        console.error('Update error:', error);
+        showErrorNotification('Fejl', 'Der opstod en fejl');
+        btn.querySelector('.btn-text').classList.remove('d-none');
+        btn.querySelector('.spinner-border').classList.add('d-none');
+        btn.disabled = false;
+    });
+}
+
+function deleteBaseTemplate(uid, name, versionCount) {
+    if (versionCount > 0) {
+        showErrorNotification('Kan ikke slettes', 'Denne base template har ' + versionCount + ' version(er). Slet versionerne først.');
+        return;
+    }
+
+    SweetPrompt.confirm('Slet base template', 'Er du sikker på du vil slette "' + name + '"? Dette kan ikke fortrydes.', {
+        confirmButtonText: 'Ja, slet',
+        onConfirm: async () => {
+            const data = await post('api/admin/marketing/base-templates/delete', {
+                uid: uid
+            });
+            if (data.status === 'success' || data.success) {
+                queueNotificationOnLoad('Succes', 'Base template slettet', 'success');
+            } else {
+                showErrorNotification('Fejl', data.error?.message || 'Kunne ikke slette base template');
+            }
+            return {
+                status: (data.status === 'success' || data.success) ? 'success' : 'error',
+                error: data.error?.message || 'Kunne ikke slette base template'
+            };
+        },
+        refreshTimeout: 1000
+    });
+}
+
+function openCreateVersionModal(baseTemplateUid, baseTemplateName, baseTemplateType) {
+    document.getElementById('createVersionBaseUid').value = baseTemplateUid;
+    document.getElementById('createVersionBaseInfo').textContent = 'Opretter version fra: ' + baseTemplateName + ' (' + baseTemplateType + ')';
+    document.getElementById('createVersionName').value = '';
+    document.getElementById('createVersionNote').value = '';
+    document.getElementById('createVersionDescription').value = '';
+    $('#createVersionModal').modal('show');
+}
+
+function createVersionFromBase() {
+    var baseTemplateUid = document.getElementById('createVersionBaseUid').value;
+    var name = document.getElementById('createVersionName').value.trim();
+    var versionName = document.getElementById('createVersionNote').value.trim();
+    var description = document.getElementById('createVersionDescription').value.trim();
+
+    if (!name) {
+        showErrorNotification('Fejl', 'Indtast venligst et versionsnavn');
+        return;
+    }
+
+    var btn = document.getElementById('createVersionBtn');
+    btn.querySelector('.btn-text').classList.add('d-none');
+    btn.querySelector('.spinner-border').classList.remove('d-none');
+    btn.disabled = true;
+
+    post('api/admin/marketing/base-templates/create-version', {
+        base_template_uid: baseTemplateUid,
+        name: name,
+        version_name: versionName,
+        description: description
+    }).then(data => {
+        if (data.status === 'success' || data.success) {
+            // Redirect to editor for the new version
+            var newUid = data.data?.uid;
+            if (newUid) {
+                queueNotificationOnLoad('Succes', 'Version oprettet', 'success');
+                window.location.href = HOST + 'panel/marketing/' + newUid + '/editor';
+            } else {
+                queueNotificationOnLoad('Succes', data.message || 'Version oprettet', 'success');
+                window.location.reload();
+            }
+        } else {
+            showErrorNotification('Fejl', data.error?.message || 'Kunne ikke oprette version');
+            btn.querySelector('.btn-text').classList.remove('d-none');
+            btn.querySelector('.spinner-border').classList.add('d-none');
+            btn.disabled = false;
+        }
+    }).catch(error => {
+        console.error('Create version error:', error);
+        showErrorNotification('Fejl', 'Der opstod en fejl');
+        btn.querySelector('.btn-text').classList.remove('d-none');
+        btn.querySelector('.spinner-border').classList.add('d-none');
+        btn.disabled = false;
+    });
+}
+
+// =====================================================
 // INSPIRATION FUNCTIONS
 // =====================================================
 

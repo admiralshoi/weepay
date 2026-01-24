@@ -179,6 +179,247 @@ class MarketingApiController {
         Response()->jsonSuccess("Template slettet");
     }
 
+    // ==========================================
+    // BASE TEMPLATE ENDPOINTS
+    // ==========================================
+
+    /**
+     * Upload a new base template PDF
+     */
+    #[NoReturn] public static function uploadBaseTemplate(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang naegtet', 403);
+        }
+
+        if (empty($args['__FILES']) || !isset($args['__FILES']['file'])) {
+            Response()->jsonError("Ingen fil uploadet", [], 400);
+        }
+
+        $file = $args['__FILES']['file'];
+        $name = trim($args['name'] ?? '') ?: pathinfo($file['name'], PATHINFO_FILENAME);
+        $type = $args['type'] ?? 'A4';
+        $description = isset($args['description']) ? trim($args['description']) : null;
+
+        // Validate PDF
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        if ($ext !== 'pdf') {
+            Response()->jsonError("Kun PDF filer er tilladt", [], 400);
+        }
+
+        // Validate file size (max 20MB)
+        if ($file['size'] > 20 * 1024 * 1024) {
+            Response()->jsonError("Filen er for stor. Maks 20MB", [], 400);
+        }
+
+        // Ensure upload directory exists
+        $uploadDir = "public/content/marketing/base-templates/";
+        if (!is_dir(ROOT . $uploadDir)) {
+            mkdir(ROOT . $uploadDir, 0755, true);
+        }
+
+        // Generate unique filename
+        $filename = "base-" . time() . "-" . uniqid() . ".pdf";
+        $filePath = $uploadDir . $filename;
+
+        if (!move_uploaded_file($file['tmp_name'], ROOT . $filePath)) {
+            Response()->jsonError("Kunne ikke gemme filen", [], 500);
+        }
+
+        // Generate preview image (first page) if Imagick is available
+        $previewPath = self::generatePdfPreview($filePath);
+
+        // Create base template record
+        $baseTemplateUid = Methods::marketingBaseTemplates()->createBaseTemplate(
+            $name,
+            $filePath,
+            $type,
+            $description,
+            $previewPath
+        );
+
+        if (!$baseTemplateUid) {
+            // Cleanup file on failure
+            if (file_exists(ROOT . $filePath)) {
+                unlink(ROOT . $filePath);
+            }
+            Response()->jsonError("Kunne ikke oprette base template", [], 500);
+        }
+
+        Response()->jsonSuccess("Base template uploadet", [
+            "uid" => $baseTemplateUid,
+            "preview" => $previewPath ? __url($previewPath) : null,
+            "file_path" => $filePath,
+        ]);
+    }
+
+    /**
+     * Get all base templates
+     */
+    #[NoReturn] public static function getBaseTemplates(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang naegtet', 403);
+        }
+
+        $baseTemplates = Methods::marketingBaseTemplates()->getAll();
+
+        $result = [];
+        foreach ($baseTemplates->list() as $base) {
+            $versionCount = Methods::marketingBaseTemplates()->getVersionCount($base->uid);
+            $result[] = [
+                'uid' => $base->uid,
+                'name' => $base->name,
+                'type' => $base->type,
+                'description' => $base->description,
+                'preview_image' => $base->preview_image ? __url($base->preview_image) : null,
+                'version_count' => $versionCount,
+                'created_at' => $base->created_at,
+            ];
+        }
+
+        Response()->jsonSuccess("Base templates hentet", ['base_templates' => $result]);
+    }
+
+    /**
+     * Update base template details
+     */
+    #[NoReturn] public static function updateBaseTemplate(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang naegtet', 403);
+        }
+
+        $uid = $args['uid'] ?? null;
+        if (isEmpty($uid)) {
+            Response()->jsonError("Manglende base template ID", [], 400);
+        }
+
+        $baseTemplate = Methods::marketingBaseTemplates()->get($uid);
+        if (isEmpty($baseTemplate)) {
+            Response()->jsonError("Base template ikke fundet", [], 404);
+        }
+
+        $updateData = [];
+        if (isset($args['name']) && !isEmpty(trim($args['name']))) {
+            $updateData['name'] = trim($args['name']);
+        }
+        if (isset($args['type'])) {
+            $updateData['type'] = $args['type'];
+        }
+        if (isset($args['description'])) {
+            $updateData['description'] = trim($args['description']);
+        }
+
+        if (empty($updateData)) {
+            Response()->jsonError("Ingen data at opdatere", [], 400);
+        }
+
+        $updated = Methods::marketingBaseTemplates()->updateBaseTemplate($uid, $updateData);
+
+        if (!$updated) {
+            Response()->jsonError("Kunne ikke opdatere base template", [], 500);
+        }
+
+        Response()->jsonSuccess("Base template opdateret");
+    }
+
+    /**
+     * Delete a base template (only if no versions use it)
+     */
+    #[NoReturn] public static function deleteBaseTemplate(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang naegtet', 403);
+        }
+
+        $uid = $args['uid'] ?? null;
+        if (isEmpty($uid)) {
+            Response()->jsonError("Manglende base template ID", [], 400);
+        }
+
+        $result = Methods::marketingBaseTemplates()->deleteBaseTemplate($uid);
+
+        if ($result !== true) {
+            Response()->jsonError($result, [], 400);
+        }
+
+        Response()->jsonSuccess("Base template slettet");
+    }
+
+    /**
+     * Create a new template version from a base template
+     */
+    #[NoReturn] public static function createVersionFromBase(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang naegtet', 403);
+        }
+
+        $baseTemplateUid = $args['base_template_uid'] ?? null;
+        $name = trim($args['name'] ?? '');
+        $versionName = isset($args['version_name']) ? trim($args['version_name']) : null;
+        $description = isset($args['description']) ? trim($args['description']) : null;
+
+        if (isEmpty($baseTemplateUid)) {
+            Response()->jsonError("Manglende base template ID", [], 400);
+        }
+
+        if (isEmpty($name)) {
+            Response()->jsonError("Navn er påkrævet", [], 400);
+        }
+
+        $baseTemplate = Methods::marketingBaseTemplates()->get($baseTemplateUid);
+        if (isEmpty($baseTemplate)) {
+            Response()->jsonError("Base template ikke fundet", [], 404);
+        }
+
+        $templateUid = Methods::marketingTemplates()->createFromBase(
+            $baseTemplateUid,
+            $name,
+            $versionName,
+            $description,
+            'DRAFT'
+        );
+
+        if (!$templateUid) {
+            Response()->jsonError("Kunne ikke oprette template version", [], 500);
+        }
+
+        Response()->jsonSuccess("Template version oprettet", [
+            "uid" => $templateUid,
+            "base_template" => $baseTemplateUid,
+        ]);
+    }
+
+    /**
+     * Get the PDF file for a base template (for PDF.js viewer)
+     */
+    #[NoReturn] public static function getBaseTemplatePdf(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang naegtet', 403);
+        }
+
+        $baseTemplateId = $args['id'] ?? null;
+        if (isEmpty($baseTemplateId)) {
+            Response()->jsonError("Manglende base template ID", [], 400);
+        }
+
+        $baseTemplate = Methods::marketingBaseTemplates()->excludeForeignKeys()->get($baseTemplateId);
+        if (isEmpty($baseTemplate)) {
+            Response()->jsonError("Base template ikke fundet", [], 404);
+        }
+
+        $filePath = ROOT . $baseTemplate->file_path;
+        if (!file_exists($filePath)) {
+            Response()->jsonError("PDF fil ikke fundet", [], 404);
+        }
+
+        // Serve the PDF file
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: inline; filename="' . basename($baseTemplate->file_path) . '"');
+        header('Content-Length: ' . filesize($filePath));
+        header('Cache-Control: private, max-age=3600');
+
+        readfile($filePath);
+        exit;
+    }
+
     /**
      * Save placeholder positions for a template
      */
@@ -217,6 +458,7 @@ class MarketingApiController {
 
     /**
      * Get the PDF file for a template (for PDF.js viewer)
+     * Supports both standalone templates and versions derived from base templates
      */
     #[NoReturn] public static function getPdfFile(array $args): void {
         if (!Methods::isAdmin()) {
@@ -233,14 +475,20 @@ class MarketingApiController {
             Response()->jsonError("Template ikke fundet", [], 404);
         }
 
-        $filePath = ROOT . $template->file_path;
+        // Get file path - use handler's fallback logic for base templates
+        $filePathRelative = Methods::marketingTemplates()->getFilePath($template);
+        if (isEmpty($filePathRelative)) {
+            Response()->jsonError("Template har ingen PDF fil", [], 404);
+        }
+
+        $filePath = ROOT . $filePathRelative;
         if (!file_exists($filePath)) {
             Response()->jsonError("PDF fil ikke fundet", [], 404);
         }
 
         // Serve the PDF file
         header('Content-Type: application/pdf');
-        header('Content-Disposition: inline; filename="' . basename($template->file_path) . '"');
+        header('Content-Disposition: inline; filename="' . basename($filePathRelative) . '"');
         header('Content-Length: ' . filesize($filePath));
         header('Cache-Control: private, max-age=3600');
 

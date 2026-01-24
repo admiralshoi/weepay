@@ -7,6 +7,7 @@
 use classes\enumerations\Links;
 
 $pageTitle = "Marketing Materialer";
+$baseTemplates = $args->baseTemplates ?? null;
 $templates = $args->templates ?? null;
 $typeOptions = $args->typeOptions ?? [];
 $statusOptions = $args->statusOptions ?? [];
@@ -15,6 +16,62 @@ $inspirations = $args->inspirations ?? null;
 $inspirationCategoryOptions = $args->inspirationCategoryOptions ?? [];
 $inspirationStatusOptions = $args->inspirationStatusOptions ?? [];
 $asignPreloads = $args->asignPreloads ?? null;
+
+/**
+ * Render a base template card
+ */
+function renderBaseTemplateCard($baseTemplate, $typeOptions): string {
+    $previewHtml = !isEmpty($baseTemplate->preview_image)
+        ? '<div class="template-preview mb-3" style="height: 180px; overflow: hidden; border-radius: 8px; background: #f8f9fa;">
+               <img src="' . __url($baseTemplate->preview_image) . '" alt="' . htmlspecialchars($baseTemplate->name) . '" class="img-fluid w-100 h-100" style="object-fit: contain;">
+           </div>'
+        : '<div class="template-preview mb-3 flex-col-center flex-align-center" style="height: 180px; background: #f8f9fa; border-radius: 8px;">
+               <i class="mdi mdi-file-pdf-outline font-50 color-gray"></i>
+           </div>';
+
+    $descriptionHtml = !isEmpty($baseTemplate->description)
+        ? '<p class="font-13 color-gray mb-3" style="min-height: 40px;">' . htmlspecialchars(substr($baseTemplate->description, 0, 80)) . (strlen($baseTemplate->description) > 80 ? '...' : '') . '</p>'
+        : '<p class="font-13 color-gray mb-3" style="min-height: 40px;"><em>Ingen beskrivelse</em></p>';
+
+    $versionCount = $baseTemplate->version_count ?? 0;
+    $versionBadge = $versionCount > 0
+        ? '<span class="mute-box">' . $versionCount . ' version' . ($versionCount > 1 ? 'er' : '') . '</span>'
+        : '<span class="mute-box">Ingen versioner</span>';
+
+    return '
+    <div class="col-md-6 col-lg-4 col-xl-3">
+        <div class="card border-radius-10px h-100">
+            <div class="card-body position-relative">
+                ' . $previewHtml . '
+                <h5 class="font-16 font-weight-bold mb-2">' . htmlspecialchars($baseTemplate->name) . '</h5>
+                <div class="flex-row-start flex-align-center flex-wrap mb-2" style="gap: 0.5rem;">
+                    <span class="mute-box">' . ($baseTemplate->type ?? 'A4') . '</span>
+                    ' . $versionBadge . '
+                </div>
+                ' . $descriptionHtml . '
+                <div class="flex-row-between flex-align-center mt-auto">
+                    <button type="button" class="btn-v2 action-btn btn-sm" onclick="openCreateVersionModal(\'' . $baseTemplate->uid . '\', \'' . htmlspecialchars($baseTemplate->name) . '\', \'' . ($baseTemplate->type ?? 'A4') . '\')">
+                        <i class="mdi mdi-plus mr-1"></i> Opret version
+                    </button>
+                    <div class="dropdown">
+                        <button class="btn-v2 mute-btn btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
+                            <i class="mdi mdi-dots-vertical"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item" href="#" onclick="editBaseTemplate(\'' . $baseTemplate->uid . '\', \'' . htmlspecialchars($baseTemplate->name) . '\', \'' . ($baseTemplate->type ?? 'A4') . '\', \'' . htmlspecialchars($baseTemplate->description ?? '') . '\'); return false;">
+                                <i class="mdi mdi-pencil mr-2"></i> Rediger detaljer
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-danger" href="#" onclick="deleteBaseTemplate(\'' . $baseTemplate->uid . '\', \'' . htmlspecialchars($baseTemplate->name) . '\', ' . $versionCount . '); return false;">
+                                <i class="mdi mdi-delete mr-2"></i> Slet
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>';
+}
 
 /**
  * Render a template card
@@ -193,8 +250,11 @@ function renderInspirationCard($item, $categoryOptions, $statusOptions): string 
 
             <!-- Tabs -->
             <div class="flex-row-start flex-align-center" style="gap: 0; border-bottom: 2px solid #e9ecef;">
-                <button type="button" class="tab-btn active" data-tab="templates" onclick="switchTab('templates')">
-                    <i class="mdi mdi-file-pdf-outline mr-2"></i> Templates
+                <button type="button" class="tab-btn active" data-tab="base-templates" onclick="switchTab('base-templates')">
+                    <i class="mdi mdi-file-document-outline mr-2"></i> Base Templates
+                </button>
+                <button type="button" class="tab-btn" data-tab="templates" onclick="switchTab('templates')">
+                    <i class="mdi mdi-file-pdf-outline mr-2"></i> Publicerede Versioner
                 </button>
                 <button type="button" class="tab-btn" data-tab="inspiration" onclick="switchTab('inspiration')">
                     <i class="mdi mdi-image-multiple mr-2"></i> Inspiration
@@ -204,12 +264,49 @@ function renderInspirationCard($item, $categoryOptions, $statusOptions): string 
                 </button>
             </div>
 
-            <!-- Tab Content: Templates -->
-            <div id="tab-templates" class="tab-content">
+            <!-- Tab Content: Base Templates -->
+            <div id="tab-base-templates" class="tab-content">
                 <div class="flex-row-between flex-align-center mb-3">
-                    <div></div>
+                    <div>
+                        <p class="mb-0 font-14 color-gray">Upload PDF-filer som kan genbruges til flere versioner med forskellige QR-placeringer.</p>
+                    </div>
+                    <button type="button" class="btn-v2 action-btn" onclick="openBaseTemplateUploadModal()">
+                        <i class="mdi mdi-plus mr-2"></i> Upload Base Template
+                    </button>
+                </div>
+
+                <?php if(!isEmpty($baseTemplates)): ?>
+                    <div class="row rg-1">
+                        <?php foreach($baseTemplates as $baseTemplate): ?>
+                            <?php echo renderBaseTemplateCard((object)$baseTemplate, $typeOptions); ?>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="card border-radius-10px">
+                        <div class="card-body flex-col-center flex-align-center py-5">
+                            <div class="square-80 bg-light-gray border-radius-50 flex-row-center-center mb-3">
+                                <i class="mdi mdi-file-document-outline font-40 color-gray"></i>
+                            </div>
+                            <p class="mb-0 font-18 font-weight-bold color-dark">Ingen base templates</p>
+                            <p class="mb-0 font-14 color-gray mt-2 text-center" style="max-width: 400px;">
+                                Upload en PDF-fil som base template. Du kan derefter oprette flere versioner med forskellige QR-placeringer uden at uploade filen igen.
+                            </p>
+                            <button type="button" class="btn-v2 action-btn mt-3" onclick="openBaseTemplateUploadModal()">
+                                <i class="mdi mdi-plus mr-2"></i> Upload Base Template
+                            </button>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Tab Content: Templates (Published Versions) -->
+            <div id="tab-templates" class="tab-content" style="display: none;">
+                <div class="flex-row-between flex-align-center mb-3">
+                    <div>
+                        <p class="mb-0 font-14 color-gray">Versioner af templates med konfigurerede QR-placeringer. Disse kan downloades af forhandlere.</p>
+                    </div>
                     <button type="button" class="btn-v2 action-btn" onclick="openUploadModal()">
-                        <i class="mdi mdi-plus mr-2"></i> Upload Template
+                        <i class="mdi mdi-plus mr-2"></i> Upload Standalone Template
                     </button>
                 </div>
 
@@ -650,6 +747,137 @@ function renderInspirationCard($item, $categoryOptions, $statusOptions): string 
                 <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Annuller</button>
                 <button type="button" class="btn-v2 action-btn" onclick="saveAsignPreloadChanges()" id="asignPreloadSaveBtn">
                     <span class="btn-text">Gem</span>
+                    <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Base Template Modal -->
+<div class="modal fade" id="baseTemplateUploadModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload base template</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="baseTemplateUploadForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">PDF Fil *</label>
+                        <input type="file" name="file" id="baseTemplateFile" accept=".pdf" required>
+                        <small class="form-text text-muted">Maks 20MB. Kun PDF filer. Denne fil kan genbruges til flere versioner.</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Navn *</label>
+                        <input type="text" class="form-field-v2 w-100" name="name" id="baseTemplateName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Type</label>
+                        <select class="form-select-v2 w-100" name="type" id="baseTemplateType">
+                            <?php foreach($typeOptions as $value => $label): ?>
+                                <option value="<?=$value?>"><?=$label?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Beskrivelse</label>
+                        <textarea class="form-field-v2 w-100" name="description" id="baseTemplateDescription" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Annuller</button>
+                <button type="button" class="btn-v2 action-btn" onclick="uploadBaseTemplate()" id="baseTemplateUploadBtn">
+                    <span class="btn-text">Upload</span>
+                    <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Base Template Modal -->
+<div class="modal fade" id="baseTemplateEditModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Rediger base template</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="baseTemplateEditForm">
+                    <input type="hidden" name="uid" id="baseTemplateEditUid">
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Navn *</label>
+                        <input type="text" class="form-field-v2 w-100" name="name" id="baseTemplateEditName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Type</label>
+                        <select class="form-select-v2 w-100" name="type" id="baseTemplateEditType">
+                            <?php foreach($typeOptions as $value => $label): ?>
+                                <option value="<?=$value?>"><?=$label?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Beskrivelse</label>
+                        <textarea class="form-field-v2 w-100" name="description" id="baseTemplateEditDescription" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Annuller</button>
+                <button type="button" class="btn-v2 action-btn" onclick="saveBaseTemplateChanges()" id="baseTemplateSaveBtn">
+                    <span class="btn-text">Gem</span>
+                    <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Version from Base Template Modal -->
+<div class="modal fade" id="createVersionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Opret ny version</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info mb-3">
+                    <i class="mdi mdi-information mr-2"></i>
+                    <span id="createVersionBaseInfo"></span>
+                </div>
+                <form id="createVersionForm">
+                    <input type="hidden" name="base_template_uid" id="createVersionBaseUid">
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Versionsnavn *</label>
+                        <input type="text" class="form-field-v2 w-100" name="name" id="createVersionName" required placeholder="f.eks. A4 Plakat - QR nederst">
+                        <small class="form-text text-muted">Giv versionen et beskrivende navn, så du kan skelne mellem forskellige placeringer.</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Intern note (valgfrit)</label>
+                        <input type="text" class="form-field-v2 w-100" name="version_name" id="createVersionNote" placeholder="f.eks. QR i bunden, logo øverst">
+                    </div>
+                    <div class="form-group">
+                        <label class="font-14 font-weight-bold d-block mb-2">Beskrivelse</label>
+                        <textarea class="form-field-v2 w-100" name="description" id="createVersionDescription" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Annuller</button>
+                <button type="button" class="btn-v2 action-btn" onclick="createVersionFromBase()" id="createVersionBtn">
+                    <span class="btn-text">Opret & Rediger</span>
                     <span class="spinner-border spinner-border-sm d-none" role="status"></span>
                 </button>
             </div>

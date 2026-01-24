@@ -44,6 +44,21 @@ class PanelController {
     }
 
     public static function marketing(array $args): mixed {
+        // Get base templates with version counts (via API-style format for frontend)
+        $baseTemplatesRaw = Methods::marketingBaseTemplates()->getAll();
+        $baseTemplates = [];
+        foreach ($baseTemplatesRaw->list() as $base) {
+            $baseTemplates[] = [
+                'uid' => $base->uid,
+                'name' => $base->name,
+                'type' => $base->type,
+                'description' => $base->description,
+                'preview_image' => $base->preview_image,
+                'version_count' => Methods::marketingBaseTemplates()->getVersionCount($base->uid),
+                'created_at' => $base->created_at,
+            ];
+        }
+        $args['baseTemplates'] = $baseTemplates;
         $args['templates'] = Methods::marketingTemplates()->getAll();
         $args['typeOptions'] = Methods::marketingTemplates()->getTypeOptions();
         $args['statusOptions'] = Methods::marketingTemplates()->getStatusOptions();
