@@ -22,6 +22,27 @@ $pageTitle = "Hjælp";
     </div>
 
     <div class="row" style="row-gap: 1.5rem;">
+        <!-- Onboarding Guide Card -->
+        <div class="col-12">
+            <a href="<?=__url('help/guides/merchant/onboarding')?>" class="card border-radius-10px text-decoration-none hover-shadow" style="transition: box-shadow 0.2s, transform 0.2s; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);">
+                <div class="card-body p-4">
+                    <div class="flex-row-start flex-align-center flex-wrap" style="gap: 1.5rem;">
+                        <div class="square-60 bg-blue border-radius-12px flex-row-center-center flex-shrink-0">
+                            <i class="mdi mdi-book-open-page-variant color-white font-30"></i>
+                        </div>
+                        <div class="flex-col-start flex-grow-1">
+                            <p class="font-20 font-weight-bold color-dark mb-1">Kom godt i gang</p>
+                            <p class="font-14 color-gray mb-0">Trin-for-trin guide til at opsætte din konto og begynde at modtage betalinger</p>
+                        </div>
+                        <div class="flex-row-start flex-align-center" style="gap: .5rem;">
+                            <span class="font-14 font-weight-medium color-blue">Læs guiden</span>
+                            <i class="mdi mdi-arrow-right color-blue"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
         <!-- FAQ Card -->
         <div class="col-12 col-md-6">
             <a href="<?=__url(Links::$faq->merchant)?>" class="card border-radius-10px h-100 text-decoration-none hover-shadow" style="transition: box-shadow 0.2s, transform 0.2s;">

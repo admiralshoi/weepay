@@ -444,6 +444,9 @@ Routes::get("policies/cookies", "LandingController::cookiesPolicy");
 Routes::get(Links::$faq->consumer, "LandingController::faqConsumer");
 Routes::get(Links::$faq->merchant, "LandingController::faqMerchant");
 
+// Guides
+Routes::get("help/guides/merchant/onboarding", "LandingController::guideMerchantOnboarding");
+
 /**
  *  =========================================
  *  ============ LOGGED OUT START ===========

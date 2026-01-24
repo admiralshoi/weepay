@@ -141,4 +141,8 @@ class LandingController {
         return Views("FAQ_MERCHANT", $args);
     }
 
+    public static function guideMerchantOnboarding(array $args): mixed {
+        return Views("GUIDE_MERCHANT_ONBOARDING");
+    }
+
 }

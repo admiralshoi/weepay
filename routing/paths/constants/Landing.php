@@ -248,4 +248,23 @@ class Landing extends \routing\paths\Paths {
         ],
     ];
 
+    const GUIDE_MERCHANT_ONBOARDING = [
+        "template" => "LANDING_INNER_HTML",
+        "view" => "landing-page.guides.merchant-onboarding",
+        "custom_scripts" => null,
+        "title" => 'Kom godt i gang som forhandler',
+        "head" => null,
+        "assets" => [
+            "main" => [
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+            ],
+            "base" => null,
+            "vendor" => [],
+            "custom" => [],
+        ],
+    ];
+
 }
