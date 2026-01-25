@@ -40,15 +40,6 @@ class Cronjob extends \Database\Model {
             "access_level" => 8
         ],
         [
-            "uid" => "crn_cleanup_logs",
-            "name" => "Cleanup Logs",
-            "started_at" => 0,
-            "finished_at" => 0,
-            "can_run" => 1,
-            "is_running" => 0,
-            "access_level" => 8
-        ],
-        [
             "uid" => "crn_payment_notifications",
             "name" => "Payment Notifications",
             "started_at" => 0,
@@ -87,6 +78,15 @@ class Cronjob extends \Database\Model {
         [
             "uid" => "crn_policy_publish",
             "name" => "Policy Publish",
+            "started_at" => 0,
+            "finished_at" => 0,
+            "can_run" => 1,
+            "is_running" => 0,
+            "access_level" => 8
+        ],
+        [
+            "uid" => "crn_system_cleanup",
+            "name" => "System Cleanup",
             "started_at" => 0,
             "finished_at" => 0,
             "can_run" => 1,

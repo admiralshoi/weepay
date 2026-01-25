@@ -447,40 +447,6 @@ class CronRequestHandler {
 
 
     /**
-     * Clean up old log files
-     * Removes logs older than configured retention period
-     */
-    public function cleanupLogs(?CronWorker $worker = null): void {
-        $worker?->log("Running cleanupLogs...");
-
-        $logDirs = [
-            ROOT . 'logs/debug/',
-            ROOT . 'logs/cron/',
-        ];
-
-        $retentionDays = 30; // Keep logs for 30 days
-        $cutoffTime = time() - ($retentionDays * 24 * 60 * 60);
-        $deletedCount = 0;
-
-        foreach ($logDirs as $dir) {
-            if (!is_dir($dir)) continue;
-
-            $files = glob($dir . '*.log');
-            foreach ($files as $file) {
-                if (filemtime($file) < $cutoffTime) {
-                    if (unlink($file)) {
-                        $deletedCount++;
-                        $worker?->log("Deleted old log file: " . basename($file));
-                    }
-                }
-            }
-        }
-
-        $worker?->log("cleanupLogs completed. Deleted $deletedCount files.");
-    }
-
-
-    /**
      * Send payment due reminder notifications
      *
      * Finds payments where due_date matches any active flow offset (e.g., today+5, today+1)
@@ -1360,5 +1326,448 @@ class CronRequestHandler {
         }
 
         return ['success' => false, 'error' => $failureReason];
+    }
+
+
+    /**
+     * System cleanup cronjob
+     * Removes stale/expired data from database and cleans up old log files
+     *
+     * Runs hourly (time_gab: 3600 seconds)
+     */
+    public function systemCleanup(?CronWorker $worker = null): void {
+        $worker?->log("Starting system cleanup...", true);
+        $worker?->memoryLog("start", true);
+
+        $stats = [
+            'oidc_sessions' => 0,
+            'draft_orders' => 0,
+            'draft_payments' => 0,
+            'draft_baskets' => 0,
+            '2fa_codes' => 0,
+            'terminal_sessions' => 0,
+            'log_files' => 0,
+            'empty_dirs' => 0,
+        ];
+
+        // 1. Cleanup OIDC Sessions (expired > 5 days)
+        $stats['oidc_sessions'] = $this->cleanupOidcSessions($worker);
+        if ($worker !== null && !$worker->canRun()) { $this->logCleanupStats($worker, $stats); return; }
+
+        // 2. Cleanup Draft Orders (> 5 days old)
+        $stats['draft_orders'] = $this->cleanupDraftOrders($worker);
+        if ($worker !== null && !$worker->canRun()) { $this->logCleanupStats($worker, $stats); return; }
+
+        // 3. Cleanup Draft Payments (> 5 days old)
+        $stats['draft_payments'] = $this->cleanupDraftPayments($worker);
+        if ($worker !== null && !$worker->canRun()) { $this->logCleanupStats($worker, $stats); return; }
+
+        // 4. Cleanup Draft Checkout Baskets (> 1 day old)
+        $stats['draft_baskets'] = $this->cleanupDraftBaskets($worker);
+        if ($worker !== null && !$worker->canRun()) { $this->logCleanupStats($worker, $stats); return; }
+
+        // 5. Cleanup expired 2FA codes (expired > 5 days)
+        $stats['2fa_codes'] = $this->cleanupExpired2FACodes($worker);
+        if ($worker !== null && !$worker->canRun()) { $this->logCleanupStats($worker, $stats); return; }
+
+        // 6. Cleanup Terminal Sessions (VOID/PENDING > 1 day, NOT COMPLETED)
+        $stats['terminal_sessions'] = $this->cleanupTerminalSessions($worker);
+        if ($worker !== null && !$worker->canRun()) { $this->logCleanupStats($worker, $stats); return; }
+
+        // 7. Cleanup Log Files (2 months = 60 days)
+        $stats['log_files'] = $this->cleanupSystemLogFiles($worker, 60);
+        if ($worker !== null && !$worker->canRun()) { $this->logCleanupStats($worker, $stats); return; }
+
+        // 8. Cleanup Empty Log Directories
+        $stats['empty_dirs'] = $this->cleanupEmptyLogDirs($worker);
+
+        $this->logCleanupStats($worker, $stats);
+        $worker?->memoryLog("end");
+    }
+
+    /**
+     * Log cleanup statistics
+     */
+    private function logCleanupStats(?CronWorker $worker, array $stats): void {
+        $worker?->log("==========================================");
+        $worker?->log("System Cleanup COMPLETED");
+        $worker?->log("  - OIDC Sessions deleted: {$stats['oidc_sessions']}");
+        $worker?->log("  - Draft Orders deleted: {$stats['draft_orders']}");
+        $worker?->log("  - Draft Payments deleted: {$stats['draft_payments']}");
+        $worker?->log("  - Draft Baskets deleted: {$stats['draft_baskets']}");
+        $worker?->log("  - 2FA Codes deleted: {$stats['2fa_codes']}");
+        $worker?->log("  - Terminal Sessions deleted: {$stats['terminal_sessions']}");
+        $worker?->log("  - Log Files deleted: {$stats['log_files']}");
+        $worker?->log("  - Empty Dirs removed: {$stats['empty_dirs']}");
+        $worker?->log("==========================================");
+
+        debugLog($stats, 'SYSTEM_CLEANUP_COMPLETED');
+    }
+
+    /**
+     * Cleanup expired OIDC sessions (expired > 5 days)
+     * No FK references to this table - safe to delete directly
+     */
+    private function cleanupOidcSessions(?CronWorker $worker): int {
+        $count = 0;
+        $fiveDaysAgo = time() - (5 * 24 * 60 * 60);
+
+        $worker?->log("--- OIDC Sessions (expired > 5 days) ---");
+
+        while (true) {
+            $session = Methods::oidcSession()->excludeForeignKeys()->queryGetFirst(
+                Methods::oidcSession()->queryBuilder()
+                    ->where('expires_at', '<', $fiveDaysAgo)
+            );
+
+            if (isEmpty($session)) break;
+
+            $expiresAt = date('Y-m-d H:i:s', $session->expires_at);
+            Methods::oidcSession()->queryBuilder()->where('uid', $session->uid)->delete();
+            $worker?->log("[DELETED] OIDC Session: {$session->uid} (expires_at: {$expiresAt})");
+            $count++;
+
+            if ($worker !== null && !$worker->canRun()) break;
+        }
+
+        $worker?->log("Deleted $count OIDC sessions");
+        return $count;
+    }
+
+    /**
+     * Cleanup draft orders (> 5 days old)
+     * Deletes order and its payments
+     * Also cleans up orphaned terminal session + baskets if applicable
+     * SKIP if: has COMPLETED payment OR has PendingValidationRefund
+     */
+    private function cleanupDraftOrders(?CronWorker $worker): int {
+        $count = 0;
+        $skipped = 0;
+        $sessionCount = 0;
+        $fiveDaysAgo = date('Y-m-d H:i:s', strtotime('-5 days'));
+
+        $worker?->log("--- Draft Orders (> 5 days old) ---");
+
+        $processed = [];
+        while (true) {
+            $order = Methods::orders()->excludeForeignKeys()->queryGetFirst(
+                Methods::orders()->queryBuilder()
+                    ->where('status', 'DRAFT')
+                    ->where('created_at', '<', $fiveDaysAgo)
+                    ->where('uid', 'NOT IN', $processed ?: [''])
+            );
+
+            if (isEmpty($order)) break;
+            $processed[] = $order->uid;
+
+            // Check if order has any COMPLETED payments - skip
+            $hasCompletedPayment = Methods::payments()->exists(['order' => $order->uid, 'status' => 'COMPLETED']);
+            if ($hasCompletedPayment) {
+                $worker?->log("[SKIPPED] Order: {$order->uid} - has COMPLETED payment");
+                $skipped++;
+                if ($worker !== null && !$worker->canRun()) break;
+                continue;
+            }
+
+            // Check if order has pending validation refunds - skip (user said leave these)
+            $hasPendingRefund = Methods::pendingValidationRefunds()->exists(['order' => $order->uid]);
+            if ($hasPendingRefund) {
+                $worker?->log("[SKIPPED] Order: {$order->uid} - has pending refund");
+                $skipped++;
+                if ($worker !== null && !$worker->canRun()) break;
+                continue;
+            }
+
+            // Store terminal_session before deleting order
+            $terminalSessionUid = $order->terminal_session;
+
+            // Delete all payments linked to this order first
+            Methods::payments()->queryBuilder()->where('order', $order->uid)->delete();
+
+            // Delete the order
+            Methods::orders()->queryBuilder()->where('uid', $order->uid)->delete();
+            $worker?->log("[DELETED] Order: {$order->uid} (created: {$order->created_at})");
+            $count++;
+
+            // Check if terminal session is now orphaned and can be cleaned up
+            if (!isEmpty($terminalSessionUid)) {
+                $canDeleteSession = $this->tryCleanupOrphanedTerminalSession($terminalSessionUid, $worker);
+                if ($canDeleteSession) $sessionCount++;
+            }
+
+            if ($worker !== null && !$worker->canRun()) break;
+        }
+
+        $worker?->log("Deleted $count draft orders + $sessionCount terminal sessions, skipped $skipped");
+        return $count;
+    }
+
+    /**
+     * Try to cleanup a terminal session if it's now orphaned (no orders, VOID/PENDING state)
+     */
+    private function tryCleanupOrphanedTerminalSession(string $sessionUid, ?CronWorker $worker): bool {
+        $session = Methods::terminalSessions()->excludeForeignKeys()->getFirst(['uid' => $sessionUid]);
+        if (isEmpty($session)) return false;
+
+        // Only cleanup VOID or PENDING sessions
+        if (!in_array($session->state, ['VOID', 'PENDING'])) return false;
+
+        // Check if session still has other orders
+        $hasOtherOrders = Methods::orders()->exists(['terminal_session' => $sessionUid]);
+        if ($hasOtherOrders) return false;
+
+        // Check if session has FULFILLED baskets (DRAFT and VOID are safe to delete)
+        $fulfilledBasket = Methods::checkoutBasket()->exists(['terminal_session' => $sessionUid, 'status' => 'FULFILLED']);
+        if ($fulfilledBasket) return false;
+
+        // Delete baskets first
+        $basketCount = Methods::checkoutBasket()->count(['terminal_session' => $sessionUid]);
+        if ($basketCount > 0) {
+            Methods::checkoutBasket()->queryBuilder()->where('terminal_session', $sessionUid)->delete();
+            $worker?->log("[DELETED] {$basketCount} basket(s) for orphaned session {$sessionUid}");
+        }
+
+        // Delete the session
+        Methods::terminalSessions()->queryBuilder()->where('uid', $sessionUid)->delete();
+        $worker?->log("[DELETED] Orphaned Terminal Session: {$sessionUid}");
+        return true;
+    }
+
+    /**
+     * Cleanup draft payments (> 5 days old, status PENDING, no linked order)
+     * Only deletes orphan payments - those linked to orders are handled by orders cleanup
+     */
+    private function cleanupDraftPayments(?CronWorker $worker): int {
+        $count = 0;
+        $fiveDaysAgo = date('Y-m-d H:i:s', strtotime('-5 days'));
+
+        $worker?->log("--- Draft Payments (PENDING > 5 days old, orphans) ---");
+
+        while (true) {
+            $payment = Methods::payments()->excludeForeignKeys()->queryGetFirst(
+                Methods::payments()->queryBuilder()
+                    ->where('status', 'PENDING')
+                    ->where('created_at', '<', $fiveDaysAgo)
+                    ->whereNull('order')
+            );
+
+            if (isEmpty($payment)) break;
+
+            Methods::payments()->queryBuilder()->where('uid', $payment->uid)->delete();
+            $worker?->log("[DELETED] Payment: {$payment->uid} (created: {$payment->created_at}, amount: {$payment->amount})");
+            $count++;
+
+            if ($worker !== null && !$worker->canRun()) break;
+        }
+
+        $worker?->log("Deleted $count orphan payments");
+        return $count;
+    }
+
+    /**
+     * Baskets are only deleted via terminal session cleanup
+     * This ensures baskets are never deleted while still needed
+     */
+    private function cleanupDraftBaskets(?CronWorker $worker): int {
+        $worker?->log("--- Draft Checkout Baskets ---");
+        $worker?->log("Baskets are cleaned up via terminal session cleanup");
+        return 0;
+    }
+
+    /**
+     * Cleanup expired 2FA codes (expired > 5 days, NOT verified)
+     * Verified codes are kept for verification checks
+     */
+    private function cleanupExpired2FACodes(?CronWorker $worker): int {
+        $count = 0;
+        $fiveDaysAgo = time() - (5 * 24 * 60 * 60);
+
+        $worker?->log("--- Expired 2FA Codes (expired > 5 days, unverified) ---");
+
+        while (true) {
+            $code = Methods::twoFactorAuth()->excludeForeignKeys()->queryGetFirst(
+                Methods::twoFactorAuth()->queryBuilder()
+                    ->where('expires_at', '<', $fiveDaysAgo)
+                    ->where('verified', 0)
+            );
+
+            if (isEmpty($code)) break;
+
+            $expiresAt = date('Y-m-d H:i:s', $code->expires_at);
+            Methods::twoFactorAuth()->queryBuilder()->where('uid', $code->uid)->delete();
+            $worker?->log("[DELETED] 2FA Code: {$code->uid} (expires_at: {$expiresAt}, purpose: " . ($code->purpose ?? 'N/A') . ")");
+            $count++;
+
+            if ($worker !== null && !$worker->canRun()) break;
+        }
+
+        $worker?->log("Deleted $count expired unverified 2FA codes");
+        return $count;
+    }
+
+    /**
+     * Cleanup terminal sessions (VOID/PENDING > 1 day, NOT COMPLETED)
+     * Also deletes linked baskets when session is deleted
+     * SKIP if: has linked orders OR has non-DRAFT baskets
+     */
+    private function cleanupTerminalSessions(?CronWorker $worker): int {
+        $count = 0;
+        $basketCount = 0;
+        $skipped = 0;
+        $oneDayAgo = date('Y-m-d H:i:s', strtotime('-1 day'));
+
+        $worker?->log("--- Terminal Sessions (VOID/PENDING > 1 day) ---");
+
+        $processed = [];
+        while (true) {
+            $session = Methods::terminalSessions()->excludeForeignKeys()->queryGetFirst(
+                Methods::terminalSessions()->queryBuilder()
+                    ->where('state', ['VOID', 'PENDING'])
+                    ->where('created_at', '<', $oneDayAgo)
+                    ->where('uid', 'NOT IN', $processed ?: [''])
+            );
+
+            if (isEmpty($session)) break;
+            $processed[] = $session->uid;
+
+            // Check if session has linked orders - skip if any exist
+            $hasOrder = Methods::orders()->exists(['terminal_session' => $session->uid]);
+            if ($hasOrder) {
+                $worker?->log("[SKIPPED] Terminal Session: {$session->uid} - has linked order");
+                $skipped++;
+                if ($worker !== null && !$worker->canRun()) break;
+                continue;
+            }
+
+            // Check if session has FULFILLED baskets - skip if so (DRAFT and VOID are safe to delete)
+            $fulfilledBasket = Methods::checkoutBasket()->exists(['terminal_session' => $session->uid, 'status' => 'FULFILLED']);
+            if ($fulfilledBasket) {
+                $worker?->log("[SKIPPED] Terminal Session: {$session->uid} - has FULFILLED basket");
+                $skipped++;
+                if ($worker !== null && !$worker->canRun()) break;
+                continue;
+            }
+
+            // Count and delete any DRAFT/VOID baskets linked to this session
+            $basketsDeleted = Methods::checkoutBasket()->count(['terminal_session' => $session->uid]);
+            if ($basketsDeleted > 0) {
+                Methods::checkoutBasket()->queryBuilder()->where('terminal_session', $session->uid)->delete();
+                $basketCount += $basketsDeleted;
+                $worker?->log("[DELETED] {$basketsDeleted} basket(s) for session {$session->uid}");
+            }
+
+            // Delete the session
+            Methods::terminalSessions()->queryBuilder()->where('uid', $session->uid)->delete();
+            $worker?->log("[DELETED] Terminal Session: {$session->uid} (created: {$session->created_at}, state: {$session->state})");
+            $count++;
+
+            if ($worker !== null && !$worker->canRun()) break;
+        }
+
+        $worker?->log("Deleted $count terminal sessions + $basketCount baskets, skipped $skipped");
+        return $count;
+    }
+
+    /**
+     * Cleanup system log files (> retentionDays old)
+     * Handles dated subdirectories (YYYY-MM/DD.log pattern)
+     */
+    private function cleanupSystemLogFiles(?CronWorker $worker, int $retentionDays = 60): int {
+        $count = 0;
+        $cutoffTime = time() - ($retentionDays * 24 * 60 * 60);
+        $cutoffDate = date('Y-m-d H:i:s', $cutoffTime);
+
+        $worker?->log("--- Log Files (> {$retentionDays} days old, before {$cutoffDate}) ---");
+
+        $logDirs = [
+            ROOT . 'logs/debug/',
+            ROOT . 'logs/errors/',
+            ROOT . 'logs/test/',
+            ROOT . 'logs/cron/',
+            ROOT . 'logs/scraper/',
+            ROOT . 'logs/webhook/',
+            ROOT . 'logs/http/',
+        ];
+
+        foreach ($logDirs as $baseDir) {
+            if (!is_dir($baseDir)) continue;
+
+            $this->deleteOldLogFiles($baseDir, $cutoffTime, $count, $worker);
+
+            if ($worker !== null && !$worker->canRun()) break;
+        }
+
+        $worker?->log("Deleted $count log files");
+        return $count;
+    }
+
+    /**
+     * Recursively delete old log files
+     */
+    private function deleteOldLogFiles(string $dir, int $cutoffTime, int &$count, ?CronWorker $worker): void {
+        try {
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS),
+                \RecursiveIteratorIterator::LEAVES_ONLY
+            );
+
+            foreach ($iterator as $file) {
+                if ($file->getExtension() !== 'log') continue;
+                if ($file->getMTime() < $cutoffTime) {
+                    $modTime = date('Y-m-d H:i:s', $file->getMTime());
+                    $size = round($file->getSize() / 1024, 2);
+                    $relativePath = str_replace(ROOT, '', $file->getPathname());
+
+                    if (@unlink($file->getPathname())) {
+                        $worker?->log("[DELETED] {$relativePath} (modified: {$modTime}, size: {$size}KB)");
+                        $count++;
+                    } else {
+                        $worker?->log("[FAILED] Could not delete {$relativePath}");
+                    }
+                }
+
+                if ($worker !== null && !$worker->canRun()) return;
+            }
+        } catch (\Exception $e) {
+            $worker?->log("Error scanning directory $dir: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Cleanup empty log directories (YYYY-MM subdirs)
+     */
+    private function cleanupEmptyLogDirs(?CronWorker $worker): int {
+        $count = 0;
+        $logDirs = [
+            ROOT . 'logs/debug/',
+            ROOT . 'logs/errors/',
+            ROOT . 'logs/test/',
+        ];
+
+        $worker?->log("--- Empty Log Directories ---");
+
+        foreach ($logDirs as $baseDir) {
+            if (!is_dir($baseDir)) continue;
+
+            $subdirs = glob($baseDir . '*', GLOB_ONLYDIR);
+            if ($subdirs === false) continue;
+
+            foreach ($subdirs as $subdir) {
+                $files = glob($subdir . '/*');
+                if ($files !== false && empty($files)) {
+                    $relativePath = str_replace(ROOT, '', $subdir);
+
+                    if (@rmdir($subdir)) {
+                        $worker?->log("[DELETED] Empty dir: {$relativePath}");
+                        $count++;
+                    } else {
+                        $worker?->log("[FAILED] Could not remove dir: {$relativePath}");
+                    }
+                }
+            }
+        }
+
+        $worker?->log("Removed $count empty directories");
+        return $count;
     }
 }

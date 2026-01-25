@@ -34,7 +34,7 @@ use classes\app\TaskManager;
 use classes\app\App;
 
 
-class ƒMethods {
+class Methods {
 
 
 

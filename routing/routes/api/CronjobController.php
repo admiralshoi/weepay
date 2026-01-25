@@ -58,25 +58,6 @@ class CronjobController {
 
 
     /**
-     * Clean up old log files
-     */
-    #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
-    public static function cleanupLogs(array $args): array {
-        if (!self::validateToken($args)) {
-            return self::returnJsonResponse("Invalid token", 401);
-        }
-
-        $worker = self::init("cleanup_logs");
-        if($worker === null) return self::returnJsonResponse("Cronjob may not be initiated.", 202);
-
-        $requestHandler = Methods::cronRequestHandler();
-        $requestHandler->cleanupLogs($worker);
-
-        return self::end($worker);
-    }
-
-
-    /**
      * Send payment notification reminders before due dates
      */
     #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
@@ -171,6 +152,25 @@ class CronjobController {
     }
 
 
+    /**
+     * System cleanup - removes stale data and old log files
+     */
+    #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
+    public static function systemCleanup(array $args): array {
+        if (!self::validateToken($args)) {
+            return self::returnJsonResponse("Invalid token", 401);
+        }
+
+        $worker = self::init("system_cleanup");
+        if($worker === null) return self::returnJsonResponse("Cronjob may not be initiated.", 202);
+
+        $requestHandler = Methods::cronRequestHandler();
+        $requestHandler->systemCleanup($worker);
+
+        return self::end($worker);
+    }
+
+
     #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
     private static function end(CronWorker $worker): array {
         $worker->log("Finished running cronjob");
@@ -202,12 +202,12 @@ class CronjobController {
         $methodMap = [
             'take_payments' => 'takePayments',
             'retry_payments' => 'retryPayments',
-            'cleanup_logs' => 'cleanupLogs',
             'payment_notifications' => 'paymentNotifications',
             'notification_queue' => 'notificationQueue',
             'rykker_checks' => 'rykkerChecks',
             'weekly_reports' => 'weeklyReports',
             'policy_publish' => 'policyPublish',
+            'system_cleanup' => 'systemCleanup',
         ];
 
         if (!isset($methodMap[$type])) {
@@ -228,12 +228,12 @@ class CronjobController {
         $actualMethod = match($type) {
             'take_payments' => 'takePayments',
             'retry_payments' => 'retryPayments',
-            'cleanup_logs' => 'cleanupLogs',
             'payment_notifications' => 'paymentNotifications',
             'notification_queue' => 'processNotificationQueue',
             'rykker_checks' => 'rykkerChecks',
             'weekly_reports' => 'weeklyReports',
             'policy_publish' => 'policyPublish',
+            'system_cleanup' => 'systemCleanup',
             default => null
         };
 

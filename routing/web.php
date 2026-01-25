@@ -841,12 +841,12 @@ Routes::group(['requiresApiLogout'], function() {
 Routes::group(['requiresApiLogout'], function() {
     Routes::post("cron/{token}/take-payments", "api.CronjobController::takePayments");
     Routes::post("cron/{token}/retry-payments", "api.CronjobController::retryPayments");
-    Routes::post("cron/{token}/cleanup-logs", "api.CronjobController::cleanupLogs");
     Routes::post("cron/{token}/payment-notifications", "api.CronjobController::paymentNotifications");
     Routes::post("cron/{token}/notification-queue", "api.CronjobController::notificationQueue");
     Routes::post("cron/{token}/rykker-checks", "api.CronjobController::rykkerChecks");
     Routes::post("cron/{token}/weekly-reports", "api.CronjobController::weeklyReports");
     Routes::post("cron/{token}/policy-publish", "api.CronjobController::policyPublish");
+    Routes::post("cron/{token}/system-cleanup", "api.CronjobController::systemCleanup");
 });
 /**
  *  =========================================

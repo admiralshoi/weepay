@@ -27,15 +27,6 @@ class CronWorker extends Crud {
             "max_run_time" => (60 * 10), // 10 min max
             "sleep_timer" => 10 // 10 seconds for testing
         ),
-        "cleanup_logs" => array(
-            "log_file" => CRON_LOGS."cronLog_cleanup_logs.log",
-            "log_date_file" => CRON_LOGS."cronDate_cleanup_logs.log",
-            "log_memory_file" => CRON_LOGS."cronMemory_cleanup_logs.log",
-            "row_id" => 'crn_cleanup_logs',
-            "time_gab" => 10, // 10 seconds for testing
-            "max_run_time" => (60 * 5), // 5 min max
-            "sleep_timer" => 10 // 10 seconds for testing
-        ),
         "payment_notifications" => array(
             "log_file" => CRON_LOGS."cronLog_payment_notifications.log",
             "log_date_file" => CRON_LOGS."cronDate_payment_notifications.log",
@@ -80,6 +71,15 @@ class CronWorker extends Crud {
             "time_gab" => 60, // 1 minute between runs
             "max_run_time" => (60 * 5), // 5 min max
             "sleep_timer" => 30 // 30 seconds between cycles
+        ),
+        "system_cleanup" => array(
+            "log_file" => CRON_LOGS."cronLog_system_cleanup.log",
+            "log_date_file" => CRON_LOGS."cronDate_system_cleanup.log",
+            "log_memory_file" => CRON_LOGS."cronMemory_system_cleanup.log",
+            "row_id" => 'crn_system_cleanup',
+            "time_gab" => 3600, // 1 hour minimum between runs
+            "max_run_time" => (60 * 15), // 15 min max
+            "sleep_timer" => 60 // 1 minute between cycles
         ),
     );
 
