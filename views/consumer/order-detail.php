@@ -84,6 +84,10 @@ foreach ($pastDuePayments->list() as $p) {
                                 <span class="action-box">Afvikles</span>
                             <?php elseif($order->status === 'CANCELLED'): ?>
                                 <span class="danger-box">Annulleret</span>
+                            <?php elseif($order->status === 'VOIDED'): ?>
+                                <span class="mute-box">Ophævet</span>
+                            <?php elseif($order->status === 'REFUNDED'): ?>
+                                <span class="warning-box">Refunderet</span>
                             <?php endif; ?>
                         </div>
 

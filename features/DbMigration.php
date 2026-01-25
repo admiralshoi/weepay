@@ -7,6 +7,7 @@ use Database\Model;
 class DbMigration {
 
     public static function _migrate_db(): void {
+        Settings::$suppressErrorNotifications = true;
         migrationLog("Starting Db migration", "_migrate_db");
         self::includeModels();
         $models = self::getModels();
@@ -15,6 +16,7 @@ class DbMigration {
             migrationLog($model, "_migrate_db");
             $model::migrate();
         }
+        Settings::$suppressErrorNotifications = false;
     }
 
 

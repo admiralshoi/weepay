@@ -3,6 +3,7 @@ namespace features;
 
 class Settings {
     public static bool $migrating = false;
+    public static bool $suppressErrorNotifications = false;
     public static bool $omnipotent = false;
     public static bool $testing = false;
     public static object $app;

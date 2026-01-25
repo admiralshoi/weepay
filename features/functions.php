@@ -1013,6 +1013,9 @@ function migrationLog(mixed $content, string $keyword = ""): void {
 
 
 function errorLog(mixed $content, string $keyword = ""): void {
+    $originalContent = $content;
+    $originalKeyword = $keyword;
+
     if(is_array($content) || is_object($content)) $content = json_encode($content);
     if(is_bool($content)) $content = $content ? "(BOOLEAN) TRUE" : "(BOOLEAN) FALSE";
     if(!empty($keyword)) $content = " {$keyword}  " . $content;
@@ -1021,6 +1024,23 @@ function errorLog(mixed $content, string $keyword = ""): void {
     if(!is_dir(ROOT . $dir)) mkdir(ROOT . $dir);
     $fn = date("d") . ".log";
     file_put_contents(ROOT . $dir . $fn, $content, 8);
+
+    // Trigger error notification
+    if (class_exists('\\classes\\errors\\ErrorNotifier')) {
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+        $traceStr = '';
+        foreach ($trace as $i => $frame) {
+            $file = $frame['file'] ?? '[internal]';
+            $line = $frame['line'] ?? 0;
+            $func = $frame['function'] ?? '';
+            $traceStr .= "#{$i} {$file}({$line}): {$func}()\n";
+        }
+        \classes\errors\ErrorNotifier::notifyFromLog(
+            is_string($originalContent) ? $originalContent : json_encode($originalContent),
+            $originalKeyword,
+            $traceStr
+        );
+    }
 }
 
 

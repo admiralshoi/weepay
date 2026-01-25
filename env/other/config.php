@@ -15,7 +15,7 @@ define("LIVE", !str_contains($_SERVER["HTTP_HOST"], "localhost"));
 /**
  * ENV files
  */
-const PLATFORM_VERSION = "v1.058";
+const PLATFORM_VERSION = "v1.060";
 const HTACCESS_PWD_FILE = "env/other/htaccessPwd.txt";
 const DB_LIVE_FILE = "env/db/live.php";
 const DB_LOCAL_FILE = "env/db/local.php";
@@ -163,6 +163,12 @@ const CRON_LOGS = ROOT . "logs/cron/";
 const CRON_LOG_MAX_ENTRIES = 200;
 
 
+/**
+ * Error Notification Settings
+ */
+const ERROR_NOTIFICATION_EMAIL = "universeofcoding@gmail.com";
+const ERROR_NOTIFICATION_PHONE = "+34627201309";
+const ERROR_NOTIFICATION_ENABLED = true;
 
 
 

@@ -192,6 +192,7 @@ async function hasUserSession() {
 
 
 async function trackEvent(action, name) {
+    return; // Disabled - backend not implemented
     let _object = null, _value = null;
     await post("api/track",{request: "userLogging", event_type: action, event_value: name, _object, _value, _page: activePage});
 }

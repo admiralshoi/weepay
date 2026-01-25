@@ -151,10 +151,16 @@ class Model {
     }
 
     public static function migrate(): void {
+        $wasSuppressed = \features\Settings::$suppressErrorNotifications;
+        \features\Settings::$suppressErrorNotifications = true;
+
         self::initialize(true);
         $schema = new Schema(self::$pdo);
         $tableName = static::tableName();
-        if ($tableName === "model") return;
+        if ($tableName === "model") {
+            \features\Settings::$suppressErrorNotifications = $wasSuppressed;
+            return;
+        }
         migrationLog("Model::migrate() START on table '$tableName'");
 
         if ($schema->tableExists($tableName)) {
@@ -192,6 +198,7 @@ class Model {
         }
 
         migrationLog("Model::migrate() END on table '$tableName'");
+        \features\Settings::$suppressErrorNotifications = $wasSuppressed;
     }
 
     public static function tableName(): string {

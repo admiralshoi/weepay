@@ -273,6 +273,12 @@ class AdminController {
         ]);
     }
 
+    // Test error notification - REMOVE AFTER TESTING
+    #[NoReturn] public static function testErrorNotification(): mixed  {
+        // This will trigger the error notification system
+        throw new \Exception("TEST ERROR: This is a test error notification triggered manually at " . date('Y-m-d H:i:s'));
+    }
+
     #[NoReturn] public static function updateBasePermissions(): mixed  {
         \classes\Methods::organisations()->updateNewBasePermissions();
         \classes\Methods::locations()->updateNewBasePermissions();

@@ -674,6 +674,9 @@ Routes::group(['requiresLogin', "admin"], function() {
      *  ============ MIGRATION END ==============
      *  =========================================
      */
+
+    // Test error notification - REMOVE AFTER TESTING
+    Routes::get("test-error-notification", "admin.AdminController::testErrorNotification");
 });
 /**
  *  =========================================

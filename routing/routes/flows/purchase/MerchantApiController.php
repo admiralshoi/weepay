@@ -96,7 +96,7 @@ class MerchantApiController {
             Response()->jsonError("Du har ikke tilladelse til denne handling", [], 401);
 
         if(strlen($name) > 100) Response()->jsonError("Beskrivelsen kan ikke være længere end 100 tegn", [], 400);
-        if(strlen($note) > 1000) Response()->jsonError("Noten kan ikke være længere end 1000 tegn", [], 400);
+        if($note !== null && strlen($note) > 1000) Response()->jsonError("Noten kan ikke være længere end 1000 tegn", [], 400);
         if($price <= 0) Response()->jsonError("Prisen bør være større end 0kr", [], 400);
 
         $basketHandler = Methods::checkoutBasket();
