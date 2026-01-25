@@ -2,6 +2,7 @@
 namespace routing\routes;
 
 use classes\Methods;
+use features\Settings;
 use JetBrains\PhpStorm\NoReturn;
 
 /**
@@ -223,6 +224,12 @@ class UserApiController {
             // Validate username format: alphanumeric, underscore, 3-30 chars
             if(!preg_match('/^[a-zA-Z0-9_]{3,30}$/', $username)) {
                 Response()->jsonError("Brugernavn skal være 3-30 tegn og kun indeholde bogstaver, tal og understreg", [], 400);
+            }
+
+            // Check if username is reserved
+            $reservedNames = toArray(Settings::$app->reserved_names ?? []);
+            if(in_array(strtolower($username), $reservedNames)) {
+                Response()->jsonError("Dette brugernavn er reserveret", [], 400);
             }
 
             // Check if username is already taken by another user

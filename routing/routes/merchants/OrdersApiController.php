@@ -37,7 +37,8 @@ class OrdersApiController {
         // Build base query
         $orderHandler = Methods::orders();
         $query = $orderHandler->queryBuilder()
-            ->where('organisation', $organisationUid);
+            ->where('organisation', $organisationUid)
+            ->where('type', 'purchase'); // Exclude card_change orders
 
         // Apply scoped location filter if applicable
         $locationIds = Methods::locations()->userLocationPredicate();

@@ -149,6 +149,11 @@ class AppMeta extends \Database\Model {
             "value" => '100',
             "type" => "float",
         ],
+        [
+            "name" => "reserved_names",
+            "value" => '["www","api","app","web","mobile","admin","administrator","root","system","sys","server","backend","frontend","dashboard","panel","console","portal","internal","status","health","monitor","metrics","logs","login","logout","signin","signup","register","auth","authentication","authorize","callback","oauth","password","reset","forgot","verify","verification","activate","deactivate","account","profile","settings","preferences","security","pay","payment","payments","checkout","invoice","invoices","billing","bill","subscription","subscriptions","plan","plans","pricing","price","fee","fees","payout","payouts","settlement","settlements","refund","refunds","chargeback","chargebacks","balance","balances","wallet","wallets","transaction","transactions","transfer","transfers","currency","currencies","tax","taxes","vat","weepay","wee-pay","weepaydk","weepay-support","support","help","service","services","official","staff","team","admin-team","moderator","moderators","operator","operations","legal","terms","conditions","privacy","policy","policies","compliance","kyc","aml","gdpr","risk","fraud","dispute","disputes","appeal","appeals","report","reports","audit","store","stores","shop","shops","merchant","merchants","seller","sellers","vendor","vendors","market","marketplace","product","products","catalog","inventory","order","orders","cart","dk","denmark","eu","europe","us","uk","global","intl","international","en","da","null","nil","none","undefined","true","false","test","testing","demo","example","sample","guest","anonymous","user","username","owner","json","xml","csv","html","js","css","php","asp","jsp"]',
+            "type" => "array",
+        ],
     ];
     protected static array $requiredRowsTesting = [];
 

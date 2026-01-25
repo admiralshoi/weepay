@@ -241,7 +241,14 @@ class PageController {
         $paymentHandler = Methods::payments();
         $payments = $paymentHandler->getByXOrderBy('installment_number', 'ASC', ['order' => $orderId]);
 
-        return Views("MERCHANT_ORDER_DETAIL", compact('order', 'payments'));
+        // Fetch checkout basket if order has a terminal session
+        $basket = null;
+        if(!isEmpty($order->terminal_session)) {
+            $terminalSessionId = is_object($order->terminal_session) ? $order->terminal_session->uid : $order->terminal_session;
+            $basket = Methods::checkoutBasket()->getFirst(['terminal_session' => $terminalSessionId, 'status' => 'FULFILLED']);
+        }
+
+        return Views("MERCHANT_ORDER_DETAIL", compact('order', 'payments', 'basket'));
     }
 
     public static function customerDetail(array $args): mixed  {

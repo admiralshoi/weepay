@@ -37,7 +37,7 @@ class NotificationLogHandler extends Crud {
         if ($sinceTimestamp) {
             $query = $this->queryBuilder()
                 ->where('channel', $channel)
-                ->where('created_at', '>=', $sinceTimestamp);
+                ->where('created_at', '>=', date('Y-m-d H:i:s', $sinceTimestamp));
             return $query->count();
         }
         return $this->count($params);
@@ -48,7 +48,7 @@ class NotificationLogHandler extends Crud {
         if ($sinceTimestamp) {
             $query = $this->queryBuilder()
                 ->where('status', $status)
-                ->where('created_at', '>=', $sinceTimestamp);
+                ->where('created_at', '>=', date('Y-m-d H:i:s', $sinceTimestamp));
             return $query->count();
         }
         return $this->count($params);
@@ -120,7 +120,6 @@ class NotificationLogHandler extends Crud {
             'schedule_offset' => $scheduleOffset,
             'metadata' => $metadata,
             'dedup_hash' => $dedupHash,
-            'created_at' => time(),
         ]);
     }
 }

@@ -57,7 +57,7 @@ class Viva {
     }
 
 
-    private static bool $sandbox = true;
+    private static bool $sandbox = false;
     private const SANDBOX_CLIENT_ID = "067jg2zsb0g51m923ez87ic03n8isrqughtqpjldn5bu6.apps.vivapayments.com";
     private const SANDBOX_CLIENT_SECRET = "7nUK8kkFW442A3q9Od4r9FmdP6t31K";
     private const SANDBOX_RESELLER_ID = "7e416dfc-aa89-4335-9be5-4b3ce2dc359b";

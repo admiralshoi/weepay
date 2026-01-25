@@ -10,6 +10,7 @@ use classes\lang\Translate;
 $order = $args->order ?? null;
 $payments = $args->payments ?? new \Database\Collection();
 $stats = $args->stats ?? (object)['totalPayments' => 0, 'completedPayments' => 0, 'pendingPayments' => 0, 'pastDuePayments' => 0, 'totalPaid' => 0];
+$basket = $args->basket ?? null;
 
 $pageTitle = $order ? ('Ordre: ' . $order->uid) : 'Ordre detaljer';
 
@@ -204,6 +205,12 @@ $providerName = is_object($order->provider) ? ($order->provider->name ?? '-') : 
                                 <div class="flex-col-start">
                                     <p class="mb-0 font-12 color-gray">Beskrivelse</p>
                                     <p class="mb-0 font-14 font-weight-medium"><?=htmlspecialchars($order->caption)?></p>
+                                </div>
+                                <?php endif; ?>
+                                <?php if(!isEmpty($basket) && !isEmpty($basket->note)): ?>
+                                <div class="flex-col-start">
+                                    <p class="mb-0 font-12 color-gray">Kasserer Note</p>
+                                    <p class="mb-0 font-14 bg-lighter-blue p-2 border-radius-5px"><?=nl2br(htmlspecialchars($basket->note))?></p>
                                 </div>
                                 <?php endif; ?>
                                 <div class="flex-col-start">

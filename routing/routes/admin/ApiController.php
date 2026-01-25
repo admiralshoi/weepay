@@ -698,11 +698,12 @@ class ApiController {
             $sortColumn = 'created_at';
         }
 
-        $query = \Database\model\Orders::queryBuilder()
-            ->select(['uid', 'uuid', 'organisation', 'location', 'caption', 'amount', 'currency', 'status', 'created_at']);
+        $query = Methods::orders()->queryBuilder()
+            ->select(['uid', 'uuid', 'organisation', 'location', 'caption', 'amount', 'currency', 'status', 'created_at'])
+            ->where('type', 'purchase'); // Exclude card_change orders
 
         if (!empty($search)) {
-            $matchingOrgs = Organisations::queryBuilder()
+            $matchingOrgs = Methods::organisations()->queryBuilder()
                 ->select(['uid'])
                 ->whereLike('name', $search)
                 ->all();
@@ -740,7 +741,7 @@ class ApiController {
         foreach ($orders->list() as $order) {
             $orgName = null;
             if (!empty($order->organisation)) {
-                $org = Organisations::where('uid', $order->organisation)->first();
+                $org = Methods::organisations()->get($order->organisation);
                 $orgName = $org ? $org->name : null;
             }
 

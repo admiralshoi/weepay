@@ -874,8 +874,16 @@ class PageController {
             }
         }
 
+        // Fetch checkout basket if order has a terminal session
+        $basket = null;
+        if(!isEmpty($order->terminal_session)) {
+            $terminalSessionId = is_object($order->terminal_session) ? $order->terminal_session->uid : $order->terminal_session;
+            $basket = Methods::checkoutBasket()->getFirst(['terminal_session' => $terminalSessionId, 'status' => 'FULFILLED']);
+        }
+
         $args['order'] = $order;
         $args['payments'] = $payments;
+        $args['basket'] = $basket;
         $args['stats'] = (object)[
             'totalPayments' => $payments->count(),
             'completedPayments' => $completedPayments,

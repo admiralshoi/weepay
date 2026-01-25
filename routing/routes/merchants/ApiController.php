@@ -350,6 +350,12 @@ class ApiController {
         $country = Methods::countries()->getByCountryCode($country, ['uid', 'enabled', 'code']);
         if(isEmpty($country) || !$country->enabled) Response()->jsonError("Ugyldigt land valgt.", ['blame_field' => 'country']);
 
+        // Check if slug is reserved
+        $reservedNames = toArray(Settings::$app->reserved_names ?? []);
+        if(in_array(strtolower($slug), $reservedNames)) {
+            Response()->jsonError("Kaldenavnet '$slug' er reserveret", ['blame_field' => 'slug']);
+        }
+
         $handler = Methods::locations();
         if($handler->exists(['slug' => $slug])) Response()->jsonError("Kaldenavnet '$slug' er allerede i brug", ['blame_field' => 'slug']);
 
@@ -450,6 +456,14 @@ class ApiController {
             $countryObj = null;
         }
 
+        // Check if slug is reserved (only if changing)
+        if($slug !== $location->slug) {
+            $reservedNames = toArray(Settings::$app->reserved_names ?? []);
+            if(in_array(strtolower($slug), $reservedNames)) {
+                Response()->jsonError("Kaldenavnet '$slug' er reserveret", ['blame_field' => 'slug']);
+            }
+        }
+
         // Check slug uniqueness (excluding current location)
         if($slug !== $location->slug && $handler->exists(['slug' => $slug]))
             Response()->jsonError("Kaldenavnet '$slug' er allerede i brug", ['blame_field' => 'slug']);
@@ -480,7 +494,9 @@ class ApiController {
             $handler->update($params, ['uid' => $locationId]);
         }
 
-        Response()->setRedirect()->jsonSuccess("Lokationsdetaljerne er blevet opdateret");
+        // Redirect to potentially updated slug URL
+        $redirectUrl = __url(Links::$merchant->locations->setSingleLocation($slug));
+        Response()->setRedirect($redirectUrl)->jsonSuccess("Lokationsdetaljerne er blevet opdateret");
     }
 
 

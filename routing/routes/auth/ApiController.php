@@ -288,6 +288,14 @@ class ApiController {
             'password' => $args['password'], // Will be hashed in LocalSignup
         ];
 
+        // Check if username is reserved
+        if (!empty($authData['username'])) {
+            $reservedNames = toArray(Settings::$app->reserved_names ?? []);
+            if (in_array(strtolower($authData['username']), $reservedNames)) {
+                Response()->jsonError("Dette brugernavn er reserveret", [], 400);
+            }
+        }
+
         // Create signup handler
         $signupHandler = Methods::localSignup();
         $signupHandler->setUserData($userData)->setAuthData($authData);

@@ -10,6 +10,7 @@ $location = $order->location;
 $customer = $order->uuid;
 $billingDetails = toArray($order->billing_details ?? []);
 $payments = $args->payments ?? null;
+$basket = $args->basket ?? null;
 
 $pageTitle = "Ordre Detaljer - {$order->uid}";
 
@@ -137,6 +138,13 @@ if(!isEmpty($payments)) {
                         <div class="col-12 mb-3">
                             <p class="mb-1 font-13 color-gray font-weight-medium">Beskrivelse</p>
                             <p class="mb-0 font-14"><?=$order->caption?></p>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if(!isEmpty($basket) && !isEmpty($basket->note)): ?>
+                        <div class="col-12 mb-3">
+                            <p class="mb-1 font-13 color-gray font-weight-medium">Kasserer Note</p>
+                            <p class="mb-0 font-14 bg-lighter-blue p-2 border-radius-5px"><?=nl2br(htmlspecialchars($basket->note))?></p>
                         </div>
                         <?php endif; ?>
                     </div>

@@ -14,6 +14,8 @@ const MerchantPOS = {
     checkSessionInterval: null,
     sentToCustomer: false,
     allSalesLoaded: false,
+    allowNavigation: false, // Flag to allow programmatic navigation without confirmation
+    leaveConfirmationEnabled: false, // Only enable on checkout/details pages
     elements: {
         awaitingContainer: null,
         sessionContainer: null,
@@ -86,6 +88,95 @@ const MerchantPOS = {
             // Load initial sales
             this.loadSales(false);
         }
+
+        // Setup leave confirmation for checkout/details pages (not start page)
+        if(!empty(this.tsId)) {
+            this.setupLeaveConfirmation();
+        }
+    },
+
+    /**
+     * Check if a URL is within the allowed POS checkout flow
+     * @param {string} url - The URL to check
+     * @returns {boolean}
+     */
+    isUrlInCheckoutFlow(url) {
+        if(!url) return false;
+
+        try {
+            // Parse the URL to get just the pathname
+            let pathname;
+            if(url.startsWith('http://') || url.startsWith('https://')) {
+                const urlObj = new URL(url);
+                // Only allow same-origin URLs
+                if(urlObj.origin !== window.location.origin) return false;
+                pathname = urlObj.pathname;
+            } else if(url.startsWith('/')) {
+                pathname = url;
+            } else {
+                // Relative URL - resolve against current location
+                const base = window.location.href;
+                const urlObj = new URL(url, base);
+                pathname = urlObj.pathname;
+            }
+
+            // Normalize: remove trailing slash, handle base path
+            pathname = pathname.replace(/\/+$/, '');
+
+            // Match POS flow patterns: merchant/{slug}/terminal/{id}/pos/...
+            const posFlowPattern = /\/merchant\/[^/]+\/terminal\/[^/]+\/pos\/(start|[^/]+\/(details|checkout|fulfilled))/;
+            return posFlowPattern.test(pathname);
+        } catch(e) {
+            return false;
+        }
+    },
+
+    /**
+     * Setup leave confirmation for checkout pages
+     */
+    setupLeaveConfirmation() {
+        this.leaveConfirmationEnabled = true;
+
+        // Handle browser close/refresh
+        window.addEventListener('beforeunload', (e) => {
+            if(!this.leaveConfirmationEnabled || this.allowNavigation) return;
+
+            e.preventDefault();
+            e.returnValue = 'Du er midt i et køb. Er du sikker på, at du vil forlade siden?';
+            return e.returnValue;
+        });
+
+        // Handle link clicks
+        document.addEventListener('click', (e) => {
+            if(!this.leaveConfirmationEnabled || this.allowNavigation) return;
+
+            // Find the closest anchor tag
+            const link = e.target.closest('a');
+            if(!link) return;
+
+            const href = link.getAttribute('href');
+            if(!href || href === '#' || href.startsWith('javascript:')) return;
+
+            // Check if target opens in new tab
+            if(link.target === '_blank') return;
+
+            // Check if the URL is within the checkout flow
+            if(this.isUrlInCheckoutFlow(href)) return;
+
+            // URL is outside the flow - show confirmation
+            e.preventDefault();
+            if(confirm('Du er midt i et køb. Er du sikker på, at du vil forlade siden?')) {
+                this.allowNavigation = true;
+                window.location.href = href;
+            }
+        });
+    },
+
+    /**
+     * Disable leave confirmation (call before programmatic navigation)
+     */
+    disableLeaveConfirmation() {
+        this.allowNavigation = true;
     },
 
 
@@ -220,6 +311,7 @@ const MerchantPOS = {
             this.elements.voidSessionBtn.disabled = false;
             return
         }
+        this.disableLeaveConfirmation();
         handleStandardApiRedirect(result)
         this.elements.voidBasketBtn.disabled = false;
         this.elements.voidSessionBtn.disabled = false;
@@ -233,6 +325,7 @@ const MerchantPOS = {
             this.elements.voidBasketBtn.disabled = false;
             return
         }
+        this.disableLeaveConfirmation();
         handleStandardApiRedirect(result)
         this.elements.voidBasketBtn.disabled = false;
     },
@@ -242,6 +335,7 @@ const MerchantPOS = {
         if(!('basket' in result.data)) return;
         let basket = result.data.basket;
         if(empty(basket) || basket.status !== 'DRAFT') return;
+        this.disableLeaveConfirmation();
         handleStandardApiRedirect(result)
     },
     async basketStatus() {
@@ -288,6 +382,7 @@ const MerchantPOS = {
             showErrorNotification("Der opstod en fejl", result.error.message)
             window.clearInterval(this.checkSessionInterval)
             this.checkSessionInterval = null;
+            this.disableLeaveConfirmation();
             handleStandardApiRedirect(result)
             return
         }
@@ -304,6 +399,7 @@ const MerchantPOS = {
             queueNotificationOnLoad("Købet er fuldført", result.message, 'success')
             window.clearInterval(this.checkSessionInterval)
             this.checkSessionInterval = null;
+            this.disableLeaveConfirmation();
             handleStandardApiRedirect(result)
         }
 
