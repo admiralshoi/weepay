@@ -45,19 +45,13 @@ function adminRefundOrder(orderId, hasPendingPayments) {
                 if (response.status === 'success') {
                     queueNotificationOnLoad('Ordre refunderet', response.message || 'Ordren blev refunderet succesfuldt.', 'success', 5000);
                     handleStandardApiRedirect(response, 1);
-                    return {
-                        status: 'success',
-                        title: 'Ordre refunderet',
-                        message: response.message || 'Ordren blev refunderet succesfuldt.'
-                    };
+                    return { status: 'success' };
                 } else {
-                    return {
-                        status: 'error',
-                        title: 'Refundering fejlede',
-                        message: response.error?.message || response.message || 'Der opstod en fejl under refunderingen.'
-                    };
+                    showErrorNotification('Refundering fejlede', response.error?.message || response.message || 'Der opstod en fejl under refunderingen.');
+                    return { status: 'error' };
                 }
-            }
+            },
+            refireAfter: true
         }
     );
 }
@@ -78,19 +72,13 @@ function adminRefundPayment(paymentId) {
                 if (response.status === 'success') {
                     queueNotificationOnLoad('Betaling refunderet', response.message || 'Betalingen blev refunderet succesfuldt.', 'success', 5000);
                     handleStandardApiRedirect(response, 1);
-                    return {
-                        status: 'success',
-                        title: 'Betaling refunderet',
-                        message: response.message || 'Betalingen blev refunderet succesfuldt.'
-                    };
+                    return { status: 'success' };
                 } else {
-                    return {
-                        status: 'error',
-                        title: 'Refundering fejlede',
-                        message: response.error?.message || response.message || 'Der opstod en fejl under refunderingen.'
-                    };
+                    showErrorNotification('Refundering fejlede', response.error?.message || response.message || 'Der opstod en fejl under refunderingen.');
+                    return { status: 'error' };
                 }
-            }
+            },
+            refireAfter: true
         }
     );
 }

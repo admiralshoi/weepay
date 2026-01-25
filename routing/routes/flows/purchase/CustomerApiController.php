@@ -148,8 +148,22 @@ class CustomerApiController {
             $isPushedPlan ? 0 : $resellerFee  // No reseller fee on 1 unit validation
         );
 
-        if(nestedArray($paymentSession, ['status']) === 'error')
+        if(nestedArray($paymentSession, ['status']) === 'error') {
+            // Create attention notification if this is a merchant config issue
+            $orgUid = is_object($location->organisation) ? $location->organisation->uid : $location->organisation;
+            Methods::requiresAttentionNotifications()->createFromVivaError(
+                'create_payment',
+                $paymentSession,
+                $orgUid,
+                [
+                    'location_uid' => $location->uid,
+                    'basket_name' => $basket->name,
+                    'amount' => $paymentAmount,
+                    'currency' => $basket->currency,
+                ]
+            );
             Response()->jsonError(nestedArray($paymentSession, ['errors', 0,'message'],'Noget gik galt'), $paymentSession, 500);
+        }
 
         if(isEmpty($paymentSession)) Response()->jsonError("Noget gik galt. Prøv igen senere.", [], 500);
 
@@ -238,11 +252,22 @@ class CustomerApiController {
 
                 // For pushed plan: process card validation (refund 1 unit and store transaction ID)
                 if ($order->payment_plan === 'pushed') {
+                    // Get UIDs for error notifications and pending refund tracking
+                    $organisationUid = is_object($order->organisation) ? $order->organisation->uid : $order->organisation;
+                    $customerUid = is_object($order->uuid) ? $order->uuid->uid : $order->uuid;
+                    $locationUid = is_object($order->location) ? $order->location->uid : $order->location;
+                    $providerUid = is_object($order->provider) ? $order->provider->uid : $order->provider;
+
                     $validationResult = CardValidationService::processValidationPayment(
                         $merchantId,
                         $orderCode,
                         $currency,
-                        $isTestOrder
+                        $isTestOrder,
+                        $organisationUid,
+                        $order->uid,
+                        $customerUid,
+                        $locationUid,
+                        $providerUid
                     );
 
                     if ($validationResult['success'] && !empty($validationResult['transaction_id'])) {
@@ -261,7 +286,6 @@ class CustomerApiController {
                         $paymentMethodUid = null;
 
                         if (!isEmpty($paymentInfo)) {
-                            $customerUid = is_object($order->uuid) ? $order->uuid->uid : $order->uuid;
                             $paymentMethod = Methods::paymentMethods()->createFromVivaTransaction(
                                 $customerUid,
                                 $paymentInfo,

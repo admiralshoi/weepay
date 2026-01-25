@@ -950,6 +950,18 @@ class ApiController {
 
         if (isEmpty($paymentResult) || isEmpty($paymentResult['orderCode'])) {
             errorLog(['result' => $paymentResult], 'card-change-create-payment-failed');
+
+            // Create attention notification if this is a merchant config issue
+            Methods::requiresAttentionNotifications()->createFromVivaError(
+                'card_validation',
+                $paymentResult ?? [],
+                $organisation->uid,
+                [
+                    'user_uid' => $userId,
+                    'action' => 'card_change_global',
+                ]
+            );
+
             Response()->jsonError('Kunne ikke starte kortskift', [], 500);
         }
 
@@ -1052,6 +1064,19 @@ class ApiController {
 
         if (isEmpty($paymentResult) || isEmpty($paymentResult['orderCode'])) {
             errorLog(['result' => $paymentResult], 'card-change-order-create-payment-failed');
+
+            // Create attention notification if this is a merchant config issue
+            Methods::requiresAttentionNotifications()->createFromVivaError(
+                'card_validation',
+                $paymentResult ?? [],
+                $organisation->uid,
+                [
+                    'user_uid' => $userId,
+                    'order_uid' => $orderUid,
+                    'action' => 'card_change_order',
+                ]
+            );
+
             Response()->jsonError('Kunne ikke starte kortskift', [], 500);
         }
 
@@ -1288,6 +1313,18 @@ class ApiController {
 
         if (isEmpty($paymentResult) || isEmpty($paymentResult['orderCode'])) {
             errorLog(['result' => $paymentResult], 'card-change-payment-method-create-failed');
+
+            // Create attention notification if this is a merchant config issue
+            Methods::requiresAttentionNotifications()->createFromVivaError(
+                'card_validation',
+                $paymentResult ?? [],
+                $organisationUid,
+                [
+                    'user_uid' => $userId,
+                    'action' => 'card_change_payment_method',
+                ]
+            );
+
             Response()->jsonError('Kunne ikke starte kortskift', [], 500);
         }
 

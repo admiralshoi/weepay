@@ -243,43 +243,126 @@ class CronRequestHandler {
             return ['success' => true];
         } else {
             $failureReason = $chargeResult['error'] ?? 'Charge failed';
-            return $this->handlePaymentAttemptFailure($payment, $failureReason, $worker);
+            $vivaEventId = $chargeResult['event_id'] ?? null;
+            return $this->handlePaymentAttemptFailure($payment, $failureReason, $worker, $vivaEventId, $chargeResult);
         }
     }
 
     /**
-     * Handle a failed payment attempt - mark as PAST_DUE and schedule first rykker
+     * Handle a failed payment attempt - mark as PAST_DUE and schedule retry + rykker
+     *
+     * scheduled_at = next payment retry attempt (uses payment_retry_day_interval)
+     * rykker_scheduled_at = next rykker escalation (uses rykker_1_days)
+     *
+     * If failure is merchant's fault, we DON'T schedule rykkers (not customer's fault)
      *
      * @param object $payment Payment object with resolved FKs
      * @param string $failureReason
      * @param CronWorker|null $worker
+     * @param int|null $vivaEventId Viva EventId code for error categorization
+     * @param array $chargeResult Full charge result from Viva (for error context)
      * @return array{success: bool, error: string}
      */
-    private function handlePaymentAttemptFailure(object $payment, string $failureReason, ?CronWorker $worker = null): array {
+    private function handlePaymentAttemptFailure(object $payment, string $failureReason, ?CronWorker $worker = null, ?int $vivaEventId = null, array $chargeResult = []): array {
         $paymentsHandler = Methods::payments();
         $currentAttempts = ($payment->attempts ?? 0) + 1;
+
+        // Get HTTP error code from charge result (e.g., 403 = API disabled)
+        $httpErrorCode = $chargeResult['error_code'] ?? null;
+
+        // Check if this is a merchant fault (e.g., recurring not enabled)
+        $categorizer = new \classes\payments\PaymentErrorCategorizer();
+        $isMerchantFault = $categorizer->requiresMerchantAttention($vivaEventId ?? 0, $httpErrorCode);
 
         debugLog([
             'payment_uid' => $payment->uid,
             'failure_reason' => $failureReason,
             'current_attempts' => $currentAttempts,
+            'viva_event_id' => $vivaEventId,
+            'http_error_code' => $httpErrorCode,
+            'is_merchant_fault' => $isMerchantFault,
+            'charge_result_keys' => !empty($chargeResult) ? array_keys($chargeResult) : 'EMPTY',
         ], 'CRON_PAYMENT_ATTEMPT_FAILURE');
 
-        // Get days until first rykker from settings
+        // Get settings for scheduling
+        $retryIntervalDays = (int)(Settings::$app->payment_retry_day_interval ?? 3);
         $rykker1Days = (int)(Settings::$app->rykker_1_days ?? 7);
 
-        // Mark as PAST_DUE and schedule first rykker check
-        $paymentsHandler->update([
+        // Build update data
+        $updateData = [
             'status' => 'PAST_DUE',
             'failure_reason' => $failureReason,
             'attempts' => $currentAttempts,
-            'scheduled_at' => date('Y-m-d H:i:s', strtotime("+{$rykker1Days} days")),
-        ], ['uid' => $payment->uid]);
+            // scheduled_at = next payment retry attempt
+            'scheduled_at' => date('Y-m-d H:i:s', strtotime("+{$retryIntervalDays} days")),
+        ];
 
-        $worker?->log("Payment {$payment->uid} marked as PAST_DUE, first rykker scheduled in {$rykker1Days} days");
+        // Only schedule rykker if it's NOT the merchant's fault
+        // If merchant config issue (e.g., recurring not enabled), don't punish customer with rykker fees
+        if (!$isMerchantFault) {
+            $updateData['rykker_scheduled_at'] = date('Y-m-d H:i:s', strtotime("+{$rykker1Days} days"));
+            $worker?->log("Payment {$payment->uid} marked as PAST_DUE, retry in {$retryIntervalDays} days, rykker in {$rykker1Days} days");
+        } else {
+            // Clear any existing rykker schedule - merchant needs to fix config
+            $updateData['rykker_scheduled_at'] = null;
+            $worker?->log("Payment {$payment->uid} marked as PAST_DUE (MERCHANT FAULT - no rykker), retry in {$retryIntervalDays} days");
+        }
 
-        // Trigger payment past due notification
-        $this->triggerPaymentNotification($payment, 'past_due', $failureReason);
+        // Mark as PAST_DUE and schedule
+        $paymentsHandler->update($updateData, ['uid' => $payment->uid]);
+
+        // Trigger payment past due notification (customer) - but only if not merchant fault
+        if (!$isMerchantFault) {
+            $this->triggerPaymentNotification($payment, 'past_due', $failureReason);
+        } else {
+            $worker?->log("Skipping customer notification - merchant fault");
+        }
+
+        // Create merchant attention notification if error requires merchant action
+        // Note: EventId can be 0 which is a valid error code, so we check for null specifically
+        $hasVivaEventId = $vivaEventId !== null;
+        debugLog([
+            'payment_uid' => $payment->uid,
+            'viva_event_id' => $vivaEventId,
+            'viva_event_id_is_null' => $vivaEventId === null,
+            'has_viva_event_id' => $hasVivaEventId,
+            'is_merchant_fault' => $isMerchantFault,
+        ], 'CRON_BEFORE_ATTENTION_NOTIFICATION');
+
+        if ($hasVivaEventId) {
+            try {
+                $notificationHandler = Methods::requiresAttentionNotifications();
+
+                debugLog([
+                    'payment_uid' => $payment->uid,
+                    'viva_event_id' => $vivaEventId,
+                    'calling' => 'createFromPaymentFailure',
+                ], 'CRON_CALLING_CREATE_NOTIFICATION');
+
+                $notificationUid = $notificationHandler->createFromPaymentFailure($payment, $vivaEventId, $chargeResult);
+
+                debugLog([
+                    'payment_uid' => $payment->uid,
+                    'notification_uid' => $notificationUid,
+                    'notification_created' => $notificationUid ? 'YES' : 'NO',
+                ], 'CRON_NOTIFICATION_RESULT');
+
+                if ($notificationUid) {
+                    $worker?->log("Created requires-attention notification {$notificationUid} for payment {$payment->uid}");
+                }
+            } catch (\Exception $e) {
+                debugLog([
+                    'payment_uid' => $payment->uid,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ], 'CRON_ATTENTION_NOTIFICATION_ERROR');
+            }
+        } else {
+            debugLog([
+                'payment_uid' => $payment->uid,
+                'reason' => 'vivaEventId is empty, skipping notification creation',
+            ], 'CRON_SKIP_ATTENTION_NOTIFICATION');
+        }
 
         return ['success' => false, 'error' => $failureReason];
     }
@@ -659,8 +742,11 @@ class CronRequestHandler {
 
     /**
      * Check overdue payments and trigger rykker (collection reminder) notifications
-     * Uses scheduled_at to control timing - payments are only processed when scheduled_at <= now
+     * Uses rykker_scheduled_at to control timing - payments are only processed when rykker_scheduled_at <= now
      * Escalates through rykker levels: 1, 2, 3 (final/collection)
+     *
+     * Note: rykker_scheduled_at is separate from scheduled_at (payment retry).
+     * If payment failed due to merchant fault, rykker_scheduled_at will be null (no rykker).
      */
     public function rykkerChecks(?CronWorker $worker = null): void {
         $worker?->log("Running rykkerChecks...");
@@ -690,10 +776,10 @@ class CronRequestHandler {
 
         $paymentHandler = Methods::payments();
 
-        // getPastDueForRykker only returns payments where scheduled_at <= now
+        // getPastDueForRykker only returns payments where rykker_scheduled_at <= now
         $scheduledPayments = $paymentHandler->getPastDueForRykker();
 
-        $worker?->log("Found {$scheduledPayments->count()} payments scheduled for rykker (scheduled_at <= now)");
+        $worker?->log("Found {$scheduledPayments->count()} payments scheduled for rykker (rykker_scheduled_at <= now)");
 
         // Debug log the query results
         debugLog([
@@ -858,7 +944,7 @@ class CronRequestHandler {
 
         // =====================================================
         // PHASE 2: Mark rykker level 3 payments as sent_to_collection
-        // after 7-day grace period (scheduled_at has passed)
+        // after 7-day grace period (rykker_scheduled_at has passed)
         // =====================================================
         $worker?->log("------------------------------------------");
         $worker?->log("Checking for rykker 3 payments ready for collection...");
@@ -868,7 +954,8 @@ class CronRequestHandler {
                 ->where('status', 'PAST_DUE')
                 ->where('rykker_level', 3)
                 ->where('sent_to_collection', 0)
-                ->where('scheduled_at', '<=', date('Y-m-d H:i:s'))
+                ->whereNotNull('rykker_scheduled_at')
+                ->where('rykker_scheduled_at', '<=', date('Y-m-d H:i:s'))
         );
 
         $collectionCount = 0;
@@ -877,7 +964,7 @@ class CronRequestHandler {
 
             $paymentHandler->update([
                 'sent_to_collection' => 1,
-                'scheduled_at' => null,
+                'rykker_scheduled_at' => null,
             ], ['uid' => $payment->uid]);
 
             $collectionCount++;
@@ -1198,34 +1285,79 @@ class CronRequestHandler {
 
         // FAILURE
         $failureReason = $chargeResult['error'] ?? 'Charge failed';
-        return $this->handleRetryFailure($payment, $failureReason, $retryIntervalDays, $worker);
+        $vivaEventId = $chargeResult['event_id'] ?? null;
+        return $this->handleRetryFailure($payment, $failureReason, $retryIntervalDays, $worker, $vivaEventId, $chargeResult);
     }
 
     /**
      * Handle retry failure - increment attempts, schedule next retry
-     * Always sets scheduled_at (even after max attempts) for rykker system
+     * scheduled_at = next payment retry
+     * If merchant fault, clear rykker_scheduled_at (don't punish customer)
+     *
+     * @param object $payment Payment object
+     * @param string $failureReason Error message
+     * @param int $retryIntervalDays Days until next retry
+     * @param CronWorker|null $worker
+     * @param int|null $vivaEventId Viva EventId code for error categorization
+     * @param array $chargeResult Full charge result from Viva (for error context)
+     * @return array{success: bool, error: string}
      */
-    private function handleRetryFailure(object $payment, string $failureReason, int $retryIntervalDays, ?CronWorker $worker = null): array {
+    private function handleRetryFailure(object $payment, string $failureReason, int $retryIntervalDays, ?CronWorker $worker = null, ?int $vivaEventId = null, array $chargeResult = []): array {
         $paymentsHandler = Methods::payments();
         $currentAttempts = ($payment->attempts ?? 0) + 1;
 
-        // Always set scheduled_at for next check (used by both retry and rykker systems)
+        // Get HTTP error code from charge result (e.g., 403 = API disabled)
+        $httpErrorCode = $chargeResult['error_code'] ?? null;
+
+        // Check if this is a merchant fault
+        $categorizer = new \classes\payments\PaymentErrorCategorizer();
+        $isMerchantFault = $categorizer->requiresMerchantAttention($vivaEventId ?? 0, $httpErrorCode);
+
+        // Schedule next retry attempt
         $nextScheduledAt = date('Y-m-d H:i:s', strtotime("+{$retryIntervalDays} days"));
 
-        $paymentsHandler->update([
+        // Build update data
+        $updateData = [
             'attempts' => $currentAttempts,
             'failure_reason' => $failureReason,
             'scheduled_at' => $nextScheduledAt,
-        ], ['uid' => $payment->uid]);
+        ];
 
-        $worker?->log("Payment {$payment->uid} retry failed: $failureReason (attempt $currentAttempts, next scheduled: $nextScheduledAt)");
+        // If merchant fault, clear rykker schedule (not customer's fault)
+        if ($isMerchantFault) {
+            $updateData['rykker_scheduled_at'] = null;
+            $worker?->log("Payment {$payment->uid} retry failed (MERCHANT FAULT - clearing rykker): $failureReason (attempt $currentAttempts, next retry: $nextScheduledAt)");
+        } else {
+            $worker?->log("Payment {$payment->uid} retry failed: $failureReason (attempt $currentAttempts, next retry: $nextScheduledAt)");
+        }
+
+        $paymentsHandler->update($updateData, ['uid' => $payment->uid]);
 
         debugLog([
             'payment_uid' => $payment->uid,
             'failure_reason' => $failureReason,
             'attempts' => $currentAttempts,
             'next_scheduled' => $nextScheduledAt,
+            'viva_event_id' => $vivaEventId,
+            'http_error_code' => $httpErrorCode,
+            'is_merchant_fault' => $isMerchantFault,
         ], 'CRON_RETRY_PAYMENT_FAILURE');
+
+        // Create merchant attention notification if error requires merchant action
+        if ($vivaEventId !== null) {
+            try {
+                $notificationHandler = Methods::requiresAttentionNotifications();
+                $notificationUid = $notificationHandler->createFromPaymentFailure($payment, $vivaEventId, $chargeResult);
+                if ($notificationUid) {
+                    $worker?->log("Created requires-attention notification {$notificationUid} for payment {$payment->uid}");
+                }
+            } catch (\Exception $e) {
+                debugLog([
+                    'payment_uid' => $payment->uid,
+                    'error' => $e->getMessage(),
+                ], 'CRON_ATTENTION_NOTIFICATION_ERROR');
+            }
+        }
 
         return ['success' => false, 'error' => $failureReason];
     }

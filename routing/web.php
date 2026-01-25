@@ -315,6 +315,15 @@ Routes::group(['api','requiresApiLogin'], function() {
         Routes::post(Links::$api->merchant->support->close, "merchants.ApiController::supportClose");
         Routes::post(Links::$api->merchant->support->reopen, "merchants.ApiController::supportReopen");
 
+        // Requires Attention Notifications
+        Routes::get("api/merchant/attention-notifications", "merchants.ApiController::getAttentionNotifications");
+        Routes::post("api/merchant/attention-notifications/{uid}/resolve", "merchants.ApiController::resolveAttentionNotification");
+
+        // Pending Validation Refunds
+        Routes::get("api/merchant/pending-validation-refunds", "merchants.ApiController::getPendingValidationRefunds");
+        Routes::post("api/merchant/pending-validation-refunds/{uid}/mark-refunded", "merchants.ApiController::markPendingRefundAsRefunded");
+        Routes::post("api/merchant/pending-validation-refunds/{uid}/refund", "merchants.ApiController::attemptPendingRefund");
+
     });
 
     Routes::group(['consumer'], function() {
@@ -772,6 +781,11 @@ Routes::group(['requiresApiLogin', "admin", "api"], function() {
     Routes::post(Links::$api->admin->support->close, "admin.ApiController::supportClose");
     Routes::post(Links::$api->admin->support->reopen, "admin.ApiController::supportReopen");
     Routes::post(Links::$api->admin->support->delete, "admin.ApiController::supportDelete");
+
+    // Requires Attention Notifications API
+    Routes::get("api/admin/attention-notifications", "admin.ApiController::getAttentionNotifications");
+    Routes::post("api/admin/attention-notifications/{uid}/resolve", "admin.ApiController::resolveAttentionNotification");
+    Routes::get("api/admin/attention-notifications/stats", "admin.ApiController::getAttentionNotificationStats");
 
     // Policy Management API
     Routes::post(Links::$api->admin->policies->list, "admin.ApiController::policiesList");

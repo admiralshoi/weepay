@@ -601,8 +601,14 @@ class Admin extends \routing\paths\Paths {
         "assets" => [
             "main" => null,
             "base" => null,
-            "vendor" => [],
-            "custom" => [],
+            "vendor" => [
+                "vendor.sweetalert.sweetalert2.min.css",
+                "vendor.sweetalert.sweetalert2.min.js",
+            ],
+            "custom" => [
+                "js.includes.SweetPrompt.js",
+                "js.admin-attention-notifications.js",
+            ],
         ],
     ];
 

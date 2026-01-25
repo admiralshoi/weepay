@@ -10,6 +10,7 @@ $terminal = $args->terminal;
 $customer = $args->customer;
 $basket = $args->basket;
 $order = $args->order;
+$pendingValidationRefund = $args->pendingValidationRefund ?? null;
 
 $pageTitle = "Ordre gennemført - {$terminal->location->name}";
 ?>
@@ -45,6 +46,33 @@ $pageTitle = "Ordre gennemført - {$terminal->location->name}";
                         </div>
                     </div>
                 </div>
+
+                <?php if(!isEmpty($pendingValidationRefund)): ?>
+                <!-- Pending Validation Refund Warning (Cashier Only) -->
+                <div class="card border-radius-10px w-100 border-danger" style="border-width: 2px;">
+                    <div class="card-body">
+                        <div class="flex-col-start">
+                            <div class="flex-row-start flex-align-center mb-3" style="gap: 0.75rem;">
+                                <div class="square-40 border-radius-50 flex-row-center-center bg-danger flex-shrink-0">
+                                    <i class="mdi mdi-alert-circle font-20 color-white"></i>
+                                </div>
+                                <p class="font-weight-bold font-18 mb-0 color-danger">Refundering af kortvalidering mislykkedes</p>
+                            </div>
+                            <p class="font-14 color-gray mb-3">
+                                Ved kortvalidering blev der trukket <strong><?=number_format($pendingValidationRefund->amount, 2)?> <?=currencySymbol($pendingValidationRefund->currency)?></strong>,
+                                men den automatiske refundering fejlede fordi refunderingsfunktionen ikke er aktiveret på Viva-kontoen.
+                            </p>
+                            <div class="bg-danger-light border-radius-8px p-3">
+                                <p class="font-14 color-dark mb-0">
+                                    <i class="mdi mdi-information-outline mr-1"></i>
+                                    <strong>Handling påkrævet:</strong> Bed din leder om at aktivere refunderinger på Viva Dashboard,
+                                    og herefter manuelt refundere <?=number_format($pendingValidationRefund->amount, 2)?> <?=currencySymbol($pendingValidationRefund->currency)?> til kunden.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
 
                 <!-- Customer Information -->
                 <div class="card border-radius-10px w-100">

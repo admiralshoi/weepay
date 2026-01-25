@@ -112,6 +112,58 @@ $kpiCardCol = $args->terminals->count() > 0 ? 'col-md-4 col-lg-6' : 'col-lg-3';
     </div>
     <?php endif; ?>
 
+    <!-- Requires Attention Notifications -->
+    <div id="attention-notifications-container" class="w-100 mb-4" style="display: none;">
+        <div class="card border-radius-10px border-danger" style="border-width: 2px;">
+            <div class="card-body">
+                <div class="flex-row-between flex-align-start flex-wrap" style="gap: 1rem;">
+                    <div class="flex-row-start flex-align-center" style="gap: .75rem;">
+                        <div class="square-45 flex-row-center flex-align-center bg-danger border-radius-50">
+                            <i class="font-22 mdi mdi-alert-outline color-white"></i>
+                        </div>
+                        <div class="flex-col-start">
+                            <p class="mb-1 font-18 font-weight-bold color-dark">
+                                Kræver opmærksomhed
+                                <span id="attention-count" class="danger-box font-13 ms-2">0</span>
+                            </p>
+                            <p class="mb-0 font-13 color-gray">Der er problemer der kræver din handling</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleAttentionNotifications()" class="btn-v2 mute-btn">
+                        <i class="mdi mdi-chevron-down" id="attention-toggle-icon"></i>
+                    </button>
+                </div>
+                <div id="attention-notifications-list" class="mt-3" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Validation Refunds -->
+    <div id="pending-refunds-container" class="w-100 mb-4" style="display: none;">
+        <div class="card border-radius-10px border-design-blue" style="border-width: 2px;">
+            <div class="card-body">
+                <div class="flex-row-between flex-align-start flex-wrap" style="gap: 1rem;">
+                    <div class="flex-row-start flex-align-center" style="gap: .75rem;">
+                        <div class="square-45 flex-row-center flex-align-center bg-design-blue border-radius-50">
+                            <i class="font-22 mdi mdi-cash-refund color-white"></i>
+                        </div>
+                        <div class="flex-col-start">
+                            <p class="mb-1 font-18 font-weight-bold color-dark">
+                                Afventende refunderinger
+                                <span id="pending-refunds-count" class="info-box font-13 ms-2">0</span>
+                            </p>
+                            <p class="mb-0 font-13 color-gray">Kortvalideringsrefunderinger der kræver manuel handling</p>
+                        </div>
+                    </div>
+                    <button onclick="togglePendingRefunds()" class="btn-v2 mute-btn">
+                        <i class="mdi mdi-chevron-down" id="pending-refunds-toggle-icon"></i>
+                    </button>
+                </div>
+                <div id="pending-refunds-list" class="mt-3" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
     <div class="flex-col-start">
         <p class="mb-0 font-30 font-weight-bold">Oversigt</p>
         <p class="mb-0 font-16 font-weight-medium color-gray">Velkommen til dit WeePay forhandler dashboard</p>
@@ -503,6 +555,5 @@ $kpiCardCol = $args->terminals->count() > 0 ? 'col-md-4 col-lg-6' : 'col-lg-3';
 
     var chart = new ApexCharts(document.querySelector("#revenueChart"), options);
     chart.render();
-
 </script>
 <?php scriptEnd(); ?>

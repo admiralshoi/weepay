@@ -523,8 +523,8 @@ class OrdersApiController {
                     'refundTransactionId' => $result['TransactionId'],
                 ], 'REFUND_ORDER_PAYMENT_SUCCESS');
 
-                // Update payment status to REFUNDED
-                $paymentHandler->update(['status' => 'REFUNDED'], ['uid' => $payment->uid]);
+                // Update payment status to REFUNDED (clears failure_reason etc.)
+                $paymentHandler->setRefunded($payment->uid);
                 $totalRefunded += (float)$payment->amount;
                 $paymentsRefundedCount++;
             } else {
@@ -536,6 +536,20 @@ class OrdersApiController {
                     'fullResult' => $result,
                 ], 'REFUND_ORDER_PAYMENT_ERROR');
                 $refundErrors[] = "Betaling {$payment->uid}: {$errorMsg}";
+
+                // Create attention notification if this is a merchant config issue
+                $orgUid = is_object($order->organisation) ? $order->organisation->uid : $order->organisation;
+                Methods::requiresAttentionNotifications()->createFromVivaError(
+                    'refund',
+                    $result ?? [],
+                    $orgUid,
+                    [
+                        'payment_uid' => $payment->uid,
+                        'order_uid' => $order->uid,
+                        'amount' => $payment->amount,
+                        'currency' => $payment->currency,
+                    ]
+                );
             }
         }
 
@@ -779,6 +793,21 @@ class OrdersApiController {
                 'errorMsg' => $errorMsg,
                 'fullResult' => $result,
             ], 'REFUND_PAYMENT_ERROR');
+
+            // Create attention notification if this is a merchant config issue
+            $orgUid = is_object($order->organisation) ? $order->organisation->uid : $order->organisation;
+            Methods::requiresAttentionNotifications()->createFromVivaError(
+                'refund',
+                $result ?? [],
+                $orgUid,
+                [
+                    'payment_uid' => $payment->uid,
+                    'order_uid' => $order->uid,
+                    'amount' => $payment->amount,
+                    'currency' => $payment->currency,
+                ]
+            );
+
             Response()->jsonError("Refundering fejlede: {$errorMsg}");
         }
 
@@ -787,9 +816,9 @@ class OrdersApiController {
             'refundTransactionId' => $result['TransactionId'],
         ], 'REFUND_PAYMENT_VIVA_SUCCESS');
 
-        // Update payment status to REFUNDED
+        // Update payment status to REFUNDED (clears failure_reason etc.)
         debugLog(['updating' => 'payment status to REFUNDED', 'paymentId' => $paymentId], 'REFUND_PAYMENT_UPDATE');
-        $paymentHandler->update(['status' => 'REFUNDED'], ['uid' => $paymentId]);
+        $paymentHandler->setRefunded($paymentId);
 
         // Update order amount_refunded and recalculate fee_amount (but NOT status - single payment refund doesn't change order status)
         $orderHandler = Methods::orders()->excludeForeignKeys();

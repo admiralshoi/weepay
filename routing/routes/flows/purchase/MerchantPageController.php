@@ -176,7 +176,13 @@ class MerchantPageController {
         // Get order info
         $order = Methods::orders()->getFirst(['terminal_session' => $sessionId]);
 
-        return Views("MERCHANT_POS_FULFILLED", compact('session', 'slug', 'terminal', 'customer', 'basket', 'order'));
+        // Check for pending validation refund
+        $pendingValidationRefund = null;
+        if (!isEmpty($order)) {
+            $pendingValidationRefund = Methods::pendingValidationRefunds()->getPendingForOrder($order->uid);
+        }
+
+        return Views("MERCHANT_POS_FULFILLED", compact('session', 'slug', 'terminal', 'customer', 'basket', 'order', 'pendingValidationRefund'));
     }
 
 }

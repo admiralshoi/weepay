@@ -31,13 +31,23 @@ class CardValidationService
      * @param string $orderCode The Viva order code from the validation payment
      * @param string $currency The currency used (for refund)
      * @param bool $isTest Whether this is a test/sandbox transaction
+     * @param string|null $organisationUid Organisation UID for error notifications
+     * @param string|null $orderUid Order UID for pending refund tracking
+     * @param string|null $customerUid Customer UID for pending refund tracking
+     * @param string|null $locationUid Location UID for pending refund tracking
+     * @param string|null $providerUid Provider UID for pending refund tracking
      * @return array{success: bool, transaction_id?: string, error?: string}
      */
     public static function processValidationPayment(
         string $merchantId,
         string $orderCode,
         string $currency = 'DKK',
-        bool $isTest = false
+        bool $isTest = false,
+        ?string $organisationUid = null,
+        ?string $orderUid = null,
+        ?string $customerUid = null,
+        ?string $locationUid = null,
+        ?string $providerUid = null
     ): array {
         $viva = Methods::viva();
         if (!$isTest) {
@@ -104,6 +114,7 @@ class CardValidationService
             $currency
         );
 
+        $refundFailed = false;
         if (empty($refundResult) || !isset($refundResult['TransactionId'])) {
             debugLog(['error' => 'Refund failed', 'result' => $refundResult], 'CARD_VALIDATION_REFUND_ERROR');
             // Even if refund fails, we still have a valid transaction ID
@@ -112,6 +123,42 @@ class CardValidationService
                 'transactionId' => $transactionId,
                 'refundResult' => $refundResult,
             ], 'card-validation-refund-failed');
+
+            $refundFailed = true;
+
+            // Create pending validation refund record for tracking
+            // orderUid can be null for card change scenarios, others required
+            if (!isEmpty($customerUid) && !isEmpty($organisationUid) && !isEmpty($locationUid) && !isEmpty($providerUid)) {
+                Methods::pendingValidationRefunds()->createFromFailedRefund(
+                    $orderUid,       // Can be null for card change
+                    $customerUid,
+                    $organisationUid,
+                    $locationUid,
+                    $providerUid,
+                    $transactionId,
+                    1, // Always 1 unit of currency
+                    $currency,
+                    $isTest,
+                    $refundResult['ErrorText'] ?? $refundResult['message'] ?? null,
+                    $refundResult['EventId'] ?? $refundResult['ErrorCode'] ?? null
+                );
+            }
+
+            // Create attention notification if this is a merchant config issue
+            if (!isEmpty($organisationUid) && !empty($refundResult)) {
+                Methods::requiresAttentionNotifications()->createFromVivaError(
+                    'refund',
+                    $refundResult,
+                    $organisationUid,
+                    [
+                        'transaction_id' => $transactionId,
+                        'order_code' => $orderCode,
+                        'amount' => 1,
+                        'currency' => $currency,
+                        'context' => 'card_validation_refund',
+                    ]
+                );
+            }
         } else {
             debugLog([
                 'refundTransactionId' => $refundResult['TransactionId'],
@@ -122,6 +169,8 @@ class CardValidationService
             'success' => true,
             'transaction_id' => $transactionId,
             'refund_transaction_id' => $refundResult['TransactionId'] ?? null,
+            'refund_failed' => $refundFailed,
+            'refund_amount' => 1, // Always 1 unit of currency for validation
         ];
     }
 
@@ -163,6 +212,17 @@ class CardValidationService
             'isvAmount' => $isvAmount,
         ], 'RECURRING_CHARGE_START');
 
+        debugLog([
+            'action' => 'BEFORE_chargeRecurring',
+            'merchantId' => $merchantId,
+            'initialTransactionId' => $initialTransactionId,
+            'amount' => $amount,
+            'currency' => $currency,
+            'isvAmount' => $isvAmount,
+            'isTest' => $isTest,
+            'viva_mode' => $isTest ? 'SANDBOX' : 'LIVE',
+        ], 'RECURRING_CHARGE_CALLING_VIVA');
+
         $result = $viva->chargeRecurring(
             $merchantId,
             $initialTransactionId,
@@ -173,6 +233,16 @@ class CardValidationService
             $currency,
             $isvAmount // Use stored ISV amount from payment record
         );
+
+        debugLog([
+            'raw_result' => $result,
+            'result_type' => gettype($result),
+            'has_error_code' => isset($result['ErrorCode']),
+            'error_code_value' => $result['ErrorCode'] ?? 'NOT_SET',
+            'has_event_id' => isset($result['EventId']),
+            'event_id_value' => $result['EventId'] ?? 'NOT_SET',
+            'has_transaction_id' => isset($result['TransactionId']),
+        ], 'RECURRING_CHARGE_RAW_RESPONSE');
 
         testLog($result, 'VIVA_CHARGE_RECURRING_RESPONSE');
 
@@ -190,11 +260,13 @@ class CardValidationService
                 'error' => 'Viva error',
                 'errorCode' => $result['ErrorCode'],
                 'errorText' => $result['ErrorText'] ?? null,
+                'eventId' => $result['EventId'] ?? null,
             ], 'RECURRING_CHARGE_ERROR');
             return [
                 'success' => false,
                 'error' => $result['ErrorText'] ?? 'Betalingen fejlede',
                 'error_code' => $result['ErrorCode'],
+                'event_id' => $result['EventId'] ?? null,
             ];
         }
 
@@ -210,11 +282,13 @@ class CardValidationService
         debugLog([
             'success' => true,
             'transactionId' => $transactionId,
+            'eventId' => $result['EventId'] ?? null,
         ], 'RECURRING_CHARGE_SUCCESS');
 
         return [
             'success' => true,
             'transaction_id' => $transactionId,
+            'event_id' => $result['EventId'] ?? null,
             'response' => $result,
         ];
     }

@@ -547,11 +547,21 @@ class PageController {
         $currency = $order->currency ?? 'DKK';
 
         // Process the validation payment (verify + refund + get transaction ID)
+        // For card change, pass available context for pending refund tracking
+        $customerUid = is_object($order->uuid) ? $order->uuid->uid : $order->uuid;
+        $locationUid = is_object($order->location) ? $order->location->uid : $order->location;
+        $providerUid = is_object($order->provider) ? $order->provider->uid : $order->provider;
+
         $validationResult = CardValidationService::processValidationPayment(
             $organisation->merchant_prid,
             $orderCode,
             $currency,
-            $isTest
+            $isTest,
+            $organisationUid,
+            null,  // No order to track for card change (gets deleted on failure)
+            $customerUid,
+            $locationUid,
+            $providerUid
         );
 
         debugLog([

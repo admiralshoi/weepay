@@ -546,8 +546,14 @@ class Merchants extends \routing\paths\Paths {
             "vendor" => [
                 "vendor.apexcharts.apexcharts.min.js",
                 "js.includes.charts.js",
+                "vendor.sweetalert.sweetalert2.min.css",
+                "vendor.sweetalert.sweetalert2.min.js",
             ],
-            "custom" => [],
+            "custom" => [
+                "js.includes.SweetPrompt.js",
+                "js.merchant-attention-notifications.js",
+                "js.merchant-pending-refunds.js",
+            ],
         ],
     ];
 

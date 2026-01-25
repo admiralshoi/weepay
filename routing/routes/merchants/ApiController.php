@@ -887,4 +887,237 @@ class ApiController {
         Response()->jsonSuccess('Henvendelse genåbnet');
     }
 
+
+    // =====================================================
+    // REQUIRES ATTENTION NOTIFICATIONS
+    // =====================================================
+
+    /**
+     * Get unresolved notifications for the current organisation
+     */
+    #[NoReturn] public static function getAttentionNotifications(array $args): void {
+        $organisationId = __oid();
+        if (isEmpty($organisationId)) {
+            Response()->jsonError('Ingen organisation valgt', [], 400);
+        }
+
+        $notifications = Methods::requiresAttentionNotifications()->getUnresolved('merchant', $organisationId);
+
+        Response()->jsonSuccess('', [
+            'notifications' => $notifications->toArray(),
+            'count' => $notifications->count(),
+        ]);
+    }
+
+    /**
+     * Mark a notification as resolved
+     */
+    #[NoReturn] public static function resolveAttentionNotification(array $args): void {
+        $notificationUid = $args['uid'] ?? null;
+        if (isEmpty($notificationUid)) {
+            Response()->jsonError('Mangler notification ID', [], 400);
+        }
+
+        $organisationId = __oid();
+        if (isEmpty($organisationId)) {
+            Response()->jsonError('Ingen organisation valgt', [], 400);
+        }
+
+        $handler = Methods::requiresAttentionNotifications();
+        $notification = $handler->get($notificationUid);
+
+        if (isEmpty($notification)) {
+            Response()->jsonError('Notification ikke fundet', [], 404);
+        }
+
+        // Verify notification belongs to current organisation
+        $notificationOrgId = is_object($notification->organisation) ? $notification->organisation->uid : $notification->organisation;
+        if ($notificationOrgId !== $organisationId) {
+            Response()->jsonError('Du har ikke adgang til denne notification', [], 403);
+        }
+
+        // Mark as resolved
+        $success = $handler->markResolved($notificationUid, __uuid());
+
+        if (!$success) {
+            Response()->jsonError('Kunne ikke markere som løst', [], 500);
+        }
+
+        Response()->jsonSuccess('Notification markeret som løst');
+    }
+
+
+    // =====================================================
+    // PENDING VALIDATION REFUNDS
+    // =====================================================
+
+    /**
+     * Get pending validation refunds for the current organisation
+     */
+    #[NoReturn] public static function getPendingValidationRefunds(array $args): void {
+        $organisationId = __oid();
+        if (isEmpty($organisationId)) {
+            Response()->jsonError('Ingen organisation valgt', [], 400);
+        }
+
+        // Get location scope if user has limited location access
+        $locationIds = Methods::locations()->userLocationPredicate();
+
+        $pendingRefunds = Methods::pendingValidationRefunds()->getPendingForOrganisation($organisationId, $locationIds);
+
+        // Format for response
+        $refunds = [];
+        foreach ($pendingRefunds as $refund) {
+            $locationName = is_object($refund->location) ? $refund->location->name : null;
+            $orderObj = is_object($refund->order) ? $refund->order : null;
+
+            $refunds[] = [
+                'uid' => $refund->uid,
+                'order_uid' => is_object($refund->order) ? $refund->order->uid : $refund->order,
+                'order_name' => $orderObj?->name ?? null,
+                'amount' => $refund->amount,
+                'currency' => $refund->currency,
+                'location_name' => $locationName,
+                'failure_reason' => $refund->failure_reason,
+                'created_at' => $refund->created_at,
+                'test' => (bool)$refund->test,
+            ];
+        }
+
+        Response()->jsonSuccess('', [
+            'refunds' => $refunds,
+            'count' => count($refunds),
+        ]);
+    }
+
+    /**
+     * Attempt to refund a pending validation refund via Viva API
+     */
+    #[NoReturn] public static function attemptPendingRefund(array $args): void {
+        $refundUid = $args['uid'] ?? null;
+        if (isEmpty($refundUid)) {
+            Response()->jsonError('Mangler refund ID', [], 400);
+        }
+
+        $organisationId = __oid();
+        if (isEmpty($organisationId)) {
+            Response()->jsonError('Ingen organisation valgt', [], 400);
+        }
+
+        $handler = Methods::pendingValidationRefunds();
+        $refund = $handler->get($refundUid);
+
+        if (isEmpty($refund)) {
+            Response()->jsonError('Refund ikke fundet', [], 404);
+        }
+
+        // Verify refund belongs to current organisation
+        $refundOrgId = is_object($refund->organisation) ? $refund->organisation->uid : $refund->organisation;
+        if ($refundOrgId !== $organisationId) {
+            Response()->jsonError('Du har ikke adgang til denne refund', [], 403);
+        }
+
+        // Check location permissions if user has limited location access
+        $locationIds = Methods::locations()->userLocationPredicate();
+        if (!empty($locationIds)) {
+            $refundLocationId = is_object($refund->location) ? $refund->location->uid : $refund->location;
+            if (!in_array($refundLocationId, $locationIds)) {
+                Response()->jsonError('Du har ikke adgang til denne lokation', [], 403);
+            }
+        }
+
+        // Check if already refunded
+        if ($refund->status === 'REFUNDED') {
+            Response()->jsonError('Denne refund er allerede markeret som refunderet', [], 400);
+        }
+
+        // Get merchant ID from organisation
+        $organisation = Settings::$organisation->organisation ?? Methods::organisations()->get($organisationId);
+        if (isEmpty($organisation) || isEmpty($organisation->merchant_prid)) {
+            Response()->jsonError('Organisation mangler Viva merchant ID', [], 400);
+        }
+
+        // Attempt the refund via Viva
+        $viva = Methods::viva();
+        if (!$refund->test) {
+            $viva->live();
+        }
+
+        $transactionId = $refund->prid;
+        if (isEmpty($transactionId)) {
+            Response()->jsonError('Mangler transaktions-ID for refund', [], 400);
+        }
+
+        $refundResult = $viva->refundTransaction(
+            $organisation->merchant_prid,
+            $transactionId,
+            $refund->amount,
+            null,
+            $refund->currency
+        );
+
+        if (empty($refundResult) || !isset($refundResult['TransactionId'])) {
+            $errorMsg = $refundResult['ErrorText'] ?? $refundResult['message'] ?? 'Refundering fejlede';
+            Response()->jsonError($errorMsg, ['viva_response' => $refundResult], 400);
+        }
+
+        // Mark as refunded
+        $handler->markAsRefunded($refundUid, __uuid());
+
+        Response()->jsonSuccess('Refundering gennemført', [
+            'refund_transaction_id' => $refundResult['TransactionId'],
+        ]);
+    }
+
+    /**
+     * Mark a pending validation refund as manually refunded
+     */
+    #[NoReturn] public static function markPendingRefundAsRefunded(array $args): void {
+        $refundUid = $args['uid'] ?? null;
+        if (isEmpty($refundUid)) {
+            Response()->jsonError('Mangler refund ID', [], 400);
+        }
+
+        $organisationId = __oid();
+        if (isEmpty($organisationId)) {
+            Response()->jsonError('Ingen organisation valgt', [], 400);
+        }
+
+        $handler = Methods::pendingValidationRefunds();
+        $refund = $handler->get($refundUid);
+
+        if (isEmpty($refund)) {
+            Response()->jsonError('Refund ikke fundet', [], 404);
+        }
+
+        // Verify refund belongs to current organisation
+        $refundOrgId = is_object($refund->organisation) ? $refund->organisation->uid : $refund->organisation;
+        if ($refundOrgId !== $organisationId) {
+            Response()->jsonError('Du har ikke adgang til denne refund', [], 403);
+        }
+
+        // Check location permissions if user has limited location access
+        $locationIds = Methods::locations()->userLocationPredicate();
+        if (!empty($locationIds)) {
+            $refundLocationId = is_object($refund->location) ? $refund->location->uid : $refund->location;
+            if (!in_array($refundLocationId, $locationIds)) {
+                Response()->jsonError('Du har ikke adgang til denne lokation', [], 403);
+            }
+        }
+
+        // Check if already refunded
+        if ($refund->status === 'REFUNDED') {
+            Response()->jsonError('Denne refund er allerede markeret som refunderet', [], 400);
+        }
+
+        // Mark as refunded
+        $success = $handler->markAsRefunded($refundUid, __uuid());
+
+        if (!$success) {
+            Response()->jsonError('Kunne ikke markere som refunderet', [], 500);
+        }
+
+        Response()->jsonSuccess('Refund markeret som refunderet');
+    }
+
 }

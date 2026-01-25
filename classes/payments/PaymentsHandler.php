@@ -33,7 +33,13 @@ class PaymentsHandler extends Crud {
         return $this->update(['status' => 'CANCELLED'], ['uid' => $id]);
     }
     public function setRefunded(string $id): bool {
-        return $this->update(['status' => 'REFUNDED'], ['uid' => $id]);
+        return $this->update([
+            'status' => 'REFUNDED',
+            'failure_reason' => null,
+            'viva_event_id' => null,
+            'scheduled_at' => null,
+            'rykker_scheduled_at' => null,
+        ], ['uid' => $id]);
     }
     public function setFailed(string $id): bool {
         return $this->update(['status' => 'FAILED'], ['uid' => $id]);
@@ -137,6 +143,10 @@ class PaymentsHandler extends Crud {
         $updateData = [
             'status' => 'COMPLETED',
             'paid_at' => date('Y-m-d H:i:s'),
+            'failure_reason' => null,
+            'viva_event_id' => null,
+            'scheduled_at' => null,
+            'rykker_scheduled_at' => null,
         ];
 
         if (!isEmpty($prid)) {
@@ -357,7 +367,10 @@ class PaymentsHandler extends Crud {
 
     /**
      * Get all PAST_DUE payments that are scheduled for rykker check
-     * Only returns payments where scheduled_at <= now (ready for next rykker)
+     * Only returns payments where rykker_scheduled_at <= now (ready for next rykker)
+     *
+     * Note: rykker_scheduled_at is separate from scheduled_at (payment retry).
+     * Payments where rykker_scheduled_at is null won't be picked up (merchant fault - no rykker).
      *
      * @return Collection
      */
@@ -366,7 +379,8 @@ class PaymentsHandler extends Crud {
             $this->queryBuilder()
                 ->where('status', 'PAST_DUE')
                 ->where('sent_to_collection', 0)
-                ->where('scheduled_at', '<=', date('Y-m-d H:i:s'))
+                ->whereNotNull('rykker_scheduled_at')
+                ->where('rykker_scheduled_at', '<=', date('Y-m-d H:i:s'))
         );
     }
 
@@ -425,7 +439,7 @@ class PaymentsHandler extends Crud {
             // Rykker 3: Schedule for collection check in 7 days (grace period)
             // Don't mark sent_to_collection yet - rykkerChecks will do that after 7 days
             $collectionSchedule = date('Y-m-d H:i:s', strtotime('+7 days'));
-            $updateData['scheduled_at'] = $collectionSchedule;
+            $updateData['rykker_scheduled_at'] = $collectionSchedule;
             debugLog([
                 'payment_id' => $paymentId,
                 'action' => 'scheduled_for_collection',
@@ -433,12 +447,12 @@ class PaymentsHandler extends Crud {
             ], 'SEND_RYKKER_COLLECTION_SCHEDULED');
         } else {
             // Schedule next rykker check
-            $nextScheduledAt = $this->calculateNextRykkerDate($rykkerLevel);
-            $updateData['scheduled_at'] = $nextScheduledAt;
+            $nextRykkerScheduledAt = $this->calculateNextRykkerDate($rykkerLevel);
+            $updateData['rykker_scheduled_at'] = $nextRykkerScheduledAt;
             debugLog([
                 'payment_id' => $paymentId,
                 'current_level' => $rykkerLevel,
-                'next_scheduled_at' => $nextScheduledAt,
+                'next_rykker_scheduled_at' => $nextRykkerScheduledAt,
             ], 'SEND_RYKKER_NEXT_SCHEDULED');
         }
 

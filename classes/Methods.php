@@ -57,6 +57,8 @@ class Methods {
     public static function orders(): \classes\payments\OrderHandler { return new \classes\payments\OrderHandler(); }
     public static function payments(): \classes\payments\PaymentsHandler { return new \classes\payments\PaymentsHandler(); }
     public static function paymentMethods(): \classes\payments\PaymentMethodsHandler { return new \classes\payments\PaymentMethodsHandler(); }
+    public static function requiresAttentionNotifications(): \classes\payments\RequiresAttentionNotificationHandler { return new \classes\payments\RequiresAttentionNotificationHandler(); }
+    public static function pendingValidationRefunds(): \classes\payments\PendingValidationRefundsHandler { return new \classes\payments\PendingValidationRefundsHandler(); }
     public static function paymentProviders(): \classes\payments\PaymentProvidersHandler { return new \classes\payments\PaymentProvidersHandler(); }
     public static function terminals(): \classes\organisations\TerminalHandler { return new \classes\organisations\TerminalHandler(); }
     public static function terminalSessions(): \classes\organisations\TerminalSessionHandler { return new \classes\organisations\TerminalSessionHandler(); }

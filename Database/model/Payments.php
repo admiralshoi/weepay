@@ -29,6 +29,7 @@ class Payments extends \Database\Model {
         "test"              => "tinyInteger",
         "processing_at"     => ["type" => "timestamp", "nullable" => true, "default" => null],
         "scheduled_at"      => ["type" => "timestamp", "nullable" => true, "default" => null],
+        "rykker_scheduled_at" => ["type" => "timestamp", "nullable" => true, "default" => null],
         "attempts"          => ["type" => "integer", "default" => 0],
         // Rykker (Dunning) fields
         "rykker_level"      => ["type" => "integer", "default" => 0],

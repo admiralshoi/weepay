@@ -416,11 +416,22 @@ class CustomerPageController {
 
             if ($order->payment_plan === 'pushed') {
                 // For pushed plan: refund the 1 unit validation and store transaction ID
+                // Get UIDs for error notifications and pending refund tracking
+                $organisationUid = is_object($order->organisation) ? $order->organisation->uid : $order->organisation;
+                $customerUid = is_object($order->uuid) ? $order->uuid->uid : $order->uuid;
+                $locationUid = is_object($order->location) ? $order->location->uid : $order->location;
+                $providerUid = is_object($order->provider) ? $order->provider->uid : $order->provider;
+
                 $validationResult = CardValidationService::processValidationPayment(
                     $merchantId,
                     $orderCode,
                     $currency,
-                    $isTestOrder
+                    $isTestOrder,
+                    $organisationUid,
+                    $order->uid,
+                    $customerUid,
+                    $locationUid,
+                    $providerUid
                 );
 
                 if ($validationResult['success'] && !empty($validationResult['transaction_id'])) {

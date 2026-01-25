@@ -1919,8 +1919,8 @@ class ApiController {
                         'refundTransactionId' => $result['TransactionId'],
                     ], 'ADMIN_REFUND_ORDER_PAYMENT_SUCCESS');
 
-                    // Update payment status to REFUNDED
-                    $paymentHandler->update(['status' => 'REFUNDED'], ['uid' => $payment->uid]);
+                    // Update payment status to REFUNDED (clears failure_reason etc.)
+                    $paymentHandler->setRefunded($payment->uid);
                     $totalRefunded += (float)$payment->amount;
                     $paymentsRefundedCount++;
                 } else {
@@ -1932,6 +1932,20 @@ class ApiController {
                         'fullResult' => $result,
                     ], 'ADMIN_REFUND_ORDER_PAYMENT_ERROR');
                     $refundErrors[] = "Betaling {$payment->uid}: {$errorMsg}";
+
+                    // Create attention notification if this is a merchant config issue
+                    $orgUid = is_object($order->organisation) ? $order->organisation->uid : $order->organisation;
+                    Methods::requiresAttentionNotifications()->createFromVivaError(
+                        'refund',
+                        $result ?? [],
+                        $orgUid,
+                        [
+                            'payment_uid' => $payment->uid,
+                            'order_uid' => $order->uid,
+                            'amount' => $payment->amount,
+                            'currency' => $payment->currency,
+                        ]
+                    );
                 }
             }
         }
@@ -2131,13 +2145,28 @@ class ApiController {
         if (isEmpty($result) || !isset($result['TransactionId'])) {
             $errorMsg = $result['message'] ?? $result['Message'] ?? $result['ErrorText'] ?? 'Ukendt fejl fra Viva';
             debugLog(['error' => 'Viva refund failed', 'errorMsg' => $errorMsg, 'fullResult' => $result], 'ADMIN_REFUND_PAYMENT_ERROR');
+
+            // Create attention notification if this is a merchant config issue
+            $orderId = is_object($payment->order) ? $payment->order->uid : $payment->order;
+            Methods::requiresAttentionNotifications()->createFromVivaError(
+                'refund',
+                $result ?? [],
+                $organisation->uid,
+                [
+                    'payment_uid' => $payment->uid,
+                    'order_uid' => $orderId,
+                    'amount' => $payment->amount,
+                    'currency' => $payment->currency,
+                ]
+            );
+
             Response()->jsonError("Refundering fejlede: {$errorMsg}");
         }
 
         debugLog(['success' => true, 'refundTransactionId' => $result['TransactionId']], 'ADMIN_REFUND_PAYMENT_VIVA_SUCCESS');
 
-        // Update payment status
-        $paymentHandler->update(['status' => 'REFUNDED'], ['uid' => $paymentId]);
+        // Update payment status (clears failure_reason etc.)
+        $paymentHandler->setRefunded($paymentId);
         debugLog(['paymentStatusUpdated' => 'REFUNDED', 'paymentId' => $paymentId], 'ADMIN_REFUND_PAYMENT_UPDATED');
 
         // Update order if exists
@@ -2938,6 +2967,94 @@ class ApiController {
         $typeUid = Methods::policyTypes()->getUidForType($type);
         $history = Methods::policyChangeLogs()->getTypeHistory($typeUid);
         Response()->jsonSuccess('', ['versions' => $history]);
+    }
+
+
+    // =====================================================
+    // REQUIRES ATTENTION NOTIFICATIONS
+    // =====================================================
+
+    /**
+     * Get all unresolved admin notifications
+     */
+    #[NoReturn] public static function getAttentionNotifications(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', [], 403);
+        }
+
+        $handler = Methods::requiresAttentionNotifications();
+
+        // Get filters from request
+        // Admin can see all notifications (admin + merchant) unless filtered
+        $filters = [
+            'resolved' => (int)($args['resolved'] ?? 0),
+        ];
+
+        // Only filter by target_audience if explicitly provided
+        if (!isEmpty($args['target_audience'] ?? null)) {
+            $filters['target_audience'] = $args['target_audience'];
+        }
+
+        if (!isEmpty($args['source'] ?? null)) {
+            $filters['source'] = $args['source'];
+        }
+        if (!isEmpty($args['severity'] ?? null)) {
+            $filters['severity'] = $args['severity'];
+        }
+        if (!isEmpty($args['type'] ?? null)) {
+            $filters['type'] = $args['type'];
+        }
+
+        $notifications = $handler->getFiltered($filters);
+        $stats = $handler->getAdminStats();
+
+        Response()->jsonSuccess('', [
+            'notifications' => $notifications->toArray(),
+            'count' => $notifications->count(),
+            'stats' => $stats,
+        ]);
+    }
+
+    /**
+     * Mark an admin notification as resolved
+     */
+    #[NoReturn] public static function resolveAttentionNotification(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', [], 403);
+        }
+
+        $notificationUid = $args['uid'] ?? null;
+        if (isEmpty($notificationUid)) {
+            Response()->jsonError('Mangler notification ID', [], 400);
+        }
+
+        $handler = Methods::requiresAttentionNotifications();
+        $notification = $handler->get($notificationUid);
+
+        if (isEmpty($notification)) {
+            Response()->jsonError('Notification ikke fundet', [], 404);
+        }
+
+        // Mark as resolved
+        $success = $handler->markResolved($notificationUid, __uuid());
+
+        if (!$success) {
+            Response()->jsonError('Kunne ikke markere som løst', [], 500);
+        }
+
+        Response()->jsonSuccess('Notification markeret som løst');
+    }
+
+    /**
+     * Get admin notification stats
+     */
+    #[NoReturn] public static function getAttentionNotificationStats(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', [], 403);
+        }
+
+        $stats = Methods::requiresAttentionNotifications()->getAdminStats();
+        Response()->jsonSuccess('', ['stats' => $stats]);
     }
 
 }

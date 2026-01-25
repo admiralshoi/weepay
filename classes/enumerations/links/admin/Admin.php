@@ -34,6 +34,9 @@ class Admin {
     public string $dashboardReports = "dashboard/reports";
     public string $dashboardSupport = "dashboard/support";
 
+    // Dynamic routes with placeholder (for JS)
+    public string $organisationDetail = "dashboard/organisations/{uid}";
+
     // Panel routes (system configuration)
     public string $panel = "panel";
     public string $panelSettings = "panel/settings";

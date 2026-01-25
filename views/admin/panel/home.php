@@ -28,6 +28,31 @@ $pageTitle = "Panel";
                 </div>
             </div>
 
+            <!-- Requires Attention Notifications -->
+            <div id="admin-attention-notifications-container" class="w-100" style="display: none;">
+                <div class="card border-radius-10px border-danger" style="border-width: 2px;">
+                    <div class="card-body">
+                        <div class="flex-row-between flex-align-start flex-wrap" style="gap: 1rem;">
+                            <div class="flex-row-start flex-align-center" style="gap: .75rem;">
+                                <div class="square-45 flex-row-center flex-align-center bg-danger border-radius-50">
+                                    <i class="font-22 mdi mdi-alert-outline color-white"></i>
+                                </div>
+                                <div class="flex-col-start">
+                                    <p class="mb-1 font-18 font-weight-bold color-dark">
+                                        Kræver opmærksomhed
+                                        <span id="admin-attention-count" class="danger-box font-13 ms-2">0</span>
+                                    </p>
+                                    <p class="mb-0 font-13 color-gray">Der er system problemer der kræver handling</p>
+                                </div>
+                            </div>
+                            <button onclick="toggleAdminAttentionNotifications()" class="btn-v2 mute-btn">
+                                <i class="mdi mdi-chevron-down" id="admin-attention-toggle-icon"></i>
+                            </button>
+                        </div>
+                        <div id="admin-attention-notifications-list" class="mt-3" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Quick Links Grid -->
             <div class="row rg-15">

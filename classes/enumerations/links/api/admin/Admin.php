@@ -92,6 +92,10 @@ class Panel {
     public string $faqsDelete = "api/admin/faqs/delete";
     public string $faqsToggleActive = "api/admin/faqs/toggle-active";
     public string $faqsReorder = "api/admin/faqs/reorder";
+
+    // Attention notifications
+    public string $attentionNotifications = "api/admin/attention-notifications";
+    public string $attentionNotificationsResolve = "api/admin/attention-notifications/{uid}/resolve";
 }
 
 class Support {

@@ -6,6 +6,15 @@ class Merchant {
 
     public MerchantSupport $support;
 
+    // Attention notifications
+    public string $attentionNotifications = "api/merchant/attention-notifications";
+    public string $attentionNotificationsResolve = "api/merchant/attention-notifications/{uid}/resolve";
+
+    // Pending validation refunds
+    public string $pendingValidationRefunds = "api/merchant/pending-validation-refunds";
+    public string $pendingValidationRefundsMarkRefunded = "api/merchant/pending-validation-refunds/{uid}/mark-refunded";
+    public string $pendingValidationRefundsAttemptRefund = "api/merchant/pending-validation-refunds/{uid}/refund";
+
     function __construct() {
         $this->support = new MerchantSupport();
     }

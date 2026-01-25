@@ -57,7 +57,7 @@ class Signicat {
 
 
 
-    private static bool $sandbox = false;
+    private static bool $sandbox = true;
     private const SANDBOX_CLIENT_ID = "sandbox-biting-clock-989";
 //    private const SANDBOX_CLIENT_ID = "sandbox-tricky-turtle-183";
     private const SANDBOX_CLIENT_SECRET = "NY8YZLg05SlEsRTYgY7ANOCPzDQi1789r98uI4kTOTAdJzBY";
