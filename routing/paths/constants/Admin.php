@@ -567,6 +567,36 @@ class Admin extends \routing\paths\Paths {
         ],
     ];
 
+    const ADMIN_DASHBOARD_SETTINGS = [
+        "template" => "ADMIN_INNER_HTML",
+        "view" => "admin.dashboard.settings",
+        "custom_scripts" => "templates.scripts",
+        "title" => "Indstillinger",
+        "head" => "templates.head",
+        "assets" => [
+            "main" => [
+                "js.server.js",
+                "js.main.js",
+                "js.utility.js",
+                "js.features.js",
+                "js.admin-settings.js",
+                "js.initializer.js",
+                "css.main.css",
+                "css.styles2.css",
+                "css.styles3.css",
+                "css.responsiveness.css",
+            ],
+            "base" => null,
+            "vendor" => [
+                "vendor.sweetalert.sweetalert2.min.css",
+                "vendor.sweetalert.sweetalert2.min.js",
+            ],
+            "custom" => [
+                "js.includes.SweetPrompt.js",
+            ],
+        ],
+    ];
+
 
     // =====================================================
     // PANEL PAGES (System configuration - existing + new)

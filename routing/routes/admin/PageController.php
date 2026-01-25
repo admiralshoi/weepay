@@ -1712,4 +1712,12 @@ class PageController {
         return Views("ADMIN_DASHBOARD_SUPPORT_DETAIL", compact('ticket', 'replies'));
     }
 
+    public static function settings(array $args): mixed {
+        $user = Methods::users()->get(__uuid());
+        $authLocal = Methods::localAuthentication()->getFirst(['user' => __uuid()]);
+        $worldCountries = Methods::misc()::getCountriesLib(WORLD_COUNTRIES);
+
+        return Views("ADMIN_DASHBOARD_SETTINGS", compact('user', 'authLocal', 'worldCountries'));
+    }
+
 }

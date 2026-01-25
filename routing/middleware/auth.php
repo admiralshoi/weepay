@@ -67,6 +67,9 @@ function merchant(): bool {
 function merchantOrConsumer(): bool {
     return merchant()  || consumer();
 }
+function anyUser(): bool {
+    return merchant() || consumer() || admin();
+}
 function consumer(): bool {
     $result = Methods::isConsumer();
     $user = Methods::users()->get(__uuid());

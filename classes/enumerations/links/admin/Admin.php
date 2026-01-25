@@ -19,6 +19,7 @@ class Admin {
     public string $reports = "dashboard/reports";
     public string $support = "dashboard/support";
     public string $supportDetail = "dashboard/support/{id}";
+    public string $settings = "settings";
 
     // Dashboard route aliases (for views using dashboardX naming)
     public string $dashboardUsers = "dashboard/users";

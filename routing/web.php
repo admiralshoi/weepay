@@ -205,8 +205,8 @@ Routes::group(['api','requiresApiLogin'], function() {
     Routes::post(Links::$api->user->notificationsMarkAllRead, "UserApiController::notificationsMarkAllRead");
     Routes::get(Links::$api->user->notificationsUnreadCount, "UserApiController::notificationsUnreadCount");
 
-    // Common user settings API (for both merchants and consumers)
-    Routes::group(['merchantOrConsumer'], function() {
+    // Common user settings API (for merchants, consumers, and admins)
+    Routes::group(['anyUser'], function() {
         Routes::post(Links::$api->user->updateProfile, "UserApiController::updateProfile");
         Routes::post(Links::$api->user->updateAddress, "UserApiController::updateAddress");
         Routes::post(Links::$api->user->updatePassword, "UserApiController::updatePassword");
@@ -603,6 +603,7 @@ Routes::group(['requiresLogin', "admin"], function() {
     Routes::get(Links::$admin->reports, "admin.PageController::reports");
     Routes::get(Links::$admin->support, "admin.PageController::support");
     Routes::get(Links::$admin->support . "/{id}", "admin.PageController::supportDetail");
+    Routes::get(Links::$admin->settings, "admin.PageController::settings");
     /**
      *  =========================================
      *  ============ DASHBOARD END ==============
