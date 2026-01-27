@@ -189,6 +189,17 @@ foreach ($cronConfig as $type => $config) {
                 </button>
             </div>
             <div class="modal-body">
+                <!-- Date Selector -->
+                <div class="flex-row-between flex-align-center mb-3">
+                    <div class="flex-row-start flex-align-center" style="gap: .5rem;">
+                        <label class="mb-0 font-13 color-gray">Dato:</label>
+                        <select id="logDateSelector" class="form-select-v2 h-35px" style="width: 180px;" onchange="loadLogsForDate()">
+                            <option value="">Henter datoer...</option>
+                        </select>
+                    </div>
+                    <span id="logDateInfo" class="font-12 color-gray"></span>
+                </div>
+
                 <div id="logsContent" class="font-13" style="white-space: pre-wrap; font-family: monospace; background: #f8f9fa; padding: 15px; border-radius: 8px; max-height: 500px; overflow-y: auto;">
                     Henter logs...
                 </div>

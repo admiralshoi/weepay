@@ -25,6 +25,13 @@ Routes::get(Links::$app->auth->merchantLogin, "auth.PageController::merchantDash
 Routes::get(Links::$app->auth->merchantSignup, "auth.PageController::merchantDashboardSignup");
 Routes::get(Links::$app->auth->adminLogin, "auth.PageController::adminDashboardLogin"); // Unlisted - not linked anywhere
 Routes::get("qr", "GeneralController::generateQr");
+
+// SEO routes (sitemap index structure)
+Routes::get("sitemap.xml", "SeoController::sitemap");
+Routes::get("sitemap-static.xml", "SeoController::sitemapStatic");
+Routes::get("sitemap-org-{uid}.xml", "SeoController::sitemapOrganisation");
+Routes::get("robots.txt", "SeoController::robots");
+Routes::get("favicon.ico", "SeoController::favicon");
 /**
  *  =========================================
  *  ============= OPEN PAGES END ============
@@ -802,6 +809,7 @@ Routes::group(['requiresApiLogin', "admin", "api"], function() {
     // Cronjob Admin API
     Routes::post("api/admin/cronjobs/force-run", "api.CronjobController::forceRun");
     Routes::get("api/admin/cronjobs/logs", "api.CronjobController::getLogs");
+    Routes::get("api/admin/cronjobs/log-dates", "api.CronjobController::getLogDates");
 });
 /**
  *  =========================================

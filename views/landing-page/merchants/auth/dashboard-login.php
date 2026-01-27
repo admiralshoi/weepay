@@ -162,6 +162,11 @@ $pageTitle = "Forhandler login";
             </div>
 
 
+            <a href="<?=__url(Links::$merchant->public->onboardingGuide)?>" class="flex-row-center flex-align-center color-blue font-13 hover-underline" style="gap: .35rem;" target="_blank">
+                <i class="mdi mdi-book-open-page-variant-outline"></i>
+                <span>Læs vores onboarding guide</span>
+            </a>
+
             <div class="flex-row-center flex-align-center flex-wrap" style="gap: .5rem;">
                 <a href="<?=__url(Links::$policies->merchant->termsOfUse)?>" class="color-gray font-12 hover-underline hover-color-blue">Vilkår & Betingelser</a>
                 &bullet;

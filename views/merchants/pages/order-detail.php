@@ -37,12 +37,16 @@ $orderStatusMap = [
 $orderStatusInfo = $orderStatusMap[$order->status] ?? null;
 
 // Check if order has pending/scheduled payments (future payments that will be voided on refund)
+// Check if any payments have been completed (need refund)
 $hasPendingPayments = false;
+$hasCompletedPayments = false;
 if(!isEmpty($payments)) {
     foreach($payments->list() as $p) {
         if(in_array($p->status, ['PENDING', 'SCHEDULED'])) {
             $hasPendingPayments = true;
-            break;
+        }
+        if($p->status === 'COMPLETED') {
+            $hasCompletedPayments = true;
         }
     }
 }
@@ -303,8 +307,8 @@ if(!isEmpty($payments)) {
 
                         <?php if($order->status === 'COMPLETED' || $order->status === 'PENDING'): ?>
                         <button type="button" class="btn-v2 danger-outline-btn w-100 flex-row-center flex-align-center" style="gap: .5rem;" data-refund-order="<?=$order->uid?>" data-has-pending-payments="<?=$hasPendingPayments ? 'true' : 'false'?>">
-                            <i class="mdi mdi-cash-refund font-16"></i>
-                            <span class="font-14">Annuller & Refunder</span>
+                            <i class="mdi mdi-<?=$hasCompletedPayments ? 'cash-refund' : 'cancel'?> font-16"></i>
+                            <span class="font-14"><?=$hasCompletedPayments ? 'Annuller & Refunder' : 'Annuller'?></span>
                         </button>
                         <?php endif; ?>
                     </div>

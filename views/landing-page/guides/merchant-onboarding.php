@@ -375,7 +375,7 @@ $orgWordLower = strtolower($orgWord);
             <ol>
                 <li><a href="#step-1">Opret din <?=$orgWordLower?></a></li>
                 <li><a href="#step-2">Forbind Viva Wallet</a> <span class="step-badge critical">Vigtigt</span></li>
-                <li><a href="#step-3">Aktivér gentagende betalinger</a> <span class="step-badge critical">Vigtigt</span></li>
+                <li><a href="#step-3">Aktivér gentagende betalinger og refunderinger</a> <span class="step-badge critical">Vigtigt</span></li>
                 <li><a href="#step-4">Opret din første butik</a></li>
                 <li><a href="#step-5">Opret en terminal</a></li>
                 <li><a href="#step-6">Opsæt din butikside</a></li>
@@ -513,25 +513,25 @@ $orgWordLower = strtolower($orgWord);
             </div>
         </div>
 
-        <!-- Step 3: Enable Recurring Payments -->
+        <!-- Step 3: Enable Recurring Payments and Refunds -->
         <div class="guide-step" id="step-3">
             <div class="step-header">
                 <div class="step-number critical">3</div>
-                <h2 class="step-title">Aktivér gentagende betalinger <span class="step-badge critical">Vigtigt</span></h2>
+                <h2 class="step-title">Aktivér gentagende betalinger og refunderinger <span class="step-badge critical">Vigtigt</span></h2>
             </div>
             <div class="step-content">
-                <p>For at dine kunder kan benytte WeePay's fleksible betalingsmuligheder (delbetaling, betal d. 1. i måneden, etc.), skal du aktivere gentagende betalinger i din Viva Wallet-konto.</p>
+                <p>For at dine kunder kan benytte WeePay's fleksible betalingsmuligheder (delbetaling, betal d. 1. i måneden, etc.), skal du aktivere gentagende betalinger og refunderinger i din Viva Wallet-konto.</p>
 
                 <div class="guide-warning">
-                    <p><strong>Vigtigt:</strong> Uden dette trin vil dine kunder kun kunne betale med det samme. Delbetaling og "betal senere" funktionerne kræver denne indstilling.</p>
+                    <p><strong>Vigtigt:</strong> Uden disse indstillinger vil dine kunder kun kunne betale med det samme. Delbetaling og "betal senere" funktionerne kræver begge indstillinger - refunderinger bruges til kortvalidering, hvor vi trækker 1 kr. og refunderer det øjeblikkeligt for at bekræfte kortet.</p>
                 </div>
 
                 <ol>
                     <li>Log ind på dit <a href="https://demo.vivapayments.com" target="_blank">Viva Wallet dashboard</a></li>
                     <li>Gå til <strong>Settings</strong> (Indstillinger)</li>
                     <li>Vælg <strong>API Access</strong></li>
-                    <li>Find indstillingen for <strong>"Recurring Payments"</strong> eller <strong>"Card-on-file"</strong></li>
-                    <li>Aktivér denne funktion</li>
+                    <li>Find og aktivér <strong>"Recurring Payments"</strong> (eller <strong>"Card-on-file"</strong>)</li>
+                    <li>Find og aktivér <strong>"Refunds"</strong></li>
                 </ol>
 
                 <div class="guide-screenshot">

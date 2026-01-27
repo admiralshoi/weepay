@@ -32,6 +32,24 @@ $pageTitle = $location->name;
     var pageTitle = <?=json_encode($pageTitle)?>;
 </script>
 
+<!-- LocalBusiness Schema.org JSON-LD -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": <?=json_encode($location->name)?>,
+    "image": <?=json_encode($logoUrl)?>,
+    "url": <?=json_encode(HOST . 'merchant/' . $slug)?><?php if($hasAddress): ?>,
+    "address": {
+        "@type": "PostalAddress",
+        "streetAddress": <?=json_encode($address->address ?? '')?>,
+        "addressLocality": <?=json_encode($address->city ?? '')?>,
+        "postalCode": <?=json_encode($address->postal ?? '')?>,
+        "addressCountry": "DK"
+    }<?php endif; ?>
+}
+</script>
+
 <!-- Hero Section -->
 <div class="position-relative" style="min-height: 300px; background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('<?=$heroImageUrl?>'); background-size: cover; background-position: center;">
     <div class="container py-4">

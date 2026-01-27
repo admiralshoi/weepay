@@ -544,7 +544,7 @@ const ConsumerPaymentActions = (function() {
     }
 
     /**
-     * Pay Now button handler (for PAST_DUE payments)
+     * Pay Now button handler (for unpaid payments)
      * Located on payment-detail.php
      */
     function bindPayNowButton() {
@@ -555,30 +555,62 @@ const ConsumerPaymentActions = (function() {
             const paymentUid = $(this).data('uid');
             if (!paymentUid) return;
 
-            // URL is set via JS variable from view (using Links class)
-            const url = typeof consumerPayNowUrl !== 'undefined'
-                ? consumerPayNowUrl
-                : `api/consumer/payments/${paymentUid}/pay-now`;
+            // Get payment data from view
+            const data = typeof payNowData !== 'undefined' ? payNowData : null;
 
-            screenLoader.show('Behandler betaling...');
-
-            try {
-                const result = await post(url);
-                screenLoader.hide();
-
-                if (result.status === 'success') {
-                    queueNotificationOnLoad('Gennemført', 'Betaling gennemført!', 'success');
-                    location.reload();
-                } else {
-                    const errorMsg = result.error?.message || result.message || 'Betaling fejlede';
-                    showErrorNotification('Fejl', errorMsg);
+            // Build confirmation message
+            let confirmHtml = '';
+            if (data) {
+                const formattedAmount = formatDanishNumber(data.amount);
+                confirmHtml = `<div class="text-left" style="line-height: 1.6;">`;
+                confirmHtml += `<p class="mb-2"><strong>Beløb:</strong> ${formattedAmount} ${data.currencySymbol}</p>`;
+                if (data.rykkerFee > 0) {
+                    confirmHtml += `<p class="mb-2 font-12 color-gray">(Heraf rykkergebyr: ${formatDanishNumber(data.rykkerFee)} ${data.currencySymbol})</p>`;
                 }
-            } catch (error) {
-                screenLoader.hide();
-                console.error('Pay now error:', error);
-                showErrorNotification('Fejl', 'Der opstod en netværksfejl');
+                if (data.hasCardInfo) {
+                    confirmHtml += `<p class="mb-0"><strong>Kort:</strong> ${data.cardBrand.toUpperCase()} (**${data.cardLast4})</p>`;
+                }
+                confirmHtml += `</div>`;
+            } else {
+                confirmHtml = 'Er du sikker på at du vil betale denne betaling nu?';
             }
+
+            // Show confirmation popup
+            SweetPrompt.confirm('Bekræft betaling', confirmHtml, {
+                useHtml: true,
+                confirmButtonText: 'Betal nu',
+                cancelButtonText: 'Annuller',
+                onConfirm: async function() {
+                    screenLoader.show("Charging...")
+                    // URL is set via JS variable from view (using Links class)
+                    const url = typeof consumerPayNowUrl !== 'undefined'
+                        ? consumerPayNowUrl
+                        : `api/consumer/payments/${paymentUid}/pay-now`;
+
+                    const result = await post(url);
+                    screenLoader.hide();
+
+                    if (result.status === 'success') {
+                        queueNotificationOnLoad('Gennemført', 'Betaling gennemført!', 'success');
+                        location.reload();
+                        return { status: 'success' };
+                    } else {
+                        showErrorNotification("Kunne ikke fuldføre betalingen", result.error.message)
+                        // return { status: 'error', error: result.error?.message || result.message || 'Betaling fejlede' };
+                    }
+                },
+                success: { title: 'Gennemført', text: 'Betaling gennemført!' },
+                error: { title: 'Fejl', text: '<_ERROR_MSG_>' },
+                refireAfter: false
+            });
         });
+    }
+
+    function formatDanishNumber(num) {
+        return new Intl.NumberFormat('da-DK', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(num);
     }
 
     /**
@@ -600,24 +632,50 @@ const ConsumerPaymentActions = (function() {
                 return;
             }
 
-            screenLoader.show('Behandler betalinger...');
+            // Get outstanding data from view
+            const data = typeof payOutstandingData !== 'undefined' ? payOutstandingData : null;
 
-            try {
-                const result = await post(url);
-                screenLoader.hide();
-
-                if (result.status === 'success') {
-                    queueNotificationOnLoad('Gennemført', result.message || 'Betalinger gennemført!', 'success');
-                    location.reload();
-                } else {
-                    const errorMsg = result.error?.message || result.message || 'Betaling fejlede';
-                    showErrorNotification('Fejl', errorMsg);
+            // Build confirmation message
+            let confirmHtml = '';
+            if (data) {
+                const formattedAmount = formatDanishNumber(data.amount);
+                confirmHtml = `<div class="text-left" style="line-height: 1.6;">`;
+                confirmHtml += `<p class="mb-2"><strong>Antal betalinger:</strong> ${data.count}</p>`;
+                confirmHtml += `<p class="mb-2"><strong>Beløb:</strong> ${formattedAmount} ${data.currencySymbol}</p>`;
+                if (data.rykkerFees > 0) {
+                    confirmHtml += `<p class="mb-2 font-12 color-gray">(Heraf rykkergebyrer: ${formatDanishNumber(data.rykkerFees)} ${data.currencySymbol})</p>`;
                 }
-            } catch (error) {
-                screenLoader.hide();
-                console.error('Pay all outstanding error:', error);
-                showErrorNotification('Fejl', 'Der opstod en netværksfejl');
+                if (data.hasCardInfo) {
+                    confirmHtml += `<p class="mb-0"><strong>Kort:</strong> ${data.cardBrand.toUpperCase()} (**${data.cardLast4})</p>`;
+                }
+                confirmHtml += `</div>`;
+            } else {
+                confirmHtml = 'Er du sikker på at du vil betale alle udestående betalinger nu?';
             }
+
+            // Show confirmation popup
+            SweetPrompt.confirm('Bekræft betaling', confirmHtml, {
+                useHtml: true,
+                confirmButtonText: 'Betal alle',
+                cancelButtonText: 'Annuller',
+                onConfirm: async function() {
+                    screenLoader.show("Charging...")
+                    const result = await post(url);
+                    screenLoader.hide();
+
+                    if (result.status === 'success') {
+                        queueNotificationOnLoad('Gennemført', result.message || 'Betalinger gennemført!', 'success');
+                        location.reload();
+                        return { status: 'success' };
+                    } else {
+                        showErrorNotification("Kunne ikke fuldføre betalingen", result.error.message)
+                        // return { status: 'error', error: result.error?.message || result.message || 'Betaling fejlede' };
+                    }
+                },
+                success: { title: 'Gennemført', text: 'Betalinger gennemført!' },
+                error: { title: 'Fejl', text: '<_ERROR_MSG_>' },
+                refireAfter: false
+            });
         });
     }
 

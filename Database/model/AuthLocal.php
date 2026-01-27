@@ -8,7 +8,7 @@ class AuthLocal extends \Database\Model {
         "email" => ["type" => "string", "default" => null, "nullable" => true],
         "username" => ["type" => "string", "default" => null, "nullable" => true],
         "phone" => ["type" => "string", "default" => null, "nullable" => true],
-        "password" => "text",
+        "password" => ["type" => "text", "default" => null, "nullable" => true],
         "force_password_change" => ["type" => "tinyInteger", "default" => 0],
         "2fa" => ["type" => "tinyInteger", "default" => 0],
         "2fa_method" => ["type" => "enum", "default" => null, "nullable" => true, "values" => ['SMS', 'EMAIL']],

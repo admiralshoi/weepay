@@ -136,10 +136,18 @@ class NotificationTriggers {
 
     /**
      * Trigger when a payment is successful
+     *
+     * @param array $options Optional settings: ['skip_sms' => true] to skip SMS for bulk payments
      */
-    public static function paymentSuccessful(object|array $payment, ?object $user = null, ?object $order = null): bool {
+    public static function paymentSuccessful(object|array $payment, ?object $user = null, ?object $order = null, array $options = []): bool {
         $context = self::buildPaymentContext($payment, $user, $order);
         $context['email_title'] = 'Betaling modtaget';
+
+        // Pass through options (e.g., skip_sms for bulk payments)
+        if (!empty($options['skip_sms'])) {
+            $context['skip_sms'] = true;
+        }
+
         return NotificationService::trigger('payment.successful', $context);
     }
 

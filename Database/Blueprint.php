@@ -186,12 +186,13 @@ class Blueprint {
             }
         }
 
+        $dbName = $this->pdo->query("SELECT DATABASE()")->fetchColumn();
         $stmt = $this->pdo->prepare("
         SELECT CONSTRAINT_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME
         FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
-        WHERE TABLE_NAME = :table AND CONSTRAINT_NAME != 'PRIMARY' AND REFERENCED_TABLE_NAME IS NOT NULL
+        WHERE TABLE_SCHEMA = :dbName AND TABLE_NAME = :table AND CONSTRAINT_NAME != 'PRIMARY' AND REFERENCED_TABLE_NAME IS NOT NULL
     ");
-        $stmt->execute(['table' => $this->table]);
+        $stmt->execute(['dbName' => $dbName, 'table' => $this->table]);
         $foreignKeys = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($foreignKeys as $fk) {

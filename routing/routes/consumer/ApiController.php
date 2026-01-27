@@ -590,9 +590,10 @@ class ApiController {
             Response()->jsonError('Du har ikke adgang til denne betaling', [], 403);
         }
 
-        // Verify payment is PAST_DUE
-        if ($payment->status !== 'PAST_DUE') {
-            Response()->jsonError('Kun forsinkede betalinger kan betales nu', [], 400);
+        // Verify payment is unpaid (PAST_DUE, SCHEDULED, or FAILED)
+        $payableStatuses = ['PAST_DUE', 'SCHEDULED', 'FAILED'];
+        if (!in_array($payment->status, $payableStatuses)) {
+            Response()->jsonError('Denne betaling kan ikke betales nu', [], 400);
         }
 
         // Get organisation for merchant_prid
@@ -738,14 +739,14 @@ class ApiController {
             Response()->jsonError('Du har ikke adgang til denne ordre', [], 403);
         }
 
-        // Get all PAST_DUE payments for this order
+        // Get all unpaid payments (PAST_DUE, SCHEDULED, FAILED) for this order
         $outstandingPayments = $paymentsHandler->includeForeignKeys()->getByX([
             'order' => $orderUid,
-            'status' => 'PAST_DUE',
+            'status' => ['PAST_DUE', 'SCHEDULED', 'FAILED'],
         ]);
 
         if ($outstandingPayments->count() === 0) {
-            Response()->jsonError('Ingen udestående betalinger på denne ordre', [], 400);
+            Response()->jsonError('Ingen ubetalte betalinger på denne ordre', [], 400);
         }
 
         // Get organisation for merchant_prid
@@ -829,11 +830,11 @@ class ApiController {
                 $totalRykkerFeesCharged += $rykkerFee;
                 $totalIsvDifference += ($newIsvAmount - $originalIsvAmount);
 
-                // Trigger notification with updated payment data
+                // Trigger notification with updated payment data (skip SMS for bulk payments)
                 try {
                     $updatedPayment = $paymentsHandler->get($payment->uid);
                     $user = Methods::users()->get($userId);
-                    \classes\notifications\NotificationTriggers::paymentSuccessful($updatedPayment, $user, $order);
+                    \classes\notifications\NotificationTriggers::paymentSuccessful($updatedPayment, $user, $order, ['skip_sms' => true]);
                 } catch (\Throwable $e) {
                     errorLog(['error' => $e->getMessage()], 'pay-order-outstanding-notification-error');
                 }
@@ -1495,8 +1496,7 @@ class ApiController {
         }
 
         // Get the payment (order is auto-resolved via foreign key)
-        $paymentHandler = Methods::payments();
-        $payment = $paymentHandler->get($paymentId);
+        $payment = Methods::payments()->get($paymentId);
 
         if (isEmpty($payment)) {
             Response()->jsonError("Betaling ikke fundet.");
@@ -1509,7 +1509,9 @@ class ApiController {
 
         // Verify the order belongs to the current user
         // Note: $payment->order->uuid is a User object (foreign key), so access ->uid
-        if ($payment->order->uuid->uid !== $userId) {
+        $orderUserId = is_object($payment->order->uuid) ? $payment->order->uuid->uid : $payment->order->uuid;
+
+        if ($orderUserId !== $userId) {
             Response()->jsonError("Du har ikke adgang til denne betaling.");
         }
 
@@ -1521,6 +1523,7 @@ class ApiController {
         // Generate and download the receipt
         $receipt = new PaymentReceipt($payment);
         $receipt->download();
+        exit;
     }
 
 

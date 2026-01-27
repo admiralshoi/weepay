@@ -249,11 +249,11 @@ $preloads = $args->preloads ?? [];
                             <div class="flex-row-center" style="gap: .5rem;">
                                 <input type="color" id="barColor"
                                        style="width: 50px; height: 36px; padding: 2px; border-radius: 6px; border: 1px solid #ddd;"
-                                       value="<?=$design ? $design->bar_color : '#8B4513'?>"
+                                       value="<?=$design ? $design->bar_color : '#173c90'?>"
                                        onchange="updateBarColor(this.value)">
                                 <input type="text" id="barColorHex" class="form-control"
                                        style="flex: 1; height: 36px; font-size: 13px;"
-                                       value="<?=$design ? $design->bar_color : '#8B4513'?>"
+                                       value="<?=$design ? $design->bar_color : '#173c90'?>"
                                        onchange="updateBarColor(this.value)">
                             </div>
                         </div>

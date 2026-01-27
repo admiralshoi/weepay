@@ -3,6 +3,8 @@
  */
 
 var logsModal = null;
+var currentLogType = null;
+var currentLogName = null;
 
 function initPanelJobs() {
     logsModal = $('#logsModal');
@@ -33,34 +35,105 @@ async function forceRunCronjob(type, button) {
 }
 
 async function viewLogs(type, name) {
+    currentLogType = type;
+    currentLogName = name;
+
+    // Update modal title
+    document.getElementById('logsModalTitle').textContent = name + ' - Logs';
+    document.getElementById('logsContent').innerHTML = 'Henter logs...';
+    document.getElementById('logDateInfo').textContent = '';
+
+    // Show modal first
+    logsModal.modal('show');
+
+    // Load available dates
+    await loadLogDates(type);
+
+    // Load logs for today (default)
+    await loadLogsForDate();
+}
+
+async function loadLogDates(type) {
+    var selector = document.getElementById('logDateSelector');
+    selector.innerHTML = '<option value="">Henter datoer...</option>';
+
     try {
-        var result = await get('api/admin/cronjobs/logs?type=' + encodeURIComponent(type));
+        var result = await get('api/admin/cronjobs/log-dates?type=' + encodeURIComponent(type));
         if (result.status === 'success') {
-            showLogsModal(name, result.logs);
+            var dates = result.dates || [];
+            var today = new Date().toISOString().split('T')[0];
+
+            // If no dates available, add today as option
+            if (dates.length === 0) {
+                dates = [today];
+            }
+
+            // Build options
+            var options = '';
+            dates.forEach(function(date, index) {
+                var isToday = date === today;
+                var label = formatDateLabel(date) + (isToday ? ' (i dag)' : '');
+                var selected = index === 0 ? 'selected' : '';
+                options += '<option value="' + date + '" ' + selected + '>' + label + '</option>';
+            });
+
+            selector.innerHTML = options;
+            rebuildSelectV2UI(selector);
         } else {
-            showErrorNotification('Fejl', result.message || 'Kunne ikke hente logs');
+            selector.innerHTML = '<option value="">Ingen datoer fundet</option>';
         }
     } catch (error) {
-        showErrorNotification('Fejl', 'Der opstod en fejl');
+        selector.innerHTML = '<option value="">Fejl ved hentning</option>';
     }
 }
 
-function showLogsModal(name, logs) {
-    var modalTitle = document.getElementById('logsModalTitle');
+async function loadLogsForDate() {
+    var selector = document.getElementById('logDateSelector');
+    var date = selector.value;
     var logsContent = document.getElementById('logsContent');
+    var dateInfo = document.getElementById('logDateInfo');
 
-    modalTitle.textContent = name + ' - Logs';
+    if (!currentLogType) return;
+
+    logsContent.innerHTML = 'Henter logs...';
+
+    try {
+        var url = 'api/admin/cronjobs/logs?type=' + encodeURIComponent(currentLogType);
+        if (date) {
+            url += '&date=' + encodeURIComponent(date);
+        }
+
+        var result = await get(url);
+        if (result.status === 'success') {
+            showLogsContent(result.logs);
+            dateInfo.textContent = 'Viser logs for ' + formatDateLabel(result.selectedDate || date);
+        } else {
+            logsContent.innerHTML = '<p class="color-gray">Kunne ikke hente logs: ' + (result.message || 'Ukendt fejl') + '</p>';
+        }
+    } catch (error) {
+        logsContent.innerHTML = '<p class="color-gray">Der opstod en fejl ved hentning af logs</p>';
+    }
+}
+
+function showLogsContent(logs) {
+    var logsContent = document.getElementById('logsContent');
 
     // Format the log content
     var content = '';
-    if (logs.log) {
+    if (logs && logs.log) {
         content = logs.log;
     } else {
-        content = '<p class="color-gray">Ingen logs fundet</p>';
+        content = '<p class="color-gray">Ingen logs fundet for denne dato</p>';
     }
 
     logsContent.innerHTML = content;
-    logsModal.modal('show');
+}
+
+function formatDateLabel(dateStr) {
+    if (!dateStr) return '';
+    var parts = dateStr.split('-');
+    if (parts.length !== 3) return dateStr;
+    return parts[2] + '/' + parts[1] + '/' + parts[0]; // DD/MM/YYYY
 }
 
 function formatTimeGap(seconds) {

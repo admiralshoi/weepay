@@ -260,6 +260,94 @@ class LocationHandler extends Crud {
     }
 
 
+    /**
+     * Get location UIDs that have a published page
+     */
+    public function getPublishedLocationUids(): array {
+        $publishedPages = Methods::locationPages()->getByX(['state' => 'PUBLISHED'], ['location']);
+        if ($publishedPages->empty()) {
+            return [];
+        }
+        $locationUids = [];
+        foreach ($publishedPages->list() as $page) {
+            if (!empty($page->location)) {
+                $locationUids[] = is_object($page->location) ? $page->location->uid : $page->location;
+            }
+        }
+        return $locationUids;
+    }
+
+    /**
+     * Get active locations with published pages for sitemap
+     * Returns locations with status=ACTIVE, a slug, and a published LocationPage
+     */
+    public function getLocationsForSitemap(): Collection {
+        $publishedLocationUids = $this->getPublishedLocationUids();
+        if (empty($publishedLocationUids)) {
+            return Methods::toCollection();
+        }
+
+        $locations = $this->model::where('status', 'ACTIVE')
+            ->whereNotNull('slug')
+            ->all();
+
+        if ($locations->empty()) {
+            return Methods::toCollection();
+        }
+
+        // Filter to only published locations
+        $filtered = [];
+        foreach ($locations->list() as $location) {
+            if (in_array($location->uid, $publishedLocationUids)) {
+                $filtered[] = $location;
+            }
+        }
+        return new Collection($filtered);
+    }
+
+    /**
+     * Get unique organisation UIDs that have at least one published location
+     */
+    public function getOrgUidsWithPublishedLocations(): array {
+        $locations = $this->getLocationsForSitemap();
+        $orgUids = [];
+        foreach ($locations->list() as $location) {
+            $orgUid = is_object($location->uuid) ? $location->uuid->uid : $location->uuid;
+            if (!empty($orgUid) && !in_array($orgUid, $orgUids)) {
+                $orgUids[] = $orgUid;
+            }
+        }
+        return $orgUids;
+    }
+
+    /**
+     * Get locations for a specific organisation for sitemap
+     */
+    public function getOrgLocationsForSitemap(string $orgUid): Collection {
+        $publishedLocationUids = $this->getPublishedLocationUids();
+        if (empty($publishedLocationUids)) {
+            return Methods::toCollection();
+        }
+
+        $locations = $this->model::where('uuid', $orgUid)
+            ->where('status', 'ACTIVE')
+            ->whereNotNull('slug')
+            ->all();
+
+        if ($locations->empty()) {
+            return Methods::toCollection();
+        }
+
+        // Filter to only published locations
+        $filtered = [];
+        foreach ($locations->list() as $location) {
+            if (in_array($location->uid, $publishedLocationUids)) {
+                $filtered[] = $location;
+            }
+        }
+        return new Collection($filtered);
+    }
+
     const BASE_PERMISSIONS = [
         'general' => [
             'icon' => 'mdi mdi-view-grid-outline',

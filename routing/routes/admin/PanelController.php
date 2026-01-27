@@ -63,8 +63,13 @@ class PanelController {
         $args['typeOptions'] = Methods::marketingTemplates()->getTypeOptions();
         $args['statusOptions'] = Methods::marketingTemplates()->getStatusOptions();
         $args['categoryOptions'] = Methods::marketingTemplates()->getCategoryOptions();
-        $args['inspirations'] = Methods::marketingInspiration()->getAll();
-        $args['inspirationCategoryOptions'] = Methods::marketingInspiration()->getCategoryOptions();
+        // Get inspirations excluding a_sign_preload (those are managed in the A-Sign tab)
+        $allInspirations = Methods::marketingInspiration()->getAll();
+        $args['inspirations'] = $allInspirations ? $allInspirations->filter(fn($i) => (is_object($i) ? $i->category : $i['category']) !== 'a_sign_preload') : null;
+        // Get category options without a_sign_preload for the inspiration dropdown
+        $allCategoryOptions = Methods::marketingInspiration()->getCategoryOptions();
+        unset($allCategoryOptions['a_sign_preload']);
+        $args['inspirationCategoryOptions'] = $allCategoryOptions;
         $args['inspirationStatusOptions'] = Methods::marketingInspiration()->getStatusOptions();
         // Get A-Sign preload backgrounds specifically
         $args['asignPreloads'] = Methods::marketingInspiration()->getByXOrderBy('sort_order', 'ASC', ['category' => 'a_sign_preload']);

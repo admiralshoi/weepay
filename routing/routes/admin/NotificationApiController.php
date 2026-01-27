@@ -1071,25 +1071,30 @@ class NotificationApiController {
             'reference_type' => $log->reference_type,
         ];
 
-        $newLog = $handler->create($newLogData);
+        debugLog(['newLogData' => $newLogData], 'RESEND_NOTIF_CREATE_DATA');
+        $created = $handler->create($newLogData);
+        debugLog(['created' => $created, 'recentUid' => $handler->recentUid], 'RESEND_NOTIF_CREATE_RESULT');
 
         // Format the new log for response
         $formattedLog = null;
-        if ($newLog) {
+        if ($created) {
+            $newLog = $handler->get($handler->recentUid);
+            debugLog(['newLog' => $newLog, 'newLogType' => gettype($newLog)], 'RESEND_NOTIF_FETCHED');
+
             $recipientName = null;
             if (is_object($log->recipient)) {
                 $recipientName = $log->recipient->full_name ?? null;
             }
 
             $formattedLog = [
-                'uid' => $newLog->uid,
-                'channel' => $newLog->channel,
+                'uid' => $newLog->uid ?? null,
+                'channel' => $newLog->channel ?? null,
                 'recipient_name' => $recipientName,
-                'recipient_identifier' => $newLog->recipient_identifier,
-                'subject' => $newLog->subject,
-                'status' => $newLog->status,
-                'breakpoint_key' => $newLog->breakpoint_key,
-                'created_at' => $newLog->created_at,
+                'recipient_identifier' => $newLog->recipient_identifier ?? null,
+                'subject' => $newLog->subject ?? null,
+                'status' => $newLog->status ?? null,
+                'breakpoint_key' => $newLog->breakpoint_key ?? null,
+                'created_at' => $newLog->created_at ?? null,
             ];
         }
 

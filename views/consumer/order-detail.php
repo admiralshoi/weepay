@@ -24,15 +24,44 @@ $orderStatusInfo = $orderStatusMap[$order->status] ?? null;
 ?>
 
 <?php
-// Count PAST_DUE payments for this order
-$pastDuePayments = $payments->filter(fn($p) => $p['status'] === 'PAST_DUE');
-$pastDueCount = $pastDuePayments->count();
+// Count unpaid payments (SCHEDULED, PAST_DUE, FAILED) for this order
+$unpaidStatuses = ['SCHEDULED', 'PAST_DUE', 'FAILED'];
+$unpaidPayments = $payments->filter(fn($p) => in_array($p['status'], $unpaidStatuses));
+$unpaidCount = $unpaidPayments->count();
+$unpaidTotal = 0;
+$unpaidFees = 0;
+$hasPastDue = false;
+
+// Also track PAST_DUE specifically for warning box
+$pastDueCount = 0;
 $pastDueTotal = 0;
 $pastDueFees = 0;
-foreach ($pastDuePayments->list() as $p) {
-    $pastDueTotal += (float)$p->amount;
-    $pastDueFees += (float)($p->rykker_fee ?? 0);
+
+foreach ($unpaidPayments->list() as $p) {
+    $unpaidTotal += (float)$p->amount;
+    $unpaidFees += (float)($p->rykker_fee ?? 0);
+    if($p->status === 'PAST_DUE') {
+        $hasPastDue = true;
+        $pastDueCount++;
+        $pastDueTotal += (float)$p->amount;
+        $pastDueFees += (float)($p->rykker_fee ?? 0);
+    }
 }
+$unpaidTotalWithFees = $unpaidTotal + $unpaidFees;
+$orderCurrencySymbol = currencySymbol($order->currency);
+
+// Get card info from first unpaid payment
+$cardBrand = null;
+$cardLast4 = null;
+foreach ($payments->list() as $p) {
+    $pm = $p->payment_method ?? null;
+    if(!isEmpty($pm) && !isEmpty($pm->brand) && !isEmpty($pm->last4)) {
+        $cardBrand = $pm->brand;
+        $cardLast4 = $pm->last4;
+        break;
+    }
+}
+$hasCardInfo = !isEmpty($cardBrand) && !isEmpty($cardLast4);
 ?>
 
 <script>
@@ -40,6 +69,18 @@ foreach ($pastDuePayments->list() as $p) {
     activePage = "orders";
     var orderUid = <?=json_encode($order->uid)?>;
     var payOrderOutstandingUrl = <?=json_encode(__url(str_replace('{uid}', $order->uid, Links::$api->consumer->payOrderOutstanding)))?>;
+    var payOutstandingData = {
+        count: <?=json_encode($unpaidCount)?>,
+        amount: <?=json_encode($unpaidTotalWithFees)?>,
+        baseAmount: <?=json_encode($unpaidTotal)?>,
+        rykkerFees: <?=json_encode($unpaidFees)?>,
+        currency: <?=json_encode($order->currency)?>,
+        currencySymbol: <?=json_encode($orderCurrencySymbol)?>,
+        cardBrand: <?=json_encode($cardBrand)?>,
+        cardLast4: <?=json_encode($cardLast4)?>,
+        hasCardInfo: <?=json_encode($hasCardInfo)?>,
+        hasPastDue: <?=json_encode($hasPastDue)?>
+    };
 </script>
 
 <div class="page-content">
@@ -253,10 +294,23 @@ foreach ($pastDuePayments->list() as $p) {
                     </div>
 
                     <div class="flex-col-start" style="row-gap: .75rem;">
-                        <?php if($pastDueCount > 0): ?>
-                        <button type="button" id="pay-all-outstanding-btn" class="btn-v2 danger-btn w-100 flex-row-center flex-align-center" style="gap: .5rem;">
-                            <i class="mdi mdi-cash-fast font-16"></i>
-                            <span class="font-14">Betal alle udestående (<?=$pastDueCount?>)</span>
+                        <?php if($unpaidCount > 0): ?>
+                        <?php
+                        // Build button text with amount and card info
+                        $btnOutstandingText = number_format($unpaidTotalWithFees, 2, ',', '.') . ' ' . $orderCurrencySymbol;
+                        $btnCardText = $hasCardInfo ? strtoupper($cardBrand) . ' (**' . $cardLast4 . ')' : '';
+                        // Use "udestående" for past due, "resterende" for scheduled only
+                        $btnLabel = $hasPastDue ? 'Betal udestående' : 'Betal resterende';
+                        $btnClass = $hasPastDue ? 'danger-btn' : 'green-btn';
+                        ?>
+                        <button type="button" id="pay-all-outstanding-btn" class="btn-v2 <?=$btnClass?> w-100 flex-col-center flex-align-center py-3" style="gap: .25rem;">
+                            <div class="flex-row-center flex-align-center" style="gap: .5rem;">
+                                <i class="mdi mdi-cash-fast font-16"></i>
+                                <span class="font-14 font-weight-bold"><?=$btnLabel?> <?=$btnOutstandingText?></span>
+                            </div>
+                            <?php if($hasCardInfo): ?>
+                            <span class="font-12 opacity-80">med <?=$btnCardText?></span>
+                            <?php endif; ?>
                         </button>
                         <?php endif; ?>
 

@@ -8,6 +8,7 @@ class MerchantPublic {
     public string $login = 'merchant/login';
     public string $home = '';
     public string $locationPage = 'merchant/{slug}';
+    public string $onboardingGuide = 'help/guides/merchant/onboarding';
 
     public function getLocationPage(string $slug): string { return str_replace('{slug}', $slug, $this->locationPage); }
 

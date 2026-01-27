@@ -14,6 +14,12 @@ $pageTitle = "Maintenance";
 // Check if maintenance mode setting exists, default to false
 $maintenanceMode = Settings::$app->maintenance_mode ?? false;
 $maintenanceMessage = Settings::$app->maintenance_message ?? 'Systemet er under vedligeholdelse. Prøv igen senere.';
+
+
+
+
+
+
 ?>
 <script>
     var pageTitle = <?=json_encode($pageTitle)?>;
@@ -23,6 +29,14 @@ $maintenanceMessage = Settings::$app->maintenance_message ?? 'Systemet er under 
 <div class="page-content py-3">
     <div class="page-inner-content">
         <div class="flex-col-start" style="row-gap: 1.5rem;">
+
+            <?php
+
+            $pmId = "7d389cfe-aa78-4ec7-a6f9-d87e5e80d5df";
+
+//            prettyPrint(\classes\Methods::viva()->getPayment("cd0ca7f2-456e-44e3-a983-b71053f67745", $pmId));
+
+            ?>
 
             <!-- Breadcrumb -->
             <div class="flex-row-start flex-align-center" style="gap: .5rem;">

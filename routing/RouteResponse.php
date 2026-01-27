@@ -37,6 +37,13 @@ class RouteResponse {
         printHtml($res, $responseCode);
     }
 
+    #[NoReturn] public function xml(string $res, int $responseCode = 200): void {
+        printXml($res, $responseCode);
+    }
+
+    #[NoReturn] public function text(string $res, int $responseCode = 200): void {
+        printText($res, $responseCode);
+    }
 
     #[NoReturn] public function e404Json(): void {
         $this->jsonError("Page not found.", [], 404);

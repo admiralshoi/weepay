@@ -10,72 +10,48 @@ class CronWorker extends Crud {
     protected bool $log = true;
     private array $typesList = array(
         "take_payments" => array(
-            "log_file" => CRON_LOGS."cronLog_take_payments.log",
-            "log_date_file" => CRON_LOGS."cronDate_take_payments.log",
-            "log_memory_file" => CRON_LOGS."cronMemory_take_payments.log",
             "row_id" => 'crn_take_payments',
             "time_gab" => 10, // 10 seconds for testing
             "max_run_time" => (60 * 10), // 10 min max
             "sleep_timer" => 10 // 10 seconds for testing
         ),
         "retry_payments" => array(
-            "log_file" => CRON_LOGS."cronLog_retry_payments.log",
-            "log_date_file" => CRON_LOGS."cronDate_retry_payments.log",
-            "log_memory_file" => CRON_LOGS."cronMemory_retry_payments.log",
             "row_id" => 'crn_retry_payments',
             "time_gab" => 10, // 10 seconds for testing
             "max_run_time" => (60 * 10), // 10 min max
             "sleep_timer" => 10 // 10 seconds for testing
         ),
         "payment_notifications" => array(
-            "log_file" => CRON_LOGS."cronLog_payment_notifications.log",
-            "log_date_file" => CRON_LOGS."cronDate_payment_notifications.log",
-            "log_memory_file" => CRON_LOGS."cronMemory_payment_notifications.log",
             "row_id" => 'crn_payment_notifications',
             "time_gab" => 10, // 10 seconds for testing
             "max_run_time" => (60 * 10), // 10 min max
             "sleep_timer" => 10 // 10 seconds for testing
         ),
         "notification_queue" => array(
-            "log_file" => CRON_LOGS."cronLog_notification_queue.log",
-            "log_date_file" => CRON_LOGS."cronDate_notification_queue.log",
-            "log_memory_file" => CRON_LOGS."cronMemory_notification_queue.log",
             "row_id" => 'crn_notification_queue',
             "time_gab" => 10, // 10 seconds for testing
             "max_run_time" => (60 * 5), // 5 min max
             "sleep_timer" => 10 // 10 seconds for testing
         ),
         "rykker_checks" => array(
-            "log_file" => CRON_LOGS."cronLog_rykker_checks.log",
-            "log_date_file" => CRON_LOGS."cronDate_rykker_checks.log",
-            "log_memory_file" => CRON_LOGS."cronMemory_rykker_checks.log",
             "row_id" => 'crn_rykker_checks',
             "time_gab" => 10, // 10 seconds for testing
             "max_run_time" => (60 * 10), // 10 min max
             "sleep_timer" => 10 // 10 seconds for testing
         ),
         "weekly_reports" => array(
-            "log_file" => CRON_LOGS."cronLog_weekly_reports.log",
-            "log_date_file" => CRON_LOGS."cronDate_weekly_reports.log",
-            "log_memory_file" => CRON_LOGS."cronMemory_weekly_reports.log",
             "row_id" => 'crn_weekly_reports',
             "time_gab" => 10, // 10 seconds for testing
             "max_run_time" => (60 * 15), // 15 min max
             "sleep_timer" => 10 // 10 seconds for testing
         ),
         "policy_publish" => array(
-            "log_file" => CRON_LOGS."cronLog_policy_publish.log",
-            "log_date_file" => CRON_LOGS."cronDate_policy_publish.log",
-            "log_memory_file" => CRON_LOGS."cronMemory_policy_publish.log",
             "row_id" => 'crn_policy_publish',
             "time_gab" => 60, // 1 minute between runs
             "max_run_time" => (60 * 5), // 5 min max
             "sleep_timer" => 30 // 30 seconds between cycles
         ),
         "system_cleanup" => array(
-            "log_file" => CRON_LOGS."cronLog_system_cleanup.log",
-            "log_date_file" => CRON_LOGS."cronDate_system_cleanup.log",
-            "log_memory_file" => CRON_LOGS."cronMemory_system_cleanup.log",
             "row_id" => 'crn_system_cleanup',
             "time_gab" => 3600, // 1 hour minimum between runs
             "max_run_time" => (60 * 15), // 15 min max
@@ -89,15 +65,84 @@ class CronWorker extends Crud {
     }
 
 
-    public function getLogFiles(string $type = ""): ?array {
+    /**
+     * Get log file paths for a specific type and date
+     * @param string $type Cronjob type (optional if already set)
+     * @param string|null $date Date in Y-m-d format (default: today)
+     */
+    public function getLogFiles(string $type = "", ?string $date = null): ?array {
         if(!empty($type)) $this->type = $type;
         if(!array_key_exists($this->type, $this->typesList)) return null;
-        $item = $this->typesList[$this->type];
+
+        $date = $date ?? date('Y-m-d');
         return [
-            "log" => $item["log_file"],
-            "date" => $item["log_date_file"],
-            "memory" => $item["log_memory_file"],
+            "log" => CRON_LOGS . "cronLog_{$this->type}_{$date}.log",
+            "date" => CRON_LOGS . "cronDate_{$this->type}_{$date}.log",
+            "memory" => CRON_LOGS . "cronMemory_{$this->type}_{$date}.log",
         ];
+    }
+
+    /**
+     * Get available log dates for a cronjob type
+     * @param string $type Cronjob type
+     * @return array Array of dates (Y-m-d format) sorted most recent first
+     */
+    public function getAvailableLogDates(string $type = ""): array {
+        if(!empty($type)) $this->type = $type;
+        if(empty($this->type)) return [];
+
+        $pattern = CRON_LOGS . "cronLog_{$this->type}_*.log";
+        $files = glob($pattern);
+        $dates = [];
+
+        foreach ($files as $file) {
+            if (preg_match('/cronLog_' . preg_quote($this->type, '/') . '_(\d{4}-\d{2}-\d{2})\.log$/', $file, $m)) {
+                $dates[] = $m[1];
+            }
+        }
+
+        rsort($dates); // Most recent first
+        return $dates;
+    }
+
+    /**
+     * Cleanup old cron log files
+     * @param int $daysOld Delete logs older than this many days (default: 5)
+     * @return int Number of files deleted
+     */
+    public function cleanupOldLogs(int $daysOld = 5): int {
+        $cutoff = date('Y-m-d', strtotime("-{$daysOld} days"));
+        $deleted = 0;
+
+        // Clean up date-based log files
+        foreach (['cronLog_*', 'cronDate_*', 'cronMemory_*'] as $prefix) {
+            $files = glob(CRON_LOGS . $prefix . '_*.log');
+            foreach ($files as $file) {
+                if (preg_match('/_(\d{4}-\d{2}-\d{2})\.log$/', $file, $m)) {
+                    if ($m[1] < $cutoff) {
+                        @unlink($file);
+                        $deleted++;
+                    }
+                }
+            }
+        }
+
+        // Also clean up old format logs without date suffix (legacy cleanup)
+        foreach ($this->typesList as $type => $config) {
+            $legacyFiles = [
+                CRON_LOGS . "cronLog_{$type}.log",
+                CRON_LOGS . "cronDate_{$type}.log",
+                CRON_LOGS . "cronMemory_{$type}.log",
+            ];
+            foreach ($legacyFiles as $file) {
+                if (file_exists($file)) {
+                    @unlink($file);
+                    $deleted++;
+                }
+            }
+        }
+
+        return $deleted;
     }
 
     /**
@@ -108,35 +153,40 @@ class CronWorker extends Crud {
     }
 
     public function log($string,$init = false):void {
-        $type = $this->typesList[$this->type];
+        $logFiles = $this->getLogFiles();
+        if(!$logFiles) return;
+
         if($init) {
-            if(file_exists($type["log_date_file"])) {
-                $dates = file_get_contents($type["log_date_file"]);
+            if(file_exists($logFiles["date"])) {
+                $dates = file_get_contents($logFiles["date"]);
                 $dates = explode(PHP_EOL,$dates);
             }
             else $dates = [];
             if(count($dates) >= CRON_LOG_MAX_ENTRIES && !empty($dates[(CRON_LOG_MAX_ENTRIES-1)])) {
-                cronLog("", $type["log_date_file"], false);
-                cronLog("", $type["log_file"], false);
-                cronLog("", $type["log_memory_file"], false);
+                cronLog("", $logFiles["date"], false);
+                cronLog("", $logFiles["log"], false);
+                cronLog("", $logFiles["memory"], false);
             }
-            cronLog(time(), $type["log_date_file"]);
-            cronLog(PHP_EOL."<b style='font-size: 20px;'>Log initiation at => ".date("d/m-Y H:i:s",time())."</b>", $type["log_file"]);
+            cronLog(time(), $logFiles["date"]);
+            cronLog(PHP_EOL."<b style='font-size: 20px;'>Log initiation at => ".date("d/m-Y H:i:s",time())."</b>", $logFiles["log"]);
             $this->memoryLog("",true);
         } else {
-            cronLog($string, $type["log_file"]);
+            cronLog($string, $logFiles["log"]);
         }
     }
+
     public function memoryLog(string $keyWord="", $init = false):void{
-        $type = $this->typesList[$this->type];
+        $logFiles = $this->getLogFiles();
+        if(!$logFiles) return;
+
         if($init) {
-            cronLog("", $type["log_memory_file"]);
+            cronLog("", $logFiles["memory"]);
             return;
         }
 
         $date = date("d/m-Y H:i:s",time());
         $string = $date." => ".memory_get_usage()." of total " . memory_get_usage(true) . " (".$keyWord.") ";
-        cronLog($string, $type["log_memory_file"]);
+        cronLog($string, $logFiles["memory"]);
     }
 
 

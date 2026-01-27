@@ -96,9 +96,9 @@ class TerminalSessionHandler extends Crud {
             } elseif(!isEmpty($cachedSessionId)) {
                 $cachedSession = $this->get($cachedSessionId);
                 if(!isEmpty($cachedSession) && in_array($cachedSession->state, ['ACTIVE', 'PENDING'])) {
-                    // Update database timestamp if stale
+                    // Touch record to refresh updated_at timestamp if stale
                     if(strtotime($cachedSession->updated_at) < time() - 600) {
-                        $this->update(['updated_at' => time()], ['uid' => $cachedSession->uid]);
+                        $this->update(['updated_at' => date('Y-m-d H:i:s')], ['uid' => $cachedSession->uid]);
                     }
                     return $cachedSession;
                 }

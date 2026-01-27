@@ -160,6 +160,9 @@ function initializeEditor() {
     // Handle responsive scaling
     handleResponsiveCanvas();
     window.addEventListener('resize', debounce(handleResponsiveCanvas, 150));
+
+    // Update element list after initialization (listeners aren't active when bottom bar is added)
+    updateElementList();
 }
 
 /**
@@ -548,7 +551,7 @@ function addBottomBar() {
     const displayDims = getDisplayDimensions();
     const barHeight = displayDims.height * (config.barHeightPercent / 100);
     const barY = displayDims.height - barHeight;
-    const barColor = document.getElementById('barColor')?.value || '#8B4513';
+    const barColor = document.getElementById('barColor')?.value || '#173c90';
 
     // Remove existing bar first
     removeBottomBar();
@@ -614,7 +617,7 @@ function removeBottomBar() {
 function updateBarColor(color) {
     // Validate hex color
     if (!/^#[0-9A-Fa-f]{6}$/.test(color)) {
-        color = '#8B4513';
+        color = '#173c90';
     }
 
     // Sync inputs
@@ -1781,6 +1784,11 @@ function buildBottomBarTextProperties(obj) {
             </div>
         </div>
         <div class="mb-3">
+            <label class="form-label font-13">Farve</label>
+            <input type="color" value="${obj.fill || '#ffffff'}" style="width: 100%; height: 36px; border: 1px solid #ddd; border-radius: 6px;"
+                   onchange="updateBottomBarProperty('fill', this.value)">
+        </div>
+        <div class="mb-3">
             <label class="form-label font-13">Bogstavafstand</label>
             <div class="flex-row-center" style="gap: .5rem;">
                 <input type="range" id="barCharSpacingRange" class="form-range" style="flex: 1;" min="-200" max="800" value="${obj.charSpacing || 0}"
@@ -2393,7 +2401,7 @@ function saveDesign(showNotification = true, btn = null) {
     const type = document.getElementById('designType').value;
     const size = document.getElementById('designSize').value;
     const locationUid = document.getElementById('designLocation').value;
-    const barColor = document.getElementById('barColor')?.value || '#8B4513';
+    const barColor = document.getElementById('barColor')?.value || '#173c90';
 
     if (!name) {
         screenLoader.hide();
@@ -2502,7 +2510,7 @@ function buildElementsConfig() {
 
     if (barBg || barText) {
         elements.bar = {
-            color: barBg?.fill || '#8B4513',
+            color: barBg?.fill || '#173c90',
             text: barText?.text || '',
         };
     }

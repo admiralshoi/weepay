@@ -85,9 +85,16 @@ function uploadTemplate() {
 function editTemplate(uid, name, type, description, status) {
     document.getElementById('editUid').value = uid;
     document.getElementById('editName').value = name;
-    document.getElementById('editType').value = type;
     document.getElementById('editDescription').value = description;
-    document.getElementById('editStatus').value = status;
+
+    // Set select values and refresh selectV2 UI
+    var typeSelect = document.getElementById('editType');
+    var statusSelect = document.getElementById('editStatus');
+    typeSelect.value = type;
+    statusSelect.value = status;
+    refreshSelectV2UI(typeSelect);
+    refreshSelectV2UI(statusSelect);
+
     $('#editModal').modal('show');
 }
 
@@ -244,8 +251,13 @@ function uploadBaseTemplate() {
 function editBaseTemplate(uid, name, type, description) {
     document.getElementById('baseTemplateEditUid').value = uid;
     document.getElementById('baseTemplateEditName').value = name;
-    document.getElementById('baseTemplateEditType').value = type;
     document.getElementById('baseTemplateEditDescription').value = description || '';
+
+    // Set select value and refresh selectV2 UI
+    var typeSelect = document.getElementById('baseTemplateEditType');
+    typeSelect.value = type;
+    refreshSelectV2UI(typeSelect);
+
     $('#baseTemplateEditModal').modal('show');
 }
 
@@ -437,9 +449,16 @@ function uploadInspiration() {
 function editInspiration(uid, title, category, description, status) {
     document.getElementById('inspirationEditUid').value = uid;
     document.getElementById('inspirationEditTitle').value = title;
-    document.getElementById('inspirationEditCategory').value = category;
     document.getElementById('inspirationEditDescription').value = description || '';
-    document.getElementById('inspirationEditStatus').value = status;
+
+    // Set select values and refresh selectV2 UI
+    var categorySelect = document.getElementById('inspirationEditCategory');
+    var statusSelect = document.getElementById('inspirationEditStatus');
+    categorySelect.value = category;
+    statusSelect.value = status;
+    refreshSelectV2UI(categorySelect);
+    refreshSelectV2UI(statusSelect);
+
     $('#inspirationEditModal').modal('show');
 }
 
@@ -596,7 +615,12 @@ function editAsignPreload(uid, title, description, status) {
     document.getElementById('asignPreloadEditUid').value = uid;
     document.getElementById('asignPreloadEditTitle').value = title;
     document.getElementById('asignPreloadEditDescription').value = description || '';
-    document.getElementById('asignPreloadEditStatus').value = status;
+
+    // Set select value and refresh selectV2 UI
+    var statusSelect = document.getElementById('asignPreloadEditStatus');
+    statusSelect.value = status;
+    refreshSelectV2UI(statusSelect);
+
     $('#asignPreloadEditModal').modal('show');
 }
 

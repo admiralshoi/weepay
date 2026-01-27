@@ -23,7 +23,7 @@ class OrderHandler extends Crud {
     public function getByOrganisation(?string $organisationId = null, array $status = ['DRAFT', 'PENDING', 'COMPLETED'], array $fields = []): Collection {
         return $this->getByX(['organisation' => $organisationId, 'status' => $status], $fields);
     }
-    public function getByPrid(int|string $prid = null, array $fields = []): ?object {
+    public function getByPrid(int|string|null $prid = null, array $fields = []): ?object {
         return $this->getFirst(['prid' => $prid], $fields);
     }
 

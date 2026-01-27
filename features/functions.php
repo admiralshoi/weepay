@@ -100,6 +100,18 @@ function printView(array $viewList): void {
     echo $content;
     exit;
 }
+#[NoReturn] function printXml(string $content, int $responseCode = 200): void {
+    http_response_code($responseCode);
+    header("Content-Type: application/xml; charset=UTF-8");
+    echo $content;
+    exit;
+}
+#[NoReturn] function printText(string $content, int $responseCode = 200): void {
+    http_response_code($responseCode);
+    header("Content-Type: text/plain; charset=UTF-8");
+    echo $content;
+    exit;
+}
 function microTimeFloat(): float {
     list($usec, $sec) = explode(" ", microtime());
     return ((float)$usec + (float)$sec);

@@ -19,6 +19,7 @@ let isResizing = false;
 let dragOffset = { x: 0, y: 0 };
 let resizeHandle = null;
 let justSelected = false; // Flag to prevent immediate deselection after selection
+let currentRenderTask = null; // Track current render to prevent conflicts
 
 // Canvas and container
 let canvas = null;
@@ -84,6 +85,12 @@ function loadPdf() {
  * Render a specific page
  */
 function renderPage(pageNum) {
+    // Cancel any existing render task
+    if (currentRenderTask) {
+        currentRenderTask.cancel();
+        currentRenderTask = null;
+    }
+
     pdfDoc.getPage(pageNum).then(function(page) {
         var viewport = page.getViewport({ scale: scale });
 
@@ -99,12 +106,20 @@ function renderPage(pageNum) {
             viewport: viewport
         };
 
-        page.render(renderContext).promise.then(function() {
+        currentRenderTask = page.render(renderContext);
+        currentRenderTask.promise.then(function() {
+            currentRenderTask = null;
             // Store canvas rect for coordinate calculations
             canvasRect = canvas.getBoundingClientRect();
 
             // Render placeholders for this page
             renderPlaceholders();
+        }).catch(function(error) {
+            // Ignore cancelled render errors
+            if (error.name !== 'RenderingCancelledException') {
+                console.error('Render error:', error);
+            }
+            currentRenderTask = null;
         });
     });
 
@@ -520,15 +535,21 @@ function updatePaginationButtons() {
  */
 function zoomIn() {
     if (scale < 2.0) {
-        scale += 0.25;
+        // Use smaller steps at lower zoom levels
+        var step = scale >= 0.5 ? 0.25 : 0.1;
+        scale += step;
+        if (scale > 2.0) scale = 2.0;
         document.getElementById('zoomLevel').textContent = Math.round(scale * 100) + '%';
         renderPage(currentPage);
     }
 }
 
 function zoomOut() {
-    if (scale > 0.5) {
-        scale -= 0.25;
+    if (scale > 0.1) {
+        // Use smaller steps at lower zoom levels
+        var step = scale > 0.5 ? 0.25 : 0.1;
+        scale -= step;
+        if (scale < 0.1) scale = 0.1;
         document.getElementById('zoomLevel').textContent = Math.round(scale * 100) + '%';
         renderPage(currentPage);
     }

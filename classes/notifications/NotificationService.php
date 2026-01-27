@@ -366,6 +366,12 @@ class NotificationService {
                 $success = self::sendEmail($recipientData, $subject, $content, $htmlContent, $context, $attachments);
                 break;
             case 'sms':
+                // Check if SMS should be skipped (e.g., bulk payment from order page)
+                if (!empty($context['skip_sms'])) {
+                    self::debug("SMS skipped due to skip_sms flag in context");
+                    $success = true; // Mark as success but don't actually send
+                    break;
+                }
                 self::debug("Sending via SMS channel");
                 $success = self::sendSms($recipientData, $content);
                 break;

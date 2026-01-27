@@ -128,8 +128,10 @@ class MessageDispatcher {
 
         $message .= "--$boundary--";
 
+        testLog(["fromName" => $encodedFromName,"fromEmail" => $encodedFromName,"headers" => $headers,], 'sendMultipartAlternativeEmail');
+
         // Send the email
-        $result = @mail($to, $subject, $message, $headers, "-f$fromEmail");
+        $result = @mail($to, $subject, $message, $headers);
 
         if (!$result) {
             debugLog([
@@ -161,9 +163,11 @@ class MessageDispatcher {
 
         // Build headers - outer boundary is multipart/mixed
         $headers = "From: $encodedFromName <$fromEmail>\r\n";
+        $headers .= "Sender: $fromEmail\r\n";
         $headers .= "Reply-To: $fromEmail\r\n";
         $headers .= "MIME-Version: 1.0\r\n";
         $headers .= "Content-Type: multipart/mixed; boundary=\"$mixedBoundary\"\r\n";
+        $additionalParams = "-f$fromEmail";
 
         // Build message body
         $message = "";
@@ -215,9 +219,8 @@ class MessageDispatcher {
 
         // Close the mixed section
         $message .= "--$mixedBoundary--";
-
         // Send the email
-        $result = @mail($to, $subject, $message, $headers, "-f$fromEmail");
+        $result = @mail($to, $subject, $message, $headers);
 
         if (!$result) {
             debugLog([

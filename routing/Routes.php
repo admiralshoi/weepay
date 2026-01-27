@@ -143,6 +143,14 @@ class Routes {
                         printHtml($result["result"]);
                         return;
                     }
+                    if (array_key_exists("return_as", $result) && $result["return_as"] === "xml") {
+                        printXml($result["result"]);
+                        return;
+                    }
+                    if (array_key_exists("return_as", $result) && $result["return_as"] === "text") {
+                        printText($result["result"]);
+                        return;
+                    }
                     if (array_key_exists("return_as", $result) && $result["return_as"] === 404) {
                         printView(ErrorController::e404());
                         return;

@@ -249,19 +249,25 @@ class CronjobController {
 
 
     /**
-     * Get cronjob logs for a specific type
-     * GET /api/admin/cronjobs/logs?type=xxx
+     * Get cronjob logs for a specific type and date
+     * GET /api/admin/cronjobs/logs?type=xxx&date=YYYY-MM-DD
      */
     #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
     public static function getLogs(array $args): array {
         $type = $args['type'] ?? null;
+        $date = $args['date'] ?? date('Y-m-d'); // Default to today
 
         if (empty($type)) {
             return self::returnJsonResponse(["status" => "error", "message" => "Cronjob type is required"], 400);
         }
 
+        // Validate date format
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+            $date = date('Y-m-d');
+        }
+
         $worker = Methods::cronWorker($type);
-        $logFiles = $worker->getLogFiles($type);
+        $logFiles = $worker->getLogFiles($type, $date);
 
         if ($logFiles === null) {
             return self::returnJsonResponse(["status" => "error", "message" => "Unknown cronjob type: {$type}"], 400);
@@ -273,7 +279,26 @@ class CronjobController {
             'memory' => file_exists($logFiles['memory']) ? file_get_contents($logFiles['memory']) : '',
         ];
 
-        return self::returnJsonResponse(["status" => "success", "logs" => $logs]);
+        return self::returnJsonResponse(["status" => "success", "logs" => $logs, "selectedDate" => $date]);
+    }
+
+
+    /**
+     * Get available log dates for a specific cronjob type
+     * GET /api/admin/cronjobs/log-dates?type=xxx
+     */
+    #[ArrayShape(["result" => "array|null|string", "response_code" => "int"])]
+    public static function getLogDates(array $args): array {
+        $type = $args['type'] ?? null;
+
+        if (empty($type)) {
+            return self::returnJsonResponse(["status" => "error", "message" => "Cronjob type is required"], 400);
+        }
+
+        $worker = Methods::cronWorker($type);
+        $dates = $worker->getAvailableLogDates($type);
+
+        return self::returnJsonResponse(["status" => "success", "dates" => $dates, "type" => $type]);
     }
 
 

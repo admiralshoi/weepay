@@ -1348,6 +1348,7 @@ class CronRequestHandler {
             'terminal_sessions' => 0,
             'log_files' => 0,
             'empty_dirs' => 0,
+            'cron_logs' => 0,
         ];
 
         // 1. Cleanup OIDC Sessions (expired > 5 days)
@@ -1380,6 +1381,12 @@ class CronRequestHandler {
 
         // 8. Cleanup Empty Log Directories
         $stats['empty_dirs'] = $this->cleanupEmptyLogDirs($worker);
+        if ($worker !== null && !$worker->canRun()) { $this->logCleanupStats($worker, $stats); return; }
+
+        // 9. Cleanup Old Cron Logs (5 days)
+        $cronWorker = Methods::cronWorker();
+        $stats['cron_logs'] = $cronWorker->cleanupOldLogs(5);
+        $worker?->log("Cleaned up {$stats['cron_logs']} old cron log files");
 
         $this->logCleanupStats($worker, $stats);
         $worker?->memoryLog("end");
@@ -1399,6 +1406,7 @@ class CronRequestHandler {
         $worker?->log("  - Terminal Sessions deleted: {$stats['terminal_sessions']}");
         $worker?->log("  - Log Files deleted: {$stats['log_files']}");
         $worker?->log("  - Empty Dirs removed: {$stats['empty_dirs']}");
+        $worker?->log("  - Cron Log Files deleted: {$stats['cron_logs']}");
         $worker?->log("==========================================");
 
         debugLog($stats, 'SYSTEM_CLEANUP_COMPLETED');

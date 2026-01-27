@@ -48,6 +48,16 @@ if(!isEmpty($orderPayments)) {
 <?php
 // Get order UID for card change
 $orderUid = is_object($order) ? $order->uid : ($order ?? null);
+
+// Get card info from payment method
+$paymentMethod = $payment->payment_method ?? null;
+$cardBrand = $paymentMethod->brand ?? null;
+$cardLast4 = $paymentMethod->last4 ?? null;
+$hasCardInfo = !isEmpty($cardBrand) && !isEmpty($cardLast4);
+
+// Calculate total due (amount + rykker fee)
+$paymentTotalDue = (float)$payment->amount + (float)($payment->rykker_fee ?? 0);
+$currencySymbolStr = currencySymbol($payment->currency);
 ?>
 
 <script>
@@ -58,6 +68,16 @@ $orderUid = is_object($order) ? $order->uid : ($order ?? null);
     var paymentOrderUid = <?=json_encode($orderUid)?>;
     var consumerPayNowUrl = <?=json_encode(__url(str_replace('{uid}', $payment->uid, Links::$api->consumer->payNow)))?>;
     var consumerReceiptUrl = <?=json_encode(__url(Links::$api->consumer->paymentReceipt($payment->uid)))?>;
+    var payNowData = {
+        amount: <?=json_encode($paymentTotalDue)?>,
+        baseAmount: <?=json_encode((float)$payment->amount)?>,
+        rykkerFee: <?=json_encode((float)($payment->rykker_fee ?? 0))?>,
+        currency: <?=json_encode($payment->currency)?>,
+        currencySymbol: <?=json_encode($currencySymbolStr)?>,
+        cardBrand: <?=json_encode($cardBrand)?>,
+        cardLast4: <?=json_encode($cardLast4)?>,
+        hasCardInfo: <?=json_encode($hasCardInfo)?>
+    };
 </script>
 
 
@@ -301,10 +321,20 @@ $orderUid = is_object($order) ? $order->uid : ($order ?? null);
                         </button>
                         <?php endif; ?>
 
-                        <?php if($payment->status === 'PAST_DUE'): ?>
-                        <button type="button" class="btn-v2 danger-btn w-100 flex-row-center flex-align-center" style="gap: .5rem;" id="pay-now-btn" data-uid="<?=$payment->uid?>">
-                            <i class="mdi mdi-cash-fast font-16"></i>
-                            <span class="font-14">Betal nu</span>
+                        <?php if(in_array($payment->status, ['SCHEDULED', 'PAST_DUE', 'FAILED'])): ?>
+                        <?php
+                        // Build button text with amount and card info
+                        $btnAmountText = number_format($paymentTotalDue, 2, ',', '.') . ' ' . $currencySymbolStr;
+                        $btnCardText = $hasCardInfo ? strtoupper($cardBrand) . ' (**' . $cardLast4 . ')' : '';
+                        ?>
+                        <button type="button" class="btn-v2 <?=$payment->status === 'PAST_DUE' ? 'danger-btn' : 'green-btn'?> w-100 flex-col-center flex-align-center py-3" style="gap: .25rem;" id="pay-now-btn" data-uid="<?=$payment->uid?>">
+                            <div class="flex-row-center flex-align-center" style="gap: .5rem;">
+                                <i class="mdi mdi-cash-fast font-16"></i>
+                                <span class="font-14 font-weight-bold">Betal <?=$btnAmountText?></span>
+                            </div>
+                            <?php if($hasCardInfo): ?>
+                            <span class="font-12 opacity-80">med <?=$btnCardText?></span>
+                            <?php endif; ?>
                         </button>
                         <?php endif; ?>
 
