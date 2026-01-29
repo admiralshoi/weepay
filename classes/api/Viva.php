@@ -189,7 +189,7 @@ class Viva {
         if(!empty($resellerFee)) {
             $resellerFee = (float)$resellerFee;
             if($resellerFee > 0) $resellerFee /= 100;
-            $payload['isvAmount'] = ceil($payload['amount'] * $resellerFee);
+            $payload['isvAmount'] = (int)floor($payload['amount'] * $resellerFee);
         }
 
 
