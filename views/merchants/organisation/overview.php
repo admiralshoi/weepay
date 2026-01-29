@@ -449,7 +449,7 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
                             <p class="font-14 font-weight-bold mb-2">Standardgebyrer</p>
                             <div class="bg-lightest-gray p-3 border-radius-8px">
                                 <div class="flex-row-between mb-2">
-                                    <span>Platformgebyr</span>
+                                    <span>Platformgebyr (maks.)</span>
                                     <span class="font-weight-bold"><?= number_format($args->resellerFee, 2, ',', '.') ?> %</span>
                                 </div>
                                 <div class="flex-row-between mb-2 color-gray">
@@ -457,16 +457,35 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
                                     <span><?= number_format($args->cardFee, 2, ',', '.') ?> %</span>
                                 </div>
                                 <div class="flex-row-between mb-2 color-gray">
-                                    <span>− Estimeret Viva-gebyr</span>
+                                    <span>− Estimeret Viva-gebyr (procent)</span>
                                     <span><?= number_format($args->paymentProviderFee, 2, ',', '.') ?> %</span>
+                                </div>
+                                <div class="flex-row-between mb-2 color-gray">
+                                    <span>− Viva fast gebyr pr. transaktion</span>
+                                    <span><?= number_format($args->paymentProviderFlatFee ?? 0.75, 2, ',', '.') ?> DKK</span>
                                 </div>
                                 <hr class="my-2">
                                 <div class="flex-row-between">
-                                    <span class="font-weight-bold">Dit gebyr til <?= BRAND_NAME ?></span>
+                                    <span class="font-weight-bold">Dit gebyr til <?= BRAND_NAME ?> (maks.)</span>
                                     <span class="font-weight-bold color-blue"><?= number_format($args->netFee, 2, ',', '.') ?> %</span>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Minimum Transaction Notice -->
+                        <?php if (!isEmpty($args->minimumTransaction) && $args->minimumTransaction > 0 && $args->minimumTransaction < PHP_FLOAT_MAX): ?>
+                        <div class="mt-3 p-3 border-radius-8px" style="background: #fff8e1; border-left: 3px solid #ffc107;">
+                            <div class="flex-row-start-center g-1 mb-1">
+                                <i class="mdi mdi-information-outline" style="color: #f57c00;"></i>
+                                <span class="font-weight-bold font-13" style="color: #e65100;">Om faste gebyrer</span>
+                            </div>
+                            <p class="mb-0 font-12 color-gray">
+                                På grund af det faste gebyr på <?= number_format($args->paymentProviderFlatFee ?? 0.75, 2, ',', '.') ?> DKK pr. transaktion,
+                                vil det samlede gebyr være højere end <?= number_format($args->resellerFee, 2, ',', '.') ?>% for transaktioner
+                                under <strong><?= number_format($args->minimumTransaction, 2, ',', '.') ?> DKK</strong>.
+                            </p>
+                        </div>
+                        <?php endif; ?>
 
                         <?php if (!isEmpty($args->activeFeeException)): ?>
                         <!-- Active Exception Section -->
@@ -497,10 +516,11 @@ $connectedAccount = Methods::vivaConnectedAccounts()->myConnection();
                             </p>
                             <ul class="font-12 color-gray mb-0" style="padding-left: 1.25rem;">
                                 <li class="mb-1">Du betaler <?= BRAND_NAME ?> det viste gebyr pr. transaktion.</li>
-                                <li class="mb-1">Kort- og Viva-gebyrer trækkes automatisk af Viva fra din merchant-konto.</li>
+                                <li class="mb-1">Kort- og Viva-gebyrer (både procent og fast gebyr) trækkes automatisk af Viva fra din merchant-konto.</li>
                                 <li class="mb-1">Ovenstående kortgebyrer gælder standard personlige Visa/Mastercard.</li>
                                 <li class="mb-1">Faktiske kortgebyrer kan variere afhængigt af din omsætning og korttype. Erhvervskort kan medføre gebyrer op til 4%.</li>
-                                <li class="mb-0">I nogle tilfælde kan de samlede gebyrer overstige eller være lavere end det estimerede platformgebyr. Dette ligger uden for vores kontrol.</li>
+                                <li class="mb-1">Det faste gebyr på <?= number_format($args->paymentProviderFlatFee ?? 0.75, 2, ',', '.') ?> DKK opkræves pr. transaktion uanset beløb.</li>
+                                <li class="mb-0">For små transaktioner kan det samlede gebyr overstige det maksimale platformgebyr på grund af det faste gebyr.</li>
                             </ul>
                         </div>
                     </div>

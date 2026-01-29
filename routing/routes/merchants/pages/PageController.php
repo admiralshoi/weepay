@@ -65,19 +65,30 @@ class PageController {
         $setupRequirements = Methods::organisations()->getSetupRequirements();
 
         // Get fee settings for display
-        $resellerFee = (float)(Settings::$app->resellerFee ?? 5.95);
-        $cardFee = (float)(Settings::$app->cardFee ?? 0.39);
-        $paymentProviderFee = (float)(Settings::$app->paymentProviderFee ?? 0.39);
-        $netFee = max(0, $resellerFee - $cardFee - $paymentProviderFee);
+        $organisation = Settings::$organisation?->organisation ?? null;
+        $organisationId = $organisation->uid ?? null;
+
+        // Get comprehensive fee breakdown
+        $feeBreakdown = null;
+        if (!isEmpty($organisationId)) {
+            $feeBreakdown = Methods::organisationFees()->getFeeBreakdown($organisationId, 'DKK');
+        }
+
+        // Fallback values if no organisation
+        $resellerFee = $feeBreakdown['totalFee'] ?? (float)(Settings::$app->resellerFee ?? 5.95);
+        $cardFee = $feeBreakdown['cardFee'] ?? (float)(Settings::$app->cardFee ?? 0.39);
+        $paymentProviderFee = $feeBreakdown['paymentProviderFee'] ?? (float)(Settings::$app->paymentProviderFee ?? 0.39);
+        $paymentProviderFlatFee = $feeBreakdown['paymentProviderFlatFee'] ?? (float)(Settings::$app->paymentProviderFlatFee ?? 0.75);
+        $netFee = $feeBreakdown['netFee'] ?? max(0, $resellerFee - $cardFee - $paymentProviderFee);
+        $minimumTransaction = $feeBreakdown['minimumTransaction'] ?? 0;
 
         // Check for active special fee exception
         $now = time();
-        $organisation = Settings::$organisation?->organisation ?? null;
         $activeFeeException = null;
-        if (!isEmpty($organisation)) {
+        if (!isEmpty($organisationId)) {
             $activeFeeException = Methods::organisationFees()->queryGetFirst(
                 Methods::organisationFees()->queryBuilder()
-                    ->where('organisation', $organisation->uid)
+                    ->where('organisation', $organisationId)
                     ->where('enabled', 1)
                     ->where('start_time', '<=', $now)
                     ->startGroup('OR')
@@ -87,7 +98,7 @@ class PageController {
             );
         }
 
-        return Views("ORGANISATION_OVERVIEW", compact('memberRows', 'worldCountries', 'locations', 'setupRequirements', 'resellerFee', 'cardFee', 'paymentProviderFee', 'netFee', 'activeFeeException'));
+        return Views("ORGANISATION_OVERVIEW", compact('memberRows', 'worldCountries', 'locations', 'setupRequirements', 'resellerFee', 'cardFee', 'paymentProviderFee', 'paymentProviderFlatFee', 'netFee', 'minimumTransaction', 'activeFeeException', 'feeBreakdown'));
     }
 
     public static function team(array $args): mixed {

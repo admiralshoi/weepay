@@ -73,7 +73,7 @@ class PaymentsHandler extends Crud {
      * @param string $provider Provider UID
      * @param string $currency Currency code
      * @param object|null $plan Plan object with payments array (from CheckoutBasketHandler)
-     * @param float $resellerFeePercent Reseller fee percentage to calculate ISV amounts
+     * @param float $resellerFeePercent Reseller fee percentage (legacy, kept for backwards compatibility)
      * @param string $paymentPlan Payment plan type (installments, pushed, etc)
      * @param bool $isTest Whether this is a test transaction
      * @return bool Success status
@@ -100,7 +100,10 @@ class PaymentsHandler extends Crud {
         foreach ($payments as $paymentInfo) {
             $paymentInfo = toObject($paymentInfo);
             $customerAmount = $paymentInfo->price;
-            $isvAmount = round($customerAmount * $resellerFeePercent / 100, 2);
+
+            // Calculate reseller fee for this specific installment amount (accounts for flat fees)
+            $installmentResellerFee = Methods::organisationFees()->calculateResellerFee($organisation, $customerAmount, $currency);
+            $isvAmount = round($customerAmount * $installmentResellerFee / 100, 2);
 
             $dueDate = date('Y-m-d H:i:s', $paymentInfo->timestamp);
             $isFirstPayment = $paymentInfo->installment === 1;

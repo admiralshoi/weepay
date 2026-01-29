@@ -85,7 +85,21 @@ class CustomerPageController {
         $session = Methods::terminalSessions()->getSession($terminalId);
         if(isEmpty($session)) return null;
 
-        if(isOidcVerified()) Response()->redirect(
+        // Debug OIDC verification status
+        $isLoggedIn = isLoggedIn();
+        $isOidcAuth = isOidcAuthenticated();
+        $hasOidcRecord = $isLoggedIn ? Methods::oidcAuthentication()->exists(['user' => __uuid(), 'enabled' => 1]) : false;
+        $oidcVerified = isOidcVerified();
+
+        debugLog([
+            'isLoggedIn' => $isLoggedIn,
+            'isOidcAuthenticated' => $isOidcAuth,
+            'hasOidcRecord' => $hasOidcRecord,
+            'isOidcVerified' => $oidcVerified,
+            'uuid' => __uuid(),
+        ], 'CHECKOUT-START-OIDC-CHECK');
+
+        if($oidcVerified) Response()->redirect(
             __url("merchant/{$terminal->location->slug}/checkout/info?tsid={$session->uid}")
         );
 

@@ -116,13 +116,15 @@ class CustomerApiController {
             $merchantId = $organisation?->merchant_prid;
         }
         if(isEmpty($merchantId)) Response()->jsonError("Forhandlers ID er ikke gyldigt. Prøv igen senere", [$location], 404);
-        $resellerFee = Methods::organisationFees()->resellerFee($organisationId);
 
         // For "pushed" plan: create 1 unit currency validation payment with allowRecurring
         // For other plans: create normal payment with to_pay_now amount
         $isPushedPlan = $planName === 'pushed';
         $paymentAmount = $isPushedPlan ? CardValidationService::getValidationAmount() : $plan->to_pay_now;
         $allowRecurring = $isPushedPlan || !($plan->start === 'now' && $plan->installments === 1);
+
+        // Calculate reseller fee using transaction-aware method (accounts for flat fees)
+        $resellerFee = Methods::organisationFees()->calculateResellerFee($organisationId, $paymentAmount, $basket->currency);
 
         // Customize description for pushed plan
         $customerNote = $isPushedPlan

@@ -12,6 +12,7 @@ $pageTitle = "Gebyrer";
 $defaultFee = $args->defaultFee ?? 5.95;
 $cardFee = $args->cardFee ?? 0.39;
 $paymentProviderFee = $args->paymentProviderFee ?? 0.39;
+$paymentProviderFlatFee = $args->paymentProviderFlatFee ?? 0.75;
 $minOrgFee = $args->minOrgFee ?? 0.78;
 $orgFees = $args->orgFees ?? new \Database\Collection();
 
@@ -63,7 +64,7 @@ $rykker3Fee = $args->rykker_3_fee ?? 100;
 
                     <div class="row" style="row-gap: 1rem;">
                         <!-- Total Platform Fee -->
-                        <div class="col-12 col-md-4">
+                        <div class="col-12 col-md-6 col-lg-3">
                             <div class="p-3 bg-light-gray border-radius-8px h-100">
                                 <div class="flex-col-start">
                                     <p class="mb-0 font-12 color-gray">Samlet platformgebyr</p>
@@ -77,7 +78,7 @@ $rykker3Fee = $args->rykker_3_fee ?? 100;
                         </div>
 
                         <!-- Card Fee -->
-                        <div class="col-12 col-md-4">
+                        <div class="col-12 col-md-6 col-lg-3">
                             <div class="p-3 bg-light-gray border-radius-8px h-100">
                                 <div class="flex-col-start">
                                     <p class="mb-0 font-12 color-gray">Kortgebyr (Visa/MC)</p>
@@ -91,7 +92,7 @@ $rykker3Fee = $args->rykker_3_fee ?? 100;
                         </div>
 
                         <!-- Payment Provider Fee -->
-                        <div class="col-12 col-md-4">
+                        <div class="col-12 col-md-6 col-lg-3">
                             <div class="p-3 bg-light-gray border-radius-8px h-100">
                                 <div class="flex-col-start">
                                     <p class="mb-0 font-12 color-gray">Betalingsudbyder gebyr</p>
@@ -99,6 +100,20 @@ $rykker3Fee = $args->rykker_3_fee ?? 100;
                                     <p class="mb-0 font-11 color-gray mt-1">Viva/stripe osv.</p>
                                 </div>
                                 <button class="btn-v2 action-btn btn-sm mt-2" onclick="editPaymentProviderFee(<?=$paymentProviderFee?>)">
+                                    <i class="mdi mdi-pencil-outline mr-1"></i> Rediger
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Payment Provider Flat Fee -->
+                        <div class="col-12 col-md-6 col-lg-3">
+                            <div class="p-3 bg-light-gray border-radius-8px h-100">
+                                <div class="flex-col-start">
+                                    <p class="mb-0 font-12 color-gray">Fast gebyr (DKK)</p>
+                                    <p class="mb-0 font-24 font-weight-bold color-green"><?=number_format($paymentProviderFlatFee, 2, ',', '.')?> kr</p>
+                                    <p class="mb-0 font-11 color-gray mt-1">Viva fast gebyr pr. transaktion</p>
+                                </div>
+                                <button class="btn-v2 action-btn btn-sm mt-2" onclick="editFlatFee(<?=$paymentProviderFlatFee?>)">
                                     <i class="mdi mdi-pencil-outline mr-1"></i> Rediger
                                 </button>
                             </div>
@@ -399,6 +414,33 @@ $rykker3Fee = $args->rykker_3_fee ?? 100;
             <div class="modal-footer border-0">
                 <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Annuller</button>
                 <button type="button" class="btn-v2 action-btn" onclick="savePaymentProviderFee()">
+                    <i class="mdi mdi-content-save-outline mr-1"></i> Gem
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Flat Fee Modal -->
+<div class="modal fade" id="editFlatFeeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-radius-10px">
+            <div class="modal-header border-0">
+                <h5 class="modal-title font-weight-bold">Rediger fast gebyr</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="flex-col-start">
+                    <label class="font-12 color-gray mb-1">Fast gebyr (DKK)</label>
+                    <input type="number" step="0.01" min="0" max="100" class="form-field-v2" id="flatFeeInput" placeholder="0.75">
+                    <p class="mb-0 font-11 color-gray mt-2">Viva fast gebyr pr. transaktion i DKK. Bruges i beregning af dynamisk reseller fee.</p>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn-v2 mute-btn" data-dismiss="modal">Annuller</button>
+                <button type="button" class="btn-v2 action-btn" onclick="saveFlatFee()">
                     <i class="mdi mdi-content-save-outline mr-1"></i> Gem
                 </button>
             </div>

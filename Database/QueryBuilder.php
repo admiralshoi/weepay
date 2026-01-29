@@ -678,12 +678,14 @@ class QueryBuilder {
 
     private function removeForeignKeys(array $dataToInsertOrUpdate): array {
         $result = [];
+        // Blueprint auto-adds these columns to every table
+        $autoColumns = ['created_at', 'updated_at'];
         if(!isAssoc($dataToInsertOrUpdate)) {
             foreach ($dataToInsertOrUpdate as $i => $item) $result[$i] = $this->removeForeignKeys($item);
         }
         else {
             foreach ($dataToInsertOrUpdate as $key => $value) {
-                if(array_key_exists($key, $this->schema)) $result[$key] = $value;
+                if(array_key_exists($key, $this->schema) || in_array($key, $autoColumns)) $result[$key] = $value;
             }
         }
         return $result;

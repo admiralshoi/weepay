@@ -120,8 +120,9 @@ class TerminalSessionHandler extends Crud {
             ->first();
 
         if(!isEmpty($session)) {
+            // Touch record to refresh updated_at timestamp if stale
             if(strtotime($session->updated_at) < time() - 600) {
-                $this->update(['updated_at' => time()], ['uid' => $session->uid]);
+                $this->update(['updated_at' => date('Y-m-d H:i:s')], ['uid' => $session->uid]);
             }
             // Store in PHP session with timestamp for expiry
             $_SESSION[$phpSessionKey] = ['id' => $session->uid, 'cached_at' => time()];

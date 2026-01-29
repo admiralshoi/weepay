@@ -5,6 +5,7 @@
 var defaultFeeModal = null;
 var cardFeeModal = null;
 var paymentProviderFeeModal = null;
+var flatFeeModal = null;
 var orgFeeModal = null;
 var organisationsLoaded = false;
 
@@ -12,6 +13,7 @@ function initPanelFees() {
     defaultFeeModal = $('#editDefaultFeeModal');
     cardFeeModal = $('#editCardFeeModal');
     paymentProviderFeeModal = $('#editPaymentProviderFeeModal');
+    flatFeeModal = $('#editFlatFeeModal');
     orgFeeModal = $('#orgFeeModal');
     loadOrganisations();
 
@@ -121,6 +123,33 @@ async function savePaymentProviderFee() {
     if (result.status === 'success') {
         paymentProviderFeeModal.modal('hide');
         queueNotificationOnLoad('Gemt', 'Betalingsudbyder gebyret er opdateret', 'success');
+        window.location.reload();
+    } else {
+        showErrorNotification('Fejl', result.message || 'Der opstod en fejl');
+    }
+}
+
+// Flat Fee functions
+function editFlatFee(currentFee) {
+    $('#flatFeeInput').val(currentFee);
+    flatFeeModal.modal('show');
+}
+
+async function saveFlatFee() {
+    var fee = parseFloat($('#flatFeeInput').val());
+    if (isNaN(fee) || fee < 0 || fee > 100) {
+        showErrorNotification('Fejl', 'Gebyret skal være mellem 0 og 100');
+        return;
+    }
+
+    var result = await post(platformLinks.api.admin.panel.updateSetting, {
+        key: 'paymentProviderFlatFee',
+        value: fee
+    });
+
+    if (result.status === 'success') {
+        flatFeeModal.modal('hide');
+        queueNotificationOnLoad('Gemt', 'Fast gebyr er opdateret', 'success');
         window.location.reload();
     } else {
         showErrorNotification('Fejl', result.message || 'Der opstod en fejl');

@@ -99,12 +99,14 @@ class PanelController {
         $defaultFee = Methods::appMeta()->get('resellerFee') ?? 5.95;
         $cardFee = Methods::appMeta()->get('cardFee') ?? 0.39;
         $paymentProviderFee = Methods::appMeta()->get('paymentProviderFee') ?? 0.39;
+        $paymentProviderFlatFee = Methods::appMeta()->get('paymentProviderFlatFee') ?? 0.75;
 
         // Get all organisation fee overrides (with resolved organisations)
         $orgFees = Methods::organisationFees()->getByX(['enabled' => 1]);
         $args['defaultFee'] = $defaultFee;
         $args['cardFee'] = $cardFee;
         $args['paymentProviderFee'] = $paymentProviderFee;
+        $args['paymentProviderFlatFee'] = $paymentProviderFlatFee;
         $args['minOrgFee'] = $cardFee + $paymentProviderFee;
         $args['orgFees'] = $orgFees;
 

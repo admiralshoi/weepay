@@ -94,6 +94,16 @@ class AppMeta extends \Database\Model {
             "type" => "float",
         ],
         [
+            "name" => "paymentProviderFlatFee",
+            "value" => '0.75',
+            "type" => "float",
+        ],
+        [
+            "name" => "currencyConversionRates",
+            "value" => '{"DKK":1,"EUR":0.13,"GBP":0.11,"SEK":1.40,"NOK":1.45,"PLN":0.57,"CZK":3.05,"HUF":47.5,"RON":0.60,"BGN":0.26}',
+            "type" => "array",
+        ],
+        [
             "name" => "bnplInstallmenMaxDuration",
             "value" => '90',
             "type" => "int",
