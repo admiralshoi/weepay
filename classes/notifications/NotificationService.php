@@ -352,10 +352,18 @@ class NotificationService {
         ]);
 
         $success = false;
+        $skipped = false;
         $attachments = [];
 
         switch ($action->channel) {
             case 'email':
+                // Check if email should be skipped (e.g., password reset via phone)
+                if (!empty($context['skip_email'])) {
+                    self::debug("Email skipped due to skip_email flag in context");
+                    $success = true;
+                    $skipped = true;
+                    break;
+                }
                 self::debug("Sending via EMAIL channel");
                 // Process attachment placeholders for email
                 $processed = self::processAttachmentPlaceholders($content, $htmlContent, $context);
@@ -366,10 +374,11 @@ class NotificationService {
                 $success = self::sendEmail($recipientData, $subject, $content, $htmlContent, $context, $attachments);
                 break;
             case 'sms':
-                // Check if SMS should be skipped (e.g., bulk payment from order page)
+                // Check if SMS should be skipped (e.g., bulk payment from order page, or password reset via email)
                 if (!empty($context['skip_sms'])) {
                     self::debug("SMS skipped due to skip_sms flag in context");
-                    $success = true; // Mark as success but don't actually send
+                    $success = true;
+                    $skipped = true;
                     break;
                 }
                 self::debug("Sending via SMS channel");
@@ -383,7 +392,13 @@ class NotificationService {
                 self::debug("ERROR: Unknown channel", ['channel' => $action->channel]);
         }
 
-        self::debug("Send result", ['success' => $success, 'channel' => $action->channel]);
+        self::debug("Send result", ['success' => $success, 'channel' => $action->channel, 'skipped' => $skipped]);
+
+        // Don't log skipped notifications
+        if ($skipped) {
+            self::debug("--- sendNotification END (skipped, not logged) ---", ['success' => $success]);
+            return $success;
+        }
 
         // Log the notification with reference data for deduplication
         $breakpointKey = is_object($flow->breakpoint) ? $flow->breakpoint->key : $flow->breakpoint;

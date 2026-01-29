@@ -167,8 +167,7 @@ Routes::group(['api', "requiresApiLogout"], function() {
      *  ============ AUTH API START =============
      *  =========================================
      */
-    Routes::post("api/password-recovery", "api.AuthController::passwordRecovery");
-    Routes::post("api/password-recovery/reset", "api.AuthController::passwordRecoveryResetPassword");
+    Routes::post(Links::$api->auth->passwordRecovery, "api.AuthController::passwordRecovery");
     Routes::post("api/create-user/{account_type}", "api.AuthController::createUser");
     Routes::post(Links::$api->auth->merchantLogin, "auth.ApiController::loginUser");
     Routes::post(Links::$api->auth->merchantSignup, "auth.ApiController::signupUser");
@@ -463,6 +462,9 @@ Routes::get(Links::$faq->merchant, "LandingController::faqMerchant");
 // Guides
 Routes::get("help/guides/merchant/onboarding", "LandingController::guideMerchantOnboarding");
 
+// Password reset page (no middleware - handles login state in controller)
+Routes::get(Links::$app->auth->resetPassword, "auth.PageController::resetPassword");
+
 /**
  *  =========================================
  *  ============ LOGGED OUT START ===========
@@ -478,9 +480,12 @@ Routes::group(['requiresLoggedOut'], function() {
 //    Routes::get(Links::$policies->merchant->termsOfUse, "GeneralController::pageNotReady");
     Routes::get(Links::$support->public, "GeneralController::pageNotReady");
 //    Routes::get(Links::$merchant->public->signup, "GeneralController::pageNotReady");
-    Routes::get(Links::$merchant->public->recovery, "GeneralController::pageNotReady");
+//    Routes::get(Links::$merchant->public->recovery, "GeneralController::pageNotReady"); // Replaced by unified password-recovery
     Routes::get(Links::$consumer->public->signup, "GeneralController::pageNotReady");
-    Routes::get(Links::$consumer->public->recovery, "GeneralController::pageNotReady");
+//    Routes::get(Links::$consumer->public->recovery, "GeneralController::pageNotReady"); // Replaced by unified password-recovery
+
+    // Password recovery request (must be logged out)
+    Routes::get(Links::$app->auth->passwordRecovery, "auth.PageController::passwordRecovery");
 
 
 

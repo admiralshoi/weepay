@@ -11,6 +11,8 @@ class Auth {
     public string $consumerSignup = "consumer/signup";
     public string $adminLogin = "admin/login";
     public string $changePassword = "auth/change-password";
+    public string $passwordRecovery = "password-recovery";
+    public string $resetPassword = "reset-password";
     public string $invitation = "invitation"; // Base path for invitation links
 
     public Oicd $oicd;

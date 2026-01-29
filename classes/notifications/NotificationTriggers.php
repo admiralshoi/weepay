@@ -53,16 +53,40 @@ class NotificationTriggers {
 
     /**
      * Trigger when user requests password reset
+     *
+     * @param object|array $user The user requesting password reset
+     * @param string $resetLink The password reset link
+     * @param array $options Optional settings:
+     *   - 'skip_sms' => true to only send email
+     *   - 'skip_email' => true to only send SMS
+     *   - 'reset_token' => string to use as reference_id for deduplication (allows multiple resets)
      */
-    public static function userPasswordReset(object|array $user, string $resetLink): bool {
+    public static function userPasswordReset(object|array $user, string $resetLink, array $options = []): bool {
         $userData = self::normalizeUserData($user);
 
-        return NotificationService::trigger('user.password_reset', [
+        $context = [
             'user' => $userData,
             'reset_link' => $resetLink,
             'app' => self::getAppContext(),
             'email_title' => 'Nulstil adgangskode',
-        ]);
+        ];
+
+        // Pass through channel skip options
+        if (!empty($options['skip_sms'])) {
+            $context['skip_sms'] = true;
+        }
+        if (!empty($options['skip_email'])) {
+            $context['skip_email'] = true;
+        }
+
+        // Use reset token as reference_id to allow multiple password resets
+        // Each reset request creates a new token, making each notification unique
+        if (!empty($options['reset_token'])) {
+            $context['reference_id'] = $options['reset_token'];
+            $context['reference_type'] = 'password_reset';
+        }
+
+        return NotificationService::trigger('user.password_reset', $context);
     }
 
     // =====================================================

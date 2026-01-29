@@ -3,6 +3,7 @@ namespace routing\routes\auth;
 
 use classes\enumerations\Links;
 use classes\Methods;
+use classes\auth\PasswordHandler;
 
 class PageController {
 
@@ -189,5 +190,98 @@ class PageController {
         // Redirect to password change page (force_password_change should be set)
         Response()->redirect(__url(Links::$app->auth->changePassword));
         return null;
+    }
+
+    /**
+     * Password recovery request page
+     * Allows users to request a password reset link via email or phone
+     */
+    public static function passwordRecovery(array $args): mixed {
+        // If already logged in, redirect to dashboard
+        if(isLoggedIn()) {
+            if(Methods::isAdmin()) $url = Links::$admin->dashboard;
+            elseif(Methods::isConsumer()) $url = Links::$consumer->dashboard;
+            elseif(Methods::isMerchant()) $url = Links::$merchant->dashboard;
+            else $url = Links::$app->home;
+            Response()->redirect(__url($url));
+        }
+
+        $worldCountries = Methods::misc()::getCountriesLib(WORLD_COUNTRIES);
+
+        return Views("AUTH_PASSWORD_RECOVERY", compact('worldCountries'));
+    }
+
+    /**
+     * Reset password page (after clicking link in email/SMS)
+     * Validates token, logs user in, sets force_password_change, shows reset form
+     */
+    public static function resetPassword(array $args): mixed {
+        $token = $args['token'] ?? null;
+
+        // If no token provided, redirect to recovery page
+        if(isEmpty($token)) {
+            Response()->redirect(__url(Links::$app->auth->passwordRecovery));
+            return null;
+        }
+
+        // If user is logged in, log them out and refresh the page
+        if(isLoggedIn()) {
+            session_destroy();
+            Response()->refresh();
+            return null;
+        }
+
+        $passwordHandler = new PasswordHandler();
+
+        // Validate token
+        if(!$passwordHandler->resetAvailable($token)) {
+            // Token invalid or expired - show error page
+            return Views("AUTH_RESET_PASSWORD", [
+                'error' => 'Linket er ugyldigt eller udløbet. Anmod venligst om et nyt link.',
+                'tokenValid' => false
+            ]);
+        }
+
+        // Get the reset record and user
+        $resetRecord = $passwordHandler->getResetByToken($token);
+        if(isEmpty($resetRecord) || isEmpty($resetRecord->user)) {
+            return Views("AUTH_RESET_PASSWORD", [
+                'error' => 'Der opstod en fejl. Prøv venligst igen.',
+                'tokenValid' => false
+            ]);
+        }
+
+        $user = $resetRecord->user; // Foreign key resolves to User object
+
+        // Get the user's AuthLocal record
+        $authLocal = Methods::localAuthentication()->excludeForeignKeys()->getFirst(['user' => $user->uid]);
+        if(isEmpty($authLocal)) {
+            return Views("AUTH_RESET_PASSWORD", [
+                'error' => 'Brugerkontoen har ikke lokal login aktiveret.',
+                'tokenValid' => false
+            ]);
+        }
+
+        // Set force_password_change = 1 on AuthLocal
+        Methods::localAuthentication()->update(
+            ['force_password_change' => 1],
+            ['uid' => $authLocal->uid]
+        );
+
+        // Mark the token as used
+        $passwordHandler->markTokenUsed($token);
+
+        // Log the user in by setting session variables
+        $userArray = toArray($user);
+        $keys = array_keys($userArray);
+        $keys[] = "logged_in";
+        $keys[] = "localAuth";
+        setSessions($userArray, $keys);
+
+        // Render the reset password page (which will use the change-password API)
+        return Views("AUTH_RESET_PASSWORD", [
+            'user' => $user,
+            'tokenValid' => true
+        ]);
     }
 }

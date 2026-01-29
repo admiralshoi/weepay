@@ -139,7 +139,7 @@ $pageTitle = "Log ind";
 
                         <div class="flex-col-start w-100" style="row-gap: .75rem;">
                             <div class="flex-row-end login-credentials-section">
-                                <a href="<?=__url(Links::$consumer->public->recovery)?>" class="color-blue hover-underline font-13">Glemt adgangskode?</a>
+                                <a href="<?=__url(Links::$app->auth->passwordRecovery)?>" class="color-blue hover-underline font-13">Glemt adgangskode?</a>
                             </div>
                             <button class="btn-v2 green-btn flex-row-center flex-align-center flex-nowrap login-credentials-section" style="gap: .5rem;" name="login-button" id="login-button">
                                 <span>Log ind</span>

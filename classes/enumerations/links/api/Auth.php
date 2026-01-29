@@ -15,5 +15,6 @@ class Auth {
     public string $verify2faLogin = 'api/auth/verify-2fa-login';
     public string $resend2faLoginCode = 'api/auth/resend-2fa-code';
     public string $changePassword = 'api/auth/change-password';
+    public string $passwordRecovery = 'api/password-recovery';
 
 }

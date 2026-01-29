@@ -349,4 +349,170 @@ class TwoFactorAuth extends Crud {
             ->where('user', '!=', $excludeUserId)
             ->delete();
     }
+
+    /**
+     * Create a password reset token (32 char string, 24hr TTL)
+     *
+     * @param string $userId User UID
+     * @param string $identifier Email or phone used for reset
+     * @param string|null $phoneCountryCode Country code if phone
+     * @return array|null Returns array with token on success, null on failure
+     */
+    public function createPasswordResetToken(string $userId, string $identifier, ?string $phoneCountryCode = null): ?array {
+        $purpose = 'password_reset';
+
+        // Invalidate any existing pending password reset tokens for this user
+        $this->update(
+            ['verified' => -1],
+            ['user' => $userId, 'purpose' => $purpose, 'verified' => 0]
+        );
+
+        // Generate random 32-character token
+        $token = bin2hex(random_bytes(16));
+
+        // 24 hour expiry
+        $expiresAt = time() + (24 * 60 * 60);
+
+        // Create verification record
+        $data = [
+            'user' => $userId,
+            'type' => 'link',
+            'purpose' => $purpose,
+            'code' => $token,
+            'identifier' => $identifier,
+            'verified' => 0,
+            'expires_at' => $expiresAt,
+        ];
+
+        if ($phoneCountryCode) {
+            $data['phone_country_code'] = $phoneCountryCode;
+        }
+
+        if (!$this->create($data)) {
+            return null;
+        }
+
+        return [
+            'token' => $token,
+            'token_id' => $this->recentUid,
+            'expires_at' => $expiresAt,
+        ];
+    }
+
+    /**
+     * Verify a password reset token
+     *
+     * @param string $token The reset token from URL
+     * @return object|null Returns verification record on success, null on failure
+     */
+    public function verifyPasswordResetToken(string $token): ?object {
+        $verification = $this->getFirst([
+            'code' => $token,
+            'purpose' => 'password_reset',
+            'verified' => 0
+        ]);
+
+        if (isEmpty($verification)) {
+            return null;
+        }
+
+        // Check if expired
+        if ($verification->expires_at < time()) {
+            return null;
+        }
+
+        return $verification;
+    }
+
+    /**
+     * Mark a password reset token as used
+     *
+     * @param string $tokenUid The UID of the verification record
+     * @return bool
+     */
+    public function markPasswordResetUsed(string $tokenUid): bool {
+        return $this->update(
+            ['verified' => 1, 'verified_at' => time()],
+            ['uid' => $tokenUid]
+        );
+    }
+
+    /**
+     * Get a valid (not expired, not used) password reset token for the user
+     * Used to reuse existing token instead of creating new ones
+     *
+     * @param string $userId User UID
+     * @return object|null Valid reset record or null
+     */
+    public function getValidPasswordReset(string $userId): ?object {
+        $now = time();
+
+        $result = $this->queryGetFirst(
+            $this->queryBuilder()
+                ->where('user', $userId)
+                ->where('purpose', 'password_reset')
+                ->where('verified', 0)
+                ->where('expires_at', '>', $now)
+                ->order('expires_at', 'DESC')
+        );
+
+        debugLog([
+            'method' => 'getValidPasswordReset',
+            'user_uid' => $userId,
+            'now' => $now,
+            'result_found' => !isEmpty($result),
+            'result_uid' => $result->uid ?? null,
+            'result_expires_at' => $result->expires_at ?? null,
+        ], "PWD-RESET-2FA-GET-VALID");
+
+        return $result;
+    }
+
+    /**
+     * Check if user is on cooldown based on expires_at timestamp
+     * expires_at is 24h from creation, so: created_at = expires_at - 24h
+     *
+     * @param string $userId User UID
+     * @param int $cooldownSeconds Cooldown period in seconds
+     * @return array ['on_cooldown' => bool, 'wait_seconds' => int, 'existing_token' => object|null]
+     */
+    public function checkPasswordResetCooldown(string $userId, int $cooldownSeconds): array {
+        $now = time();
+        $tokenTtl = 24 * 60 * 60; // 24 hours - matches createPasswordResetToken
+
+        // Get valid (not expired, not used) token
+        $validToken = $this->getValidPasswordReset($userId);
+
+        if (isEmpty($validToken)) {
+            debugLog([
+                'on_cooldown' => false,
+                'reason' => 'no valid token exists',
+            ], "PWD-RESET-COOLDOWN-CHECK");
+            return ['on_cooldown' => false, 'wait_seconds' => 0, 'existing_token' => null];
+        }
+
+        // Calculate when token was created from expires_at
+        $expiresAt = (int)$validToken->expires_at;
+        $createdAt = $expiresAt - $tokenTtl;
+        $secondsSinceCreated = $now - $createdAt;
+        $cooldownEndsAt = $createdAt + $cooldownSeconds;
+        $waitSeconds = max(0, $cooldownEndsAt - $now);
+
+        debugLog([
+            'expires_at' => $expiresAt,
+            'calculated_created_at' => $createdAt,
+            'now' => $now,
+            'seconds_since_created' => $secondsSinceCreated,
+            'cooldown_seconds' => $cooldownSeconds,
+            'cooldown_ends_at' => $cooldownEndsAt,
+            'wait_seconds' => $waitSeconds,
+            'on_cooldown' => $waitSeconds > 0,
+        ], "PWD-RESET-COOLDOWN-CHECK");
+
+        return [
+            'on_cooldown' => $waitSeconds > 0,
+            'wait_seconds' => $waitSeconds,
+            'existing_token' => $validToken
+        ];
+    }
 }

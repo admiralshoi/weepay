@@ -25,5 +25,61 @@ class ContentController {
     }
 
 
+    /**
+     * Proxy endpoint for fetching external URLs (for media info detection)
+     * Used by fetchMediaInfo in features.js
+     */
+    #[NoReturn] public static function proxy(array $args): void {
+        $url = $args['url'] ?? null;
+        $method = strtoupper($args['method'] ?? 'HEAD');
+
+        if (isEmpty($url)) {
+            Response()->jsonError("URL is required", [], 400);
+        }
+
+        // Validate URL
+        if (!filter_var($url, FILTER_VALIDATE_URL)) {
+            Response()->jsonError("Invalid URL", [], 400);
+        }
+
+        // Only allow HEAD and GET for security
+        if (!in_array($method, ['HEAD', 'GET'])) {
+            Response()->jsonError("Method not allowed", [], 405);
+        }
+
+        try {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+            curl_setopt($ch, CURLOPT_USERAGENT, 'WeePay/1.0');
+
+            if ($method === 'HEAD') {
+                curl_setopt($ch, CURLOPT_NOBODY, true);
+                curl_setopt($ch, CURLOPT_HEADER, true);
+            }
+
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+            $contentLength = curl_getinfo($ch, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
+
+            if (curl_errno($ch)) {
+                curl_close($ch);
+                Response()->jsonError("Failed to fetch URL: " . curl_error($ch), [], 500);
+            }
+
+            curl_close($ch);
+
+            Response()->jsonSuccess("OK", [
+                'http_code' => $httpCode,
+                'content_type' => $contentType,
+                'content_length' => $contentLength
+            ]);
+        } catch (\Exception $e) {
+            Response()->jsonError("Proxy error: " . $e->getMessage(), [], 500);
+        }
+    }
 
 }
