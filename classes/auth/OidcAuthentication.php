@@ -123,8 +123,8 @@ class OidcAuthentication extends Crud {
             "nin_country" => $ninCountry,
             "nin_user_type" => $ninUserType,
             "restricted_logon_types" => $restrictedLogonTypes,
+            "enabled" => $enabled ?? 1,
         ];
-        if($enabled !== null) $params['enabled'] = $enabled;
         if($this->create($params)) return $this->recentUid;
         return null;
     }
