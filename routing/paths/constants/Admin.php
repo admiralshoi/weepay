@@ -655,7 +655,7 @@ class Admin extends \routing\paths\Paths {
                 "vendor.sweetalert.sweetalert2.min.css",
                 "js.includes.sweetAlert.js",
                 "vendor.sweetalert.sweetalert2.min.js",
-                "js.includes.sweetPrompt.js",
+                "js.includes.SweetPrompt.js",
             ],
             "custom" => [
                 "js.admin-panel-settings.js",
@@ -718,7 +718,7 @@ class Admin extends \routing\paths\Paths {
                 "vendor.sweetalert.sweetalert2.min.css",
                 "js.includes.sweetAlert.js",
                 "vendor.sweetalert.sweetalert2.min.js",
-                "js.includes.sweetPrompt.js",
+                "js.includes.SweetPrompt.js",
                 "vendor.datatables.dataTables.js",
                 "vendor.datatables.dataTablesBs.js",
                 "vendor.datatables.dataTablesBs.css",
@@ -906,8 +906,14 @@ class Admin extends \routing\paths\Paths {
         "assets" => [
             "main" => null,
             "base" => null,
-            "vendor" => [],
-            "custom" => [],
+            "vendor" => [
+                "vendor.sweetalert.sweetalert2.min.css",
+                "vendor.sweetalert.sweetalert2.min.js",
+            ],
+            "custom" => [
+                "js.includes.SweetPrompt.js",
+                "js.admin-contact-forms.js",
+            ],
         ],
     ];
 

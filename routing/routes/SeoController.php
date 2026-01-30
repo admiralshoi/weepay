@@ -21,6 +21,9 @@ class SeoController {
         // Static pages sitemap
         $sitemaps[] = ['loc' => HOST . 'sitemap-static.xml'];
 
+        // Demo sitemap
+        $sitemaps[] = ['loc' => HOST . 'sitemap-demo.xml'];
+
         // Get organisation UIDs with published locations
         $orgUids = Methods::locations()->getOrgUidsWithPublishedLocations();
         foreach ($orgUids as $orgUid) {
@@ -46,6 +49,21 @@ class SeoController {
             ['loc' => HOST . 'help/faqs/consumer', 'priority' => '0.6', 'changefreq' => 'weekly'],
             ['loc' => HOST . 'help/faqs/merchant', 'priority' => '0.6', 'changefreq' => 'weekly'],
             ['loc' => HOST . 'help/guides/merchant/onboarding', 'priority' => '0.6', 'changefreq' => 'weekly'],
+        ];
+
+        $xml = self::buildUrlsetXml($urls);
+        return ["return_as" => "xml", "result" => $xml];
+    }
+
+    /**
+     * Generate Demo Pages Sitemap
+     * GET /sitemap-demo.xml
+     */
+    public static function sitemapDemo(array $args): array {
+        $urls = [
+            ['loc' => HOST . 'demo', 'priority' => '0.8', 'changefreq' => 'monthly'],
+            ['loc' => HOST . 'demo/cashier', 'priority' => '0.7', 'changefreq' => 'monthly'],
+            ['loc' => HOST . 'demo/consumer', 'priority' => '0.7', 'changefreq' => 'monthly'],
         ];
 
         $xml = self::buildUrlsetXml($urls);

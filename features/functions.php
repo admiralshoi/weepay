@@ -58,7 +58,13 @@ function printView(array $viewList): void {
     $head = $viewList["head"];
     $customScripts = $viewList["custom_scripts"];
     $view = $viewList["views"][0];
-    $pageHeaderTitle = $viewList["title"];
+    // Allow controller to override title via args, fallback to path constant title
+    $pageHeaderTitle = $viewList["args"]["title"] ?? $viewList["title"] ?? null;
+    // Allow controller to override meta via args, fallback to path constant meta
+    $pageMeta = array_merge(
+        $viewList["meta"] ?? [],
+        $viewList["args"]["meta"] ?? []
+    );
     unset($viewList["views"][0]);
     $viewList["views"] = array_values($viewList["views"]);
     include_once __view($view);

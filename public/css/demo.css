@@ -1,0 +1,412 @@
+/* Demo Mode Styles */
+
+/* Demo Badge */
+.demo-badge {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: var(--blue);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    z-index: 9999;
+    box-shadow: 0 4px 15px rgba(var(--blue-rgb), 0.4);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.demo-badge i {
+    font-size: 14px;
+}
+
+/* Demo Landing Page */
+.demo-landing {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.demo-landing-hero {
+    text-align: center;
+    max-width: 600px;
+    margin-bottom: 3rem;
+}
+
+.demo-landing-hero h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 1rem;
+}
+
+.demo-landing-hero p {
+    font-size: 1.1rem;
+    color: #6c757d;
+    line-height: 1.6;
+}
+
+/* Demo Store Avatar */
+.demo-store-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--blue-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid var(--blue);
+}
+
+.demo-store-avatar i {
+    font-size: 2.5rem;
+    color: var(--blue);
+}
+
+.demo-role-cards {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.demo-role-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    width: 280px;
+    min-height: 320px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 2px solid transparent;
+}
+
+.demo-role-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+    border-color: var(--blue);
+    text-decoration: none;
+    color: inherit;
+}
+
+.demo-role-card .role-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    font-size: 2.5rem;
+}
+
+.demo-role-card.merchant .role-icon {
+    background: var(--green);
+    color: white;
+}
+
+.demo-role-card.consumer .role-icon {
+    background: var(--blue);
+    color: white;
+}
+
+.demo-role-card h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 0.5rem;
+}
+
+.demo-role-card p {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 0;
+    flex: 1;
+}
+
+.demo-role-card .role-btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    margin-top: 1.5rem;
+}
+
+.demo-role-card.merchant .role-btn {
+    background: var(--green);
+    color: white;
+}
+
+.demo-role-card.consumer .role-btn {
+    background: var(--blue);
+    color: white;
+}
+
+/* Demo Reset Link */
+.demo-reset-link {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #f8f9fa;
+    color: #6c757d;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    border: 1px solid #dee2e6;
+    z-index: 999;
+}
+
+.demo-reset-link:hover {
+    background: #e9ecef;
+    color: #495057;
+    text-decoration: none;
+}
+
+/* Demo Info Box */
+.demo-info-box {
+    background: var(--blue-light);
+    border: 1px solid var(--blue-light);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.demo-info-box i {
+    color: var(--blue);
+    font-size: 1.25rem;
+    margin-top: 2px;
+}
+
+.demo-info-box .info-content {
+    flex: 1;
+}
+
+.demo-info-box .info-title {
+    font-weight: 600;
+    color: var(--blue);
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.demo-info-box .info-text {
+    color: var(--gray);
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+/* Demo Waiting Animation */
+.demo-waiting {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.demo-waiting .waiting-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: var(--blue-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.demo-waiting .waiting-icon i {
+    font-size: 3rem;
+    color: var(--blue);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(var(--blue-rgb), 0.4);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 20px rgba(var(--blue-rgb), 0);
+    }
+}
+
+.demo-waiting h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 0.5rem;
+}
+
+.demo-waiting p {
+    color: #6c757d;
+    font-size: 0.95rem;
+}
+
+/* Demo Stepper Override */
+.demo-stepper {
+    margin-bottom: 2rem;
+}
+
+/* Demo Customer Card */
+.demo-customer-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
+}
+
+.demo-customer-card .customer-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.demo-customer-card .customer-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+.demo-customer-card .customer-info h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a1a2e;
+}
+
+.demo-customer-card .customer-info p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+/* Demo MitID Button */
+.demo-mitid-btn {
+    background: linear-gradient(135deg, #0066cc 0%, #004999 100%);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.demo-mitid-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 102, 204, 0.3);
+}
+
+.demo-mitid-btn i {
+    font-size: 1.5rem;
+}
+
+/* Demo Status Badge */
+.demo-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.demo-status-badge.pending {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.demo-status-badge.active {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.demo-status-badge.completed {
+    background: var(--blue-light);
+    color: var(--blue);
+}
+
+/* Demo Action Buttons */
+.demo-action-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.demo-action-group .btn-v2 {
+    justify-content: center;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .demo-role-cards {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .demo-role-card {
+        width: 100%;
+        max-width: 320px;
+    }
+
+    .demo-landing-hero h1 {
+        font-size: 1.8rem;
+    }
+
+    .demo-badge {
+        top: auto;
+        bottom: 70px;
+        right: 10px;
+        font-size: 10px;
+        padding: 6px 12px;
+    }
+
+    .demo-reset-link {
+        bottom: 70px;
+        left: 10px;
+        right: auto;
+    }
+}

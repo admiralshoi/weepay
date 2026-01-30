@@ -50,7 +50,47 @@ class CustomerPageController {
         $currentPageUrl = "merchant/{$slug}";
         $loginUrl = __url(\classes\enumerations\Links::$app->auth->consumerLogin . '?' . http_build_query(['redirect' => $currentPageUrl]));
 
-        return Views("CUSTOMER_LOCATION_HOME", compact('location', 'publishedPage', 'slug', 'isConsumerLoggedIn', 'bnplLimit', 'hasPastDue', 'loginUrl'));
+        // Dynamic page title using location name
+        $title = $location->name;
+
+        // Dynamic meta tags for SEO
+        $metaDescription = $publishedPage->caption ?? $location->caption ?? 'Betal med ' . BRAND_NAME . ' hos ' . $location->name;
+        $ogImage = !empty($publishedPage->logo) ? __asset($publishedPage->logo) : __asset(OG_IMAGE);
+
+        // Build LocalBusiness schema
+        $address = Methods::locations()->locationAddress($location);
+        $pageUrl = __url($currentPageUrl);
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'LocalBusiness',
+            'name' => $location->name,
+            'description' => $metaDescription,
+            'url' => $pageUrl,
+            'image' => $ogImage,
+        ];
+
+        // Add address if available
+        if (!empty($address)) {
+            $schemaAddress = ['@type' => 'PostalAddress'];
+            if (!empty($address->line_1)) $schemaAddress['streetAddress'] = $address->line_1;
+            if (!empty($address->city)) $schemaAddress['addressLocality'] = $address->city;
+            if (!empty($address->postal)) $schemaAddress['postalCode'] = $address->postal;
+            if (!empty($address->country)) $schemaAddress['addressCountry'] = $address->country;
+            if (count($schemaAddress) > 1) {
+                $schema['address'] = $schemaAddress;
+            }
+        }
+
+        $meta = [
+            'description' => $metaDescription,
+            'og_title' => $location->name,
+            'og_description' => $metaDescription,
+            'og_image' => $ogImage,
+            'canonical' => $pageUrl,
+            'schema' => $schema,
+        ];
+
+        return Views("CUSTOMER_LOCATION_HOME", compact('location', 'publishedPage', 'slug', 'isConsumerLoggedIn', 'bnplLimit', 'hasPastDue', 'loginUrl', 'title', 'meta'));
     }
 
     public static function start(array $args): mixed  {

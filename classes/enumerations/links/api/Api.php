@@ -11,6 +11,7 @@ use classes\enumerations\links\api\organisation\Organisation;
 class Api {
 
     public Auth $auth;
+    public Demo $demo;
     public Forms $forms;
     public Organisation $organisation;
     public Locations $locations;

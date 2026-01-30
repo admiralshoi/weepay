@@ -16,6 +16,7 @@ class Admin {
     public Panel $panel;
     public Support $support;
     public Policies $policies;
+    public ContactForms $contactForms;
 
     function __construct() {
         $this->payments = new Payments();
@@ -30,6 +31,7 @@ class Admin {
         $this->panel = new Panel();
         $this->support = new Support();
         $this->policies = new Policies();
+        $this->contactForms = new ContactForms();
     }
 }
 
@@ -113,4 +115,9 @@ class Policies {
     public string $publish = "api/admin/policies/publish";
     public string $delete = "api/admin/policies/delete";
     public string $versions = "api/admin/policies/versions";
+}
+
+class ContactForms {
+    public string $list = "api/admin/contact-forms/list";
+    public string $delete = "api/admin/contact-forms/delete";
 }

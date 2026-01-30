@@ -45,7 +45,52 @@ class PublicContactFormHandler extends Crud {
         ]);
     }
 
+    /**
+     * Get paginated list of submissions with optional search
+     */
+    public function getList(int $page = 1, int $perPage = 25, string $search = '', string $sortColumn = 'created_at', string $sortDirection = 'DESC'): array {
+        $allowedSortColumns = ['created_at', 'name', 'email'];
+        if (!in_array($sortColumn, $allowedSortColumns)) {
+            $sortColumn = 'created_at';
+        }
 
+        $query = $this->queryBuilder()
+            ->select(['uid', 'name', 'email', 'subject', 'content', 'newsletter_consent', 'created_at']);
 
+        if (!empty($search)) {
+            $query->startGroup('OR')
+                ->whereLike('name', $search)
+                ->whereLike('email', $search)
+                ->whereLike('subject', $search)
+                ->endGroup();
+        }
+
+        $totalCount = (clone $query)->count();
+        $totalPages = max(1, (int)ceil($totalCount / $perPage));
+        $page = min(max(1, $page), $totalPages);
+        $offset = ($page - 1) * $perPage;
+
+        $submissions = $query->order($sortColumn, $sortDirection)
+            ->limit($perPage)
+            ->offset($offset)
+            ->all();
+
+        return [
+            'submissions' => $submissions,
+            'pagination' => [
+                'page' => $page,
+                'perPage' => $perPage,
+                'total' => $totalCount,
+                'totalPages' => $totalPages,
+            ],
+        ];
+    }
+
+    /**
+     * Delete a submission by UID
+     */
+    public function deleteByUid(string $uid): bool {
+        return $this->delete(['uid' => $uid]);
+    }
 
 }

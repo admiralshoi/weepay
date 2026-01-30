@@ -3058,4 +3058,81 @@ class ApiController {
         Response()->jsonSuccess('', ['stats' => $stats]);
     }
 
+
+    // =====================================================
+    // CONTACT FORMS MANAGEMENT
+    // =====================================================
+
+    /**
+     * List contact form submissions with pagination and search
+     */
+    #[NoReturn] public static function contactFormsList(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', [], 403);
+        }
+
+        $page = (int)($args['page'] ?? 1);
+        $perPage = (int)($args['per_page'] ?? 25);
+        $search = trim($args['search'] ?? '');
+        $sortColumn = $args['sort_column'] ?? 'created_at';
+        $sortDirection = strtoupper($args['sort_direction'] ?? 'DESC');
+
+        $handler = Methods::publicContactForm();
+        $result = $handler->getList($page, $perPage, $search, $sortColumn, $sortDirection);
+
+        $formattedSubmissions = [];
+        foreach ($result['submissions']->list() as $submission) {
+            $formattedSubmissions[] = [
+                'uid' => $submission->uid,
+                'name' => $submission->name,
+                'email' => $submission->email,
+                'subject' => $submission->subject,
+                'content' => $submission->content,
+                'newsletter_consent' => (bool)$submission->newsletter_consent,
+                'created_at' => $submission->created_at,
+            ];
+        }
+
+        Response()->jsonSuccess('', [
+            'submissions' => $formattedSubmissions,
+            'pagination' => $result['pagination'],
+        ]);
+    }
+
+    /**
+     * Delete a contact form submission
+     */
+    #[NoReturn] public static function contactFormsDelete(array $args): void {
+        if (!Methods::isAdmin()) {
+            Response()->jsonError('Adgang nægtet', [], 403);
+        }
+
+        $uid = $args['uid'] ?? null;
+
+        if (isEmpty($uid)) {
+            Response()->jsonError('Indsendelse ID mangler');
+        }
+
+        $handler = Methods::publicContactForm();
+        $submission = $handler->get($uid);
+
+        if (isEmpty($submission)) {
+            Response()->jsonError('Indsendelse ikke fundet');
+        }
+
+        $success = $handler->deleteByUid($uid);
+
+        if ($success) {
+            debugLog([
+                'admin' => __uuid(),
+                'submission_uid' => $uid,
+                'action' => 'delete_contact_form_submission'
+            ], 'ADMIN_CONTACT_FORM_DELETE');
+
+            Response()->jsonSuccess('Indsendelse slettet');
+        } else {
+            Response()->jsonError('Kunne ikke slette indsendelsen');
+        }
+    }
+
 }

@@ -15,6 +15,37 @@ require_once ROOT . "routing/middleware/middleware.php";
 
 /**
  *  =========================================
+ *  ============= DEMO PAGES ================
+ *  =========================================
+ */
+Routes::group([], function() {
+    // Demo Pages
+    Routes::get("demo", "demo.DemoController::landing");
+    Routes::get("demo/cashier", "demo.DemoController::merchantStart");
+    Routes::get("demo/cashier/details", "demo.DemoController::merchantDetails");
+    Routes::get("demo/cashier/checkout", "demo.DemoController::merchantCheckout");
+    Routes::get("demo/cashier/fulfilled", "demo.DemoController::merchantFulfilled");
+    Routes::get("demo/consumer", "demo.DemoController::consumerStart");
+    Routes::get("demo/consumer/info", "demo.DemoController::consumerInfo");
+    Routes::get("demo/consumer/choose-plan", "demo.DemoController::consumerChoosePlan");
+    Routes::get("demo/consumer/confirmation", "demo.DemoController::consumerConfirmation");
+});
+
+// Demo API
+Routes::group(['api'], function() {
+    Routes::post("api/demo/merchant/customer-appear", "demo.DemoApiController::simulateCustomerAppearance");
+    Routes::get("api/demo/merchant/sessions", "demo.DemoApiController::getMerchantSessions");
+    Routes::post("api/demo/merchant/basket", "demo.DemoApiController::createBasket");
+    Routes::get("api/demo/merchant/session-status", "demo.DemoApiController::getMerchantSessionStatus");
+    Routes::post("api/demo/consumer/simulate-login", "demo.DemoApiController::simulateLogin");
+    Routes::get("api/demo/consumer/basket", "demo.DemoApiController::getConsumerBasket");
+    Routes::post("api/demo/consumer/pay", "demo.DemoApiController::simulatePayment");
+    Routes::post("api/demo/reset", "demo.DemoApiController::resetDemo");
+});
+
+
+/**
+ *  =========================================
  *  =========== OPEN PAGES START ============
  *  =========================================
  */
@@ -29,6 +60,7 @@ Routes::get("qr", "GeneralController::generateQr");
 // SEO routes (sitemap index structure)
 Routes::get("sitemap.xml", "SeoController::sitemap");
 Routes::get("sitemap-static.xml", "SeoController::sitemapStatic");
+Routes::get("sitemap-demo.xml", "SeoController::sitemapDemo");
 Routes::get("sitemap-org-{uid}.xml", "SeoController::sitemapOrganisation");
 Routes::get("robots.txt", "SeoController::robots");
 Routes::get("favicon.ico", "SeoController::favicon");
@@ -810,6 +842,10 @@ Routes::group(['requiresApiLogin', "admin", "api"], function() {
     Routes::post(Links::$api->admin->policies->publish, "admin.ApiController::policiesPublish");
     Routes::post(Links::$api->admin->policies->delete, "admin.ApiController::policiesDelete");
     Routes::post(Links::$api->admin->policies->versions, "admin.ApiController::policiesVersions");
+
+    // Contact Forms API
+    Routes::post(Links::$api->admin->contactForms->list, "admin.ApiController::contactFormsList");
+    Routes::post(Links::$api->admin->contactForms->delete, "admin.ApiController::contactFormsDelete");
 
     // Cronjob Admin API
     Routes::post("api/admin/cronjobs/force-run", "api.CronjobController::forceRun");

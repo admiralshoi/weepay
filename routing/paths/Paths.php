@@ -29,6 +29,7 @@ class Paths {
                 "custom_scripts" => $const["custom_scripts"],
                 "head" => $const["head"],
                 "title" => $const["title"] ?? null,
+                "meta" => $const["meta"] ?? null,
             ];
 
 
@@ -47,7 +48,7 @@ class Paths {
     #[Pure] #[ArrayShape(["views" => "array", "css" => "array", "js" => "array"])]
     private static function viewAssetsTransform(array $viewList): array {
         $viewList = array_reverse($viewList);
-        $transformed = ["views" => [], "css" => [], "js" => [],  "custom_scripts" => [], "head" => null, "title" => ""];
+        $transformed = ["views" => [], "css" => [], "js" => [],  "custom_scripts" => [], "head" => null, "title" => "", "meta" => null];
 
         $assets = [ //Ensure order.
             "base" => [],
@@ -59,6 +60,7 @@ class Paths {
         foreach ($viewList as $item) {
             $transformed["views"][] = $item["view"];
             if(isset($item["title"]) && !empty($item["title"])) $transformed["title"] = $item["title"];
+            if(isset($item["meta"]) && !empty($item["meta"])) $transformed["meta"] = $item["meta"];
 
             if(!empty($item["custom_scripts"])) {
                 if(!is_array($item["custom_scripts"])) $item["custom_scripts"] = [$item["custom_scripts"]];

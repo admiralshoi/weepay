@@ -4,6 +4,7 @@ namespace Database\model;
 class ContactFormSubmissions extends \Database\Model {
     public static ?string $uidPrefix = null;
     protected static array $schema = [
+        "uid" => "string",
         "name" => "string",
         "email" => "string",
         "subject" => "string",
@@ -15,7 +16,9 @@ class ContactFormSubmissions extends \Database\Model {
     protected static array $indexes = [
         "email"
     ];
-    protected static array $uniques = [];
+    protected static array $uniques = [
+        "uid"
+    ];
 
 
     protected static array $requiredRows = [

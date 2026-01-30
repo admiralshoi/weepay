@@ -15,6 +15,9 @@ $bnplLimit = $args->bnplLimit ?? null;
 $hasPastDue = $args->hasPastDue ?? false;
 $loginUrl = $args->loginUrl ?? __url(\classes\enumerations\Links::$app->auth->consumerLogin);
 
+// Check if user is logged in as merchant/admin (not consumer)
+$isLoggedInAsNonConsumer = isLoggedIn() && !Methods::isConsumer();
+
 // Prepare URLs
 $heroImageUrl = __url($page->hero_image);
 $logoUrl = __url($page->logo);
@@ -30,24 +33,6 @@ $pageTitle = $location->name;
 
 <script>
     var pageTitle = <?=json_encode($pageTitle)?>;
-</script>
-
-<!-- LocalBusiness Schema.org JSON-LD -->
-<script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": <?=json_encode($location->name)?>,
-    "image": <?=json_encode($logoUrl)?>,
-    "url": <?=json_encode(HOST . 'merchant/' . $slug)?><?php if($hasAddress): ?>,
-    "address": {
-        "@type": "PostalAddress",
-        "streetAddress": <?=json_encode($address->address ?? '')?>,
-        "addressLocality": <?=json_encode($address->city ?? '')?>,
-        "postalCode": <?=json_encode($address->postal ?? '')?>,
-        "addressCountry": "DK"
-    }<?php endif; ?>
-}
 </script>
 
 <!-- Hero Section -->
@@ -169,6 +154,34 @@ $offerVisible = !isEmpty($page->offer_enabled) && !isEmpty($page->offer_title) &
                         <?php if($isConsumerLoggedIn && !isEmpty($bnplLimit)): ?>
                             <!-- Logged in - show actual credit -->
                             <?=\features\DomMethods::bnplCreditCard($bnplLimit, $hasPastDue)?>
+                            <div class="mt-3 pt-3 border-top">
+                                <p class="font-13 color-gray mb-2">
+                                    <i class="mdi mdi-information-outline"></i>
+                                    Butikken forbeholder sig retten til at afvise køb nu betal senere i øjeblikket.
+                                </p>
+                                <p class="font-12 color-gray mb-0">
+                                    <i class="mdi mdi-store-outline"></i>
+                                    Kredit tilbydes af <strong><?=$location->name?></strong>. <?=BRAND_NAME?> leverer betalingsløsningen.
+                                </p>
+                            </div>
+                        <?php elseif($isLoggedInAsNonConsumer): ?>
+                            <!-- Logged in as merchant/admin - show info that this is for consumers -->
+                            <div class="flex-row-start-center mb-3" style="gap: 0.5rem;">
+                                <i class="mdi mdi-shield-outline font-18 color-design-blue"></i>
+                                <p class="font-weight-bold font-18">Sikker betaling</p>
+                            </div>
+                            <p class="mb-3 font-14 color-gray">
+                                Se hvor meget du kan handle for hos <?=$location->name?>
+                            </p>
+                            <a href="<?=$loginUrl?>" class="btn-v2 green-btn w-100">
+                                Tjek min kredit nu
+                            </a>
+                            <div class="mt-3 p-3 bg-light border-radius-10px">
+                                <p class="font-13 mb-0">
+                                    <i class="mdi mdi-information-outline color-design-blue"></i>
+                                    Kreditgrænsen vises kun for forbruger-brugere.
+                                </p>
+                            </div>
                             <div class="mt-3 pt-3 border-top">
                                 <p class="font-13 color-gray mb-2">
                                     <i class="mdi mdi-information-outline"></i>

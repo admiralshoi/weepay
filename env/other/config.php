@@ -15,7 +15,7 @@ define("LIVE", !str_contains($_SERVER["HTTP_HOST"], "localhost"));
 /**
  * ENV files
  */
-const PLATFORM_VERSION = "v1.066";
+const PLATFORM_VERSION = "v1.067";
 const HTACCESS_PWD_FILE = "env/other/htaccessPwd.txt";
 const DB_LIVE_FILE = "env/db/live.php";
 const DB_LOCAL_FILE = "env/db/local.php";
@@ -79,6 +79,7 @@ define("BRAND_NAME","WeePay"); //Brand
 define("LOGO_WIDE_HEADER", "media/logos/weepay_pos.svg");
 define("PARTNER_BANK_LOGO", "media/images/viva-first-tech-bank.png");
 define("LOGO_ICON", "media/logos/icon.png");
+define("OG_IMAGE", "media/logos/weepay_pos.png"); // Default Open Graph image for social sharing (wide banner)
 define("FAVICON", "media/icons/icon.ico");
 
 define("DEFAULT_LOCATION_HERO", "public/media/images/merchant-beauty-DuNYPCOQ.jpg");

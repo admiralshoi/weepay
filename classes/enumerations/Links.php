@@ -6,6 +6,7 @@ namespace classes\enumerations;
 use classes\enumerations\links\admin\Admin;
 use classes\enumerations\links\checkout\Checkout;
 use classes\enumerations\links\Consumer;
+use classes\enumerations\links\Demo;
 use classes\enumerations\links\Faq;
 use classes\enumerations\links\Merchant;
 use classes\enumerations\links\policies\Policies;
@@ -15,6 +16,7 @@ use classes\enumerations\links\app\App;
 
 final class Links {
     public static Consumer $consumer;
+    public static Demo $demo;
     public static Merchant $merchant;
     public static Admin $admin;
     public static Policies $policies;

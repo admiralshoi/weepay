@@ -11,7 +11,13 @@ class Landing extends \routing\paths\Paths {
         "template" => "LANDING_INNER_HTML",
         "view" => "landing-page.home",
         "custom_scripts" => null,
+        "title" => "Betal senere, del betalingen op",
         "head" => null,
+        "meta" => [
+            "description" => "WeePay gør det nemt at betale senere eller dele betalingen op. Fleksible betalingsløsninger for forbrugere og forhandlere i Danmark.",
+            "og_title" => "WeePay - Betal senere, del betalingen op",
+            "og_description" => "Fleksible betalingsløsninger der passer til dig. Betal nu, senere eller del op i rater.",
+        ],
         "assets" => [
             "main" => [
                 "js.server.js",
@@ -99,6 +105,9 @@ class Landing extends \routing\paths\Paths {
         "custom_scripts" => null,
         "title" => 'Privatlivspolitik for forbrugere',
         "head" => null,
+        "meta" => [
+            "description" => "Læs WeePays privatlivspolitik for forbrugere. Vi beskytter dine personlige data og forklarer hvordan vi behandler dine oplysninger.",
+        ],
         "assets" => [
             "main" => [
                 "js.server.js",
@@ -122,6 +131,9 @@ class Landing extends \routing\paths\Paths {
         "custom_scripts" => null,
         "title" => 'Vilkår for forbrugere',
         "head" => null,
+        "meta" => [
+            "description" => "Læs WeePays handelsbetingelser og vilkår for forbrugere. Forstå dine rettigheder og forpligtelser når du bruger vores betalingsløsninger.",
+        ],
         "assets" => [
             "main" => [
                 "js.server.js",
@@ -145,6 +157,9 @@ class Landing extends \routing\paths\Paths {
         "custom_scripts" => null,
         "title" => 'Privatlivspolitik for forhandlere',
         "head" => null,
+        "meta" => [
+            "description" => "Læs WeePays privatlivspolitik for forhandlere. Vi beskytter dine virksomhedsdata og forklarer hvordan vi behandler dine oplysninger.",
+        ],
         "assets" => [
             "main" => [
                 "js.server.js",
@@ -168,6 +183,9 @@ class Landing extends \routing\paths\Paths {
         "custom_scripts" => null,
         "title" => 'Vilkår for forhandlere',
         "head" => null,
+        "meta" => [
+            "description" => "Læs WeePays handelsbetingelser og vilkår for forhandlere. Forstå dine rettigheder og forpligtelser som partner.",
+        ],
         "assets" => [
             "main" => [
                 "js.server.js",
@@ -191,6 +209,9 @@ class Landing extends \routing\paths\Paths {
         "custom_scripts" => null,
         "title" => 'Cookiepolitik',
         "head" => null,
+        "meta" => [
+            "description" => "Læs om WeePays brug af cookies. Vi forklarer hvilke cookies vi bruger og hvordan de hjælper med at forbedre din oplevelse.",
+        ],
         "assets" => [
             "main" => [
                 "js.server.js",
@@ -214,6 +235,10 @@ class Landing extends \routing\paths\Paths {
         "custom_scripts" => null,
         "title" => 'FAQ - Forbrugere',
         "head" => null,
+        "meta" => [
+            "description" => "Få svar på de mest stillede spørgsmål om WeePay som forbruger. Lær om betalingsplaner, sikkerhed og hvordan du kommer i gang.",
+            "schema_type" => "FAQPage",
+        ],
         "assets" => [
             "main" => [
                 "css.main.css",
@@ -234,6 +259,10 @@ class Landing extends \routing\paths\Paths {
         "custom_scripts" => null,
         "title" => 'FAQ - Forhandlere',
         "head" => null,
+        "meta" => [
+            "description" => "Få svar på de mest stillede spørgsmål om WeePay som forhandler. Lær om integration, gebyrer og hvordan du tilbyder fleksible betalinger.",
+            "schema_type" => "FAQPage",
+        ],
         "assets" => [
             "main" => [
                 "css.main.css",
@@ -254,6 +283,9 @@ class Landing extends \routing\paths\Paths {
         "custom_scripts" => null,
         "title" => 'Kom godt i gang som forhandler',
         "head" => null,
+        "meta" => [
+            "description" => "Guide til at komme i gang som forhandler hos WeePay. Lær trin-for-trin hvordan du opsætter din butik og begynder at tilbyde fleksible betalinger.",
+        ],
         "assets" => [
             "main" => [
                 "css.main.css",
